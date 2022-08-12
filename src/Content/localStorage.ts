@@ -15,15 +15,11 @@
     along with d-comments.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-export type options = { [key: string]: unknown };
+export type options = { [key: string]: string | number | boolean };
 
-/**
- * デフォルト設定
- * @data コメントを表示する: true
- */
 export const defaultOptions: options = {
-  設定できる項目はありません: true,
-  開発場所: "https://github.com/gobosan/d-comments.git",
+  ポップアップを開いたとき最後に入力した動画IDを表示する: true,
+  ポップアップを開いたとき自動で動画検索を開始する: true,
 };
 
 /**
@@ -48,12 +44,15 @@ export const getAllOptions = () => {
 };
 
 /**
- * Chrome.storage.local の設定を取得する
- * @param key 設定キー { string }
- * @returns 設定値 { unknown }
+ * 設定を取得し、Callback を呼び出す
+ * @param key 設定キー
+ * @param callback 設定値を取得した後に呼ばれる関数
  */
-export const getOption = (key: string) => {
+export const getOption = (
+  key: string,
+  callback: (value: string | number | boolean) => void
+) => {
   chrome.storage.local.get(key, (result) => {
-    return result[key] ?? defaultOptions[key];
+    callback(result[key] ?? defaultOptions[key]);
   });
 };
