@@ -1,0 +1,241 @@
+@use "../global.scss";
+
+#popup {
+  width: 400px;
+  height: 580px;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  .btn-option {
+    margin: 0px;
+    overflow: hidden;
+    padding: 6px 8px;
+    border-radius: 100%;
+    background-color: rgb(236 236 236);
+    color: black;
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    display: inline-block;
+    cursor: pointer;
+
+    span {
+      position: relative;
+      transition: color 0.6s cubic-bezier(0.53, 0.21, 0, 1);
+
+      i {
+        font-size: 25px;
+      }
+    }
+
+    &:before {
+      content: "";
+      display: block;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: hsl(0, 0%, 49%);
+      transform: scaleX(0);
+      transform-origin: 100% 100%;
+      transition: transform 0.6s cubic-bezier(0.53, 0.21, 0, 1);
+    }
+
+    &:hover {
+      &:before {
+        transform-origin: 0 0;
+        transform: scaleX(1);
+      }
+
+      span {
+        color: white;
+      }
+    }
+  }
+
+  input {
+    width: 240px;
+    height: 32px;
+    border: none;
+    border-radius: 8px;
+    padding: 8px;
+    margin: 0px;
+    font-size: 20px;
+    font-weight: bolder;
+    background-color: rgb(236 236 236);
+
+    &:focus {
+      outline: none;
+    }
+  }
+
+  .btn {
+    margin: 0px;
+    overflow: hidden;
+    border-radius: 7px;
+    background-color: rgb(236 236 236);
+    display: inline-block;
+    color: black;
+    cursor: pointer;
+
+    &:hover {
+      animation: swing 1s ease;
+      animation-iteration-count: 1;
+    }
+
+    @keyframes swing {
+      15% {
+        transform: translateX(5px);
+      }
+
+      30% {
+        transform: translateX(-5px);
+      }
+
+      50% {
+        transform: translateX(3px);
+      }
+
+      80% {
+        transform: translateX(2px);
+      }
+
+      90% {
+        transform: translateX(1px);
+      }
+
+      100% {
+        transform: translateX(0px);
+      }
+    }
+  }
+
+  .movieId {
+    font-size: large;
+    font-weight: bold;
+    display: flex;
+    flex-direction: column;
+    padding: 0 24px;
+
+    .btn-draw {
+      padding: 10px 20px;
+      position: absolute;
+      top: 70px;
+      right: 25px;
+    }
+  }
+
+  .search {
+    font-size: large;
+    font-weight: bold;
+    display: flex;
+    flex-direction: column;
+    padding: 0 24px;
+
+    .btn-search {
+      padding: 10px 25px;
+      position: absolute;
+      top: 180px;
+      right: 25px;
+
+      i {
+        font-size: 24px;
+        font-weight: bold;
+      }
+    }
+  }
+
+  ul {
+    list-style: none;
+    padding: 0;
+    border: 2px solid rgb(187 187 187);
+    overflow-x: hidden;
+    overflow-y: scroll;
+    height: 350px;
+    font-weight: bolder;
+
+    :not(:last-child) {
+      li {
+        border-bottom: 5px solid rgb(181 181 181);
+      }
+    }
+
+    li {
+      background-color: rgb(248 248 248);
+
+      &:not(:last-child) {
+        border-bottom: 5px solid rgb(181 181 181);
+      }
+
+      .title {
+        height: 24px;
+        text-align: center;
+        overflow: hidden;
+
+        span {
+          font-size: 14px;
+          font-weight: bold;
+          margin: 0px;
+          padding: 8px 0px 0px 100%;
+          display: inline-block;
+          white-space: nowrap;
+          line-height: 1em;
+          animation: scroll 15s linear infinite;
+
+          @keyframes scroll {
+            0% {
+              transform: translateX(0);
+            }
+
+            100% {
+              transform: translateX(-100%);
+            }
+          }
+        }
+      }
+
+      .wrapper {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px;
+
+        .info {
+          p {
+            margin: auto;
+          }
+
+          font-size: 16px;
+          display: flex;
+          flex-direction: column;
+        }
+      }
+    }
+  }
+
+  .error {
+    display: flex;
+    flex-direction: row;
+
+    span {
+      display: inline-block;
+      text-align: center;
+
+      i {
+        padding: 16px 0;
+        font-size: 48px;
+        color: rgb(51 51 51);
+        overflow: hidden;
+      }
+    }
+
+    a {
+      margin: auto 1em;
+      font-size: 16px;
+    }
+  }
+}

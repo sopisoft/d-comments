@@ -1,0 +1,106 @@
+@use "../global.scss";
+
+#options {
+  max-width: 800px;
+  margin: auto;
+
+  header {
+    display: flex;
+    flex-direction: row;
+
+    span {
+      display: inline-block;
+      text-align: center;
+
+      i {
+        padding: 16px 0;
+        font-size: 48px;
+        color: rgb(51 51 51);
+        overflow: hidden;
+      }
+    }
+
+    h1 {
+      margin: auto 1em;
+    }
+  }
+
+  main {
+    display: flex;
+    flex-direction: column;
+    margin: 2em;
+
+    .wrapper {
+      display: flex;
+      flex-direction: column;
+      flex-wrap: wrap;
+      width: 100%;
+      height: 100%;
+      padding: 0;
+      margin: 0;
+
+      .editor {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        margin: 0.5rem 0;
+        border: 1px solid #ccc;
+
+        label {
+          display: flex;
+          flex-direction: column;
+          margin: 1rem;
+          font-size: 1.2rem;
+          font-weight: bolder;
+        }
+
+        input[type="text"] {
+          height: 2rem;
+          border: none;
+          border-radius: 0.5rem;
+          padding: 0.5rem;
+          margin: 0.5rem;
+          font-size: 1.2rem;
+          font-weight: bolder;
+          background-color: rgb(236 236 236);
+
+          &:focus {
+            outline: none;
+          }
+        }
+
+        input[type="number"] {
+          height: 2rem;
+          border: none;
+          border-radius: 0.5rem;
+          padding: 0.5rem;
+          margin: 0.5rem;
+          font-size: 1.2rem;
+          font-weight: bolder;
+          background-color: rgb(236 236 236);
+
+          &:focus {
+            outline: none;
+          }
+        }
+
+        input[type="checkbox"] {
+          margin-right: 2em;
+          width: 2rem;
+          height: 2rem;
+          border: none;
+          border-radius: 0.5rem;
+          padding: 0.5rem;
+          font-size: 1.2rem;
+          font-weight: bolder;
+          background-color: rgb(236 236 236);
+
+          &:focus {
+            outline: none;
+          }
+        }
+      }
+    }
+  }
+}

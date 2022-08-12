@@ -1,0 +1,21 @@
+@import "~@vscode/codicons/dist/codicon.css";
+
+:root {
+  box-sizing: border-box;
+  user-select: none;
+  -webkit-font-smoothing: subpixel-antialiased;
+  text-rendering: optimizeLegibility;
+
+  @media only screen and (-webkit-min-device-pixel-ratio: 2),
+    (min-resolution: 2dppx) {
+    -webkit-font-smoothing: antialiased;
+  }
+
+  word-break: break-word;
+  word-wrap: break-word;
+
+  :any-link {
+    text-decoration: none;
+    color: rgb(6, 7, 133);
+  }
+}

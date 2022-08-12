@@ -1,0 +1,35 @@
+{
+  "manifest_version": 3,
+  "name": "d-comments",
+  "description": "dアニメストアの動画再生画面にてニコニコ動画のコメントを表示します。",
+  "version": "2022.8.1",
+  "author": "牛蒡",
+  "icons": {
+    "16": "icons/16.png",
+    "32": "icons/32.png",
+    "48": "icons/48.png",
+    "128": "icons/128.png"
+  },
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "options_page": "options.html",
+  "content_scripts": [
+    {
+      "matches": ["https://animestore.docomo.ne.jp/*"],
+      "js": ["d_comments.js"],
+      "run_at": "document_start",
+      "all_frames": true
+    }
+  ],
+  "background": {
+    "service_worker": "bg.js"
+  },
+  "permissions": ["storage", "tabs"],
+  "host_permissions": [
+    "http://animestore.docomo.ne.jp/*",
+    "https://www.nicovideo.jp/*",
+    "https://nvcomment.nicovideo.jp/*",
+    "https://api.search.nicovideo.jp/*"
+  ]
+}
