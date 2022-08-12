@@ -3,7 +3,7 @@
   "description": "Player addon for d-anime",
   "version": "2022.8.1",
   "private": true,
-  "license": "MIT",
+  "license": "GPL-3.0",
   "engines": {
     "node": ">=16.0.0"
   },
