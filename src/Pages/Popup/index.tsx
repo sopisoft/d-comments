@@ -16,10 +16,11 @@
 */
 
 import React from "react";
+import * as Storage from "../../Content/localStorage";
 import "./index.scss";
 
 const Popup = () => {
-  const [value, setValue] = React.useState("");
+  const [movieId, setMovieId] = React.useState("");
   const [word, setWord] = React.useState("");
   const [result, setResult] = React.useState<SearchResult>();
   const [isActive, setIsActive] = React.useState(false);
@@ -44,7 +45,7 @@ const Popup = () => {
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
       chrome.tabs.sendMessage(tabs[0].id as number, {
         type: "renderComments",
-        movieId: value,
+        movieId: movieId,
       }),
         (response: string) => {
           console.log(response);
@@ -54,7 +55,7 @@ const Popup = () => {
 
   const handler = (value: string) => {
     window.localStorage.setItem("movieId", value);
-    setValue(value);
+    setMovieId(value);
   };
 
   const search = async (word: string) => {
@@ -66,29 +67,52 @@ const Popup = () => {
       })
       .then((response) => {
         console.log(response);
+        window.localStorage.setItem("searchResult", JSON.stringify(response));
         setResult(response);
       });
   };
 
   React.useEffect(() => {
     const init = (title: string) => {
-      setWord(title);
-      search(title).then(() => {
-        const movieId = window.localStorage.getItem("movieId")
-        if (movieId) {
-          setValue(movieId);
+      Storage.getOption(
+        "ポップアップを開いたとき最後に入力した動画IDを表示する",
+        (value) => {
+          if (value === true) {
+            setMovieId(window.localStorage.getItem("movieId") ?? "");
+          }
         }
-      });
+      );
+      Storage.getOption(
+        "ポップアップを開いたとき自動で動画検索を開始する",
+        (value) => {
+          if (value === true) {
+            setWord(title);
+            search(title);
+          } else {
+            Storage.getOption(
+              "自動検索が無効のとき前回の検索結果を表示する",
+              (value) => {
+                if (value === true) {
+                  setResult(
+                    JSON.parse(
+                      window.localStorage.getItem("searchResult") as string
+                    )
+                  );
+                }
+              }
+            );
+          }
+        }
+      );
     };
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
       console.log(tabs[0]?.url);
       tabs[0]?.url?.includes(
         "https://animestore.docomo.ne.jp/animestore/sc_d_pc"
       )
-        ? ((setIsActive(true)), init(tabs[0]?.title ?? ""))
+        ? (setIsActive(true), init(tabs[0]?.title ?? ""))
         : setIsActive(false);
     });
-
   }, []);
 
   return (
@@ -117,7 +141,7 @@ const Popup = () => {
                 【詳細】
               </a>
             </p>
-            <input value={value} onChange={(e) => handler(e.target.value)} />
+            <input value={movieId} onChange={(e) => handler(e.target.value)} />
             <a
               className="btn btn-draw"
               onClick={() => {

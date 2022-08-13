@@ -8,7 +8,7 @@
     "node": ">=16.0.0"
   },
   "scripts": {
-    "production": "yarn remove-build && yarn build && yarn zip",
+    "production": "yarn lint && yarn remove-build && yarn build && yarn zip",
     "remove-build": "rm -rf build && rm -rf build.zip",
     "zip": "zip -r build.zip build",
     "build": "yarn build:react && yarn build:contents",

@@ -29,7 +29,11 @@ window.onload = async () => {
       const res = await fetch(restApi.getAttribute("value") as string);
       const data = await res.json();
       const title = data["data"]["title"];
+      const description = data["data"]["partExp"];
       document.title = title ?? document.title;
+      document
+        .querySelector("meta[name=Description]")
+        ?.setAttribute("content", description);
       break;
     }
   }

@@ -15,22 +15,21 @@
     along with d-comments.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-export type options = { [key: string]: unknown };
+export type options = {
+  [key: string]: string | number | boolean;
+};
 
-/**
- * デフォルト設定
- * @data コメントを表示する: true
- */
 export const defaultOptions: options = {
-  設定できる項目はありません: true,
-  開発場所: "https://github.com/gobosan/d-comments.git",
+  ポップアップを開いたとき最後に入力した動画IDを表示する: true,
+  ポップアップを開いたとき自動で動画検索を開始する: true,
+  自動検索が無効のとき前回の検索結果を表示する: true,
 };
 
 /**
- * Chrome.storage.local に保存されている設定を取得する
- * @returns 設定 { [key: string]: unknown }
+ * Chrome.storage.local に保存されている設定を取得し、callback を呼び出す。
+ * @param callback callback(options)
  */
-export const getAllOptions = () => {
+export const getAllOptions = (callback: (options: options) => void) => {
   chrome.storage.local.get(null, (result) => {
     Object.keys(defaultOptions).map((key: string) => {
       if (result[key] === undefined) {
@@ -43,17 +42,20 @@ export const getAllOptions = () => {
         chrome.storage.local.remove(key as string);
       }
     });
-    return result;
+    return callback(result);
   });
 };
 
 /**
- * Chrome.storage.local の設定を取得する
- * @param key 設定キー { string }
- * @returns 設定値 { unknown }
+ * 設定を取得し、Callback を呼び出す
+ * @param key 設定キー
+ * @param callback 設定値を取得した後に呼ばれる関数
  */
-export const getOption = (key: string) => {
+export const getOption = (
+  key: string,
+  callback: (value: string | number | boolean) => void
+) => {
   chrome.storage.local.get(key, (result) => {
-    return result[key] ?? defaultOptions[key];
+    callback(result[key] ?? defaultOptions[key]);
   });
 };
