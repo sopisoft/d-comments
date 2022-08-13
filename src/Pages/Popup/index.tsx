@@ -43,10 +43,13 @@ const Popup = () => {
 
   const sendMessage = () => {
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-      chrome.tabs.sendMessage(tabs[0].id as number, {
-        type: "renderComments",
-        movieId: movieId,
-      }),
+      tabs[0]?.url?.includes(
+        "https://animestore.docomo.ne.jp/animestore/sc_d_pc"
+      ) &&
+        chrome.tabs.sendMessage(tabs[0].id as number, {
+          type: "renderComments",
+          movieId: movieId,
+        }),
         (response: string) => {
           console.log(response);
         };
@@ -59,17 +62,25 @@ const Popup = () => {
   };
 
   const search = async (word: string) => {
-    chrome.runtime
-      .sendMessage({
-        type: "search",
-        word: word,
-        UserAgent: navigator.userAgent ?? "",
-      })
-      .then((response) => {
-        console.log(response);
-        window.localStorage.setItem("searchResult", JSON.stringify(response));
-        setResult(response);
-      });
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+      tabs[0]?.url?.includes(
+        "https://animestore.docomo.ne.jp/animestore/sc_d_pc"
+      ) &&
+        chrome.runtime
+          .sendMessage({
+            type: "search",
+            word: word,
+            UserAgent: navigator.userAgent ?? "",
+          })
+          .then((response) => {
+            console.log(response);
+            window.localStorage.setItem(
+              "searchResult",
+              JSON.stringify(response)
+            );
+            setResult(response);
+          });
+    });
   };
 
   React.useEffect(() => {
