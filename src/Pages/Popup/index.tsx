@@ -89,8 +89,17 @@ const Popup = () => {
             setWord(title);
             search(title);
           } else {
-            setResult(
-              JSON.parse(window.localStorage.getItem("searchResult") as string)
+            Storage.getOption(
+              "自動検索が無効のとき前回の検索結果を表示する",
+              (value) => {
+                if (value === true) {
+                  setResult(
+                    JSON.parse(
+                      window.localStorage.getItem("searchResult") as string
+                    )
+                  );
+                }
+              }
             );
           }
         }

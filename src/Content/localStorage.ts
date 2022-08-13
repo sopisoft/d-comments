@@ -15,18 +15,21 @@
     along with d-comments.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-export type options = { [key: string]: string | number | boolean };
+export type options = {
+  [key: string]: string | number | boolean;
+};
 
 export const defaultOptions: options = {
   ポップアップを開いたとき最後に入力した動画IDを表示する: true,
   ポップアップを開いたとき自動で動画検索を開始する: true,
+  自動検索が無効のとき前回の検索結果を表示する: true,
 };
 
 /**
- * Chrome.storage.local に保存されている設定を取得する
- * @returns 設定 { [key: string]: unknown }
+ * Chrome.storage.local に保存されている設定を取得し、callback を呼び出す。
+ * @param callback callback(options)
  */
-export const getAllOptions = () => {
+export const getAllOptions = (callback: (options: options) => void) => {
   chrome.storage.local.get(null, (result) => {
     Object.keys(defaultOptions).map((key: string) => {
       if (result[key] === undefined) {
@@ -39,7 +42,7 @@ export const getAllOptions = () => {
         chrome.storage.local.remove(key as string);
       }
     });
-    return result;
+    return callback(result);
   });
 };
 
