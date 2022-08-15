@@ -8,11 +8,11 @@
     "node": ">=16.0.0"
   },
   "scripts": {
-    "production": "yarn lint && yarn remove-build && yarn build && yarn zip",
+    "production": "npm run lint && npm run remove-build && npm run build && npm run zip",
     "remove-build": "rm -rf build && rm -rf build.zip",
     "zip": "zip -r build.zip build",
-    "build": "yarn build:react && yarn build:contents",
-    "build:react": "react-scripts build && yarn rename:popup && yarn rename:options",
+    "build": "npm run build:react && npm run build:contents",
+    "build:react": "react-scripts build && npm run rename:popup && npm run rename:options",
     "build:contents": "webpack --config webpack.config.ts",
     "rename:popup": "sed 's/root/popup/' build/index.html > build/popup.html",
     "rename:options": "sed -e 's/root/options/' build/index.html >  build/options.html",
