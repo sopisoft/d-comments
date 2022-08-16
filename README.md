@@ -6,7 +6,7 @@
 
 ## Requirements
 
-- node.js ^16.0.0 (<https://nodejs.org/ja/>)
+- node.js ^16.17.0 (<https://nodejs.org/ja/>)
 - Google Chrome (Latest) or Microsoft Edge (Latest)
 
 ### Command Line
