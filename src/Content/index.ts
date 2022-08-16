@@ -25,15 +25,28 @@ window.onload = async () => {
       addMenu();
       break;
     case url.pathname.includes("sc_d_pc"): {
-      const restApi = document.getElementById("restApiUrl") as HTMLDivElement;
-      const res = await fetch(restApi.getAttribute("value") as string);
-      const data = await res.json();
-      const title = data["data"]["title"];
-      const description = data["data"]["partExp"];
-      document.title = title ?? document.title;
-      document
-        .querySelector("meta[name=Description]")
-        ?.setAttribute("content", description);
+      const setDocument = async () => {
+        const res = await fetch(
+          "https://animestore.docomo.ne.jp/animestore/rest/WS010105?viewType=5" +
+            window.location.search.replace("?", "&")
+        );
+        const data = await res.json();
+        const title = data["data"]["title"];
+        const description = data["data"]["partExp"];
+        document.title = title ?? document.title;
+        document
+          .querySelector("meta[name=Description]")
+          ?.setAttribute("content", description);
+      };
+      let url = new Object();
+      url = window.location.href;
+      setInterval(() => {
+        if (url !== window.location.href) {
+          url = window.location.href;
+          setDocument();
+        }
+      }, 1000);
+      setDocument();
       break;
     }
   }

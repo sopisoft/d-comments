@@ -5,5 +5,4 @@ build.zip
 /node_modules
 .vscode
 .eslintcache
-yarn-debug.log*
-yarn-error.log*
+npm-debug.log*
