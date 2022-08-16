@@ -20,7 +20,7 @@ dアニメストアの動画再生画面にてニコニコ動画のコメント�
 
 (6).「表示」ボタンをクリックするとコメントが表示されます。
 
-## For Microsoft Store Tester
+## [Notes for certification](<https://docs.microsoft.com/en-us/microsoft-edge/extensions-chromium/publish/publish-extension?branch=extensions-documentation#notes-for-certification>)
 
 1. You go to "https://animestore.docomo.ne.jp/animestore/sc_d_pc?partId=10463999".
 
