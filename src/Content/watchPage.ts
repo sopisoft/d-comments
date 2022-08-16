@@ -140,6 +140,20 @@ const render = async (movieId: string) => {
                 ul.appendChild(df);
               });
 
+              let params = new Object();
+              params = location.href;
+              setInterval(() => {
+                if (params !== location.href) {
+                  ul.remove();
+                  const p = document.createElement("p");
+                  p.textContent =
+                    "作品パートが変更されました。" +
+                    "コメントを再取得してください。";
+                  container.appendChild(p);
+                  params = location.href;
+                }
+              }, 1000);
+
               setTimeout(function main() {
                 const currentTime = Math.round(video.currentTime * 1000);
                 const li = ul.querySelectorAll(
