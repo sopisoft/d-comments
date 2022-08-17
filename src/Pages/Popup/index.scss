@@ -20,9 +20,54 @@
 #popup {
   width: 400px;
   height: 580px;
+  max-width: 480px;
+  max-height: 580px;
+  min-width: 400px;
+  min-height: 580px;
 
   &::-webkit-scrollbar {
     display: none;
+  }
+
+  .btn {
+    margin: 0px;
+    overflow: hidden;
+    border-radius: 7px;
+    background-color: rgb(236 236 236);
+    display: inline-block;
+    color: black;
+    cursor: pointer;
+
+    &:hover {
+      animation: swing 1s ease;
+      animation-iteration-count: 1;
+    }
+
+    @keyframes swing {
+      15% {
+        transform: translateX(5px);
+      }
+
+      30% {
+        transform: translateX(-5px);
+      }
+
+      50% {
+        transform: translateX(3px);
+      }
+
+      80% {
+        transform: translateX(2px);
+      }
+
+      90% {
+        transform: translateX(1px);
+      }
+
+      100% {
+        transform: translateX(0px);
+      }
+    }
   }
 
   .btn-option {
@@ -89,83 +134,35 @@
     }
   }
 
-  .btn {
-    margin: 0px;
-    overflow: hidden;
-    border-radius: 7px;
-    background-color: rgb(236 236 236);
-    display: inline-block;
-    color: black;
-    cursor: pointer;
-
-    &:hover {
-      animation: swing 1s ease;
-      animation-iteration-count: 1;
-    }
-
-    @keyframes swing {
-      15% {
-        transform: translateX(5px);
-      }
-
-      30% {
-        transform: translateX(-5px);
-      }
-
-      50% {
-        transform: translateX(3px);
-      }
-
-      80% {
-        transform: translateX(2px);
-      }
-
-      90% {
-        transform: translateX(1px);
-      }
-
-      100% {
-        transform: translateX(0px);
-      }
-    }
-  }
-
-  .movieId {
+  label {
     font-size: large;
     font-weight: bold;
     display: flex;
     flex-direction: column;
     padding: 0 24px;
 
-    .btn-draw {
-      padding: 10px 20px;
-      position: absolute;
-      top: 70px;
-      right: 25px;
-    }
-  }
+    div {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
 
-  .search {
-    font-size: large;
-    font-weight: bold;
-    display: flex;
-    flex-direction: column;
-    padding: 0 24px;
+      .btn-draw {
+        padding: 10px 20px;
+      }
 
-    .btn-search {
-      padding: 10px 25px;
-      position: absolute;
-      top: 180px;
-      right: 25px;
+      .btn-search {
+        padding: 10px 25px;
 
-      i {
-        font-size: 24px;
-        font-weight: bold;
+        i {
+          font-size: 24px;
+          font-weight: bold;
+        }
       }
     }
   }
 
-  ul {
+  .result {
     list-style: none;
     padding: 0;
     border: 2px solid rgb(187 187 187);

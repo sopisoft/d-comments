@@ -18,17 +18,33 @@
 import addMenu from "./menuPage";
 import render from "./watchPage";
 
-const url = new URL(window.location.href);
+const href = window.location.href;
+
+const isMenuPage = href.match(
+  /https:\/\/animestore\.docomo\.ne\.jp\/animestore\/ci_pc\?workId=\d+/
+)
+  ? true
+  : false;
+
+const isWatchPage = href.match(
+  /https:\/\/animestore\.docomo\.ne\.jp\/animestore\/sc_d_pc\?partId=\d+/
+)
+  ? true
+  : false;
+
 window.onload = async () => {
   switch (true) {
-    case url.pathname.includes("ci_pc"):
+    case isMenuPage:
       addMenu();
       break;
-    case url.pathname.includes("sc_d_pc"): {
+    case isWatchPage: {
       const setDocument = async () => {
+        const apiUrl = document
+          .getElementById("restApiUrl")
+          ?.getAttribute("value")
+          ?.split("&")[0];
         const res = await fetch(
-          "https://animestore.docomo.ne.jp/animestore/rest/WS010105?viewType=5" +
-            window.location.search.replace("?", "&")
+          `${apiUrl}&${window.location.search.split("?")[1]}`
         );
         const data = await res.json();
         const title = data["data"]["title"];
@@ -52,11 +68,8 @@ window.onload = async () => {
   }
 };
 
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  if (message.type === "renderComments" && url.pathname.includes("sc_d_pc")) {
+chrome.runtime.onMessage.addListener((message) => {
+  if (message.type === "render" && isWatchPage) {
     render(message.movieId);
-    sendResponse("Trying to render comments");
-  } else {
-    sendResponse("Not supported");
   }
 });
