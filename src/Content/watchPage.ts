@@ -40,6 +40,7 @@ const render = async (movieId: string) => {
   const watch = document.createElement("div");
   watch.id = "d-comments-watch";
   container.appendChild(watch);
+  let time = new Object();
   setTimeout(function main() {
     const hours = `${
       Math.floor(video.currentTime / 3600) > 0
@@ -52,7 +53,10 @@ const render = async (movieId: string) => {
         : ""
     }`;
     const seconds = `${Math.floor(video.currentTime % 60)}&nbsp;秒`;
-    watch.innerHTML = `${hours}${minutes}${seconds}`;
+    if (time !== `${hours}${minutes}${seconds}`) {
+      time = `${hours}${minutes}${seconds}`;
+      watch.innerHTML = `${hours}${minutes}${seconds}`;
+    }
     setTimeout(main, 100);
   }, 100);
 
@@ -145,6 +149,9 @@ const render = async (movieId: string) => {
               setInterval(() => {
                 if (params !== location.href) {
                   ul.remove();
+                  container.querySelectorAll("p").forEach((p) => {
+                    p.remove();
+                  });
                   const p = document.createElement("p");
                   p.textContent =
                     "作品パートが変更されました。" +

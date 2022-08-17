@@ -43,11 +43,11 @@ const Popup = () => {
 
   const sendMessage = () => {
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-      tabs[0]?.url?.includes(
-        "https://animestore.docomo.ne.jp/animestore/sc_d_pc"
+      tabs[0]?.url?.match(
+        /https:\/\/animestore\.docomo\.ne\.jp\/animestore\/sc_d_pc\?partId=\d+/
       ) &&
         chrome.tabs.sendMessage(tabs[0].id as number, {
-          type: "renderComments",
+          type: "render",
           movieId: movieId,
         }),
         (response: string) => {
@@ -63,8 +63,8 @@ const Popup = () => {
 
   const search = async (word: string) => {
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-      tabs[0]?.url?.includes(
-        "https://animestore.docomo.ne.jp/animestore/sc_d_pc"
+      tabs[0]?.url?.match(
+        /https:\/\/animestore\.docomo\.ne\.jp\/animestore\/sc_d_pc\?partId=\d+/
       ) &&
         chrome.runtime
           .sendMessage({
@@ -118,8 +118,8 @@ const Popup = () => {
     };
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
       console.log(tabs[0]?.url);
-      tabs[0]?.url?.includes(
-        "https://animestore.docomo.ne.jp/animestore/sc_d_pc"
+      tabs[0]?.url?.match(
+        /https:\/\/animestore\.docomo\.ne\.jp\/animestore\/sc_d_pc\?partId=\d+/
       )
         ? (setIsActive(true), init(tabs[0]?.title ?? ""))
         : setIsActive(false);
@@ -141,7 +141,7 @@ const Popup = () => {
 
       {isActive ? (
         <>
-          <label className="movieId">
+          <label>
             <p>
               動画ID
               <a
@@ -152,29 +152,36 @@ const Popup = () => {
                 【詳細】
               </a>
             </p>
-            <input value={movieId} onChange={(e) => handler(e.target.value)} />
-            <a
-              className="btn btn-draw"
-              onClick={() => {
-                sendMessage();
-              }}
-            >
-              表示
-            </a>
+            <div>
+              <input
+                value={movieId}
+                onChange={(e) => handler(e.target.value)}
+              />
+              <a
+                className="btn btn-draw"
+                onClick={() => {
+                  sendMessage();
+                }}
+              >
+                表示
+              </a>
+            </div>
           </label>
-          <label className="search">
+          <label>
             <p>検索ワード</p>
-            <input value={word} onChange={(e) => setWord(e.target.value)} />
-            <a
-              className="btn btn-search"
-              onClick={() => {
-                search(word);
-              }}
-            >
-              <span>
-                <i className="codicon codicon-search" />
-              </span>
-            </a>
+            <div>
+              <input value={word} onChange={(e) => setWord(e.target.value)} />
+              <a
+                className="btn btn-search"
+                onClick={() => {
+                  search(word);
+                }}
+              >
+                <span>
+                  <i className="codicon codicon-search" />
+                </span>
+              </a>
+            </div>
           </label>
           <ul className="result">
             {result?.meta?.status === 200 &&

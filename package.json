@@ -17,8 +17,7 @@
     "rename:popup": "sed 's/root/popup/' build/index.html > build/popup.html",
     "rename:options": "sed -e 's/root/options/' build/index.html >  build/options.html",
     "test": "react-scripts test",
-    "lint": "eslint --cache --fix src/ && prettier --write src/",
-    "prettier": "prettier --write ./**/*.{ts,tsx,json,scss,css,html,md}"
+    "lint": "eslint --cache --fix src/ && prettier --write ./**/*.{ts,tsx,json,scss,css,html}"
   },
   "eslintConfig": {
     "extends": [
