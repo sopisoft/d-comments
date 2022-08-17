@@ -41,11 +41,17 @@ const Popup = () => {
     }[];
   };
 
+  const isWatchPage = (href: string) => {
+    return href.match(
+      /https:\/\/animestore\.docomo\.ne\.jp\/animestore\/sc_d_pc\?partId=\d+/
+    )
+      ? true
+      : false;
+  };
+
   const sendMessage = () => {
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-      tabs[0]?.url?.match(
-        /https:\/\/animestore\.docomo\.ne\.jp\/animestore\/sc_d_pc\?partId=\d+/
-      ) &&
+      isWatchPage(tabs[0]?.url ?? "") &&
         chrome.tabs.sendMessage(tabs[0].id as number, {
           type: "render",
           movieId: movieId,
@@ -63,9 +69,7 @@ const Popup = () => {
 
   const search = async (word: string) => {
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-      tabs[0]?.url?.match(
-        /https:\/\/animestore\.docomo\.ne\.jp\/animestore\/sc_d_pc\?partId=\d+/
-      ) &&
+      isWatchPage(tabs[0]?.url ?? "") &&
         chrome.runtime
           .sendMessage({
             type: "search",
@@ -118,9 +122,7 @@ const Popup = () => {
     };
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
       console.log(tabs[0]?.url);
-      tabs[0]?.url?.match(
-        /https:\/\/animestore\.docomo\.ne\.jp\/animestore\/sc_d_pc\?partId=\d+/
-      )
+      isWatchPage(tabs[0]?.url ?? "")
         ? (setIsActive(true), init(tabs[0]?.title ?? ""))
         : setIsActive(false);
     });

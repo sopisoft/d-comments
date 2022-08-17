@@ -127,7 +127,7 @@ const render = async (movieId: string) => {
 
             await getComments().then((comments) => {
               const contents = async (comments) => {
-                const lists = new Array<HTMLElement>();
+                const lists = [] as HTMLElement[];
                 comments.map((comment) => {
                   const li = document.createElement("li");
                   li.innerText = comment.body;
@@ -166,7 +166,7 @@ const render = async (movieId: string) => {
                 const li = ul.querySelectorAll(
                   "li[data-time]"
                 ) as NodeListOf<HTMLElement>;
-                const list = new Array<HTMLElement>();
+                const list = [] as HTMLElement[];
                 for (let i = 0; i < li.length; i++) {
                   const time = Number(li[i].getAttribute("data-time"));
                   if (currentTime > time) {
