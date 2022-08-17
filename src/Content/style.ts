@@ -15,7 +15,10 @@
     along with d-comments.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-export const style = document.createElement("style");
+/**
+ * 視聴ページで追加する要素のスタイル
+ */
+const style = document.createElement("style");
 style.innerHTML = `
             #d-comments-wrapper {
               display:flex;
@@ -38,6 +41,12 @@ style.innerHTML = `
             #d-comments-container #d-comments-watch {
               text-align:center;
             }
+            #d-comments-container #d-comments-close {
+              width:80%;
+              margin:0 auto;
+              border-radius:10px;
+              cursor:pointer;
+            }
             #d-comments-container ul {
               margin-block-start:0px;
               margin-block-end:0px;
@@ -56,3 +65,4 @@ style.innerHTML = `
               display: none;
             }
             `;
+export default style;

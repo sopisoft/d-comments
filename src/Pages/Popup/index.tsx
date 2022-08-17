@@ -49,11 +49,14 @@ const Popup = () => {
       : false;
   };
 
+  /**
+   * 視聴ページでコメントを表示する
+   */
   const sendMessage = () => {
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
       isWatchPage(tabs[0]?.url ?? "") &&
         chrome.tabs.sendMessage(tabs[0].id as number, {
-          type: "render",
+          type: "showComments",
           movieId: movieId,
         }),
         (response: string) => {

@@ -15,8 +15,8 @@
     along with d-comments.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-import addMenu from "./menuPage";
-import render from "./watchPage";
+import * as util from "./util";
+import showComments from "./watchPage";
 
 const href = window.location.href;
 
@@ -35,41 +35,25 @@ const isWatchPage = href.match(
 window.onload = async () => {
   switch (true) {
     case isMenuPage:
-      addMenu();
+      util.addMenu();
       break;
     case isWatchPage: {
-      const setDocument = async () => {
-        const apiUrl = document
-          .getElementById("restApiUrl")
-          ?.getAttribute("value")
-          ?.split("&")[0];
-        const res = await fetch(
-          `${apiUrl}&${window.location.search.split("?")[1]}`
-        );
-        const data = await res.json();
-        const title = data["data"]["title"];
-        const description = data["data"]["partExp"];
-        document.title = title ?? document.title;
-        document
-          .querySelector("meta[name=Description]")
-          ?.setAttribute("content", description);
-      };
       let url = new Object();
       url = window.location.href;
       setInterval(() => {
         if (url !== window.location.href) {
           url = window.location.href;
-          setDocument();
+          util.setInfo();
         }
       }, 1000);
-      setDocument();
+      util.setInfo();
       break;
     }
   }
 };
 
 chrome.runtime.onMessage.addListener((message) => {
-  if (message.type === "render" && isWatchPage) {
-    render(message.movieId);
+  if (message.type === "showComments" && isWatchPage) {
+    showComments(message.movieId);
   }
 });

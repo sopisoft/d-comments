@@ -15,6 +15,12 @@
     along with d-comments.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+/**
+ * 任意の範囲のランダムな整数を返す
+ * @param min 最小値
+ * @param max 最大値
+ * @returns min 以上 max 以下のランダムな整数
+ */
 const getRandomInt = (min: number, max: number) => {
   min = Math.ceil(min);
   max = Math.floor(max);
@@ -24,6 +30,7 @@ const getRandomInt = (min: number, max: number) => {
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   switch (message.type) {
     case "movieData": {
+      // 動画情報を取得
       const actionTrackId =
         Math.random().toString(36).slice(-10) +
         "_" +
@@ -37,9 +44,8 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       fetch(url + "?" + new URLSearchParams(params), {
         credentials: "omit",
         headers: {
-          "x-client-os-type": "android",
-          "x-frontend-id": "3",
-          "x-frontend-version": "0.1.0",
+          "x-frontend-id": "6",
+          "x-frontend-version": "0",
         },
       })
         .then((res) => {
@@ -54,6 +60,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       return true;
     }
     case "threadData": {
+      // コメントスレッドの情報とコメントを取得
       const nvComment = message.watchData["data"]["comment"]["nvComment"];
       const serverUrl = nvComment["server"] + "/v1/threads";
       const jsonBody = {
@@ -93,6 +100,10 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         _limit: "20",
         _context: "d-comments",
       };
+      /**
+       * スナップショットAPIを使って動画を検索する
+       * @see https://site.nicovideo.jp/search-api-docs/snapshot
+       */
       fetch(endpoint + "?" + new URLSearchParams(params), {
         headers: {
           "User-Agent": message.UserAgent,
