@@ -22,7 +22,6 @@ export type options = {
 export const defaultOptions: options = {
   ポップアップを開いたとき最後に入力した動画IDを表示する: true,
   ポップアップを開いたとき自動で動画検索を開始する: true,
-  自動検索が無効のとき前回の検索結果を表示する: true,
 };
 
 /**

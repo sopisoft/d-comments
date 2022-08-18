@@ -121,7 +121,6 @@ const Popup = () => {
           };
           setOwnerInfo().then(() => {
             setOwner((owner) => (owner ? [...owner, ...res] : res));
-            window.localStorage.setItem("owner", JSON.stringify(res ?? []));
           });
         } else {
           return;
@@ -147,26 +146,26 @@ const Popup = () => {
             UserAgent: navigator.userAgent ?? "",
           },
           (response) => {
-            console.log("検索結果", response);
-            window.localStorage.setItem(
-              "searchResult",
-              JSON.stringify(response)
-            );
-            setResult(response);
-            response.data.forEach(
-              (item: {
-                userId: string;
-                contentId: string;
-                channelId: string;
-              }) => {
-                const isUser = item.userId ? true : false;
-                getOwnerInfo(
-                  item.contentId,
-                  isUser ? item.userId : item.channelId,
-                  isUser ? true : false
-                );
-              }
-            );
+            if (response.meta.status === 200) {
+              console.log("検索結果", response);
+              setResult(response);
+              response.data.forEach(
+                (item: {
+                  userId: string;
+                  contentId: string;
+                  channelId: string;
+                }) => {
+                  const isUser = item.userId ? true : false;
+                  getOwnerInfo(
+                    item.contentId,
+                    isUser ? item.userId : item.channelId,
+                    isUser ? true : false
+                  );
+                }
+              );
+            } else {
+              return;
+            }
           }
         );
     });
@@ -188,22 +187,6 @@ const Popup = () => {
           if (value === true) {
             setWord(title);
             search(title);
-          } else {
-            Storage.getOption(
-              "自動検索が無効のとき前回の検索結果を表示する",
-              (value) => {
-                if (value === true) {
-                  setResult(
-                    JSON.parse(
-                      window.localStorage.getItem("searchResult") ?? ""
-                    ) ?? ""
-                  );
-                  setOwner(
-                    JSON.parse(window.localStorage.getItem("owner") ?? "") ?? ""
-                  );
-                }
-              }
-            );
           }
         }
       );
