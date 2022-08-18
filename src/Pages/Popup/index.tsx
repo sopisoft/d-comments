@@ -295,11 +295,7 @@ const Popup = () => {
                                 src={ownerItem.ownerIconUrl}
                                 alt={ownerItem.ownerName}
                               />
-                              <p>
-                                {ownerItem.ownerName.length > 0
-                                  ? ownerItem.ownerName
-                                  : "削除されたユーザー"}
-                              </p>
+                              <p>{ownerItem.ownerName}</p>
                             </div>
                           );
                         }
