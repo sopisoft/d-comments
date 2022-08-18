@@ -72,9 +72,6 @@ const showComments = async (movieId: string) => {
    * エラーメッセージ表示用 paragraph
    */
   const p = document.createElement("p");
-  p.style.display = "block";
-  p.textContent = "コメントを読み込んでいます...";
-  container.appendChild(p);
 
   /**
    * コメントコンテナを閉じるボタン
@@ -102,11 +99,13 @@ const showComments = async (movieId: string) => {
         if (watchData["data"]["reasonCode"] === "PPV_VIDEO") {
           p.style.display = "block";
           p.textContent = "有料動画のためコメントを取得できませんでした。";
+          container.appendChild(p);
           container.appendChild(b);
           return;
         } else {
           p.style.display = "block";
           p.innerHTML = `<p>コメントの取得に失敗しました。</p><p>エラーコード: ${watchData["data"]["reasonCode"]}</p>`;
+          container.appendChild(p);
           container.appendChild(b);
           return;
         }
@@ -127,10 +126,10 @@ const showComments = async (movieId: string) => {
              */
             const getThreadComments = (fork: string) => {
               const thread = threads
-                .filter((thread) => {
+                .filter((thread: { [x: string]: string }) => {
                   return thread["fork"] === fork;
                 })
-                .map((thread) => {
+                .map((thread: any) => {
                   return thread;
                 });
               if (thread.length > 1) {
@@ -149,12 +148,14 @@ const showComments = async (movieId: string) => {
              */
             const getComments = async () => {
               const comments = mainThread;
-              comments.filter((comment) => {
+              comments.filter((comment: { [x: string]: number }) => {
                 return comment["score"] > 0;
               });
-              comments.sort((a, b) => {
-                return a["vposMs"] - b["vposMs"];
-              });
+              comments.sort(
+                (a: { [x: string]: number }, b: { [x: string]: number }) => {
+                  return a["vposMs"] - b["vposMs"];
+                }
+              );
               return comments;
             };
 
@@ -165,18 +166,19 @@ const showComments = async (movieId: string) => {
             container.appendChild(ul);
 
             await getComments().then((comments) => {
-              p.style.display = "none";
-              p.textContent = "";
+              p.remove();
               b.remove();
 
-              const contents = async (comments) => {
+              const contents = async (comments: any[]) => {
                 const lists = [] as HTMLElement[];
-                comments.map((comment) => {
-                  const li = document.createElement("li");
-                  li.innerText = comment.body;
-                  li.setAttribute("data-time", comment["vposMs"]);
-                  lists.push(li);
-                });
+                comments.map(
+                  (comment: { [x: string]: string; body: string }) => {
+                    const li = document.createElement("li");
+                    li.innerText = comment.body;
+                    li.setAttribute("data-time", comment["vposMs"]);
+                    lists.push(li);
+                  }
+                );
                 return lists;
               };
               contents(comments).then((lists) => {
@@ -192,7 +194,7 @@ const showComments = async (movieId: string) => {
                URLが変更されたら作品パートが変更されたと判断し、コメントの再読み込みを促す
                */
               let href = new Object();
-              href = location.href;
+              href = window.location.href;
               setInterval(() => {
                 if (href !== location.href) {
                   ul.remove();
@@ -206,12 +208,12 @@ const showComments = async (movieId: string) => {
               }, 1000);
 
               // コメントを再生時刻に合わせてスクロールする
-              const li = ul.querySelectorAll(
-                "li[data-time]"
-              ) as NodeListOf<HTMLElement>;
               setTimeout(function main() {
                 const currentTime = Math.round(video.currentTime * 1000);
-                const list = [] as HTMLElement[]; // 再生時刻に合致するコメントを格納する配列
+                const li = ul.querySelectorAll(
+                  "li[data-time]"
+                ) as NodeListOf<HTMLElement>;
+                const list = new Array<HTMLElement>();
                 for (let i = 0; i < li.length; i++) {
                   const time = Number(li[i].getAttribute("data-time"));
                   if (currentTime > time) {
@@ -220,7 +222,6 @@ const showComments = async (movieId: string) => {
                     list.unshift(li[i]) || null;
                   }
                 }
-
                 const target =
                   (list[li.length - 1] as HTMLElement) ??
                   (list[0] as HTMLElement);

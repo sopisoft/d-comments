@@ -16,8 +16,9 @@
 */
 
 import React from "react";
-import * as Storage from "../../Content/localStorage";
-import "./index.scss";
+import * as ReactDOM from "react-dom/client";
+import * as Storage from "../content_script/localStorage";
+import "./popup.scss";
 
 const Popup = () => {
   const [movieId, setMovieId] = React.useState("");
@@ -139,13 +140,13 @@ const Popup = () => {
   const search = async (word: string) => {
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
       isWatchPage(tabs[0]?.url ?? "") &&
-        chrome.runtime
-          .sendMessage({
+        chrome.runtime.sendMessage(
+          {
             type: "search",
             word: word,
             UserAgent: navigator.userAgent ?? "",
-          })
-          .then((response) => {
+          },
+          (response) => {
             console.log("検索結果", response);
             window.localStorage.setItem(
               "searchResult",
@@ -166,7 +167,8 @@ const Popup = () => {
                 );
               }
             );
-          });
+          }
+        );
     });
   };
 
@@ -330,4 +332,5 @@ const Popup = () => {
   );
 };
 
-export default Popup;
+const root = ReactDOM.createRoot(document.getElementById("root"));
+root.render(<Popup />);

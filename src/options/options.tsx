@@ -16,9 +16,9 @@
 */
 
 import React from "react";
-import "./index.scss";
-import { defaultOptions, options } from "../../Content/localStorage";
-document.title = "設定";
+import * as ReactDOM from "react-dom/client";
+import "./options.scss";
+import { defaultOptions, options } from "../content_script/localStorage";
 
 const Options = () => {
   const [options, setOptions] = React.useState<options>(defaultOptions);
@@ -101,4 +101,5 @@ const Options = () => {
   );
 };
 
-export default Options;
+const root = ReactDOM.createRoot(document.getElementById("root"));
+root.render(<Options />);

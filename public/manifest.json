@@ -18,13 +18,13 @@
   "content_scripts": [
     {
       "matches": ["https://animestore.docomo.ne.jp/*"],
-      "js": ["d_comments.js"],
+      "js": ["js/d_comments.js"],
       "run_at": "document_start",
       "all_frames": true
     }
   ],
   "background": {
-    "service_worker": "bg.js"
+    "service_worker": "js/sw.js"
   },
   "permissions": ["storage", "tabs"],
   "host_permissions": [

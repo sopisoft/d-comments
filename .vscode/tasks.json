@@ -1,0 +1,25 @@
+{
+  "version": "2.0.0",
+  "command": "npm",
+  "tasks": [
+    {
+      "label": "install",
+      "type": "shell",
+      "command": "npm",
+      "args": ["install"]
+    },
+    {
+      "label": "update",
+      "type": "shell",
+      "command": "npm",
+      "args": ["update"]
+    },
+    {
+      "label": "build",
+      "type": "shell",
+      "group": "build",
+      "command": "npm",
+      "args": ["run", "watch"]
+    }
+  ]
+}

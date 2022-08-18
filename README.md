@@ -1,5 +1,7 @@
 # d-comments
 
+dアニメストアの動画再生画面でニコニコ動画のコメントを表示する Chromium 拡張機能です。
+
 [Chrome Web Store](https://chrome.google.com/webstore/detail/d-comments/jocjhkklfiaojhhnjiejmimlohaemiep)
 
 [Microsoft Edge Addon](https://microsoftedge.microsoft.com/addons/detail/dcomments/megnnllcbcmllggmljcgbadfblpodanp)
@@ -9,28 +11,30 @@
 - node.js ^16.17.0 (<https://nodejs.org/ja/>)
 - Google Chrome (Latest) or Microsoft Edge (Latest)
 
-### Command Line
+## Option
 
-#### Installation
+- [Visual Studio Code](https://code.visualstudio.com/) (Recommended)
+
+## Setup
 
 ```bash
 npm install
 ```
 
-#### Build
+## Build
 
 ```bash
 npm run build
 ```
 
-#### Publish
+## Build in watch mode
 
 ```bash
-npm run production
+npm run watch
 ```
 
-#### Lint
+## Format
 
 ```bash
-npm run lint
+npm run prettier
 ```
