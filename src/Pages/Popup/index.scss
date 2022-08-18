@@ -214,11 +214,28 @@
       .wrapper {
         display: flex;
         flex-direction: row;
-        justify-content: space-between;
         align-items: center;
         padding: 10px;
 
+        img {
+          width: 130px;
+        }
+
         .info {
+          margin-left: 20px;
+
+          .owner {
+            display: flex;
+            white-space: nowrap;
+            margin-bottom: 5px;
+
+            img {
+              width: 32px;
+              height: 32px;
+              margin-right: 5px;
+            }
+          }
+
           p {
             margin: auto;
           }

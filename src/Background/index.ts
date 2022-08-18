@@ -96,8 +96,8 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         targets: "title,description,tags",
         _sort: "-commentCounter",
         fields:
-          "contentId,title,thumbnailUrl,commentCounter,viewCounter,lengthSeconds",
-        _limit: "20",
+          "contentId,title,thumbnailUrl,commentCounter,viewCounter,lengthSeconds,userId,channelId",
+        _limit: "40",
         _context: "d-comments",
       };
       /**
@@ -109,6 +109,43 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
           "User-Agent": message.UserAgent,
         },
       })
+        .then((res) => {
+          return res.json();
+        })
+        .then((json) => {
+          sendResponse(json);
+        })
+        .catch((err) => {
+          sendResponse(err);
+        });
+      return true;
+    }
+    case "user": {
+      const url = "https://nvapi.nicovideo.jp/v1/users/" + message.id;
+      fetch(url, {
+        headers: {
+          "User-Agent": message.UserAgent,
+          "x-frontend-id": "6",
+          "x-frontend-version": "0",
+        },
+      })
+        .then((res) => {
+          return res.json();
+        })
+        .then((json) => {
+          sendResponse(json);
+        })
+        .catch((err) => {
+          sendResponse(err);
+        });
+      return true;
+    }
+    case "channel": {
+      const url =
+        "https://public.api.nicovideo.jp/v1/channel/channelapp/channels/" +
+        message.id +
+        ".json";
+      fetch(url)
         .then((res) => {
           return res.json();
         })
