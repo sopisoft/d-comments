@@ -105,22 +105,26 @@ const Popup = () => {
         UserAgent: navigator.userAgent ?? "",
       },
       (response) => {
-        const setOwnerInfo = async () => {
-          res.push({
-            contentId: contentId,
-            ownerId: ownerId,
-            ownerName: isUser
-              ? response.data.user.nickname
-              : response.data.channel.name,
-            ownerIconUrl: isUser
-              ? response.data.user.icons.small
-              : response.data.channel.thumbnailSmallUrl,
+        if (response.meta.status === 200) {
+          const setOwnerInfo = async () => {
+            res.push({
+              contentId: contentId,
+              ownerId: ownerId,
+              ownerName: isUser
+                ? response.data.user.nickname
+                : response.data.channel.name,
+              ownerIconUrl: isUser
+                ? response.data.user.icons.small
+                : response.data.channel.thumbnailSmallUrl,
+            });
+          };
+          setOwnerInfo().then(() => {
+            setOwner((owner) => (owner ? [...owner, ...res] : res));
+            window.localStorage.setItem("owner", JSON.stringify(res ?? []));
           });
-        };
-        setOwnerInfo().then(() => {
-          setOwner((owner) => (owner ? [...owner, ...res] : res));
-          window.localStorage.setItem("owner", JSON.stringify(res ?? []));
-        });
+        } else {
+          return;
+        }
       }
     );
     return res;
@@ -154,11 +158,7 @@ const Popup = () => {
                 contentId: string;
                 channelId: string;
               }) => {
-                const isUser = item.userId
-                  ? item.userId.length > 0
-                    ? true
-                    : false
-                  : false;
+                const isUser = item.userId ? true : false;
                 getOwnerInfo(
                   item.contentId,
                   isUser ? item.userId : item.channelId,
