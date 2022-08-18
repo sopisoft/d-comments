@@ -23,6 +23,7 @@ const Popup = () => {
   const [movieId, setMovieId] = React.useState("");
   const [word, setWord] = React.useState("");
   const [result, setResult] = React.useState<SearchResult>();
+  const [owner, setOwner] = React.useState<Owner>();
   const [isActive, setIsActive] = React.useState(false);
 
   type SearchResult = {
@@ -34,6 +35,8 @@ const Popup = () => {
     data: {
       contentId: string;
       title: string;
+      userId: string;
+      channelId: string;
       commentCounter: number;
       thumbnailUrl: string;
       viewCounter: number;
@@ -41,6 +44,18 @@ const Popup = () => {
     }[];
   };
 
+  type Owner = {
+    contentId: string;
+    ownerId: string;
+    ownerName: string;
+    ownerIconUrl: string;
+  }[];
+
+  /**
+   * 作品視聴ページか判定
+   * @param href window.location.href
+   * @returns boolean
+   */
   const isWatchPage = (href: string) => {
     return href.match(
       /https:\/\/animestore\.docomo\.ne\.jp\/animestore\/sc_d_pc\?partId=\d+/
@@ -70,6 +85,53 @@ const Popup = () => {
     setMovieId(value);
   };
 
+  /**
+   * 動画投稿者の名前、アイコンURLを取得
+   * @param contentId 動画ID
+   * @param ownerId ユーザーID または チャンネルID
+   * @param isUser ユーザーかチャンネルか
+   * @returns 動画投稿者の名前、アイコンURL
+   */
+  const getOwnerInfo = (
+    contentId: string,
+    ownerId: string,
+    isUser: boolean
+  ) => {
+    const res: Owner = [];
+    chrome.runtime.sendMessage(
+      {
+        type: isUser ? "user" : "channel",
+        id: ownerId,
+        UserAgent: navigator.userAgent ?? "",
+      },
+      (response) => {
+        const setOwnerInfo = async () => {
+          res.push({
+            contentId: contentId,
+            ownerId: ownerId,
+            ownerName: isUser
+              ? response.data.user.nickname
+              : response.data.channel.name,
+            ownerIconUrl: isUser
+              ? response.data.user.icons.small
+              : response.data.channel.thumbnailSmallUrl,
+          });
+        };
+        setOwnerInfo().then(() => {
+          setOwner((owner) => (owner ? [...owner, ...res] : res));
+          window.localStorage.setItem("owner", JSON.stringify(res ?? []));
+        });
+      }
+    );
+    return res;
+  };
+
+  /**
+   * スナップショットAPIを使ってキーワードで動画を検索
+   * @param word キーワード
+   * @returns 動画情報
+   * @see https://site.nicovideo.jp/search-api-docs/snapshot
+   */
   const search = async (word: string) => {
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
       isWatchPage(tabs[0]?.url ?? "") &&
@@ -80,12 +142,30 @@ const Popup = () => {
             UserAgent: navigator.userAgent ?? "",
           })
           .then((response) => {
-            console.log(response);
+            console.log("検索結果", response);
             window.localStorage.setItem(
               "searchResult",
               JSON.stringify(response)
             );
             setResult(response);
+            response.data.forEach(
+              (item: {
+                userId: string;
+                contentId: string;
+                channelId: string;
+              }) => {
+                const isUser = item.userId
+                  ? item.userId.length > 0
+                    ? true
+                    : false
+                  : false;
+                getOwnerInfo(
+                  item.contentId,
+                  isUser ? item.userId : item.channelId,
+                  isUser ? true : false
+                );
+              }
+            );
           });
     });
   };
@@ -113,8 +193,11 @@ const Popup = () => {
                 if (value === true) {
                   setResult(
                     JSON.parse(
-                      window.localStorage.getItem("searchResult") as string
-                    )
+                      window.localStorage.getItem("searchResult") ?? ""
+                    ) ?? ""
+                  );
+                  setOwner(
+                    JSON.parse(window.localStorage.getItem("owner") ?? "") ?? ""
                   );
                 }
               }
@@ -204,6 +287,23 @@ const Popup = () => {
                     <img src={item.thumbnailUrl} alt={item.title} />
                     <div className="info">
                       <p>動画情報</p>
+                      {owner?.map((ownerItem) => {
+                        if (ownerItem.contentId === item.contentId) {
+                          return (
+                            <div className="owner" key={ownerItem.ownerId}>
+                              <img
+                                src={ownerItem.ownerIconUrl}
+                                alt={ownerItem.ownerName}
+                              />
+                              <p>
+                                {ownerItem.ownerName.length > 0
+                                  ? ownerItem.ownerName
+                                  : "削除されたユーザー"}
+                              </p>
+                            </div>
+                          );
+                        }
+                      })}
                       <a>再生数&emsp;&emsp;&nbsp;:&nbsp;{item.viewCounter}</a>
                       <a>コメント数&nbsp;:&nbsp;{item.commentCounter}</a>
                       <a>

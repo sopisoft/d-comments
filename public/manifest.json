@@ -31,6 +31,8 @@
     "http://animestore.docomo.ne.jp/*",
     "https://www.nicovideo.jp/*",
     "https://nvcomment.nicovideo.jp/*",
+    "https://nvapi.nicovideo.jp/v1/users/*",
+    "https://public.api.nicovideo.jp/v1/channel/channelapp/channels/*",
     "https://api.search.nicovideo.jp/*"
   ]
 }
