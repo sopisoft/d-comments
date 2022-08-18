@@ -38,3 +38,11 @@ npm run watch
 ```bash
 npm run prettier
 ```
+
+## Zip
+
+[PowerShell](https://docs.microsoft.com/ja-jp/powershell/scripting/install/installing-powershell) (Required)
+
+```PowerShell
+Compress-Archive -Path dist -DestinationPath dist.zip -Force
+```
