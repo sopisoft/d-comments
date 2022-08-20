@@ -59,3 +59,7 @@ Remove-Item -Recurse -Force node_modules
 ```PowerShell
 Compress-Archive -Path dist -DestinationPath dist.zip -Force
 ```
+
+## License
+
+[Gnu General Public License v3.0](LICENSE.txt)
