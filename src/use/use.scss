@@ -108,8 +108,10 @@ body {
 
     img {
       margin: auto;
-      max-width: 100%;
-      max-height: 100%;
+      max-width: 98%;
+      max-height: 98%;
+      border: 1px solid rgb(60 60 60);
+      border-radius: 5px;
     }
   }
 }

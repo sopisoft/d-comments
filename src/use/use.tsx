@@ -42,7 +42,7 @@ const steps = [
     text: "ポップアップの操作",
     children: [
       {
-        text: "前項で選択したパートの再生ページが新しいタブで開かます",
+        text: "前項で選択したパートの再生ページが新しいタブで開きます。",
         img: null,
         imgAlt: null,
       },
@@ -52,7 +52,7 @@ const steps = [
         imgAlt: "拡張機能のポップアップページ",
       },
       {
-        text: "ポップアップでニコニコ動画の動画検索が始まります。",
+        text: "ニコニコ動画の動画検索が始まります。",
         img: null,
         imgAlt: null,
       },
