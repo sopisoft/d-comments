@@ -44,17 +44,21 @@ body {
     }
 
     .step {
-      padding: 10px;
-      margin: 10px 0px;
+      padding: 0px;
       font-size: 1.2em;
-      background-color: rgb(60 60 60);
+      margin: 10px 0px;
 
-      .number {
-        color: rgb(229 141 14);
-      }
+      p {
+        padding: 10px;
+        background-color: rgb(60 60 60);
 
-      .text {
-        color: rgb(240 240 240);
+        .number {
+          color: rgb(229 141 14);
+        }
+
+        .text {
+          color: rgb(240 240 240);
+        }
       }
 
       img {
@@ -62,6 +66,8 @@ body {
         max-width: 100%;
         max-height: 600px;
         cursor: pointer;
+        border: 2px solid rgb(60 60 60);
+        border-radius: 5px;
       }
     }
   }
@@ -84,11 +90,20 @@ body {
     align-items: center;
 
     .close {
-      position: absolute;
-      top: 0;
-      right: 0.5em;
-      font-size: 2em;
       cursor: pointer;
+      padding: 10px;
+      border: 1px solid rgb(80, 80, 80);
+      border-radius: 100%;
+      background-color: rgb(73 73 73);
+      color: rgb(243 246 255);
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      margin: 10px 0px 0px 90%;
+
+      i {
+        font-size: 1.5em;
+      }
     }
 
     img {
@@ -101,4 +116,13 @@ body {
 
 .ReactModal__Body--open {
   overflow: hidden;
+}
+
+.ReactModal__Content {
+  position: absolute;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  max-width: 1000px;
+  height: 80%;
 }
