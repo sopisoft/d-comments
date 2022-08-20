@@ -24,12 +24,16 @@ body {
 #root {
   max-width: 800px;
   margin: auto;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  grid-template-columns: 100%;
+  min-height: 100vh;
 
   header {
     display: inline-flex;
     flex-direction: row;
     align-items: center;
-    margin: 20px auto;
+    margin: 20px 0 0 20px;
 
     span {
       text-align: center;
@@ -123,24 +127,37 @@ body {
 
   footer {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     justify-content: center;
+    align-items: center;
     margin: 2em;
+    padding: 1em;
+    border: 1px solid #ccc;
+    border-radius: 0.5rem;
 
-    a {
-      display: inline-flex;
-      flex-direction: row;
-      align-items: center;
+    .info {
+      font-size: 1.2rem;
+      font-weight: 500;
+    }
 
-      span {
-        font-size: 24px;
-        font-weight: bolder;
-        color: rgb(51 51 51);
-      }
+    .github {
+      margin: 1em 0 0 0;
 
-      i {
-        font-size: 20px;
-        color: rgb(51 51 51);
+      a {
+        display: inline-flex;
+        flex-direction: row;
+        align-items: center;
+
+        span {
+          font-size: 24px;
+          font-weight: bolder;
+          color: rgb(51 51 51);
+        }
+
+        i {
+          font-size: 20px;
+          color: rgb(51 51 51);
+        }
       }
     }
   }

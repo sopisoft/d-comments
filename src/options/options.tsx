@@ -55,11 +55,10 @@ const Options = () => {
     <>
       <header>
         <span className="inner">
-          <i className="codicon codicon-settings-gear" />{" "}
+          <i className="codicon codicon-settings-gear" />
         </span>
         <h1>
-          設定&nbsp;(&nbsp;{chrome.runtime.getManifest().name}
-          &nbsp;-Version&nbsp;{chrome.runtime.getManifest().version}&nbsp;)
+          設定
         </h1>
       </header>
       <main>
@@ -101,7 +100,14 @@ const Options = () => {
         </div>
       </main>
       <footer>
-        <span className="inner">
+        <span className="info">
+          {chrome.runtime.getManifest().name}
+          &nbsp;-&nbsp;Version&nbsp;{chrome.runtime.getManifest().version}
+        </span>
+        <span className="info">
+          &copy;&nbsp;{new Date().getFullYear()}&nbsp;{chrome.runtime.getManifest().author}
+        </span>
+        <span className="github">
           <a
             href="https://github.com/gobosan/d-comments"
             target="_blank"

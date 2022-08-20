@@ -110,7 +110,10 @@ const Use = () => {
 
   return (
     <>
-      <h1>つかいかた</h1>
+      <h1>
+        <i className="codicon codicon-question"></i>
+        <span>つかいかた</span>
+      </h1>
       {steps.map((step, i) => (
         <section key={i}>
           <h2>

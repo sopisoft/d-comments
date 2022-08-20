@@ -162,4 +162,15 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   }
 });
 
+/**
+ * インストール直後につかいかたページを開く
+ */
+chrome.runtime.onInstalled.addListener((details) => {
+  if (details.reason === "install") {
+    chrome.tabs.create({
+      url: chrome.runtime.getURL("use.html"),
+    });
+  }
+});
+
 export default {};

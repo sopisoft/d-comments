@@ -316,6 +316,7 @@ const Popup = () => {
               rel="noopener noreferrer"
               className="btn btn-use"
             >
+              <i className="codicon codicon-question" />
               <span>つかいかた</span>
             </a>
           </div>

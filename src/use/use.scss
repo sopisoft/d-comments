@@ -29,6 +29,19 @@ body {
   max-width: 800px;
   font-size: 16px;
 
+  h1 {
+    display: inline-flex;
+    flex-direction: row;
+    align-items: center;
+    margin: 0px;
+    padding: 20px 0px 0px 0px;
+
+    i {
+      font-size: larger;
+      font-weight: 500;
+    }
+  }
+
   section {
     h2 {
       padding: 10px;
@@ -104,6 +117,12 @@ body {
       i {
         font-size: 1.5em;
       }
+
+
+    }
+
+    p {
+      font-size: 1.2em;
     }
 
     img {
@@ -121,10 +140,13 @@ body {
 }
 
 .ReactModal__Content {
+  border: 2px solid rgb(0 0 0) !important;
+  border-radius: 10px !important;
   position: absolute;
   top: 50% !important;
   left: 50% !important;
   transform: translate(-50%, -50%) !important;
-  max-width: 1000px;
-  height: 80%;
+  width: 70% !important;
+  max-width: 1000px !important;
+  height: 80% !important;
 }
