@@ -57,7 +57,10 @@ const Options = () => {
         <span className="inner">
           <i className="codicon codicon-settings-gear" />{" "}
         </span>
-        <h1>設定</h1>
+        <h1>
+          設定&nbsp;(&nbsp;{chrome.runtime.getManifest().name}
+          &nbsp;-Version&nbsp;{chrome.runtime.getManifest().version}&nbsp;)
+        </h1>
       </header>
       <main>
         <div className="wrapper">
@@ -97,6 +100,19 @@ const Options = () => {
           })}
         </div>
       </main>
+      <footer>
+        <span className="inner">
+          <a
+            href="https://github.com/gobosan/d-comments"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <i className="codicon codicon-mark-github" />
+            &nbsp;
+            <span>GitHub</span>
+          </a>
+        </span>
+      </footer>
     </>
   );
 };

@@ -17,14 +17,17 @@
 
 @use "../global.scss";
 
-#root {
+body {
+  margin: 0;
   width: 400px;
   height: 580px;
   max-width: 480px;
   max-height: 580px;
   min-width: 400px;
   min-height: 580px;
+}
 
+#root {
   &::-webkit-scrollbar {
     display: none;
   }
@@ -77,7 +80,7 @@
     border-radius: 100%;
     background-color: rgb(236 236 236);
     color: black;
-    position: absolute;
+    position: fixed;
     top: 10px;
     right: 15px;
     display: inline-block;
@@ -142,7 +145,7 @@
     padding: 0 24px;
 
     div {
-      display: flex;
+      display: inline-flex;
       flex-direction: row;
       justify-content: space-between;
       align-items: center;
@@ -165,7 +168,7 @@
   .result {
     list-style: none;
     padding: 0;
-    border: 2px solid rgb(187 187 187);
+    border-top: 2px solid rgb(187 187 187);
     overflow-x: hidden;
     overflow-y: scroll;
     height: 350px;
@@ -248,25 +251,37 @@
     }
   }
 
-  .error {
+  .not-active {
+    padding: 10px;
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
 
-    span {
-      display: inline-block;
-      text-align: center;
+    .message {
+      display: inline-flex;
+      flex-direction: row;
+      align-items: center;
+      margin: 80px auto;
 
       i {
-        padding: 16px 0;
         font-size: 48px;
         color: rgb(51 51 51);
-        overflow: hidden;
+        margin-right: 10px;
+      }
+
+      p {
+        font-size: 18px;
+        font-weight: bold;
+        margin: auto;
       }
     }
 
-    a {
-      margin: auto 1em;
+    .use {
+      margin: auto;
       font-size: 16px;
+
+      .btn-use {
+        padding: 10px 25px;
+      }
     }
   }
 }

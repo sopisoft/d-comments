@@ -1,10 +1,19 @@
 {
-  "typescript.tsdk": "./node_modules/typescript/lib",
+  "[markdown]": {
+    "editor.defaultFormatter": "DavidAnson.vscode-markdownlint"
+  },
+  "[scss]": {
+    "editor.defaultFormatter": "vscode.css-language-features"
+  },
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": true,
+  "files.autoSave": "afterDelay",
   "files.eol": "\n",
   "json.schemas": [
     {
       "fileMatch": ["/manifest.json"],
       "url": "http://json.schemastore.org/chrome-manifest"
     }
-  ]
+  ],
+  "typescript.tsdk": "./node_modules/typescript/lib"
 }
