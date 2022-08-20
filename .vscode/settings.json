@@ -1,5 +1,14 @@
 {
+  "[scss]": {
+    "editor.defaultFormatter": "vscode.css-language-features"
+  },
+  "[markdown]": {
+    "editor.defaultFormatter": "DavidAnson.vscode-markdownlint"
+  },
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": true,
   "typescript.tsdk": "./node_modules/typescript/lib",
+  "files.autoSave": "afterDelay",
   "files.eol": "\n",
   "json.schemas": [
     {

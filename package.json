@@ -14,13 +14,16 @@
   "scripts": {
     "watch": "webpack --config webpack/webpack.dev.js --watch",
     "build": "webpack --config webpack/webpack.prod.js",
-    "clean": "rimraf dist",
+    "clean:build": "@powershell Remove-Item -Recurse -Force dist",
+    "clean:zip": "@powershell Remove-Item -Recurse -Force dist.zip",
+    "zip": "@powershell Compress-Archive -Path dist -DestinationPath dist.zip",
     "prettier": "prettier --write \"src/**/*.{ts,tsx}\""
   },
   "dependencies": {
     "@vscode/codicons": "^0.0.32",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "react-modal": "^3.15.1"
   },
   "devDependencies": {
     "@types/chrome": "0.0.158",
@@ -29,7 +32,6 @@
     "copy-webpack-plugin": "^9.0.1",
     "css-loader": "^6.7.1",
     "prettier": "^2.2.1",
-    "rimraf": "^3.0.2 ",
     "sass": "^1.54.4",
     "sass-loader": "^13.0.2",
     "style-loader": "^3.3.1",

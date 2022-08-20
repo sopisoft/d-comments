@@ -304,12 +304,22 @@ const Popup = () => {
           </ul>
         </>
       ) : (
-        <p className="error">
-          <span className="inner">
+        <div className="not-active">
+          <div className="message">
             <i className="codicon codicon-info" />
-          </span>
-          <a>現在使用中のタブでは使用できません。</a>
-        </p>
+            <p>現在のタブでは使用できません。</p>
+          </div>
+          <div className="use">
+            <a
+              href="use.html"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn btn-use"
+            >
+              <span>つかいかた</span>
+            </a>
+          </div>
+        </div>
       )}
     </>
   );
