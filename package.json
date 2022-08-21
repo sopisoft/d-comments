@@ -1,7 +1,7 @@
 {
   "name": "d-comments",
   "description": "Player addon for d-anime",
-  "version": "2022.8.20",
+  "version": "2022.8.21",
   "private": true,
   "license": "GPL-3.0",
   "repository": {
@@ -17,7 +17,7 @@
     "clean:build": "@powershell Remove-Item -Recurse -Force dist",
     "clean:zip": "@powershell Remove-Item -Recurse -Force dist.zip",
     "zip": "@powershell Compress-Archive -Path dist -DestinationPath dist.zip",
-    "prettier": "prettier --write \"src/**/*.{ts,tsx}\""
+    "prettier": "prettier --write \"src/**/*.{ts,tsx,scss}\""
   },
   "dependencies": {
     "@vscode/codicons": "^0.0.32",

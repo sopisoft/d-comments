@@ -57,9 +57,7 @@ const Options = () => {
         <span className="inner">
           <i className="codicon codicon-settings-gear" />
         </span>
-        <h1>
-          設定
-        </h1>
+        <h1>設定</h1>
       </header>
       <main>
         <div className="wrapper">
@@ -105,7 +103,8 @@ const Options = () => {
           &nbsp;-&nbsp;Version&nbsp;{chrome.runtime.getManifest().version}
         </span>
         <span className="info">
-          &copy;&nbsp;{new Date().getFullYear()}&nbsp;{chrome.runtime.getManifest().author}
+          &copy;&nbsp;{new Date().getFullYear()}&nbsp;
+          {chrome.runtime.getManifest().author}
         </span>
         <span className="github">
           <a
