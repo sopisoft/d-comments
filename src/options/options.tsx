@@ -107,11 +107,7 @@ const Options = () => {
           {chrome.runtime.getManifest().author}
         </span>
         <span className="github">
-          <a
-            href="https://github.com/gobosan/d-comments"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
+          <a href="https://github.com/gobosan/d-comments" target="_blank">
             <i className="codicon codicon-mark-github" />
             &nbsp;
             <span>GitHub</span>
