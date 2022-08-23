@@ -61,7 +61,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     }
     case "threadData": {
       // コメントスレッドの情報とコメントを取得
-      const nvComment = message.watchData["data"]["comment"]["nvComment"];
+      const nvComment = message.movieData["data"]["comment"]["nvComment"];
       const serverUrl = nvComment["server"] + "/v1/threads";
       const jsonBody = {
         threadKey: nvComment["threadKey"],

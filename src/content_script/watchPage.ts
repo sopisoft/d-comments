@@ -71,7 +71,11 @@ const showComments = async (movieId: string) => {
   /**
    * エラーメッセージ表示用 paragraph
    */
-  const p = document.createElement("p");
+  const d = document.createElement("div");
+  d.id = "d-comments-error";
+  d.innerHTML = "<p>コメント取得中...</p>";
+  d.style.display = "block";
+  container.appendChild(d);
 
   /**
    * コメントコンテナを閉じるボタン
@@ -89,23 +93,32 @@ const showComments = async (movieId: string) => {
       type: "movieData",
       movieId: movieId,
     },
-    (watchData) => {
-      console.log("watchData", watchData);
-      if (!watchData) {
+    (movieData) => {
+      console.log("movieData", movieData);
+      if (!movieData) {
+        d.style.display = "block";
+        d.innerHTML = "<p>動画情報の取得に失敗しました。</p>";
+        container.appendChild(b);
         return;
       }
-      if (watchData["meta"]["status"] !== 200) {
-        console.log("error", watchData ? watchData["meta"]["status"] : "Error");
-        if (watchData["data"]["reasonCode"] === "PPV_VIDEO") {
-          p.style.display = "block";
-          p.textContent = "有料動画のためコメントを取得できませんでした。";
-          container.appendChild(p);
-          container.appendChild(b);
-          return;
+      if (movieData["meta"]["status"] !== 200) {
+        console.log("error", movieData ? movieData["meta"]["status"] : "Error");
+        if (movieData["data"]) {
+          if (movieData["data"]["reasonCode"] === "PPV_VIDEO") {
+            d.style.display = "block";
+            d.innerHTML =
+              "<p>有料動画のためコメントを取得できませんでした。</p>";
+            container.appendChild(b);
+            return;
+          } else {
+            d.style.display = "block";
+            d.innerHTML = `<p>コメントの取得に失敗しました。</p><p><span>コード</span><span>${movieData["data"]["reasonCode"]}</span></p>`;
+            container.appendChild(b);
+            return;
+          }
         } else {
-          p.style.display = "block";
-          p.innerHTML = `<p>コメントの取得に失敗しました。</p><p>エラーコード: ${watchData["data"]["reasonCode"]}</p>`;
-          container.appendChild(p);
+          d.style.display = "block";
+          d.innerHTML = `<p>動画情報の取得に失敗しました。</p><p><span>エラーコード</span><span>${movieData["meta"]["status"]}</span></p>`;
           container.appendChild(b);
           return;
         }
@@ -113,7 +126,7 @@ const showComments = async (movieId: string) => {
         chrome.runtime.sendMessage(
           {
             type: "threadData",
-            watchData: watchData,
+            movieData: movieData,
           },
           async (threadData) => {
             console.log("threads", threadData["threads"]);
@@ -165,8 +178,12 @@ const showComments = async (movieId: string) => {
             const ul = document.createElement("ul");
             container.appendChild(ul);
 
+            /**
+             * コメントを取得して表示する
+             */
             await getComments().then((comments) => {
-              p.remove();
+              d.innerHTML = "";
+              d.style.display = "none";
               b.remove();
 
               const contents = async (comments: any[]) => {
@@ -198,10 +215,9 @@ const showComments = async (movieId: string) => {
               setInterval(() => {
                 if (href !== location.href) {
                   ul.remove();
-                  p.style.display = "block";
-                  p.textContent =
-                    "作品パートが変更されました。" +
-                    "コメントを再取得してください。";
+                  d.style.display = "block";
+                  d.innerHTML =
+                    "<p>作品パートが変更されました。</p><a>コメントを再取得してください。</a>";
                   container.appendChild(b);
                   href = location.href;
                 }

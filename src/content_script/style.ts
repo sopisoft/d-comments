@@ -22,6 +22,7 @@ const style = document.createElement("style");
 style.innerHTML = `
             #d-comments-wrapper {
               display:flex;
+              flex-direction: row;
               width:100%;
               height:100%;
               z-index:1;
@@ -40,6 +41,10 @@ style.innerHTML = `
             }
             #d-comments-container #d-comments-watch {
               text-align:center;
+            }
+            #d-comments-container #d-comments-error {
+              width:90%;
+              margin:1em auto;
             }
             #d-comments-container #d-comments-close {
               width:80%;
