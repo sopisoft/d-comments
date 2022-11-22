@@ -17,6 +17,7 @@
 
 import * as util from "./util";
 import showComments from "./watchPage";
+import exportJson from "./export";
 
 const href = window.location.href;
 
@@ -54,6 +55,9 @@ window.onload = async () => {
 
 chrome.runtime.onMessage.addListener((message) => {
   if (message.type === "showComments" && isWatchPage) {
-    showComments(message.movieId);
+    showComments(message.movieId, message.data);
+  }
+  if (message.type === "exportJson" && isWatchPage) {
+    exportJson(message.movieId);
   }
 });

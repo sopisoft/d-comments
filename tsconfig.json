@@ -1,15 +1,15 @@
 {
-    "compilerOptions": {
-        "strict": true,
-        "module": "commonjs",
-        "target": "ES2022",
-        "esModuleInterop": true,
-        "sourceMap": false,
-        "rootDir": "src",
-        "outDir": "dist/js",
-        "noEmitOnError": true,
-        "noImplicitAny": false,
-        "jsx": "react",
-        "typeRoots": [ "node_modules/@types" ]
-    }
+  "compilerOptions": {
+    "strict": true,
+    "module": "commonjs",
+    "target": "ES2022",
+    "esModuleInterop": true,
+    "sourceMap": false,
+    "rootDir": "src",
+    "outDir": "dist/js",
+    "noEmitOnError": true,
+    "noImplicitAny": false,
+    "jsx": "react",
+    "typeRoots": ["node_modules/@types"]
+  }
 }

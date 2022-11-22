@@ -67,6 +67,7 @@ body {
         justify-content: space-between;
         margin: 0.5rem 0;
         border: 1px solid #ccc;
+        border-radius: 5px;
 
         label {
           display: flex;
@@ -133,7 +134,7 @@ body {
     margin: 2em;
     padding: 1em;
     border: 1px solid #ccc;
-    border-radius: 0.5rem;
+    border-radius: 5px;
 
     .info {
       font-size: 1.2rem;

@@ -21,11 +21,15 @@ import * as Storage from "../content_script/localStorage";
 import "./popup.scss";
 
 const Popup = () => {
+  const [isActive, setIsActive] = React.useState(false);
+
   const [movieId, setMovieId] = React.useState("");
   const [word, setWord] = React.useState("");
-  const [result, setResult] = React.useState<SearchResult>();
+
+  const [file, setFile] = React.useState("");
+
   const [owner, setOwner] = React.useState<Owner>();
-  const [isActive, setIsActive] = React.useState(false);
+  const [result, setResult] = React.useState<SearchResult>();
 
   type SearchResult = {
     meta: {
@@ -74,6 +78,7 @@ const Popup = () => {
         chrome.tabs.sendMessage(tabs[0].id as number, {
           type: "showComments",
           movieId: movieId,
+          data: undefined,
         }),
         (response: string) => {
           console.log(response);
@@ -81,9 +86,106 @@ const Popup = () => {
     });
   };
 
+  /**
+   * コメントをファイルで出力する
+   */
+  const exportJson = () => {
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+      isWatchPage(tabs[0]?.url ?? "") &&
+        chrome.tabs.sendMessage(tabs[0].id as number, {
+          type: "exportJson",
+          movieId: movieId,
+        }),
+        (response: string) => {
+          console.log(response);
+        };
+    });
+  };
+
+  /**
+   * 動画ID用 Input ハンドラ
+   */
   const handler = (value: string) => {
     window.localStorage.setItem("movieId", value);
     setMovieId(value);
+  };
+
+  /**
+   * コメントファイル Input ハンドラ
+   */
+  const onFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    console.log(e.target.files);
+    const f = e.target.files?.[0];
+    if (f) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        console.log("FileData", reader.result);
+        setFile(reader.result as string);
+      };
+      reader.readAsText(f);
+    } else {
+      return;
+    }
+  };
+
+  /**
+   * コメントファイル読み込み
+   */
+  const loadFile = () => {
+    if (file.length > 0) {
+      chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+        isWatchPage(tabs[0]?.url ?? "") &&
+          chrome.tabs.sendMessage(tabs[0].id as number, {
+            type: "showComments",
+            movieId: movieId,
+            data: file,
+          }),
+          (response: string) => {
+            console.log(response);
+          };
+      });
+    }
+  };
+
+  /**
+   * スナップショットAPIを使ってキーワードで動画を検索
+   * @param word キーワード
+   * @returns 動画情報
+   * @see https://site.nicovideo.jp/search-api-docs/snapshot
+   */
+  const search = async (word: string) => {
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+      isWatchPage(tabs[0]?.url ?? "") &&
+        chrome.runtime.sendMessage(
+          {
+            type: "search",
+            word: word,
+            UserAgent: navigator.userAgent ?? "",
+          },
+          (response) => {
+            if (response.meta.status === 200) {
+              console.log("検索結果", response);
+              setResult(response);
+              response.data.forEach(
+                (item: {
+                  userId: string;
+                  contentId: string;
+                  channelId: string;
+                }) => {
+                  const isUser = item.userId ? true : false;
+                  getOwnerInfo(
+                    item.contentId,
+                    isUser ? item.userId : item.channelId,
+                    isUser ? true : false
+                  );
+                }
+              );
+            } else {
+              return;
+            }
+          }
+        );
+    });
   };
 
   /**
@@ -128,47 +230,6 @@ const Popup = () => {
       }
     );
     return res;
-  };
-
-  /**
-   * スナップショットAPIを使ってキーワードで動画を検索
-   * @param word キーワード
-   * @returns 動画情報
-   * @see https://site.nicovideo.jp/search-api-docs/snapshot
-   */
-  const search = async (word: string) => {
-    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-      isWatchPage(tabs[0]?.url ?? "") &&
-        chrome.runtime.sendMessage(
-          {
-            type: "search",
-            word: word,
-            UserAgent: navigator.userAgent ?? "",
-          },
-          (response) => {
-            if (response.meta.status === 200) {
-              console.log("検索結果", response);
-              setResult(response);
-              response.data.forEach(
-                (item: {
-                  userId: string;
-                  contentId: string;
-                  channelId: string;
-                }) => {
-                  const isUser = item.userId ? true : false;
-                  getOwnerInfo(
-                    item.contentId,
-                    isUser ? item.userId : item.channelId,
-                    isUser ? true : false
-                  );
-                }
-              );
-            } else {
-              return;
-            }
-          }
-        );
-    });
   };
 
   React.useEffect(() => {
@@ -227,11 +288,20 @@ const Popup = () => {
             </p>
             <div>
               <input
+                className="input-movieId"
                 value={movieId}
                 onChange={(e) => handler(e.target.value)}
               />
               <a
-                className="btn btn-draw"
+                className="btn btn-text"
+                onClick={() => {
+                  exportJson();
+                }}
+              >
+                保存
+              </a>
+              <a
+                className="btn btn-text"
                 onClick={() => {
                   sendMessage();
                 }}
@@ -241,11 +311,34 @@ const Popup = () => {
             </div>
           </label>
           <label>
+            <p>コメントファイル読み込み</p>
+            <div>
+              <input
+                className="input-file"
+                type="file"
+                accept=".json"
+                onChange={onFileInputChange}
+              />
+              <a
+                className="btn btn-text"
+                onClick={() => {
+                  loadFile();
+                }}
+              >
+                表示
+              </a>
+            </div>
+          </label>
+          <label>
             <p>検索ワード</p>
             <div>
-              <input value={word} onChange={(e) => setWord(e.target.value)} />
+              <input
+                className="input-search"
+                value={word}
+                onChange={(e) => setWord(e.target.value)}
+              />
               <a
-                className="btn btn-search"
+                className="btn btn-icon"
                 onClick={() => {
                   search(word);
                 }}
@@ -272,19 +365,38 @@ const Popup = () => {
                     <img src={item.thumbnailUrl} alt={item.title} />
                     <div className="info">
                       <p>動画情報</p>
-                      {owner?.map((ownerItem) => {
-                        if (ownerItem.contentId === item.contentId) {
-                          return (
-                            <div className="owner" key={ownerItem.ownerId}>
-                              <img
-                                src={ownerItem.ownerIconUrl}
-                                alt={ownerItem.ownerName}
-                              />
-                              <p>{ownerItem.ownerName}</p>
-                            </div>
-                          );
+                      <div
+                        className="owner"
+                        key={
+                          owner?.find(
+                            (ownerItem) =>
+                              ownerItem.contentId === item.contentId
+                          )?.contentId ?? item.contentId
                         }
-                      })}
+                      >
+                        <img
+                          src={
+                            owner?.find(
+                              (ownerItem) =>
+                                ownerItem.contentId === item.contentId
+                            )?.ownerIconUrl
+                          }
+                          alt={
+                            owner?.find(
+                              (ownerItem) =>
+                                ownerItem.contentId === item.contentId
+                            )?.ownerName
+                          }
+                        />
+                        <p>
+                          {
+                            owner?.find(
+                              (ownerItem) =>
+                                ownerItem.contentId === item.contentId
+                            )?.ownerName
+                          }
+                        </p>
+                      </div>
                       <a>再生数&emsp;&emsp;&nbsp;:&nbsp;{item.viewCounter}</a>
                       <a>コメント数&nbsp;:&nbsp;{item.commentCounter}</a>
                       <a>
@@ -326,5 +438,5 @@ const Popup = () => {
   );
 };
 
-const root = ReactDOM.createRoot(document.getElementById("root"));
+const root = ReactDOM.createRoot(document.getElementById("root")!);
 root.render(<Popup />);
