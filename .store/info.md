@@ -6,19 +6,23 @@ dアニメストアの動画再生画面にてニコニコ動画のコメント�
 
 ## 説明
 
-【使い方】
+d-comments は dアニメストア ( <https://animestore.docomo.ne.jp> ) の作品再生画面で、ニコニコ動画にアップロードされた任意の動画のコメントを表示する拡張機能です。
 
-(1). ドコモアニメストアの任意のアニメ作品ページで各パートに表示される「コメントを表示しながら再生」ボタンをクリックします。
+【特徴】
+・ ニコニコ動画の動画を検索できる
+・ ニコニコ動画のコメントデータをダウンロードして保存できる
 
-(2). (1) で選択したパートの再生ページが新しいタブで開かれ、再生が開始されたら、拡張機能のポップアップを開きます。
+【注意】
+d-comments は dアニメストア、 ニコニコ動画の運営会社およびその他の関連会社様とは一切関係のない第三者が開発した非公式な非営利目的の拡張機能です。
+この拡張機能に関する御意見は、この拡張機能の GitHub リポジトリ ( <https://github.com/gobosan/d-comments> ) にお寄せください。
 
-(3). ポップアップでニコニコ動画の動画検索が始まります。（設定で無効化が可能）
+【開発】
+以下のリンクから新機能のリクエストやバグ報告、コントリビュートをお待ちしています。
+GitHub リポジトリ ( <https://github.com/gobosan/d-comments> )
 
-(4). ポップアップでコメントを表示したい動画をリストから選択します。
-
-(5). 動画ID欄に (4) で選択した動画のIDが入力されます。
-
-(6).「表示」ボタンをクリックするとコメントが表示されます。
+【評価】
+ストア評価やアンケートにお答えただけると開発者の励みになります。
+Microsoft Forms ( <https://forms.office.com/r/JR9KksWHJD> )
 
 ## [Notes for certification](<https://docs.microsoft.com/en-us/microsoft-edge/extensions-chromium/publish/publish-extension?branch=extensions-documentation#notes-for-certification>)
 
