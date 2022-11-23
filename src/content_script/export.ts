@@ -14,8 +14,7 @@ const exportJson = (movieId: string) => {
             movieData: movieData,
           },
           (threadData) => {
-            const fileName =
-              movieData["data"]["video"]["title"] + " " + movieId;
+            const fileName = movieData["data"]["video"]["title"];
             const jsonBody = {
               version: 1,
               movieId: movieId,

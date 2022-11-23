@@ -103,9 +103,9 @@ const init = () => {
 /**
  * スレッドデータからコメントを設置する
  * @param threadData
- * @param b
- * @param container
- * @param d
+ * @param b  コメントコンテナを閉じるボタン
+ * @param container コメントコンテナ
+ * @param d エラーメッセージ表示用 paragraph
  * @param video
  */
 const setComments = (
@@ -258,10 +258,10 @@ const setComments = (
  */
 const showComments = async (movieId: string, data: string) => {
   const { b, container, d, video } = init();
-  if (data.length > 0) {
-    const d = JSON.parse(data);
-    if (d["threadData"]) {
-      setComments(d["threadData"], b, container, d, video);
+  if (data) {
+    const e = JSON.parse(data);
+    if (e["threadData"]) {
+      setComments(e["threadData"], b, container, d, video);
     } else {
       d.style.display = "block";
       d.innerHTML = "<p>コメントの取得に失敗しました。</p>";

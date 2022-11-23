@@ -26,8 +26,6 @@ const Popup = () => {
   const [movieId, setMovieId] = React.useState("");
   const [word, setWord] = React.useState("");
 
-  const [file, setFile] = React.useState("");
-
   const [owner, setOwner] = React.useState<Owner>();
   const [result, setResult] = React.useState<SearchResult>();
 
@@ -120,7 +118,7 @@ const Popup = () => {
       const reader = new FileReader();
       reader.onload = () => {
         console.log("FileData", reader.result);
-        setFile(reader.result as string);
+        loadFile(reader.result as string);
       };
       reader.readAsText(f);
     } else {
@@ -131,14 +129,14 @@ const Popup = () => {
   /**
    * コメントファイル読み込み
    */
-  const loadFile = () => {
-    if (file.length > 0) {
+  const loadFile = (data: string) => {
+    if (data.length > 0) {
       chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
         isWatchPage(tabs[0]?.url ?? "") &&
           chrome.tabs.sendMessage(tabs[0].id as number, {
             type: "showComments",
             movieId: movieId,
-            data: file,
+            data: data,
           }),
           (response: string) => {
             console.log(response);
@@ -160,7 +158,7 @@ const Popup = () => {
           {
             type: "search",
             word: word,
-            UserAgent: navigator.userAgent ?? "",
+            UserAgent: "d-comments",
           },
           (response) => {
             if (response.meta.status === 200) {
@@ -319,14 +317,6 @@ const Popup = () => {
                 accept=".json"
                 onChange={onFileInputChange}
               />
-              <a
-                className="btn btn-text"
-                onClick={() => {
-                  loadFile();
-                }}
-              >
-                表示
-              </a>
             </div>
           </label>
           <label>

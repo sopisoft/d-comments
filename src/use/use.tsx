@@ -62,7 +62,7 @@ const steps = [
         imgAlt: null,
       },
       {
-        text: "動画ID欄に前項で選択した動画のIDが入力されます。",
+        text: "動画ID欄に選択したニコニコ動画の動画IDが入力されます。",
         img: null,
         imgAlt: null,
       },
@@ -81,6 +81,38 @@ const steps = [
         text: "「表示」ボタンをクリックするとコメントが表示されます。",
         img: "img/comments.png",
         imgAlt: "コメントが表示された様子",
+      },
+    ],
+  },
+  {
+    step: 4,
+    text: "コメントのダウンロード",
+    children: [
+      {
+        text: "動画ID欄に指定の動画IDが入力されていることを確認します。",
+        img: null,
+        imgAlt: null,
+      },
+      {
+        text: "「保存」ボタンをクリックするとコメントのダウンロードが開始されます",
+        img: null,
+        imgAlt: null,
+      },
+    ],
+  },
+  {
+    step: 5,
+    text: "ダウンロードしたコメントの表示",
+    children: [
+      {
+        text: "コメントファイルの読み込み欄でファイルを選択",
+        img: null,
+        imgAlt: null,
+      },
+      {
+        text: "ファイルを選択するとコメントが表示されます。",
+        img: null,
+        imgAlt: null,
       },
     ],
   },
