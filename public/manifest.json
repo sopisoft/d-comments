@@ -3,7 +3,7 @@
   "name": "__MSG_name__",
   "description": "__MSG_description__",
   "default_locale": "ja",
-  "version": "2022.11.6",
+  "version": "2022.11.23",
   "author": "牛蒡",
   "icons": {
     "16": "icons/16.png",
@@ -29,7 +29,7 @@
   "permissions": ["storage", "tabs"],
   "web_accessible_resources": [
     {
-      "resources": ["NotoSansCJKjp-VF.otf"],
+      "resources": ["fonts/BIZ_UDPGothic.ttf"],
       "matches": ["https://animestore.docomo.ne.jp/*"]
     }
   ],

@@ -27,7 +27,6 @@ style.innerHTML = `
               width:100%;
               height:100%;
               z-index:1;
-              text-rendering:geometricPrecision
             }
             #d-comments-container {
               z-index:1;
@@ -36,7 +35,7 @@ style.innerHTML = `
               flex-direction:column;
               overflow:hidden;
               overflow-y:scroll;
-              font-family:NotoSansCJKjp;
+              font-family:BIZ_UDPGothic;
               font-size:medium;
               font-weight:500;
               font-style:normal;
@@ -73,6 +72,7 @@ style.innerHTML = `
             }
             #d-comments-container ul li {
               font-size:16px;
+              line-height:1.4;
               padding:5px;
               border-bottom:1px solid #484848d1;
             }
@@ -80,10 +80,10 @@ style.innerHTML = `
               display:none;
             }
             @font-face {
-              font-family: "NotoSansCJKjp";
+              font-family:"BIZ_UDPGothic";
               src: url(${chrome.runtime.getURL(
-                "NotoSansCJKjp-VF.otf"
-              )}) format("opentype");
+                "fonts/BIZ_UDPGothic.ttf"
+              )}) format("truetype")
             }
             `;
 export default style;
