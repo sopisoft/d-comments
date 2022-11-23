@@ -27,27 +27,96 @@ const getRandomInt = (min: number, max: number) => {
   return Math.floor(Math.random() * (max - min) + min);
 };
 
+/**
+ * 動画情報を取得する
+ * @param movieId　ニコニコ動画の動画ID
+ * @returns　Promise<Response>
+ */
+const getMovieData = (movieId: string) => {
+  const actionTrackId =
+    Math.random().toString(36).slice(-10) +
+    "_" +
+    getRandomInt(10 ** 12, 10 ** 13);
+  const url = `https://www.nicovideo.jp/api/watch/v3_guest/${movieId}`;
+  const params = {
+    _frontendId: "6",
+    _frontendVersion: "0",
+    actionTrackId: actionTrackId,
+  };
+
+  const d = fetch(url + "?" + new URLSearchParams(params), {
+    credentials: "omit",
+    headers: {
+      "x-frontend-id": "6",
+      "x-frontend-version": "0",
+    },
+  }).then((res) => {
+    return res;
+  });
+
+  return d;
+};
+
+/**
+ * コメントスレッドの情報とコメントを取得
+ * @param movieData getMovieData で取得した動画情報
+ * @returns　Promise<Response>
+ */
+const getThreadComments = (movieData: any) => {
+  const nvComment = movieData["data"]["comment"]["nvComment"];
+  const serverUrl = nvComment["server"] + "/v1/threads";
+  const jsonBody = {
+    threadKey: nvComment["threadKey"],
+    params: nvComment["params"],
+    additionals: {},
+  };
+
+  const d = fetch(serverUrl + "?_frontendId=6", {
+    headers: {
+      "Content-Type": "application/json",
+      "x-frontend-id": "6",
+      "x-frontend-version": "0",
+    },
+    method: "POST",
+    body: JSON.stringify(jsonBody),
+  }).then((res) => {
+    return res;
+  });
+
+  return d;
+};
+
+const search = (word: string, UserAgent: string) => {
+  const endpoint =
+    "https://api.search.nicovideo.jp/api/v2/snapshot/video/contents/search";
+  const params = {
+    q: word,
+    targets: "title,description,tags",
+    _sort: "-commentCounter",
+    fields:
+      "contentId,title,thumbnailUrl,commentCounter,viewCounter,lengthSeconds,userId,channelId",
+    _limit: "40",
+    _context: "d-comments",
+  };
+  /**
+   * スナップショットAPIを使って動画を検索する
+   * @see https://site.nicovideo.jp/search-api-docs/snapshot
+   */
+  const d = fetch(endpoint + "?" + new URLSearchParams(params), {
+    headers: {
+      "User-Agent": UserAgent,
+    },
+  }).then((res) => {
+    return res;
+  });
+
+  return d;
+};
+
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   switch (message.type) {
     case "movieData": {
-      // 動画情報を取得
-      const actionTrackId =
-        Math.random().toString(36).slice(-10) +
-        "_" +
-        getRandomInt(10 ** 12, 10 ** 13);
-      const url = `https://www.nicovideo.jp/api/watch/v3_guest/${message.movieId}`;
-      const params = {
-        _frontendId: "6",
-        _frontendVersion: "0",
-        actionTrackId: actionTrackId,
-      };
-      fetch(url + "?" + new URLSearchParams(params), {
-        credentials: "omit",
-        headers: {
-          "x-frontend-id": "6",
-          "x-frontend-version": "0",
-        },
-      })
+      getMovieData(message.movieId)
         .then((res) => {
           return res.json();
         })
@@ -60,23 +129,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       return true;
     }
     case "threadData": {
-      // コメントスレッドの情報とコメントを取得
-      const nvComment = message.movieData["data"]["comment"]["nvComment"];
-      const serverUrl = nvComment["server"] + "/v1/threads";
-      const jsonBody = {
-        threadKey: nvComment["threadKey"],
-        params: nvComment["params"],
-        additionals: {},
-      };
-      fetch(serverUrl + "?_frontendId=6", {
-        headers: {
-          "Content-Type": "application/json",
-          "x-frontend-id": "6",
-          "x-frontend-version": "0",
-        },
-        method: "POST",
-        body: JSON.stringify(jsonBody),
-      })
+      getThreadComments(message.movieData)
         .then((res) => {
           return res.json();
         })
@@ -89,26 +142,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       return true;
     }
     case "search": {
-      const endpoint =
-        "https://api.search.nicovideo.jp/api/v2/snapshot/video/contents/search";
-      const params = {
-        q: message.word,
-        targets: "title,description,tags",
-        _sort: "-commentCounter",
-        fields:
-          "contentId,title,thumbnailUrl,commentCounter,viewCounter,lengthSeconds,userId,channelId",
-        _limit: "40",
-        _context: "d-comments",
-      };
-      /**
-       * スナップショットAPIを使って動画を検索する
-       * @see https://site.nicovideo.jp/search-api-docs/snapshot
-       */
-      fetch(endpoint + "?" + new URLSearchParams(params), {
-        headers: {
-          "User-Agent": message.UserAgent,
-        },
-      })
+      search(message.word, message.UserAgent)
         .then((res) => {
           return res.json();
         })

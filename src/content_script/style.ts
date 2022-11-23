@@ -19,13 +19,15 @@
  * 視聴ページで追加する要素のスタイル
  */
 const style = document.createElement("style");
+style.id = "d-comments-style";
 style.innerHTML = `
             #d-comments-wrapper {
               display:flex;
-              flex-direction: row;
+              flex-direction:row;
               width:100%;
               height:100%;
               z-index:1;
+              text-rendering:geometricPrecision
             }
             #d-comments-container {
               z-index:1;
@@ -34,6 +36,10 @@ style.innerHTML = `
               flex-direction:column;
               overflow:hidden;
               overflow-y:scroll;
+              font-family:NotoSansCJKjp;
+              font-size:medium;
+              font-weight:500;
+              font-style:normal;
               color:white;
             }
             #d-comments-container ::-webkit-scrollbar {
@@ -45,14 +51,18 @@ style.innerHTML = `
             #d-comments-container #d-comments-error {
               width:90%;
               margin:1em auto;
+              z-index:-1;
             }
             #d-comments-container #d-comments-close {
               width:80%;
+              height:2em;
               margin:0 auto;
-              border-radius:10px;
+              padding:3px;
+              border-radius:15px;
               cursor:pointer;
             }
             #d-comments-container ul {
+              border-top:0.1px solid #484848;
               margin-block-start:0px;
               margin-block-end:0px;
               padding-inline-start:0px;
@@ -64,10 +74,16 @@ style.innerHTML = `
             #d-comments-container ul li {
               font-size:16px;
               padding:5px;
-              border-bottom:1px solid rgb(12 0 193);
+              border-bottom:1px solid #484848d1;
             }
             *::-webkit-scrollbar {
-              display: none;
+              display:none;
+            }
+            @font-face {
+              font-family: "NotoSansCJKjp";
+              src: url(${chrome.runtime.getURL(
+                "NotoSansCJKjp-VF.otf"
+              )}) format("opentype");
             }
             `;
 export default style;

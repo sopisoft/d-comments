@@ -2,6 +2,10 @@
   "[markdown]": {
     "editor.defaultFormatter": "DavidAnson.vscode-markdownlint"
   },
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "cSpell.words": ["animestore", "codicon", "codicons", "docomo", "Noto"],
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.formatOnSave": true,
   "files.autoSave": "afterDelay",
@@ -12,5 +16,10 @@
       "url": "http://json.schemastore.org/chrome-manifest"
     }
   ],
-  "typescript.tsdk": "./node_modules/typescript/lib"
+  "typescript.autoClosingTags": true,
+  "typescript.check.npmIsInstalled": true,
+  "typescript.format.enable": true,
+  "typescript.referencesCodeLens.enabled": true,
+  "typescript.tsdk": "node_modules\\typescript\\lib",
+  "typescript.updateImportsOnFileMove.enabled": "always"
 }
