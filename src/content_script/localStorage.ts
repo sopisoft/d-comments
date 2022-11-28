@@ -22,6 +22,8 @@ export type options = {
 export const defaultOptions: options = {
   ポップアップを開いたとき最後に入力した動画IDを表示する: true,
   ポップアップを開いたとき自動で動画検索を開始する: true,
+  スクロールモードを利用可能にする: true,
+  コメント欄の幅_px: 300,
 };
 
 /**

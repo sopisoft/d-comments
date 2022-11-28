@@ -106,13 +106,22 @@ const Options = () => {
           &copy;&nbsp;{new Date().getFullYear()}&nbsp;
           {chrome.runtime.getManifest().author}
         </span>
-        <span className="github">
-          <a href="https://github.com/gobosan/d-comments" target="_blank">
-            <i className="codicon codicon-mark-github" />
-            &nbsp;
-            <span>GitHub</span>
-          </a>
-        </span>
+        <div className="links">
+          <span className="link">
+            <a href="https://forms.office.com/r/JR9KksWHJD" target="_blank">
+              <i className="codicon codicon-feedback" />
+              &nbsp;
+              <span>FeedBack</span>
+            </a>
+          </span>
+          <span className="link">
+            <a href="https://github.com/gobosan/d-comments" target="_blank">
+              <i className="codicon codicon-mark-github" />
+              &nbsp;
+              <span>GitHub</span>
+            </a>
+          </span>
+        </div>
       </footer>
     </>
   );

@@ -29,6 +29,7 @@ style.innerHTML = `
               z-index:1;
             }
             #d-comments-container {
+              position:relative;
               z-index:1;
               width:300px;
               display:flex;
@@ -42,15 +43,25 @@ style.innerHTML = `
               color:white;
             }
             #d-comments-container ::-webkit-scrollbar {
-              display: none;
+              display:none;
             }
             #d-comments-container #d-comments-watch {
               text-align:center;
+              padding:4px;
             }
             #d-comments-container #d-comments-error {
               width:90%;
               margin:1em auto;
               z-index:-1;
+            }
+            #d-comments-container #d-comments-info {
+              position:absolute;
+              width:100%;
+              margin:50px 0;
+              text-align:center;
+              background:white;
+              color:black;
+              z-index:2;
             }
             #d-comments-container #d-comments-close {
               width:80%;
@@ -84,6 +95,16 @@ style.innerHTML = `
               src: url(${chrome.runtime.getURL(
                 "fonts/BIZ_UDPGothic.ttf"
               )}) format("truetype")
+              font-weight: normal;
+              font-style: normal;
+            }
+            @font-face {
+              font-family:"BIZ_UDPGothic";
+              src: url(${chrome.runtime.getURL(
+                "fonts/BIZ_UDPGothic-Bold.ttf"
+              )}) format("truetype")
+              font-weight: bold, bolder;
+              font-style: normal;
             }
             `;
 export default style;

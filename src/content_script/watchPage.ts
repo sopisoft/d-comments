@@ -16,6 +16,7 @@
 */
 
 import style from "./style";
+import * as Storage from "./localStorage";
 
 /**
  * ドキュメント要素の初期化
@@ -50,6 +51,9 @@ const init = () => {
   const container = document.createElement("div");
   container.id = "d-comments-container";
   wrapper.appendChild(container);
+  Storage.getOption("コメント欄の幅_px", (value) => {
+    container.style.width = String(value) + "px";
+  });
 
   /**
    * 作品再生時刻を表示する
@@ -87,6 +91,15 @@ const init = () => {
   container.appendChild(d);
 
   /**
+   * メッセージ表示用 paragraph
+   */
+  const i = document.createElement("div");
+  i.id = "d-comments-info";
+  i.innerHTML = "";
+  i.style.display = "none";
+  container.appendChild(i);
+
+  /**
    * コメントコンテナを閉じるボタン
    */
   const b = document.createElement("button");
@@ -97,13 +110,14 @@ const init = () => {
     b.parentElement?.remove();
   });
 
-  return { b, container, d, video };
+  return { b, i, container, d, video };
 };
 
 /**
  * スレッドデータからコメントを設置する
  * @param threadData
  * @param b  コメントコンテナを閉じるボタン
+ * @param i  メッセージ表示用 paragraph
  * @param container コメントコンテナ
  * @param d エラーメッセージ表示用 paragraph
  * @param video
@@ -111,6 +125,7 @@ const init = () => {
 const setComments = (
   threadData: any,
   b: HTMLButtonElement,
+  i: HTMLDivElement,
   container: HTMLDivElement,
   d: HTMLDivElement,
   video: HTMLVideoElement
@@ -163,20 +178,35 @@ const setComments = (
   container.appendChild(ul);
 
   /**
-   * Mouse Over Event
+   * スクロールモード
    */
-  ul.setAttribute("is-mouse-over", "false");
+  let isMouseOver = false;
+  let isScrollMode = false;
+  const checkIsScrollModeEnabled = () => {
+    Storage.getOption("スクロールモードを利用可能にする", (value) => {
+      if (value === true) {
+        isScrollMode = isMouseOver;
+        if (isMouseOver) {
+          i.style.display = "block";
+          i.innerHTML = "<p>スクロールモード</p>";
+        } else {
+          i.style.display = "none";
+          i.innerHTML = "";
+        }
+      } else {
+        isScrollMode = false;
+        i.style.display = "none";
+        i.innerHTML = "";
+      }
+    });
+  };
   ul.addEventListener("mouseover", () => {
-    ul.setAttribute("is-mouse-over", "true");
-    d.style.display = "block";
-    d.innerHTML = "<p>マウススクロールモード</p>";
+    isMouseOver = true;
+    checkIsScrollModeEnabled();
   });
   ul.addEventListener("mouseleave", () => {
-    ul.setAttribute("is-mouse-over", "false");
-    setTimeout(() => {
-      d.style.display = "none";
-      d.innerHTML = "";
-    }, 250);
+    isMouseOver = false;
+    checkIsScrollModeEnabled();
   });
 
   /**
@@ -239,7 +269,7 @@ const setComments = (
       }
       const target =
         (list[li.length - 1] as HTMLElement) ?? (list[0] as HTMLElement);
-      if (target && ul.getAttribute("is-mouse-over") === "false") {
+      if (target && !isScrollMode) {
         const scroll = target.offsetTop - ul.offsetHeight;
         ul.scroll({
           top: scroll,
@@ -257,11 +287,11 @@ const setComments = (
  * @param data ファイルからコメントを読み込むときjsonファイルで保存されたコメントデータ。ファイルからの読み込みでない場合は、undefined。
  */
 const showComments = async (movieId: string, data: string) => {
-  const { b, container, d, video } = init();
+  const { b, i, container, d, video } = init();
   if (data) {
     const e = JSON.parse(data);
     if (e["threadData"]) {
-      setComments(e["threadData"], b, container, d, video);
+      setComments(e["threadData"], b, i, container, d, video);
     } else {
       d.style.display = "block";
       d.innerHTML = "<p>コメントの取得に失敗しました。</p>";
@@ -313,7 +343,7 @@ const showComments = async (movieId: string, data: string) => {
               movieData: movieData,
             },
             (threadData) => {
-              setComments(threadData, b, container, d, video);
+              setComments(threadData, b, i, container, d, video);
             }
           );
         }
