@@ -16,7 +16,7 @@
 */
 
 import style from "./style";
-import * as Storage from "./localStorage";
+import * as Config from "./config";
 
 /**
  * ドキュメント要素の初期化
@@ -51,7 +51,7 @@ const init = () => {
   const container = document.createElement("div");
   container.id = "d-comments-container";
   wrapper.appendChild(container);
-  Storage.getOption("コメント欄の幅_px", (value) => {
+  Config.getOption("コメント欄の幅_px", (value) => {
     container.style.width = String(value) + "px";
   });
 
@@ -183,7 +183,7 @@ const setComments = (
   let isMouseOver = false;
   let isScrollMode = false;
   const checkIsScrollModeEnabled = () => {
-    Storage.getOption("スクロールモードを利用可能にする", (value) => {
+    Config.getOption("スクロールモードを利用可能にする", (value) => {
       if (value === true) {
         isScrollMode = isMouseOver;
         if (isMouseOver) {

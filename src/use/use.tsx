@@ -17,7 +17,6 @@
 
 import React from "react";
 import * as ReactDOM from "react-dom/client";
-import ReactModal from "react-modal";
 import "./use.scss";
 
 const steps = [
@@ -118,28 +117,7 @@ const steps = [
   },
 ];
 
-type modal = {
-  isOpen: boolean;
-  img: string;
-  imgAlt: string;
-};
-
 const Use = () => {
-  const [modalState, setModal] = React.useState<modal>({
-    isOpen: false,
-    img: "",
-    imgAlt: "",
-  });
-  const openModal = (img: string, imgAlt: string) => {
-    setModal({
-      isOpen: true,
-      img: img,
-      imgAlt: imgAlt,
-    });
-  };
-
-  ReactModal.setAppElement(document.getElementById("root"));
-
   return (
     <>
       <h1>
@@ -160,35 +138,11 @@ const Use = () => {
                 </span>
                 <span className="text">{child.text}</span>
               </p>
-              {child.img && (
-                <img
-                  src={child.img}
-                  alt={child.imgAlt}
-                  onClick={() => openModal(child.img, child.imgAlt)}
-                />
-              )}
+              {child.img && <img src={child.img} alt={child.imgAlt} />}
             </div>
           ))}
         </section>
       ))}
-
-      <ReactModal
-        isOpen={modalState.isOpen}
-        onRequestClose={() => setModal({ isOpen: false, img: "", imgAlt: "" })}
-      >
-        <div className="modal">
-          <div className="modal-content">
-            <span
-              className="close"
-              onClick={() => setModal({ isOpen: false, img: "", imgAlt: "" })}
-            >
-              <i className="codicon codicon-chrome-close"></i>
-            </span>
-            <img src={modalState.img} alt={modalState.imgAlt} />
-            <p>{modalState.imgAlt}</p>
-          </div>
-        </div>
-      </ReactModal>
     </>
   );
 };

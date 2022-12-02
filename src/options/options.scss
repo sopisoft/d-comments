@@ -62,6 +62,7 @@ body {
 
       .editor {
         display: flex;
+        height: 3.5rem;
         flex-direction: row;
         align-items: center;
         justify-content: space-between;
@@ -78,7 +79,7 @@ body {
         }
 
         input[type="text"] {
-          height: 2rem;
+          height: 1.2rem;
           border: none;
           border-radius: 0.5rem;
           padding: 0.5rem;
@@ -93,7 +94,7 @@ body {
         }
 
         input[type="number"] {
-          height: 2rem;
+          height: 1.2rem;
           border: none;
           border-radius: 0.5rem;
           padding: 0.5rem;
@@ -137,8 +138,8 @@ body {
     border-radius: 5px;
 
     .info {
-      font-size: 15px;
-      font-weight: 500;
+      font-size: 14px;
+      font-weight: lighter;
       margin: 2px;
     }
 

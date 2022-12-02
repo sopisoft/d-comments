@@ -16,22 +16,22 @@
     "build": "webpack --config webpack/webpack.prod.js",
     "clean:build": "@powershell Remove-Item -Recurse -Force dist",
     "clean:zip": "@powershell Remove-Item -Recurse -Force dist.zip",
+    "clean:node_modules": "@powershell Remove-Item -Recurse -Force node_modules",
     "zip": "@powershell Compress-Archive -Path dist -DestinationPath dist.zip",
     "prettier": "prettier --write \"src/**/*.{ts,tsx,scss}\""
   },
   "dependencies": {
     "@vscode/codicons": "^0.0.32",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-modal": "^3.16.1"
+    "react-dom": "^18.2.0"
   },
   "devDependencies": {
-    "@types/chrome": "0.0.202",
+    "@types/chrome": "0.0.203",
     "@types/react": "^18.0.25",
     "@types/react-dom": "^18.0.9",
     "copy-webpack-plugin": "^11.0.0",
     "css-loader": "^6.7.2",
-    "prettier": "^2.7.1",
+    "prettier": "^2.8.0",
     "sass": "^1.56.1",
     "sass-loader": "^13.2.0",
     "style-loader": "^3.3.1",

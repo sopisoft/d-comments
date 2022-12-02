@@ -57,6 +57,8 @@ Remove-Item -Recurse -Force node_modules
 ## Zip
 
 ```PowerShell
+npm run zip
+# or
 Compress-Archive -Path dist -DestinationPath dist.zip -Force
 ```
 

@@ -18,7 +18,7 @@
 import React from "react";
 import * as ReactDOM from "react-dom/client";
 import "./options.scss";
-import { defaultOptions, options } from "../content_script/localStorage";
+import { defaultOptions, options } from "../content_script/config";
 
 const Options = () => {
   const [options, setOptions] = React.useState<options>(defaultOptions);

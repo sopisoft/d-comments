@@ -17,7 +17,7 @@
 
 import React from "react";
 import * as ReactDOM from "react-dom/client";
-import * as Storage from "../content_script/localStorage";
+import * as Config from "../content_script/config";
 import "./popup.scss";
 
 const Popup = () => {
@@ -232,7 +232,7 @@ const Popup = () => {
 
   React.useEffect(() => {
     const init = (title: string) => {
-      Storage.getOption(
+      Config.getOption(
         "ポップアップを開いたとき最後に入力した動画IDを表示する",
         (value) => {
           if (value === true) {
@@ -240,7 +240,7 @@ const Popup = () => {
           }
         }
       );
-      Storage.getOption(
+      Config.getOption(
         "ポップアップを開いたとき自動で動画検索を開始する",
         (value) => {
           if (value === true) {
