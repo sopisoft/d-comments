@@ -26,7 +26,6 @@ style.innerHTML = `
               flex-direction:row;
               width:100%;
               height:100%;
-              z-index:1;
             }
             #d-comments-container {
               position:relative;
@@ -42,10 +41,10 @@ style.innerHTML = `
               font-style:normal;
               color:white;
             }
-            #d-comments-container ::-webkit-scrollbar {
+            #d-comments-container::-webkit-scrollbar {
               display:none;
             }
-            #d-comments-container #d-comments-watch {
+            #d-comments-container #d-comments-status {
               text-align:center;
               padding:4px;
             }
@@ -53,15 +52,6 @@ style.innerHTML = `
               width:90%;
               margin:1em auto;
               z-index:-1;
-            }
-            #d-comments-container #d-comments-info {
-              position:absolute;
-              width:100%;
-              margin:50px 0;
-              text-align:center;
-              background:white;
-              color:black;
-              z-index:2;
             }
             #d-comments-container #d-comments-close {
               width:80%;
@@ -81,14 +71,14 @@ style.innerHTML = `
               overflow:hidden;
               overflow-y:scroll;
             }
+            #d-comments-container ul::-webkit-scrollbar {
+              display:none;
+            }
             #d-comments-container ul li {
               font-size:16px;
               line-height:1.4;
               padding:5px;
               border-bottom:1px solid #484848d1;
-            }
-            *::-webkit-scrollbar {
-              display:none;
             }
             @font-face {
               font-family:"BIZ_UDPGothic";

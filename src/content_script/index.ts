@@ -15,6 +15,7 @@
     along with d-comments.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+import * as Config from "./config";
 import * as util from "./util";
 import showComments from "./watchPage";
 import exportJson from "./export";
@@ -36,7 +37,14 @@ const isWatchPage = href.match(
 window.onload = async () => {
   switch (true) {
     case isMenuPage:
-      util.addMenu();
+      Config.getOption(
+        "作品ページに「コメントを表示しながら再生」ボタンを追加する",
+        (value) => {
+          if (value) {
+            util.addMenu();
+          }
+        }
+      );
       break;
     case isWatchPage: {
       let url = new Object();

@@ -18,6 +18,10 @@
 import style from "./style";
 import * as Config from "./config";
 
+const status = {
+  scroll: false,
+};
+
 /**
  * ドキュメント要素の初期化
  * @returns HTML 要素
@@ -51,35 +55,16 @@ const init = () => {
   const container = document.createElement("div");
   container.id = "d-comments-container";
   wrapper.appendChild(container);
-  Config.getOption("コメント欄の幅_px", (value) => {
+  Config.getOption("コメント欄の幅 (px)", (value) => {
     container.style.width = String(value) + "px";
   });
 
   /**
-   * 作品再生時刻を表示する
+   * ステータスを表示する
    */
-  const watch = document.createElement("div");
-  watch.id = "d-comments-watch";
-  container.appendChild(watch);
-  let time = new Object();
-  setTimeout(function main() {
-    const hours = `${
-      Math.floor(video.currentTime / 3600) > 0
-        ? Math.floor(video.currentTime / 3600) + "&nbsp;時間&nbsp;"
-        : ""
-    }`;
-    const minutes = `${
-      Math.floor(video.currentTime / 60) % 60 > 0
-        ? (Math.floor(video.currentTime / 60) % 60) + "&nbsp;分&nbsp;"
-        : ""
-    }`;
-    const seconds = `${Math.floor(video.currentTime % 60)}&nbsp;秒`;
-    if (time !== `${hours}${minutes}${seconds}`) {
-      time = `${hours}${minutes}${seconds}`;
-      watch.innerHTML = `${hours}${minutes}${seconds}`;
-    }
-    setTimeout(main, 100);
-  }, 100);
+  const s = document.createElement("div");
+  s.id = "d-comments-status";
+  container.appendChild(s);
 
   /**
    * エラーメッセージ表示用 paragraph
@@ -89,15 +74,6 @@ const init = () => {
   d.innerHTML = "<p>コメント取得中...</p>";
   d.style.display = "block";
   container.appendChild(d);
-
-  /**
-   * メッセージ表示用 paragraph
-   */
-  const i = document.createElement("div");
-  i.id = "d-comments-info";
-  i.innerHTML = "";
-  i.style.display = "none";
-  container.appendChild(i);
 
   /**
    * コメントコンテナを閉じるボタン
@@ -110,14 +86,14 @@ const init = () => {
     b.parentElement?.remove();
   });
 
-  return { b, i, container, d, video };
+  return { b, s, container, d, video };
 };
 
 /**
  * スレッドデータからコメントを設置する
  * @param threadData
  * @param b  コメントコンテナを閉じるボタン
- * @param i  メッセージ表示用 paragraph
+ * @param s  ステータス
  * @param container コメントコンテナ
  * @param d エラーメッセージ表示用 paragraph
  * @param video
@@ -125,13 +101,35 @@ const init = () => {
 const setComments = (
   threadData: any,
   b: HTMLButtonElement,
-  i: HTMLDivElement,
+  s: HTMLDivElement,
   container: HTMLDivElement,
   d: HTMLDivElement,
   video: HTMLVideoElement
 ) => {
   console.log("threads", threadData["threads"]);
   const threads = threadData["threads"];
+
+  let time = new Object();
+  setTimeout(function main() {
+    if (!status.scroll) {
+      const hours = `${
+        Math.floor(video.currentTime / 3600) > 0
+          ? Math.floor(video.currentTime / 3600) + "&nbsp;時間&nbsp;"
+          : ""
+      }`;
+      const minutes = `${
+        Math.floor(video.currentTime / 60) % 60 > 0
+          ? (Math.floor(video.currentTime / 60) % 60) + "&nbsp;分&nbsp;"
+          : ""
+      }`;
+      const seconds = `${Math.floor(video.currentTime % 60)}&nbsp;秒`;
+      if (time !== `${hours}${minutes}${seconds}`) {
+        time = `${hours}${minutes}${seconds}`;
+        s.innerHTML = `${hours}${minutes}${seconds}`;
+      }
+    }
+    setTimeout(main, 100);
+  }, 100);
 
   /**
    * 任意のスレッドのコメントを表示する
@@ -187,16 +185,18 @@ const setComments = (
       if (value === true) {
         isScrollMode = isMouseOver;
         if (isMouseOver) {
-          i.style.display = "block";
-          i.innerHTML = "<p>スクロールモード</p>";
+          status.scroll = true;
+          s.innerText = "スクロールモード";
+          s.style.background = "#eb5528";
+          s.style.color = "#ffffff";
         } else {
-          i.style.display = "none";
-          i.innerHTML = "";
+          status.scroll = false;
+          s.style.background = "#000000cc";
         }
       } else {
         isScrollMode = false;
-        i.style.display = "none";
-        i.innerHTML = "";
+        status.scroll = false;
+        s.style.background = "#000000cc";
       }
     });
   };
@@ -270,11 +270,31 @@ const setComments = (
       const target =
         (list[li.length - 1] as HTMLElement) ?? (list[0] as HTMLElement);
       if (target && !isScrollMode) {
-        const scroll = target.offsetTop - ul.offsetHeight;
-        ul.scroll({
-          top: scroll,
-          behavior: "smooth",
+        const scrollHeight = target.offsetTop - ul.offsetHeight;
+
+        let windowHeight = window.innerHeight;
+        window.addEventListener("resize", () => {
+          windowHeight = window.innerHeight;
         });
+
+        let scrolledHeight = ul.scrollTop;
+        ul.addEventListener("scroll", () => {
+          scrolledHeight = ul.scrollTop;
+        });
+
+        const scrollLength = Math.abs(scrollHeight - scrolledHeight);
+        if (windowHeight / 2 - scrollLength > 0) {
+          target.scrollIntoView({
+            behavior: "smooth",
+            block: "end",
+            inline: "nearest",
+          });
+        } else {
+          ul.scroll({
+            top: scrollHeight,
+            behavior: "instant" as ScrollBehavior,
+          });
+        }
       }
       setTimeout(main, 100);
     }, 100);
@@ -287,11 +307,11 @@ const setComments = (
  * @param data ファイルからコメントを読み込むときjsonファイルで保存されたコメントデータ。ファイルからの読み込みでない場合は、undefined。
  */
 const showComments = async (movieId: string, data: string) => {
-  const { b, i, container, d, video } = init();
+  const { b, s, container, d, video } = init();
   if (data) {
     const e = JSON.parse(data);
     if (e["threadData"]) {
-      setComments(e["threadData"], b, i, container, d, video);
+      setComments(e["threadData"], b, s, container, d, video);
     } else {
       d.style.display = "block";
       d.innerHTML = "<p>コメントの取得に失敗しました。</p>";
@@ -343,7 +363,7 @@ const showComments = async (movieId: string, data: string) => {
               movieData: movieData,
             },
             (threadData) => {
-              setComments(threadData, b, i, container, d, video);
+              setComments(threadData, b, s, container, d, video);
             }
           );
         }
