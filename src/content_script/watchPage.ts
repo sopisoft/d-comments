@@ -92,8 +92,8 @@ const init = () => {
 /**
  * スレッドデータからコメントを設置する
  * @param threadData
- * @param b  コメントコンテナを閉じるボタン
- * @param s  ステータス
+ * @param b コメントコンテナを閉じるボタン
+ * @param s ステータス
  * @param container コメントコンテナ
  * @param d エラーメッセージ表示用 paragraph
  * @param video

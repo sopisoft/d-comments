@@ -31,6 +31,10 @@
     {
       "resources": ["fonts/BIZ_UDPGothic.ttf"],
       "matches": ["https://animestore.docomo.ne.jp/*"]
+    },
+    {
+      "resources": ["fonts/BIZ_UDPGothic-Bold.ttf"],
+      "matches": ["https://animestore.docomo.ne.jp/*"]
     }
   ],
   "host_permissions": [
