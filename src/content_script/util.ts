@@ -15,31 +15,46 @@
     along with d-comments.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+import * as Config from "../content_script/config";
+
 /**
  * 作品ページの各パートに新しいタブで開くボタンを追加する
  */
 export const addMenu = () => {
   const items = document.querySelectorAll(".itemModule.list a");
-  for (const item of items) {
-    const partID = item?.getAttribute("href")?.replace(/[^0-9]/g, "");
-    const bgColor = window.getComputedStyle(item).backgroundColor;
 
-    const a = document.createElement("a");
-    a.href = `sc_d_pc?partId=${partID}`;
-    a.target = "_blank";
-    a.rel = "noopener noreferrer";
-    a.id = `d-comments-${partID}`;
-    a.innerText = "コメントを表示しながら再生";
-    item.parentElement?.parentElement?.appendChild(a);
-    const style = document.createElement("style");
-    style.innerHTML = `
+  if (items.length > 0) {
+    for (const item of items) {
+      const partID = item?.getAttribute("href")?.replace(/[^0-9]/g, "");
+      const bgColor = window.getComputedStyle(item).backgroundColor;
+      const a = document.createElement("a");
+      a.id = `d-comments-${partID}`;
+      a.href = `sc_d_pc?partId=${partID}`;
+      Config.getConfig(
+        "「コメントを表示しながら再生」ボタンでは新しいタブで開く",
+        (value) => {
+          if (value) {
+            a.target = "_blank";
+            a.rel = "noopener noreferrer";
+            a.innerText = "新しいタブでコメントを表示しながら再生";
+          } else {
+            a.innerText = "現在のタブでコメントを表示しながら再生";
+          }
+        }
+      );
+      item.parentElement?.parentElement?.appendChild(a);
+      const style = document.createElement("style");
+      style.innerHTML = `
       #d-comments-${partID} {
         text-align:center;
         border-top: 1px solid rgb(224 224 224);
         background-color: ${bgColor};
       }
     `;
-    document.head.appendChild(style);
+      document.head.appendChild(style);
+    }
+  } else {
+    setTimeout(addMenu, 60);
   }
 };
 
@@ -51,12 +66,18 @@ export const setInfo = async () => {
     .getElementById("restApiUrl")
     ?.getAttribute("value")
     ?.split("&")[0];
-  const res = await fetch(`${apiUrl}&${window.location.search.split("?")[1]}`);
-  const data = await res.json();
-  const title = data["data"]["title"];
-  const description = data["data"]["partExp"];
-  document.title = title ?? document.title;
-  document
-    .querySelector("meta[name=Description]")
-    ?.setAttribute("content", description);
+  if (apiUrl) {
+    const res = await fetch(
+      `${apiUrl}&${window.location.search.split("?")[1]}`
+    );
+    const data = await res.json();
+    const title = data["data"]["title"];
+    const description = data["data"]["partExp"];
+    document.title = title ?? document.title;
+    document
+      .querySelector("meta[name=Description]")
+      ?.setAttribute("content", description);
+  } else {
+    setTimeout(setInfo, 60);
+  }
 };

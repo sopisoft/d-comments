@@ -18,38 +18,54 @@
 import React from "react";
 import * as ReactDOM from "react-dom/client";
 import "./options.scss";
-import { defaultOptions, options } from "../content_script/config";
+import * as Config from "../content_script/config";
+import Editor from "./editor";
 
 const Options = () => {
-  const [options, setOptions] = React.useState<options>(defaultOptions);
-
-  const onChange = (key: string, value: string | number | boolean) => {
-    const newOptions = { ...options, [key]: value };
-    setOptions(newOptions);
-    chrome.storage.local.set(newOptions, () => {
-      console.log("保存しました！", { key, value });
-    });
-  };
+  const [options, setOptions] = React.useState<Array<Config.config>>(
+    Config.defaultConfigs
+  );
 
   React.useEffect(() => {
-    chrome.storage.local.get(null, (result) => {
-      Object.keys(defaultOptions).map((key: string) => {
-        if (result[key] === undefined) {
-          result[key] = defaultOptions[key];
+    const t: Array<Config.config> = [];
+    Config.defaultConfigs.forEach((i, idx, array) => {
+      Config.getConfig(i.key, (value) => {
+        const r: Config.config = {
+          key: i.key,
+          value: value,
+          type: i.type,
+        };
+        t.push(r);
+        if (idx === array.length - 1) {
+          setOptions(t);
         }
       });
-      Object.keys(result).map((key: string) => {
-        if (!(key in defaultOptions)) {
-          delete result[key];
-          chrome.storage.local.remove(key as string, () => {
-            console.log("存在しないオプションを削除しました！");
-          });
-        }
-      });
-      console.log("取得しました！", result);
-      setOptions(result);
     });
   }, []);
+
+  const setOption = (m: string, v: string | number | boolean) => {
+    const d = Config.defaultConfigs.find((i) => i.key === m)?.type;
+    const t: Array<Config.config> = options.filter((n) => n.key !== m);
+    const r: Config.config = {
+      key: m,
+      value: v,
+      type: d as string,
+    };
+    setOptions(t.concat(r));
+  };
+
+  const onChange = (e: any) => {
+    const n = e.target.name;
+    if (e.target.type === "checkbox") {
+      const v = options.find((i) => i.key === n)?.value;
+      setOption(n, !v);
+      Config.setConfig(n, !v);
+    } else {
+      const v = e.target.value;
+      setOption(n, v);
+      Config.setConfig(n, v);
+    }
+  };
 
   return (
     <>
@@ -61,40 +77,35 @@ const Options = () => {
       </header>
       <main>
         <div className="wrapper">
-          {Object.keys(options).map((key) => {
-            return (
-              <div className="editor" key={key}>
-                <>
-                  <label htmlFor={key}>{key}</label>
-                  {typeof options[key] === "boolean" ? (
-                    <input
-                      type="checkbox"
-                      id={key}
-                      name={key}
-                      checked={options[key] as boolean}
-                      onChange={() => onChange(key, !(options[key] as boolean))}
-                    />
-                  ) : typeof options[key] === "number" ? (
-                    <input
-                      type="number"
-                      id={key}
-                      name={key}
-                      value={options[key] as number}
-                      onChange={(e) => onChange(key, parseInt(e.target.value))}
-                    />
-                  ) : (
-                    <input
-                      type="text"
-                      id={key}
-                      name={key}
-                      value={options[key] as string}
-                      onChange={(e) => onChange(key, e.target.value)}
-                    />
-                  )}
-                </>
-              </div>
-            );
-          })}
+          <h2>ポップアップ</h2>
+          <Editor
+            p="ポップアップを開いたとき最後に入力した動画IDを表示する"
+            o={options}
+            update={onChange}
+          />
+          <Editor
+            p="ポップアップを開いたとき自動で動画検索を開始する"
+            o={options}
+            update={onChange}
+          />
+          <Editor p="コメント欄の幅 (px)" o={options} update={onChange} />
+          <h2>視聴ページ</h2>
+          <Editor
+            p="スクロールモードを利用可能にする"
+            o={options}
+            update={onChange}
+          />
+          <h2>作品ページ</h2>
+          <Editor
+            p="作品ページに「コメントを表示しながら再生」ボタンを追加する"
+            o={options}
+            update={onChange}
+          />
+          <Editor
+            p="「コメントを表示しながら再生」ボタンでは新しいタブで開く"
+            o={options}
+            update={onChange}
+          />
         </div>
       </main>
       <footer>

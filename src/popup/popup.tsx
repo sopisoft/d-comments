@@ -232,7 +232,7 @@ const Popup = () => {
 
   React.useEffect(() => {
     const init = (title: string) => {
-      Config.getOption(
+      Config.getConfig(
         "ポップアップを開いたとき最後に入力した動画IDを表示する",
         (value) => {
           if (value === true) {
@@ -240,7 +240,7 @@ const Popup = () => {
           }
         }
       );
-      Config.getOption(
+      Config.getConfig(
         "ポップアップを開いたとき自動で動画検索を開始する",
         (value) => {
           if (value === true) {
