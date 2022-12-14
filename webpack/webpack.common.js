@@ -10,7 +10,7 @@ module.exports = {
     options: path.join(srcDir, "options/options.tsx"),
     use: path.join(srcDir, "use/use.tsx"),
     sw: path.join(srcDir, "background.ts"),
-    d_comments: path.join(srcDir, "content_script/index.ts"),
+    d_comments_dmm: path.join(srcDir, "content_script/index.ts"),
   },
   output: {
     path: path.join(__dirname, "../dist/js"),

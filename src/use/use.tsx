@@ -1,18 +1,18 @@
 /*
-    This file is part of d-comments.
+    This file is part of d-comments_For_DMM-TV.
 
-    d-comments is free software: you can redistribute it and/or modify
+    d-comments_For_DMM-TV is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
-    d-comments is distributed in the hope that it will be useful,
+    d-comments_For_DMM-TV is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with d-comments.  If not, see <https://www.gnu.org/licenses/>.
+    along with d-comments_For_DMM-TV.  If not, see <https://www.gnu.org/licenses/>.
 */
 
 import React from "react";
@@ -25,12 +25,12 @@ const steps = [
     text: "準備",
     children: [
       {
-        text: "ドコモアニメストアの任意のアニメ作品ページにアクセスします。",
-        img: "img/menu.png",
-        imgAlt: "再生ボタンが追加された作品ページ",
+        text: "DMM TV の任意の作品視聴ページにアクセスします。",
+        img: null,
+        imgAlt: null,
       },
       {
-        text: "各パートに表示された「コメントを表示しながら再生」ボタンをクリックします。",
+        text: "拡張機能のアイコンをクリックします",
         img: null,
         imgAlt: null,
       },
@@ -41,19 +41,14 @@ const steps = [
     text: "ポップアップの操作",
     children: [
       {
-        text: "前項で選択したパートの再生ページが新しいタブで開きます。",
+        text: "拡張機能のアイコンをクリックします",
         img: null,
         imgAlt: null,
       },
       {
-        text: "再生ページで再生が開始されたら、拡張機能のポップアップを開きます。",
+        text: "ポップアップが開き、ニコニコ動画の動画検索が始まります。",
         img: "img/popup.png",
         imgAlt: "拡張機能のポップアップページ",
-      },
-      {
-        text: "ニコニコ動画の動画検索が始まります。",
-        img: null,
-        imgAlt: null,
       },
       {
         text: "動画リストからコメントを表示したい動画選択します。",

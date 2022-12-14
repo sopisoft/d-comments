@@ -17,8 +17,8 @@
   "options_page": "options.html",
   "content_scripts": [
     {
-      "matches": ["https://animestore.docomo.ne.jp/*"],
-      "js": ["js/d_comments.js"],
+      "matches": ["https://tv.dmm.com/*"],
+      "js": ["js/d_comments_dmm.js"],
       "run_at": "document_start",
       "all_frames": true
     }
@@ -30,15 +30,15 @@
   "web_accessible_resources": [
     {
       "resources": ["fonts/BIZ_UDPGothic.ttf"],
-      "matches": ["https://animestore.docomo.ne.jp/*"]
+      "matches": ["https://tv.dmm.com/*"]
     },
     {
       "resources": ["fonts/BIZ_UDPGothic-Bold.ttf"],
-      "matches": ["https://animestore.docomo.ne.jp/*"]
+      "matches": ["https://tv.dmm.com/*"]
     }
   ],
   "host_permissions": [
-    "http://animestore.docomo.ne.jp/*",
+    "https://tv.dmm.com/*",
     "https://www.nicovideo.jp/*",
     "https://nvcomment.nicovideo.jp/*",
     "https://nvapi.nicovideo.jp/v1/users/*",
