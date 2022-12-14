@@ -20,7 +20,12 @@ import * as Config from "../config";
 
 /**
  * ドキュメント要素の初期化
- * @returns HTML 要素
+ * @returns threadData
+ * @returns b コメントコンテナを閉じるボタン
+ * @returns s ステータス
+ * @returns container コメントコンテナ
+ * @returns d エラーメッセージ表示用 paragraph
+ * @returns video
  */
 const init = () => {
   const video = document.getElementById("video") as HTMLVideoElement;
@@ -67,7 +72,7 @@ const init = () => {
    */
   const d = document.createElement("div");
   d.id = "d-comments-error";
-  d.innerHTML = "<p>コメント取得中...</p>";
+  d.innerText = "コメント取得中...";
   d.style.display = "block";
   container.appendChild(d);
 

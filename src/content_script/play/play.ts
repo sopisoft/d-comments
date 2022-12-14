@@ -18,7 +18,14 @@
 import * as Config from "../config";
 
 const status = {
-  scroll: false,
+  /** スクロールモードかどうか */
+  isScrollMode: false,
+  /** 設定「スクロールモードを利用可能にする」の値 */
+  ScrollConfig: true,
+  /** コメントコンテナ上にマウスカーソルがあるか */
+  isMouseOver: false,
+  /** 作品再生時刻 */
+  time: "",
 };
 
 /**
@@ -38,12 +45,34 @@ const play = (
   d: HTMLDivElement,
   video: HTMLVideoElement
 ) => {
-  console.log("threads", threadData["threads"]);
-  const threads = threadData["threads"];
+  /**
+   * 設定の変更を監視する
+   */
+  chrome.storage.onChanged.addListener((changes, namespace) => {
+    for (let [key, { oldValue, newValue }] of Object.entries(changes)) {
+      console.log(
+        `設定 ${key} (namespace "${namespace}" ) が更新されました`,
+        `\n更新前 : ${oldValue} | 更新後 : ${newValue}`
+      );
+      switch (key) {
+        case "スクロールモードを利用可能にする":
+          status.ScrollConfig = newValue;
+          break;
+        case "コメント欄の幅 (px)":
+          container.style.width = String(newValue) + "px";
+          break;
+      }
+    }
+  });
+  Config.getConfig("スクロールモードを利用可能にする", (value) => {
+    status.ScrollConfig = value as boolean;
+  });
 
-  let time = new Object();
+  /**
+   * 再生時刻
+   */
   setTimeout(function main() {
-    if (!status.scroll) {
+    if (!status.isScrollMode) {
       const hours = `${
         Math.floor(video.currentTime / 3600) > 0
           ? Math.floor(video.currentTime / 3600) + "&nbsp;時間&nbsp;"
@@ -55,13 +84,13 @@ const play = (
           : ""
       }`;
       const seconds = `${Math.floor(video.currentTime % 60)}&nbsp;秒`;
-      if (time !== `${hours}${minutes}${seconds}`) {
-        time = `${hours}${minutes}${seconds}`;
-        s.innerHTML = `${hours}${minutes}${seconds}`;
+      if (status.time !== `${hours}${minutes}${seconds}`) {
+        status.time = `${hours}${minutes}${seconds}`;
+        s.innerHTML = status.time;
       }
     }
-    setTimeout(main, 100);
-  }, 100);
+    setTimeout(main, 120);
+  }, 120);
 
   /**
    * 任意のスレッドのコメントを表示する
@@ -69,17 +98,17 @@ const play = (
    * @returns コメント
    */
   const getThreadComments = (fork: string) => {
-    const thread = threads
+    const threads = threadData["threads"]
       .filter((thread: { [x: string]: string }) => {
         return thread["fork"] === fork;
       })
       .map((thread: any) => {
         return thread;
       });
-    if (thread.length > 1) {
-      return thread[1]["comments"];
+    if (threads.length > 1) {
+      return threads[1]["comments"];
     }
-    return thread[0]["comments"];
+    return threads[0]["comments"];
   };
 
   //const ownerThread = getThreadComments("owner");
@@ -110,48 +139,31 @@ const play = (
   /**
    * スクロールモード
    */
-  let isMouseOver = false;
-  let isScrollMode = false;
-  let ScrollConfig = false;
-  Config.getConfig("スクロールモードを利用可能にする", (value) => {
-    ScrollConfig = value as boolean;
-  });
-  chrome.storage.onChanged.addListener((changes, namespace) => {
-    for (let [key, { oldValue, newValue }] of Object.entries(changes)) {
-      console.log(
-        `Storage key "${key}" in namespace "${namespace}" changed.`,
-        `Old value was "${oldValue}", new value is "${newValue}".`
-      );
-      if ((key = "スクロールモードを利用可能にする")) {
-        ScrollConfig = newValue;
-      }
-    }
-  });
-
   const checkIsScrollModeEnabled = () => {
-    if (ScrollConfig === true) {
-      isScrollMode = isMouseOver;
-      if (isMouseOver) {
-        status.scroll = true;
+    if (status.ScrollConfig === true) {
+      if (status.isMouseOver) {
+        status.isScrollMode = true;
         s.innerText = "スクロールモード";
         s.style.background = "#eb5528";
         s.style.color = "#ffffff";
       } else {
-        status.scroll = false;
+        s.innerHTML = status.time;
+        status.isScrollMode = false;
         s.style.background = "#000000cc";
       }
     } else {
-      isScrollMode = false;
-      status.scroll = false;
+      status.isScrollMode = false;
+      s.innerHTML = status.time;
+      status.isScrollMode = false;
       s.style.background = "#000000cc";
     }
   };
   ul.addEventListener("mouseover", () => {
-    isMouseOver = true;
+    status.isMouseOver = true;
     checkIsScrollModeEnabled();
   });
   ul.addEventListener("mouseleave", () => {
-    isMouseOver = false;
+    status.isMouseOver = false;
     checkIsScrollModeEnabled();
   });
 
@@ -159,7 +171,7 @@ const play = (
    * コメントを取得して表示する
    */
   getComments().then((comments) => {
-    d.innerHTML = "";
+    d.innerText = "";
     d.style.display = "none";
     b.remove();
 
@@ -191,8 +203,8 @@ const play = (
       if (href !== location.href) {
         ul.remove();
         d.style.display = "block";
-        d.innerHTML =
-          "<p>作品パートが変更されました。</p><a>コメントを再取得してください。</a>";
+        d.innerText =
+          "作品パートが変更されました。\nコメントを再取得してください。";
         container.appendChild(b);
         href = location.href;
       }
@@ -215,7 +227,7 @@ const play = (
       }
       const target =
         (list[li.length - 1] as HTMLElement) ?? (list[0] as HTMLElement);
-      if (target && !isScrollMode) {
+      if (target && !status.isScrollMode) {
         const scrollHeight = target.offsetTop - ul.offsetHeight;
 
         let windowHeight = window.innerHeight;

@@ -25,67 +25,68 @@ import play from "./play";
  */
 const fire = async (movieId: string, data: string) => {
   const { b, s, container, d, video } = init();
+
+  /**
+   * エラーメッセージを表示する
+   * @param message エラーメッセージ
+   * @param code　エラーコード　もしくは　null
+   */
+  const setD = (message: string, code: string | null) => {
+    d.style.display = "block";
+    code ? (d.innerText = `${message}\n${code}`) : (d.innerHTML = `${message}`);
+    container.appendChild(b);
+    return;
+  };
+
+  /**
+   * reasonCode に合わせたエラーメッセージを表示する
+   * @param reasonCode movieData["data"]["reasonCode"]
+   */
+  const setReason = (reasonCode: string) => {
+    switch (reasonCode) {
+      case "PPV_VIDEO":
+        setD("有料動画のためコメントを取得できませんでした。", reasonCode);
+        break;
+      default:
+        setD("コメントの取得に失敗しました。", reasonCode);
+    }
+  };
+
+  // ファイルからコメントを読み込むとき
   if (data) {
     const e = JSON.parse(data);
     if (e["threadData"]) {
       play(e["threadData"], b, s, container, d, video);
     } else {
-      d.style.display = "block";
-      d.innerHTML = "<p>コメントの取得に失敗しました。</p>";
-      container.appendChild(b);
-      return;
+      setD("コメントの取得に失敗しました。", null);
     }
   } else {
-    chrome.runtime.sendMessage(
-      {
+    // サーバーから動画情報を取得する
+    chrome.runtime
+      .sendMessage({
         type: "movieData",
         movieId: movieId,
-      },
-      (movieData) => {
-        console.log("movieData", movieData);
-        if (!movieData) {
-          d.style.display = "block";
-          d.innerHTML = "<p>動画情報の取得に失敗しました。</p>";
-          container.appendChild(b);
-          return;
-        }
-        if (movieData["meta"]["status"] !== 200) {
-          console.log(
-            "error",
-            movieData ? movieData["meta"]["status"] : "Error"
-          );
-          if (movieData["data"]) {
-            if (movieData["data"]["reasonCode"] === "PPV_VIDEO") {
-              d.style.display = "block";
-              d.innerHTML =
-                "<p>有料動画のためコメントを取得できませんでした。</p>";
-              container.appendChild(b);
-              return;
-            } else {
-              d.style.display = "block";
-              d.innerHTML = `<p>コメントの取得に失敗しました。</p><p><span>コード</span><span>${movieData["data"]["reasonCode"]}</span></p>`;
-              container.appendChild(b);
-              return;
-            }
-          } else {
-            d.style.display = "block";
-            d.innerHTML = `<p>動画情報の取得に失敗しました。</p><p><span>エラーコード</span><span>${movieData["meta"]["status"]}</span></p>`;
-            container.appendChild(b);
-            return;
-          }
-        } else {
-          chrome.runtime.sendMessage(
-            {
+      })
+      .then((movieData) => {
+        if (movieData["meta"]["status"] === 200) {
+          // サーバーからコメントを取得する
+          chrome.runtime
+            .sendMessage({
               type: "threadData",
               movieData: movieData,
-            },
-            (threadData) => {
+            })
+            .then((threadData) => {
               play(threadData, b, s, container, d, video);
-            }
+            });
+        } else if (movieData["data"]) {
+          setReason(movieData["data"]["reasonCode"]);
+        } else {
+          setD(
+            "動画情報の取得に失敗しました。",
+            movieData ? movieData["meta"]["status"] : null
           );
         }
-      }
-    );
+      });
   }
 };
 

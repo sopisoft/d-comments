@@ -4,8 +4,6 @@ d アニメストアの動画再生画面でニコニコ動画のコメントを
 
 [Chrome Web Store](https://chrome.google.com/webstore/detail/d-comments/jocjhkklfiaojhhnjiejmimlohaemiep)
 
-[Microsoft Edge Addon](https://microsoftedge.microsoft.com/addons/detail/dcomments/megnnllcbcmllggmljcgbadfblpodanp)
-
 ## Requirements
 
 - node.js ^18.12.0 ([Node.js](https://nodejs.org/ja/))

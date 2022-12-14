@@ -23,15 +23,3 @@ GitHub リポジトリ ( <https://github.com/gobosan/d-comments> )
 【評価】
 ストア評価やアンケートにお答えただけると開発者の励みになります。
 Microsoft Forms ( <https://forms.office.com/r/JR9KksWHJD> )
-
-## [Notes for certification](<https://docs.microsoft.com/en-us/microsoft-edge/extensions-chromium/publish/publish-extension?branch=extensions-documentation#notes-for-certification>)
-
-1. You go to "https://animestore.docomo.ne.jp/animestore/sc_d_pc?partId=10463999".
-
-2. Click on the extension icon.
-
-3. Enter your search word in the lower input element of the two and click on the search icon to the right of it.
-
-4. Click on one of the video listings. Then the text will be entered in the upper input element, and click on the "表示" button to the right of it.
-
-5. You will see that the selected comment has been added to the first page you accessed.

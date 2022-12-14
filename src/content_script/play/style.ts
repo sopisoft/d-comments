@@ -52,6 +52,7 @@ style.innerHTML = `
               width:90%;
               margin:1em auto;
               z-index:-1;
+              line-height:2;
             }
             #d-comments-container #d-comments-close {
               width:80%;
