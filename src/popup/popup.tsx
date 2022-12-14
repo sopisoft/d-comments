@@ -1,18 +1,18 @@
 /*
-    This file is part of d-comments_For_DMM-TV.
+    This file is part of d-comments.
 
-    d-comments_For_DMM-TV is free software: you can redistribute it and/or modify
+    d-comments is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
-    d-comments_For_DMM-TV is distributed in the hope that it will be useful,
+    d-comments is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with d-comments_For_DMM-TV.  If not, see <https://www.gnu.org/licenses/>.
+    along with d-comments.  If not, see <https://www.gnu.org/licenses/>.
 */
 
 import React from "react";
@@ -60,7 +60,11 @@ const Popup = () => {
    * @returns boolean
    */
   const isWatchPage = (href: string) => {
-    return href.match(/https:\/\/tv\.dmm\.com\/vod\/playback/) ? true : false;
+    return href.match(
+      /https:\/\/animestore\.docomo\.ne\.jp\/animestore\/sc_d_pc\?partId=\d+/
+    )
+      ? true
+      : false;
   };
 
   /**
@@ -154,7 +158,7 @@ const Popup = () => {
           {
             type: "search",
             word: word,
-            UserAgent: "d-comments_For_DMM-TV",
+            UserAgent: "d-comments",
           },
           (response) => {
             if (response.meta.status === 200) {
@@ -249,8 +253,7 @@ const Popup = () => {
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
       console.log(tabs[0]?.url);
       isWatchPage(tabs[0]?.url ?? "")
-        ? (setIsActive(true),
-          init(tabs[0]?.title?.replace("｜DMM TV", "") ?? ""))
+        ? (setIsActive(true), init(tabs[0]?.title ?? ""))
         : setIsActive(false);
     });
   }, []);

@@ -1,18 +1,18 @@
 /*
-    This file is part of d-comments_For_DMM-TV.
+    This file is part of d-comments.
 
-    d-comments_For_DMM-TV is free software: you can redistribute it and/or modify
+    d-comments is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
-    d-comments_For_DMM-TV is distributed in the hope that it will be useful,
+    d-comments is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with d-comments_For_DMM-TV.  If not, see <https://www.gnu.org/licenses/>.
+    along with d-comments.  If not, see <https://www.gnu.org/licenses/>.
 */
 
 import React from "react";
@@ -88,10 +88,21 @@ const Options = () => {
             o={options}
             update={onChange}
           />
-          <Editor p="コメント欄の幅 (0～100%)" o={options} update={onChange} />
+          <Editor p="コメント欄の幅 (px)" o={options} update={onChange} />
           <h2>視聴ページ</h2>
           <Editor
             p="スクロールモードを利用可能にする"
+            o={options}
+            update={onChange}
+          />
+          <h2>作品ページ</h2>
+          <Editor
+            p="作品ページに「コメントを表示しながら再生」ボタンを追加する"
+            o={options}
+            update={onChange}
+          />
+          <Editor
+            p="「コメントを表示しながら再生」ボタンでは新しいタブで開く"
             o={options}
             update={onChange}
           />
@@ -107,15 +118,13 @@ const Options = () => {
           {chrome.runtime.getManifest().author}
         </span>
         <div className="links">
-          {/*
           <span className="link">
-            <a href="" target="_blank">
+            <a href="https://forms.office.com/r/JR9KksWHJD" target="_blank">
               <i className="codicon codicon-feedback" />
               &nbsp;
               <span>FeedBack</span>
             </a>
           </span>
-        */}
           <span className="link">
             <a href="https://github.com/gobosan/d-comments" target="_blank">
               <i className="codicon codicon-mark-github" />

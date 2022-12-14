@@ -28,16 +28,6 @@ const status = {
   time: "",
 };
 
-let windowScrolledHeight = window.scrollY;
-window.addEventListener("scroll", () => {
-  windowScrolledHeight = window.scrollY;
-});
-
-let windowInnerHeight = window.innerHeight;
-window.addEventListener("resize", () => {
-  windowInnerHeight = window.innerHeight;
-});
-
 /**
  * スレッドデータからコメントを設置する
  * @param threadData
@@ -68,11 +58,8 @@ const play = (
         case "スクロールモードを利用可能にする":
           status.ScrollConfig = newValue;
           break;
-        case "コメント欄の幅 (0～100%)":
-          const n = Number(newValue);
-          const w = (100 - n) as number;
-          video.style.width = String(w) + "%";
-          container.style.width = String(newValue) + "%";
+        case "コメント欄の幅 (px)":
+          container.style.width = String(newValue) + "px";
           break;
       }
     }
@@ -241,36 +228,26 @@ const play = (
       const target =
         (list[li.length - 1] as HTMLElement) ?? (list[0] as HTMLElement);
       if (target && !status.isScrollMode) {
-        /**
-         * コメントコンテナのスクロール必要量
-         **/
         const scrollHeight = target.offsetTop - ul.offsetHeight;
 
-        let ulScrolledHeight = ul.scrollTop;
-        ul.addEventListener("scroll", () => {
-          ulScrolledHeight = ul.scrollTop;
+        let windowHeight = window.innerHeight;
+        window.addEventListener("resize", () => {
+          windowHeight = window.innerHeight;
         });
 
-        const ulScrollLength = Math.abs(scrollHeight - ulScrolledHeight);
+        let scrolledHeight = ul.scrollTop;
+        ul.addEventListener("scroll", () => {
+          scrolledHeight = ul.scrollTop;
+        });
 
-        /**
-         * コメントコンテナのスクロールがコンテナの高さの½以上必要か
-         **/
-        const isScrollBehaviorSmooth =
-          windowInnerHeight / 2 - ulScrollLength > 0;
-        /**
-         * ページ全体が⅛以上スクロールされたか
-         **/
-        const isWindowScrolledEnough =
-          windowScrolledHeight - windowInnerHeight / 8 > 0;
-
-        if (isScrollBehaviorSmooth && !isWindowScrolledEnough) {
+        const scrollLength = Math.abs(scrollHeight - scrolledHeight);
+        if (windowHeight / 2 - scrollLength > 0) {
           target.scrollIntoView({
             behavior: "smooth",
             block: "end",
             inline: "nearest",
           });
-        } else if (!isWindowScrolledEnough) {
+        } else {
           ul.scroll({
             top: scrollHeight,
             behavior: "instant" as ScrollBehavior,

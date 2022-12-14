@@ -28,12 +28,7 @@ import * as Config from "../config";
  * @returns video
  */
 const init = () => {
-  const video = document.querySelector("video") as HTMLVideoElement;
-  Config.getConfig("コメント欄の幅 (0～100%)", (value) => {
-    const n = Number(value);
-    const w = (100 - n) as number;
-    video.style.width = String(w) + "%";
-  });
+  const video = document.getElementById("video") as HTMLVideoElement;
 
   /**
    * スタイル設定
@@ -42,15 +37,27 @@ const init = () => {
     document.head.appendChild(style);
 
   /**
+   * すべての要素をラップする
+   */
+  const wrapper =
+    document.getElementById("d-comments-wrapper") ??
+    document.createElement("div");
+  if (!document.getElementById("d-comments-wrapper")) {
+    wrapper.id = "d-comments-wrapper";
+    video.parentElement?.before(wrapper);
+    wrapper.append(video.parentElement as HTMLElement);
+  }
+
+  /**
    * コメントコンテナ
    */
   document.getElementById("d-comments-container") &&
     document.getElementById("d-comments-container")?.remove();
   const container = document.createElement("div");
   container.id = "d-comments-container";
-  video.after(container);
-  Config.getConfig("コメント欄の幅 (0～100%)", (value) => {
-    container.style.width = String(value) + "%";
+  wrapper.appendChild(container);
+  Config.getConfig("コメント欄の幅 (px)", (value) => {
+    container.style.width = String(value) + "px";
   });
 
   /**

@@ -1,18 +1,18 @@
 /*
-    This file is part of d-comments_For_DMM-TV.
+    This file is part of d-comments.
 
-    d-comments_For_DMM-TV is free software: you can redistribute it and/or modify
+    d-comments is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
-    d-comments_For_DMM-TV is distributed in the hope that it will be useful,
+    d-comments is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with d-comments_For_DMM-TV.  If not, see <https://www.gnu.org/licenses/>.
+    along with d-comments.  If not, see <https://www.gnu.org/licenses/>.
 */
 
 export type config = {
@@ -20,7 +20,6 @@ export type config = {
   value: string | number | boolean;
   type: string;
 };
-
 export const defaultConfigs: Array<config> = [
   {
     key: "ポップアップを開いたとき最後に入力した動画IDを表示する",
@@ -33,11 +32,21 @@ export const defaultConfigs: Array<config> = [
     type: "checkbox",
   },
   {
-    key: "コメント欄の幅 (0～100%)",
-    value: 20,
+    key: "コメント欄の幅 (px)",
+    value: 300,
     type: "number",
   },
   { key: "スクロールモードを利用可能にする", value: true, type: "checkbox" },
+  {
+    key: "作品ページに「コメントを表示しながら再生」ボタンを追加する",
+    value: true,
+    type: "checkbox",
+  },
+  {
+    key: "「コメントを表示しながら再生」ボタンでは新しいタブで開く",
+    value: true,
+    type: "checkbox",
+  },
 ];
 
 /**

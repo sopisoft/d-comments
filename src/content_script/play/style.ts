@@ -1,18 +1,18 @@
 /*
-    This file is part of d-comments_For_DMM-TV.
+    This file is part of d-comments.
 
-    d-comments_For_DMM-TV is free software: you can redistribute it and/or modify
+    d-comments is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
-    d-comments_For_DMM-TV is distributed in the hope that it will be useful,
+    d-comments is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with d-comments_For_DMM-TV.  If not, see <https://www.gnu.org/licenses/>.
+    along with d-comments.  If not, see <https://www.gnu.org/licenses/>.
 */
 
 /**
@@ -21,8 +21,13 @@
 const style = document.createElement("style");
 style.id = "d-comments-style";
 style.innerHTML = `
+            #d-comments-wrapper {
+              display:flex;
+              flex-direction:row;
+              width:100%;
+              height:100%;
+            }
             #d-comments-container {
-              height: 100vh;
               position:relative;
               z-index:1;
               width:300px;

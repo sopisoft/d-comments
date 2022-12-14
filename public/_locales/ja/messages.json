@@ -1,8 +1,8 @@
 {
   "name": {
-    "message": "d-comments_For_DMM-TV"
+    "message": "d-comments"
   },
   "description": {
-    "message": "DMM TVの作品再生画面にてニコニコ動画のコメントを表示します。"
+    "message": "dアニメストアの動画再生画面にてニコニコ動画のコメントを表示します。"
   }
 }
