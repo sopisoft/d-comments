@@ -59,6 +59,8 @@ body {
       height: 100%;
       padding: 0;
       margin: 0;
+      opacity: 0;
+      animation: 0.5s fadeIn forwards;
 
       .editor {
         display: flex;
@@ -123,6 +125,14 @@ body {
             outline: none;
           }
         }
+      }
+    }
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
       }
     }
   }

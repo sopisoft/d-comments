@@ -15,49 +15,72 @@
     along with d-comments.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-export type options = {
-  [key: string]: string | number | boolean;
+export type config = {
+  key: string;
+  value: string | number | boolean;
+  type: string;
 };
-
-export const defaultOptions: options = {
-  ポップアップを開いたとき最後に入力した動画IDを表示する: true,
-  ポップアップを開いたとき自動で動画検索を開始する: true,
-  スクロールモードを利用可能にする: true,
-  "作品ページに「コメントを表示しながら再生」ボタンを追加する": true,
-  "コメント欄の幅 (px)": 300,
-};
+export const defaultConfigs: Array<config> = [
+  {
+    key: "ポップアップを開いたとき最後に入力した動画IDを表示する",
+    value: true,
+    type: "checkbox",
+  },
+  {
+    key: "ポップアップを開いたとき自動で動画検索を開始する",
+    value: true,
+    type: "checkbox",
+  },
+  {
+    key: "コメント欄の幅 (px)",
+    value: 300,
+    type: "number",
+  },
+  { key: "スクロールモードを利用可能にする", value: true, type: "checkbox" },
+  {
+    key: "作品ページに「コメントを表示しながら再生」ボタンを追加する",
+    value: true,
+    type: "checkbox",
+  },
+  {
+    key: "「コメントを表示しながら再生」ボタンでは新しいタブで開く",
+    value: true,
+    type: "checkbox",
+  },
+];
 
 /**
- * Chrome.storage.local に保存されている設定を取得し、callback を呼び出す。
- * @param callback callback(options)
+ * 設定を取得し、Callback を呼ぶ
+ * @param key 設定キー
+ * @param callback 設定値を取得した後に呼ばれる関数
  */
-export const getAllOptions = (callback: (options: options) => void) => {
-  chrome.storage.local.get(null, (result) => {
-    Object.keys(defaultOptions).map((key: string) => {
-      if (result[key] === undefined) {
-        result[key] = defaultOptions[key];
-      }
-    });
-    Object.keys(result).map((key: string) => {
-      if (!(key in defaultOptions)) {
-        delete result[key];
-        chrome.storage.local.remove(key as string);
-      }
-    });
-    return callback(result);
+export const getConfig = (
+  key: string,
+  callback: (value: string | number | boolean) => void
+) => {
+  chrome.storage.local.get([key]).then((result) => {
+    if (result[key] === undefined || null) {
+      console.log(
+        `${key} (${result[key]}) ${
+          defaultConfigs.find((item) => item.key === key)?.value
+        }`
+      );
+    } else {
+      console.log(key, result[key]);
+    }
+    callback(
+      result[key] ?? defaultConfigs.find((item) => item.key === key)?.value
+    );
   });
 };
 
 /**
- * 設定を取得し、Callback を呼び出す
+ * 設定を保存する
  * @param key 設定キー
- * @param callback 設定値を取得した後に呼ばれる関数
+ * @param value 設定値
  */
-export const getOption = (
-  key: string,
-  callback: (value: string | number | boolean) => void
-) => {
-  chrome.storage.local.get(key, (result) => {
-    callback(result[key] ?? defaultOptions[key]);
+export const setConfig = (key: string, value: string | number | boolean) => {
+  chrome.storage.local.set({ [key]: value }).then(() => {
+    console.log(key, value);
   });
 };

@@ -17,7 +17,7 @@
 
 import * as Config from "./config";
 import * as util from "./util";
-import showComments from "./watchPage";
+import fire from "./play/fire";
 import exportJson from "./export";
 
 const href = window.location.href;
@@ -34,10 +34,10 @@ const isWatchPage = href.match(
   ? true
   : false;
 
-window.onload = async () => {
+document.addEventListener("DOMContentLoaded", () => {
   switch (true) {
     case isMenuPage:
-      Config.getOption(
+      Config.getConfig(
         "作品ページに「コメントを表示しながら再生」ボタンを追加する",
         (value) => {
           if (value) {
@@ -59,11 +59,11 @@ window.onload = async () => {
       break;
     }
   }
-};
+});
 
 chrome.runtime.onMessage.addListener((message) => {
   if (message.type === "showComments" && isWatchPage) {
-    showComments(message.movieId, message.data);
+    fire(message.movieId, message.data);
   }
   if (message.type === "exportJson" && isWatchPage) {
     exportJson(message.movieId);
