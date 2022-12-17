@@ -85,17 +85,15 @@ style.innerHTML = `
               font-family:"BIZ_UDPGothic";
               src: url(${chrome.runtime.getURL(
                 "fonts/BIZ_UDPGothic.ttf"
-              )}) format("truetype")
-              font-weight: normal;
-              font-style: normal;
+              )}) format("truetype");
+              font-weight:normal;
             }
             @font-face {
               font-family:"BIZ_UDPGothic";
               src: url(${chrome.runtime.getURL(
                 "fonts/BIZ_UDPGothic-Bold.ttf"
-              )}) format("truetype")
-              font-weight: bold, bolder;
-              font-style: normal;
+              )}) format("truetype");
+              font-weight:bolder;
             }
             `;
 export default style;

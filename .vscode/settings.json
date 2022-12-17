@@ -5,7 +5,7 @@
   "[typescript]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
-  "cSpell.words": ["animestore", "codicon", "codicons", "docomo"],
+  "cSpell.words": ["animestore", "codicon", "codicons", "docomo", "vpos"],
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.formatOnSave": true,
   "files.autoSave": "afterDelay",
