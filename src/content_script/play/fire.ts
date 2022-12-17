@@ -33,7 +33,9 @@ const fire = async (movieId: string, data: string) => {
    */
   const setD = (message: string, code: string | null) => {
     d.style.display = "block";
-    code ? (d.innerText = `${message}\n${code}`) : (d.innerHTML = `${message}`);
+    code
+      ? (d.innerText = `${message}\nエラーコード : ${code}`)
+      : (d.innerHTML = `${message}`);
     container.appendChild(b);
     return;
   };
@@ -60,7 +62,9 @@ const fire = async (movieId: string, data: string) => {
     } else {
       setD("コメントの取得に失敗しました。", null);
     }
-  } else {
+  }
+  // サーバーからコメントを取得するとき
+  else {
     // サーバーから動画情報を取得する
     chrome.runtime
       .sendMessage({

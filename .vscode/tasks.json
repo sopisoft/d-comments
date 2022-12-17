@@ -6,20 +6,23 @@
       "label": "install",
       "type": "shell",
       "command": "npm",
-      "args": ["install"]
+      "args": ["install"],
+      "problemMatcher": []
     },
     {
       "label": "update",
       "type": "shell",
       "command": "npm",
-      "args": ["update"]
+      "args": ["update"],
+      "problemMatcher": []
     },
     {
       "label": "build",
       "type": "shell",
       "group": "build",
       "command": "npm",
-      "args": ["run", "watch"]
+      "args": ["run", "watch"],
+      "problemMatcher": []
     }
   ]
 }

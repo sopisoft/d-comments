@@ -20,12 +20,33 @@ import * as Config from "../config";
 const status = {
   /** スクロールモードかどうか */
   isScrollMode: false,
-  /** 設定「スクロールモードを利用可能にする」の値 */
-  ScrollConfig: true,
   /** コメントコンテナ上にマウスカーソルがあるか */
   isMouseOver: false,
   /** 作品再生時刻 */
   time: "",
+  /** ページのURL */
+  href: window.location.href,
+  /** ビューポートの高さ */
+  windowHeight: window.innerHeight,
+  /** コメント欄のスクロール必要量 */
+  scrollHeight: 0,
+  /** コメント欄のスクロール量 */
+  scrolledHeight: 0,
+};
+
+const configs = {
+  /** 設定「スクロールモードを利用可能にする」の値 */
+  ScrollConfig: true,
+  /** 投稿者コメントを表示するか */
+  ownerThread: false,
+  /** 通常コメントを表示するか */
+  mainThread: false,
+  /** かんたんコメントを表示するか */
+  easyThread: false,
+};
+
+const global = {
+  comments: [] as any,
 };
 
 /**
@@ -51,22 +72,57 @@ const play = (
   chrome.storage.onChanged.addListener((changes, namespace) => {
     for (let [key, { oldValue, newValue }] of Object.entries(changes)) {
       console.log(
-        `設定 ${key} (namespace "${namespace}" ) が更新されました`,
+        `設定 ${key} (${namespace}) が更新されました`,
         `\n更新前 : ${oldValue} | 更新後 : ${newValue}`
       );
       switch (key) {
         case "スクロールモードを利用可能にする":
-          status.ScrollConfig = newValue;
+          configs.ScrollConfig = newValue;
           break;
         case "コメント欄の幅 (px)":
           container.style.width = String(newValue) + "px";
           break;
+        case "投稿者コメント": {
+          configs.ownerThread = newValue;
+          showComments();
+          break;
+        }
+        case "通常コメント": {
+          configs.mainThread = newValue;
+          showComments();
+          break;
+        }
+        case "かんたんコメント": {
+          configs.easyThread = newValue;
+          showComments();
+          break;
+        }
       }
     }
   });
+  /**
+   * ステータスに設定値を設定する
+   */
   Config.getConfig("スクロールモードを利用可能にする", (value) => {
-    status.ScrollConfig = value as boolean;
+    configs.ScrollConfig = value as boolean;
   });
+  Config.getConfig("投稿者コメント", (value) => {
+    configs.ownerThread = value as boolean;
+  });
+  Config.getConfig("通常コメント", (value) => {
+    configs.mainThread = value as boolean;
+  });
+  Config.getConfig("かんたんコメント", (value) => {
+    configs.easyThread = value as boolean;
+    showComments();
+  });
+
+  /**
+   * コメントリストのUl
+   */
+  const ul = document.createElement("ul");
+  container.appendChild(ul);
+  ul.style.display = "none";
 
   /**
    * 再生時刻
@@ -91,9 +147,10 @@ const play = (
     }
     setTimeout(main, 120);
   }, 120);
+  s.innerHTML = status.time;
 
   /**
-   * 任意のスレッドのコメントを表示する
+   * 任意のスレッドのコメントを返す
    * @param fork コメントの fork
    * @returns コメント
    */
@@ -105,22 +162,42 @@ const play = (
       .map((thread: any) => {
         return thread;
       });
+    // main thread が二つある場合があり、この時 thread[1] を返す
     if (threads.length > 1) {
       return threads[1]["comments"];
     }
     return threads[0]["comments"];
   };
 
-  //const ownerThread = getThreadComments("owner");
-  const mainThread = getThreadComments("main");
-  //const easyThread = getThreadComments("easy");
+  /**
+   * 指定されたコメントを返す
+   * @param Callback
+   */
+  const getComments = async (callback: (comments: any) => any) => {
+    const a = async () => {
+      global.comments.length = 0;
+      configs.ownerThread && global.comments.push(getThreadComments("owner"));
+    };
+    const b = async () => {
+      configs.mainThread && global.comments.push(getThreadComments("main"));
+    };
+    const c = async () => {
+      configs.easyThread && global.comments.push(getThreadComments("easy"));
+    };
+    const d = async () => {
+      callback(global.comments.flat(1));
+    };
+    a()
+      .then(() => b())
+      .then(() => c())
+      .then(() => d());
+  };
 
   /**
    * コメントを再生時刻でソートする
    * @returns コメント
    */
-  const getComments = async () => {
-    const comments = mainThread;
+  const sortComments = async (comments) => {
     comments.filter((comment: { [x: string]: number }) => {
       return comment["score"] > 0;
     });
@@ -131,50 +208,9 @@ const play = (
   };
 
   /**
-   * コメントリストのUl
+   * コメントリストを設置する
    */
-  const ul = document.createElement("ul");
-  container.appendChild(ul);
-
-  /**
-   * スクロールモード
-   */
-  const checkIsScrollModeEnabled = () => {
-    if (status.ScrollConfig === true) {
-      if (status.isMouseOver) {
-        status.isScrollMode = true;
-        s.innerText = "スクロールモード";
-        s.style.background = "#eb5528";
-        s.style.color = "#ffffff";
-      } else {
-        s.innerHTML = status.time;
-        status.isScrollMode = false;
-        s.style.background = "#000000cc";
-      }
-    } else {
-      status.isScrollMode = false;
-      s.innerHTML = status.time;
-      status.isScrollMode = false;
-      s.style.background = "#000000cc";
-    }
-  };
-  ul.addEventListener("mouseover", () => {
-    status.isMouseOver = true;
-    checkIsScrollModeEnabled();
-  });
-  ul.addEventListener("mouseleave", () => {
-    status.isMouseOver = false;
-    checkIsScrollModeEnabled();
-  });
-
-  /**
-   * コメントを取得して表示する
-   */
-  getComments().then((comments) => {
-    d.innerText = "";
-    d.style.display = "none";
-    b.remove();
-
+  const setComments = (comments) => {
     const contents = async (comments: any[]) => {
       const lists = [] as HTMLElement[];
       comments.map((comment: { [x: string]: string; body: string }) => {
@@ -190,27 +226,106 @@ const play = (
       lists.map((list) => {
         df.appendChild(list);
       });
+      while (ul.firstChild) {
+        ul.removeChild(ul.firstChild);
+      }
       ul.appendChild(df);
     });
+  };
 
-    /*
-    URLの変更を監視する
-    URLが変更されたら作品パートが変更されたと判断し、コメントの再読み込みを促す
-    */
-    let href = new Object();
-    href = window.location.href;
-    setInterval(() => {
-      if (href !== location.href) {
-        ul.remove();
+  /**
+   * URLの変更を監視する
+   * URLが変更されたら作品パートが変更されたと判断し、コメントの再読み込みを促す
+   */
+  setInterval(() => {
+    if (status.href !== location.href) {
+      ul.remove();
+      d.style.display = "block";
+      d.innerText =
+        "作品パートが変更されました。\nコメントを再取得してください。";
+      container.appendChild(b);
+      status.href = location.href;
+    }
+  }, 1000);
+
+  /**
+   * コメントリストを表示する
+   */
+  const showComments = () => {
+    getComments((comments) => {
+      if (comments.length > 0) {
+        sortComments(comments).then((comments) => {
+          setComments(comments);
+          d.innerText = "";
+          d.style.display = "none";
+          b.remove();
+          ul.style.display = "block";
+          scroll();
+        });
+      } else {
         d.style.display = "block";
-        d.innerText =
-          "作品パートが変更されました。\nコメントを再取得してください。";
-        container.appendChild(b);
-        href = location.href;
+        d.innerText = "表示できるコメントはありません。";
+        ul.style.display = "none";
       }
-    }, 1000);
+    });
+  };
+
+  const scroll = () => {
+    /**
+     * スクロールモード
+     */
+    const checkIsScrollModeEnabled = () => {
+      if (configs.ScrollConfig === true) {
+        if (status.isMouseOver) {
+          status.isScrollMode = true;
+          s.innerText = "スクロールモード";
+          s.style.background = "#eb5528";
+          s.style.color = "#ffffff";
+        } else {
+          s.innerHTML = status.time;
+          status.isScrollMode = false;
+          s.style.background = "#000000cc";
+        }
+      } else {
+        status.isScrollMode = false;
+        s.innerHTML = status.time;
+        status.isScrollMode = false;
+        s.style.background = "#000000cc";
+      }
+    };
+    ul.addEventListener(
+      "mouseover",
+      () => {
+        status.isMouseOver = true;
+        checkIsScrollModeEnabled();
+      },
+      { passive: true }
+    );
+    ul.addEventListener(
+      "mouseleave",
+      () => {
+        status.isMouseOver = false;
+        checkIsScrollModeEnabled();
+      },
+      { passive: true }
+    );
 
     // コメントを再生時刻に合わせてスクロールする
+    window.addEventListener(
+      "resize",
+      () => {
+        status.windowHeight = window.innerHeight;
+      },
+      { passive: true }
+    );
+    status.scrolledHeight = ul.scrollTop;
+    ul.addEventListener(
+      "scroll",
+      () => {
+        status.scrolledHeight = ul.scrollTop;
+      },
+      { passive: true }
+    );
     setTimeout(function main() {
       const currentTime = Math.round(video.currentTime * 1000);
       const li = ul.querySelectorAll(
@@ -228,20 +343,12 @@ const play = (
       const target =
         (list[li.length - 1] as HTMLElement) ?? (list[0] as HTMLElement);
       if (target && !status.isScrollMode) {
-        const scrollHeight = target.offsetTop - ul.offsetHeight;
+        status.scrollHeight = target.offsetTop - ul.offsetHeight;
 
-        let windowHeight = window.innerHeight;
-        window.addEventListener("resize", () => {
-          windowHeight = window.innerHeight;
-        });
-
-        let scrolledHeight = ul.scrollTop;
-        ul.addEventListener("scroll", () => {
-          scrolledHeight = ul.scrollTop;
-        });
-
-        const scrollLength = Math.abs(scrollHeight - scrolledHeight);
-        if (windowHeight / 2 - scrollLength > 0) {
+        const scrollLength = Math.abs(
+          status.scrollHeight - status.scrolledHeight
+        );
+        if (status.windowHeight / 2 - scrollLength > 0) {
           target.scrollIntoView({
             behavior: "smooth",
             block: "end",
@@ -249,14 +356,14 @@ const play = (
           });
         } else {
           ul.scroll({
-            top: scrollHeight,
+            top: status.scrollHeight,
             behavior: "instant" as ScrollBehavior,
           });
         }
       }
-      setTimeout(main, 100);
-    }, 100);
-  });
+      setTimeout(main, 120);
+    }, 120);
+  };
 };
 
 export default play;

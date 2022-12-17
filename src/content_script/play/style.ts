@@ -45,6 +45,7 @@ style.innerHTML = `
               display:none;
             }
             #d-comments-container #d-comments-status {
+              border-bottom:0.1px solid #484848;
               text-align:center;
               padding:4px;
             }
@@ -63,7 +64,6 @@ style.innerHTML = `
               cursor:pointer;
             }
             #d-comments-container ul {
-              border-top:0.1px solid #484848;
               margin-block-start:0px;
               margin-block-end:0px;
               padding-inline-start:0px;

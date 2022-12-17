@@ -84,7 +84,7 @@ const init = () => {
   b.textContent = "サイドバーを閉じる";
   b.setAttribute("type", "button");
   b.addEventListener("click", () => {
-    b.parentElement?.remove();
+    container.remove();
   });
 
   return { b, s, container, d, video };

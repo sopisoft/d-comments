@@ -24,8 +24,9 @@ type Editor = {
 };
 const Editor = (props: Editor) => {
   const { p, o } = props;
-  const type = o.find((i) => i.key === p)?.type;
-  const value = o.find((i) => i.key === p)?.value;
+  const v = o.find((i) => i.key === p);
+  const type = v?.type;
+  const value = v?.value;
 
   return (
     <div className="editor" key={p}>
