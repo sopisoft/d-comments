@@ -22,7 +22,7 @@ const set = () => {
   ) {
     const style = document.createElement("style");
     style.id = "d-comments-style-root";
-    const rgba = `${configs.r},${configs.g},${configs.b},${configs.a}`;
+    const rgba = `${configs.r} ${configs.g} ${configs.b} / ${configs.a}%`;
     style.innerHTML = `
 :root {
   --d-comments-text-color:${configs.commentsColor};
@@ -91,8 +91,8 @@ const init = () => {
     configs.g = hexToRgb(value as string).g;
     configs.b = hexToRgb(value as string).b;
   });
-  Config.getConfig("コメント欄の背景透明度 (%)", (value) => {
-    configs.a = (value as number) / 100;
+  Config.getConfig("コメント欄の背景不透明度 (%)", (value) => {
+    configs.a = value as number;
   });
   Config.getConfig("コメントの文字色", (value) => {
     configs.commentsColor = value as string;
@@ -140,8 +140,8 @@ chrome.storage.onChanged.addListener((changes, namespace) => {
         set();
         break;
       }
-      case "コメント欄の背景透明度 (%)": {
-        configs.a = newValue / 100;
+      case "コメント欄の背景不透明度 (%)": {
+        configs.a = newValue;
         set();
         break;
       }
