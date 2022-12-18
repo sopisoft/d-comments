@@ -62,6 +62,11 @@ export const defaultConfigs: Array<config> = [
     value: false,
     type: "checkbox",
   },
+  {
+    key: "自動スクロールの実行間隔 (ミリ秒)",
+    value: 120,
+    type: "number",
+  },
 ];
 
 /**

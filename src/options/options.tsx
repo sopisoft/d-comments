@@ -95,6 +95,11 @@ const Options = () => {
             o={options}
             update={onChange}
           />
+          <Editor
+            p="自動スクロールの実行間隔 (ミリ秒)"
+            o={options}
+            update={onChange}
+          />
           <h2>作品ページ</h2>
           <Editor
             p="作品ページに「コメントを表示しながら再生」ボタンを追加する"

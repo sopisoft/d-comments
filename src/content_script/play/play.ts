@@ -22,6 +22,8 @@ const status = {
   isScrollMode: false,
   /** コメントコンテナ上にマウスカーソルがあるか */
   isMouseOver: false,
+  /** コメントリストのUlをスクール中か */
+  isUlScrolling: false,
   /** 作品再生時刻 */
   time: "",
   /** ページのURL */
@@ -37,6 +39,8 @@ const status = {
 const configs = {
   /** 設定「スクロールモードを利用可能にする」の値 */
   ScrollConfig: true,
+  /** 設定「自動スクロールの実行間隔 (ミリ秒)」の値 */
+  autoScrollInterval: 600,
   /** 投稿者コメントを表示するか */
   ownerThread: false,
   /** 通常コメントを表示するか */
@@ -47,6 +51,7 @@ const configs = {
 
 const global = {
   comments: [] as any,
+  lists: [] as HTMLElement[],
 };
 
 /**
@@ -79,6 +84,9 @@ const play = (
         case "スクロールモードを利用可能にする":
           configs.ScrollConfig = newValue;
           break;
+        case "自動スクロールの実行間隔 (ミリ秒)":
+          configs.autoScrollInterval = newValue;
+          break;
         case "コメント欄の幅 (px)":
           container.style.width = String(newValue) + "px";
           break;
@@ -100,11 +108,22 @@ const play = (
       }
     }
   });
+  window.addEventListener(
+    "resize",
+    () => {
+      status.windowHeight = window.innerHeight;
+    },
+    { passive: true }
+  );
+
   /**
    * ステータスに設定値を設定する
    */
   Config.getConfig("スクロールモードを利用可能にする", (value) => {
     configs.ScrollConfig = value as boolean;
+  });
+  Config.getConfig("自動スクロールの実行間隔 (ミリ秒)", (value) => {
+    configs.autoScrollInterval = value as number;
   });
   Config.getConfig("投稿者コメント", (value) => {
     configs.ownerThread = value as boolean;
@@ -123,11 +142,64 @@ const play = (
   const ul = document.createElement("ul");
   container.appendChild(ul);
   ul.style.display = "none";
+  status.scrolledHeight = ul.scrollTop;
+  ul.addEventListener(
+    "scroll",
+    () => {
+      if (!status.isUlScrolling) {
+        status.isUlScrolling = true;
+        window.requestAnimationFrame(() => {
+          status.scrolledHeight = ul.scrollTop;
+          status.isUlScrolling = false;
+        });
+      }
+    },
+    { passive: true }
+  );
+  ul.addEventListener(
+    "mouseover",
+    () => {
+      status.isMouseOver = true;
+      checkIsScrollModeEnabled();
+    },
+    { passive: true }
+  );
+  ul.addEventListener(
+    "mouseleave",
+    () => {
+      status.isMouseOver = false;
+      checkIsScrollModeEnabled();
+    },
+    { passive: true }
+  );
+
+  /**
+   * スクロールモード
+   */
+  const checkIsScrollModeEnabled = () => {
+    if (configs.ScrollConfig === true) {
+      if (status.isMouseOver) {
+        status.isScrollMode = true;
+        s.innerText = "スクロールモード";
+        s.style.background = "#eb5528";
+        s.style.color = "#ffffff";
+      } else {
+        s.innerHTML = status.time;
+        status.isScrollMode = false;
+        s.style.background = "#000000cc";
+      }
+    } else {
+      status.isScrollMode = false;
+      s.innerHTML = status.time;
+      status.isScrollMode = false;
+      s.style.background = "#000000cc";
+    }
+  };
 
   /**
    * 再生時刻
    */
-  setTimeout(function main() {
+  const setCurrentTime = () => {
     if (!status.isScrollMode) {
       const hours = `${
         Math.floor(video.currentTime / 3600) > 0
@@ -145,9 +217,9 @@ const play = (
         s.innerHTML = status.time;
       }
     }
-    setTimeout(main, 120);
-  }, 120);
-  s.innerHTML = status.time;
+    window.requestAnimationFrame(setCurrentTime);
+  };
+  window.requestAnimationFrame(setCurrentTime);
 
   /**
    * 任意のスレッドのコメントを返す
@@ -211,15 +283,15 @@ const play = (
    * コメントリストを設置する
    */
   const setComments = (comments) => {
+    global.lists.length = 0;
     const contents = async (comments: any[]) => {
-      const lists = [] as HTMLElement[];
       comments.map((comment: { [x: string]: string; body: string }) => {
         const li = document.createElement("li");
         li.innerText = comment.body;
         li.setAttribute("data-time", comment["vposMs"]);
-        lists.push(li);
+        global.lists.push(li);
       });
-      return lists;
+      return global.lists;
     };
     contents(comments).then((lists) => {
       const df = document.createDocumentFragment();
@@ -237,7 +309,7 @@ const play = (
    * URLの変更を監視する
    * URLが変更されたら作品パートが変更されたと判断し、コメントの再読み込みを促す
    */
-  setInterval(() => {
+  const checkLocationNow = () => {
     if (status.href !== location.href) {
       ul.remove();
       d.style.display = "block";
@@ -246,87 +318,13 @@ const play = (
       container.appendChild(b);
       status.href = location.href;
     }
-  }, 1000);
-
-  /**
-   * コメントリストを表示する
-   */
-  const showComments = () => {
-    getComments((comments) => {
-      if (comments.length > 0) {
-        sortComments(comments).then((comments) => {
-          setComments(comments);
-          d.innerText = "";
-          d.style.display = "none";
-          b.remove();
-          ul.style.display = "block";
-          scroll();
-        });
-      } else {
-        d.style.display = "block";
-        d.innerText = "表示できるコメントはありません。";
-        ul.style.display = "none";
-      }
-    });
+    window.requestAnimationFrame(checkLocationNow);
   };
+  window.requestAnimationFrame(checkLocationNow);
 
-  const scroll = () => {
-    /**
-     * スクロールモード
-     */
-    const checkIsScrollModeEnabled = () => {
-      if (configs.ScrollConfig === true) {
-        if (status.isMouseOver) {
-          status.isScrollMode = true;
-          s.innerText = "スクロールモード";
-          s.style.background = "#eb5528";
-          s.style.color = "#ffffff";
-        } else {
-          s.innerHTML = status.time;
-          status.isScrollMode = false;
-          s.style.background = "#000000cc";
-        }
-      } else {
-        status.isScrollMode = false;
-        s.innerHTML = status.time;
-        status.isScrollMode = false;
-        s.style.background = "#000000cc";
-      }
-    };
-    ul.addEventListener(
-      "mouseover",
-      () => {
-        status.isMouseOver = true;
-        checkIsScrollModeEnabled();
-      },
-      { passive: true }
-    );
-    ul.addEventListener(
-      "mouseleave",
-      () => {
-        status.isMouseOver = false;
-        checkIsScrollModeEnabled();
-      },
-      { passive: true }
-    );
-
-    // コメントを再生時刻に合わせてスクロールする
-    window.addEventListener(
-      "resize",
-      () => {
-        status.windowHeight = window.innerHeight;
-      },
-      { passive: true }
-    );
-    status.scrolledHeight = ul.scrollTop;
-    ul.addEventListener(
-      "scroll",
-      () => {
-        status.scrolledHeight = ul.scrollTop;
-      },
-      { passive: true }
-    );
-    setTimeout(function main() {
+  /** コメントを再生時刻に合わせてスクロールする */
+  const scroll = (callBack) => {
+    if ((Math.round(callBack / 10) * 10) % configs.autoScrollInterval === 0) {
       const currentTime = Math.round(video.currentTime * 1000);
       const li = ul.querySelectorAll(
         "li[data-time]"
@@ -361,8 +359,33 @@ const play = (
           });
         }
       }
-      setTimeout(main, 120);
-    }, 120);
+    }
+    window.requestAnimationFrame(scroll);
+  };
+
+  /**
+   * コメントリストを表示する
+   */
+  const showComments = () => {
+    getComments((comments) => {
+      if (comments.length > 0) {
+        sortComments(comments).then((comments) => {
+          setComments(comments);
+          d.innerText = "";
+          d.style.display = "none";
+          b.remove();
+          ul.style.display = "block";
+          window.requestAnimationFrame(scroll);
+        });
+      } else {
+        d.style.display = "block";
+        d.innerText = "表示できるコメントはありません。";
+        while (ul.firstChild) {
+          ul.removeChild(ul.firstChild);
+        }
+        ul.style.display = "none";
+      }
+    });
   };
 };
 
