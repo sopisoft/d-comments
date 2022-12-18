@@ -47,6 +47,26 @@ export const defaultConfigs: Array<config> = [
     value: true,
     type: "checkbox",
   },
+  {
+    key: "投稿者コメント",
+    value: false,
+    type: "checkbox",
+  },
+  {
+    key: "通常コメント",
+    value: true,
+    type: "checkbox",
+  },
+  {
+    key: "かんたんコメント",
+    value: false,
+    type: "checkbox",
+  },
+  {
+    key: "自動スクロールの実行間隔 (ミリ秒)",
+    value: 120,
+    type: "number",
+  },
 ];
 
 /**
@@ -59,18 +79,13 @@ export const getConfig = (
   callback: (value: string | number | boolean) => void
 ) => {
   chrome.storage.local.get([key]).then((result) => {
+    const defaultValue = defaultConfigs.find((item) => item.key === key)?.value;
     if (result[key] === undefined || null) {
-      console.log(
-        `${key} (${result[key]}) ${
-          defaultConfigs.find((item) => item.key === key)?.value
-        }`
-      );
+      console.log(`${key} (${result[key]}) ${defaultValue}`);
     } else {
       console.log(key, result[key]);
     }
-    callback(
-      result[key] ?? defaultConfigs.find((item) => item.key === key)?.value
-    );
+    callback(result[key] ?? defaultValue);
   });
 };
 
