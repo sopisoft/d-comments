@@ -56,6 +56,14 @@ const Editor = (props: Editor) => {
             checked={value as boolean}
             onChange={props.update}
           />
+        ) : type === "color" ? (
+          <input
+            type="color"
+            id={p}
+            name={p}
+            value={value as string}
+            onChange={props.update}
+          />
         ) : (
           ""
         )}

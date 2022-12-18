@@ -87,9 +87,6 @@ const play = (
         case "自動スクロールの実行間隔 (ミリ秒)":
           configs.autoScrollInterval = newValue;
           break;
-        case "コメント欄の幅 (px)":
-          container.style.width = String(newValue) + "px";
-          break;
         case "投稿者コメント": {
           configs.ownerThread = newValue;
           showComments();

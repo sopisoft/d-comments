@@ -88,7 +88,7 @@ const Options = () => {
             o={options}
             update={onChange}
           />
-          <Editor p="コメント欄の幅 (px)" o={options} update={onChange} />
+
           <h2>視聴ページ</h2>
           <Editor
             p="スクロールモードを利用可能にする"
@@ -100,6 +100,50 @@ const Options = () => {
             o={options}
             update={onChange}
           />
+          <Editor p="コメント欄の幅 (px)" o={options} update={onChange} />
+          <Editor
+            p="コメント欄のスクールバーを表示する"
+            o={options}
+            update={onChange}
+          />
+
+          <h2>コメント欄の色</h2>
+          <Editor p="コメント欄の背景色" o={options} update={onChange} />
+          <Editor
+            p="コメント欄の背景不透明度 (%)"
+            o={options}
+            update={onChange}
+          />
+          <Editor p="コメントの文字色" o={options} update={onChange} />
+
+          <h2>コメントリストのオーバーレイ （β版）</h2>
+          <Editor
+            p="作品再生画面にオーバーレイ表示"
+            o={options}
+            update={onChange}
+          />
+          <div
+            style={{
+              opacity: options.find(
+                (i) => i.key === "作品再生画面にオーバーレイ表示"
+              )?.value
+                ? 1
+                : 0.6,
+            }}
+          >
+            <Editor
+              p="画面の上部分からの距離 (%)"
+              o={options}
+              update={onChange}
+            />
+            <Editor
+              p="画面の左部分からの距離 (%)"
+              o={options}
+              update={onChange}
+            />
+            <Editor p="コメント欄の高さ (%)" o={options} update={onChange} />
+          </div>
+
           <h2>作品ページ</h2>
           <Editor
             p="作品ページに「コメントを表示しながら再生」ボタンを追加する"
@@ -111,6 +155,7 @@ const Options = () => {
             o={options}
             update={onChange}
           />
+
           <h2>コメントの種類</h2>
           <Editor p="投稿者コメント" o={options} update={onChange} />
           <Editor p="通常コメント" o={options} update={onChange} />

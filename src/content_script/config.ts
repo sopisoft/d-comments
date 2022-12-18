@@ -31,12 +31,57 @@ export const defaultConfigs: Array<config> = [
     value: true,
     type: "checkbox",
   },
+  { key: "スクロールモードを利用可能にする", value: true, type: "checkbox" },
+  {
+    key: "自動スクロールの実行間隔 (ミリ秒)",
+    value: 120,
+    type: "number",
+  },
   {
     key: "コメント欄の幅 (px)",
     value: 300,
     type: "number",
   },
-  { key: "スクロールモードを利用可能にする", value: true, type: "checkbox" },
+  {
+    key: "コメント欄のスクールバーを表示する",
+    value: false,
+    type: "checkbox",
+  },
+  {
+    key: "コメント欄の背景色",
+    value: "#000000",
+    type: "color",
+  },
+  {
+    key: "コメント欄の背景不透明度 (%)",
+    value: 35,
+    type: "number",
+  },
+  {
+    key: "コメントの文字色",
+    value: "#FFFFFF",
+    type: "color",
+  },
+  {
+    key: "作品再生画面にオーバーレイ表示",
+    value: false,
+    type: "checkbox",
+  },
+  {
+    key: "画面の上部分からの距離 (%)",
+    value: 0,
+    type: "number",
+  },
+  {
+    key: "画面の左部分からの距離 (%)",
+    value: 0,
+    type: "number",
+  },
+  {
+    key: "コメント欄の高さ (%)",
+    value: 100,
+    type: "number",
+  },
   {
     key: "作品ページに「コメントを表示しながら再生」ボタンを追加する",
     value: true,
@@ -61,11 +106,6 @@ export const defaultConfigs: Array<config> = [
     key: "かんたんコメント",
     value: false,
     type: "checkbox",
-  },
-  {
-    key: "自動スクロールの実行間隔 (ミリ秒)",
-    value: 120,
-    type: "number",
   },
 ];
 

@@ -16,7 +16,7 @@
 */
 
 import style from "./style";
-import * as Config from "../config";
+import * as Root from "./root";
 
 /**
  * ドキュメント要素の初期化
@@ -35,6 +35,7 @@ const init = () => {
    */
   document.getElementById("d-comments-style") ??
     document.head.appendChild(style);
+  Root.default();
 
   /**
    * すべての要素をラップする
@@ -56,9 +57,6 @@ const init = () => {
   const container = document.createElement("div");
   container.id = "d-comments-container";
   wrapper.appendChild(container);
-  Config.getConfig("コメント欄の幅 (px)", (value) => {
-    container.style.width = String(value) + "px";
-  });
 
   /**
    * ステータスを表示する
