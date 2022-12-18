@@ -28,9 +28,13 @@ style.innerHTML = `
               height:100%;
             }
             #d-comments-container {
-              position:relative;
-              z-index:1;
-              width:300px;
+              position:var(--d-comments-container-position, relative);
+              z-index:var(--d-comments-container-z-index, 1);
+              width:var(--d-comments-container-width ,300px);
+              height:var(--d-comments-container-height, 100vh);
+              top:var(--d-comments-container-top, 0%);
+              left:var(--d-comments-container-left, 0%);
+              background:var(--d-comments-container-background, rgba(0,0,0,0.35));
               display:flex;
               flex-direction:column;
               overflow:hidden;
@@ -39,7 +43,7 @@ style.innerHTML = `
               font-size:medium;
               font-weight:500;
               font-style:normal;
-              color:white;
+              color:var(--d-comments-text-color, white);
             }
             #d-comments-container::-webkit-scrollbar {
               display:none;
@@ -71,9 +75,6 @@ style.innerHTML = `
               list-style:none;
               overflow:hidden;
               overflow-y:scroll;
-            }
-            #d-comments-container ul::-webkit-scrollbar {
-              display:none;
             }
             #d-comments-container ul li {
               font-size:16px;
