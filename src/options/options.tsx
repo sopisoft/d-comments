@@ -67,6 +67,12 @@ const Options = () => {
     }
   };
 
+  chrome.storage.onChanged.addListener((changes, namespace) => {
+    for (let [key, { oldValue, newValue }] of Object.entries(changes)) {
+      setOption(key, newValue);
+    }
+  });
+
   return (
     <>
       <header>
@@ -75,93 +81,103 @@ const Options = () => {
         </span>
         <h1>設定</h1>
       </header>
-      <main>
-        <div className="wrapper">
-          <h2>ポップアップ</h2>
-          <Editor
-            p="ポップアップを開いたとき最後に入力した動画IDを表示する"
-            o={options}
-            update={onChange}
-          />
-          <Editor
-            p="ポップアップを開いたとき自動で動画検索を開始する"
-            o={options}
-            update={onChange}
-          />
-
-          <h2>視聴ページ</h2>
-          <Editor
-            p="スクロールモードを利用可能にする"
-            o={options}
-            update={onChange}
-          />
-          <Editor
-            p="自動スクロールの実行間隔 (ミリ秒)"
-            o={options}
-            update={onChange}
-          />
-          <Editor p="コメント欄の幅 (px)" o={options} update={onChange} />
-          <Editor
-            p="コメント欄のスクールバーを表示する"
-            o={options}
-            update={onChange}
-          />
-
-          <h2>コメント欄の色</h2>
-          <Editor p="コメント欄の背景色" o={options} update={onChange} />
-          <Editor
-            p="コメント欄の背景不透明度 (%)"
-            o={options}
-            update={onChange}
-          />
-          <Editor p="コメントの文字色" o={options} update={onChange} />
-
-          <h2>コメントリストのオーバーレイ （β版）</h2>
-          <Editor
-            p="作品再生画面にオーバーレイ表示"
-            o={options}
-            update={onChange}
-          />
-          <div
-            style={{
-              opacity: options.find(
-                (i) => i.key === "作品再生画面にオーバーレイ表示"
-              )?.value
-                ? 1
-                : 0.6,
-            }}
-          >
+      <div className="wrapper">
+        <div id="left-side">
+          <div>
+            <h2>ポップアップ</h2>
             <Editor
-              p="画面の上部分からの距離 (%)"
+              p="ポップアップを開いたとき最後に入力した動画IDを表示する"
               o={options}
               update={onChange}
             />
             <Editor
-              p="画面の左部分からの距離 (%)"
+              p="ポップアップを開いたとき自動で動画検索を開始する"
               o={options}
               update={onChange}
             />
-            <Editor p="コメント欄の高さ (%)" o={options} update={onChange} />
           </div>
-
-          <h2>作品ページ</h2>
-          <Editor
-            p="作品ページに「コメントを表示しながら再生」ボタンを追加する"
-            o={options}
-            update={onChange}
-          />
-          <Editor
-            p="「コメントを表示しながら再生」ボタンでは新しいタブで開く"
-            o={options}
-            update={onChange}
-          />
-
-          <h2>コメントの種類</h2>
-          <Editor p="投稿者コメント" o={options} update={onChange} />
-          <Editor p="通常コメント" o={options} update={onChange} />
-          <Editor p="かんたんコメント" o={options} update={onChange} />
+          <div>
+            <h2>作品ページ</h2>
+            <Editor
+              p="作品ページに「コメントを表示しながら再生」ボタンを追加する"
+              o={options}
+              update={onChange}
+            />
+            <Editor
+              p="「コメントを表示しながら再生」ボタンでは新しいタブで開く"
+              o={options}
+              update={onChange}
+            />
+          </div>
+          <div>
+            <h2>コメントの種類</h2>
+            <Editor p="投稿者コメント" o={options} update={onChange} />
+            <Editor p="通常コメント" o={options} update={onChange} />
+            <Editor p="かんたんコメント" o={options} update={onChange} />
+          </div>
         </div>
-      </main>
+        <div id="right-side">
+          <div>
+            <h2>視聴ページ</h2>
+            <Editor
+              p="スクロールモードを利用可能にする"
+              o={options}
+              update={onChange}
+            />
+            <Editor
+              p="自動スクロールの実行間隔 (ミリ秒)"
+              o={options}
+              update={onChange}
+            />
+            <Editor p="コメント欄の幅 (px)" o={options} update={onChange} />
+            <Editor
+              p="コメント欄のスクールバーを表示する"
+              o={options}
+              update={onChange}
+            />
+          </div>
+          <div>
+            <h2>コメント欄の色</h2>
+            <Editor p="コメント欄の背景色" o={options} update={onChange} />
+            <Editor
+              p="コメント欄の背景不透明度 (%)"
+              o={options}
+              update={onChange}
+            />
+            <Editor p="コメントの文字色" o={options} update={onChange} />
+          </div>
+          <div>
+            <h2>コメントリストのオーバーレイ （β版）</h2>
+            <Editor
+              p="作品再生画面にオーバーレイ表示"
+              o={options}
+              update={onChange}
+            />
+            <div
+              style={{
+                opacity: options.find(
+                  (i) => i.key === "作品再生画面にオーバーレイ表示"
+                )?.value
+                  ? 1
+                  : 0.6,
+              }}
+            >
+              <Editor
+                p="画面の上部分からの距離 (%)"
+                o={options}
+                update={onChange}
+              />
+              <Editor
+                p="画面の左部分からの距離 (%)"
+                o={options}
+                update={onChange}
+              />
+              <Editor p="コメント欄の高さ (%)" o={options} update={onChange} />
+            </div>
+          </div>
+        </div>
+      </div>
+
       <footer>
         <span className="info">
           {chrome.runtime.getManifest().name}

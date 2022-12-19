@@ -174,22 +174,15 @@ const play = (
    * スクロールモード
    */
   const checkIsScrollModeEnabled = () => {
-    if (configs.ScrollConfig === true) {
-      if (status.isMouseOver) {
-        status.isScrollMode = true;
-        s.innerText = "スクロールモード";
-        s.style.background = "#eb5528";
-        s.style.color = "#ffffff";
-      } else {
-        s.innerHTML = status.time;
-        status.isScrollMode = false;
-        s.style.background = "#000000cc";
-      }
-    } else {
+    console.log(status.isMouseOver);
+    if (configs.ScrollConfig && status.isMouseOver) {
+      status.isScrollMode = true;
+      s.innerText = "スクロールモード";
+      s.classList.add("scrolling");
+    } else if (!status.isMouseOver) {
       status.isScrollMode = false;
       s.innerHTML = status.time;
-      status.isScrollMode = false;
-      s.style.background = "#000000cc";
+      s.classList.remove("scrolling");
     }
   };
 

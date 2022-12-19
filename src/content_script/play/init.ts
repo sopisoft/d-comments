@@ -15,8 +15,7 @@
     along with d-comments.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-import style from "./style";
-import * as Root from "./root";
+import * as Style from "./style";
 
 /**
  * ドキュメント要素の初期化
@@ -34,8 +33,8 @@ const init = () => {
    * スタイル設定
    */
   document.getElementById("d-comments-style") ??
-    document.head.appendChild(style);
-  Root.default();
+    document.head.appendChild(Style.style);
+  Style.init();
 
   /**
    * すべての要素をラップする

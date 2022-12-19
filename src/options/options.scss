@@ -22,7 +22,6 @@ body {
 }
 
 #root {
-  max-width: 800px;
   margin: auto;
   display: grid;
   grid-template-rows: auto 1fr auto;
@@ -33,8 +32,7 @@ body {
     display: inline-flex;
     flex-direction: row;
     align-items: center;
-    margin: 20px 0 0 20px;
-
+    margin: 1rem 15%;
     span {
       text-align: center;
       margin-right: 20px;
@@ -45,84 +43,88 @@ body {
       }
     }
   }
-
-  main {
+  .wrapper {
     display: flex;
-    flex-direction: column;
-    margin: 2em;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+    gap: 1rem;
+    margin: auto;
+    padding: 0;
+    opacity: 0;
+    animation: 0.5s fadeIn forwards;
 
-    .wrapper {
+    [id*="side"] {
+      max-width: 900px;
       display: flex;
       flex-direction: column;
       flex-wrap: wrap;
-      width: 100%;
-      height: 100%;
-      padding: 0;
       margin: 0;
-      opacity: 0;
-      animation: 0.5s fadeIn forwards;
-
-      h2 {
-        padding: 0.8rem;
-        border: 1px solid #9899bb;
-        border-radius: 10px;
-        background-color: #f0f8ff;
-      }
-
-      .editor {
-        display: flex;
-        height: 3.5rem;
-        flex-direction: row;
-        align-items: center;
-        justify-content: space-between;
-        margin: 0.5rem 0;
-        border: 1px solid #767676;
-        border-radius: 5px;
-
-        label {
-          display: flex;
-          flex-direction: column;
-          margin: 1rem;
-          font-size: 1.2rem;
-          font-weight: bolder;
-        }
-
-        input {
-          height: 1.2rem;
-          border: none;
-          border-radius: 0.5rem;
-          padding: 0.5rem;
-          margin: 0.5rem;
-          font-weight: bolder;
-          font-size: 1.2rem;
-          background-color: rgb(236 236 236);
-        }
-
-        input[type="checkbox"] {
-          margin-right: 2em;
-          width: 2rem;
-          height: 2rem;
-          border: none;
-          border-radius: 0.5rem;
-          padding: 0.5rem;
-        }
-
-        input[type="color"] {
-          margin-right: 1.5em;
-          height: 2rem;
-          border: none;
-          border-radius: 0.5rem;
-          padding: 0rem;
-        }
+      padding: 0;
+      &:not(*:last-child) {
+        gap: 0.5rem;
       }
     }
-    @keyframes fadeIn {
-      from {
-        opacity: 0;
+
+    h2 {
+      padding: 0.8rem;
+      border-radius: 10px;
+      background-color: #cdcdcd;
+    }
+
+    .editor {
+      display: flex;
+      height: 3.5rem;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      margin: 0.5rem 0;
+      border: 1px solid #767676;
+      border-radius: 5px;
+
+      label {
+        display: flex;
+        flex-direction: column;
+        margin: 1rem;
+        font-size: 1.2rem;
+        font-weight: bolder;
       }
-      to {
-        opacity: 1;
+
+      input {
+        height: 1.2rem;
+        border: none;
+        border-radius: 0.5rem;
+        padding: 0.5rem;
+        margin: 0.5rem;
+        font-weight: bolder;
+        font-size: 1.2rem;
+        background-color: rgb(236 236 236);
       }
+
+      input[type="checkbox"] {
+        margin-right: 2em;
+        width: 2rem;
+        height: 2rem;
+        border: none;
+        border-radius: 0.5rem;
+        padding: 0.5rem;
+      }
+
+      input[type="color"] {
+        margin-right: 1.5em;
+        height: 2rem;
+        border: none;
+        border-radius: 0.5rem;
+        padding: 0rem;
+      }
+    }
+  }
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
     }
   }
 
@@ -131,7 +133,8 @@ body {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    margin: 2em;
+    width: 500px;
+    margin: 2em auto;
     padding: 1em;
     border: 1px solid #ccc;
     border-radius: 5px;
