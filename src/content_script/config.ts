@@ -69,17 +69,17 @@ export const defaultConfigs: Array<config> = [
   },
   {
     key: "画面の上部分からの距離 (%)",
-    value: 0,
+    value: 5,
     type: "number",
   },
   {
     key: "画面の左部分からの距離 (%)",
-    value: 0,
+    value: 10,
     type: "number",
   },
   {
     key: "コメント欄の高さ (%)",
-    value: 100,
+    value: 85,
     type: "number",
   },
   {
