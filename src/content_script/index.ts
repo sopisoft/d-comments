@@ -40,9 +40,7 @@ document.addEventListener("DOMContentLoaded", () => {
       Config.getConfig(
         "作品ページに「コメントを表示しながら再生」ボタンを追加する",
         (value) => {
-          if (value) {
-            util.addMenu();
-          }
+          value && util.addMenu();
         }
       );
       break;

@@ -174,15 +174,14 @@ const play = (
    * スクロールモード
    */
   const checkIsScrollModeEnabled = () => {
-    console.log(status.isMouseOver);
     if (configs.ScrollConfig && status.isMouseOver) {
       status.isScrollMode = true;
       s.innerText = "スクロールモード";
-      s.classList.add("scrolling");
+      s.id = "d-comments-status-scrolling";
     } else if (!status.isMouseOver) {
       status.isScrollMode = false;
-      s.innerHTML = status.time;
-      s.classList.remove("scrolling");
+      s.innerText = status.time;
+      s.id = "d-comments-status";
     }
   };
 
@@ -193,18 +192,18 @@ const play = (
     if (!status.isScrollMode) {
       const hours = `${
         Math.floor(video.currentTime / 3600) > 0
-          ? Math.floor(video.currentTime / 3600) + "&nbsp;時間&nbsp;"
+          ? `${Math.floor(video.currentTime / 3600)} 時間 `
           : ""
       }`;
       const minutes = `${
         Math.floor(video.currentTime / 60) % 60 > 0
-          ? (Math.floor(video.currentTime / 60) % 60) + "&nbsp;分&nbsp;"
+          ? `${Math.floor(video.currentTime / 60) % 60} 分 `
           : ""
       }`;
-      const seconds = `${Math.floor(video.currentTime % 60)}&nbsp;秒`;
+      const seconds = `${Math.floor(video.currentTime % 60)} 秒`;
       if (status.time !== `${hours}${minutes}${seconds}`) {
         status.time = `${hours}${minutes}${seconds}`;
-        s.innerHTML = status.time;
+        s.innerText = status.time;
       }
     }
     window.requestAnimationFrame(setCurrentTime);
@@ -316,9 +315,11 @@ const play = (
   const scroll = (callBack) => {
     if ((Math.round(callBack / 10) * 10) % configs.autoScrollInterval === 0) {
       const currentTime = Math.round(video.currentTime * 1000);
+
       const li = ul.querySelectorAll(
         "li[data-time]"
       ) as NodeListOf<HTMLElement>;
+
       const list = new Array<HTMLElement>();
       for (let i = 0; i < li.length; i++) {
         const time = Number(li[i].getAttribute("data-time"));
@@ -328,8 +329,10 @@ const play = (
           list.unshift(li[i]) || null;
         }
       }
+
       const target =
         (list[li.length - 1] as HTMLElement) ?? (list[0] as HTMLElement);
+
       if (target && !status.isScrollMode) {
         status.scrollHeight = target.offsetTop - ul.offsetHeight;
 

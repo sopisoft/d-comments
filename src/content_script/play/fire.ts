@@ -31,11 +31,11 @@ const fire = async (movieId: string, data: string) => {
    * @param message エラーメッセージ
    * @param code　エラーコード　もしくは　null
    */
-  const setD = (message: string, code: string | null) => {
+  const setMessage = (message: string, code: string | null) => {
     d.style.display = "block";
     code
       ? (d.innerText = `${message}\nエラーコード : ${code}`)
-      : (d.innerHTML = `${message}`);
+      : (d.innerText = `${message}`);
     container.appendChild(b);
     return;
   };
@@ -47,10 +47,13 @@ const fire = async (movieId: string, data: string) => {
   const setReason = (reasonCode: string) => {
     switch (reasonCode) {
       case "PPV_VIDEO":
-        setD("有料動画のためコメントを取得できませんでした。", reasonCode);
+        setMessage(
+          "有料動画のためコメントを取得できませんでした。",
+          reasonCode
+        );
         break;
       default:
-        setD("コメントの取得に失敗しました。", reasonCode);
+        setMessage("コメントの取得に失敗しました。", reasonCode);
     }
   };
 
@@ -60,7 +63,7 @@ const fire = async (movieId: string, data: string) => {
     if (e["threadData"]) {
       play(e["threadData"], b, s, container, d, video);
     } else {
-      setD("コメントの取得に失敗しました。", null);
+      setMessage("コメントの取得に失敗しました。", null);
     }
   }
   // サーバーからコメントを取得するとき
@@ -85,7 +88,7 @@ const fire = async (movieId: string, data: string) => {
         } else if (movieData["data"]) {
           setReason(movieData["data"]["reasonCode"]);
         } else {
-          setD(
+          setMessage(
             "動画情報の取得に失敗しました。",
             movieData ? movieData["meta"]["status"] : null
           );

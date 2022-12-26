@@ -19,7 +19,6 @@ import * as Style from "./style";
 
 /**
  * ドキュメント要素の初期化
- * @returns threadData
  * @returns b コメントコンテナを閉じるボタン
  * @returns s ステータス
  * @returns container コメントコンテナ
@@ -32,8 +31,7 @@ const init = () => {
   /**
    * スタイル設定
    */
-  document.getElementById("d-comments-style") ??
-    document.head.appendChild(Style.style);
+  Style.setDefaultStyle();
   Style.init();
 
   /**
