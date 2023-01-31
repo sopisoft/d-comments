@@ -15,61 +15,60 @@
     along with d-comments.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-import React from "react";
-import * as Config from "../content_script/config";
+import { JSX } from "solid-js";
+import * as Config from "../content_scripts/config";
 type Editor = {
-  p: string;
-  o: Array<Config.config>;
-  update: React.ChangeEventHandler;
+	p: string;
+	o: Array<Config.config>;
+	update: JSX.EventHandlerUnion<HTMLInputElement, Event>;
 };
 const Editor = (props: Editor) => {
-  const { p, o } = props;
-  const v = o.find((i) => i.key === p);
-  const type = v?.type;
-  const value = v?.value;
+	const p = () => props.p;
+	const o = () => props.o;
+	const v = () => o().find((i) => i.key === p());
+	const type = v()?.type;
+	const value = () => v()?.value;
 
-  return (
-    <div className="editor" key={p}>
-      <>
-        <label htmlFor={p}>{p}</label>
-        {type === "text" ? (
-          <input
-            type="text"
-            id={p}
-            name={p}
-            value={value as string}
-            onChange={props.update}
-          />
-        ) : type === "number" ? (
-          <input
-            type="number"
-            id={p}
-            name={p}
-            value={value as number}
-            onChange={props.update}
-          />
-        ) : type === "checkbox" ? (
-          <input
-            type="checkbox"
-            id={p}
-            name={p}
-            checked={value as boolean}
-            onChange={props.update}
-          />
-        ) : type === "color" ? (
-          <input
-            type="color"
-            id={p}
-            name={p}
-            value={value as string}
-            onChange={props.update}
-          />
-        ) : (
-          ""
-        )}
-      </>
-    </div>
-  );
+	return (
+		<div class="editor">
+			<label for={p()}>{p()}</label>
+			{type === "text" ? (
+				<input
+					type="text"
+					id={p()}
+					name={p()}
+					value={value() as string}
+					onChange={props.update}
+				/>
+			) : type === "number" ? (
+				<input
+					type="number"
+					id={p()}
+					name={p()}
+					value={value() as number}
+					onChange={props.update}
+				/>
+			) : type === "checkbox" ? (
+				<input
+					type="checkbox"
+					id={p()}
+					name={p()}
+					checked={value() as boolean}
+					onChange={props.update}
+				/>
+			) : type === "color" ? (
+				<input
+					type="color"
+					id={p()}
+					name={p()}
+					value={value() as string}
+					onChange={props.update}
+				/>
+			) : (
+				""
+			)}
+		</div>
+	);
 };
 
 export default Editor;

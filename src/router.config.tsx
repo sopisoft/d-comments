@@ -15,24 +15,34 @@
     along with d-comments.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-@use "@vscode/codicons/dist/codicon.css";
+import { Route, Routes } from "@solidjs/router";
 
-:root {
-  box-sizing: border-box;
-  user-select: none;
-  -webkit-font-smoothing: subpixel-antialiased;
-  text-rendering: optimizeLegibility;
+import Options from "./options/options";
+import Use from "./use/use";
 
-  @media only screen and (-webkit-min-device-pixel-ratio: 2),
-    (min-resolution: 2dppx) {
-    -webkit-font-smoothing: antialiased;
-  }
+const RouterConfig = () => {
+	return (
+		<>
+			<Routes>
+				<Route
+					path="/options"
+					element={
+						<div id="options">
+							<Options />
+						</div>
+					}
+				/>
+				<Route
+					path="/use"
+					element={
+						<div id="use">
+							<Use />
+						</div>
+					}
+				/>
+			</Routes>
+		</>
+	);
+};
 
-  word-break: break-word;
-  word-wrap: break-word;
-
-  :any-link {
-    text-decoration: none;
-    color: rgb(6, 7, 133);
-  }
-}
+export default RouterConfig;

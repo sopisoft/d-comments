@@ -15,24 +15,15 @@
     along with d-comments.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-@use "@vscode/codicons/dist/codicon.css";
+import { render } from "solid-js/web";
+import { Router } from "@solidjs/router";
+import RouterConfig from "./router.config";
 
-:root {
-  box-sizing: border-box;
-  user-select: none;
-  -webkit-font-smoothing: subpixel-antialiased;
-  text-rendering: optimizeLegibility;
-
-  @media only screen and (-webkit-min-device-pixel-ratio: 2),
-    (min-resolution: 2dppx) {
-    -webkit-font-smoothing: antialiased;
-  }
-
-  word-break: break-word;
-  word-wrap: break-word;
-
-  :any-link {
-    text-decoration: none;
-    color: rgb(6, 7, 133);
-  }
-}
+render(
+	() => (
+		<Router>
+			<RouterConfig />
+		</Router>
+	),
+	document.querySelector("body")!,
+);

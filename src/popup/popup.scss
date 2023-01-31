@@ -25,9 +25,7 @@ body {
   max-height: 580px;
   min-width: 400px;
   min-height: 580px;
-}
 
-#root {
   &::-webkit-scrollbar {
     display: none;
   }
@@ -35,6 +33,7 @@ body {
   .btn {
     margin: 0px;
     overflow: hidden;
+    border: #ececec 2px solid;
     border-radius: 7px;
     background-color: rgb(236 236 236);
     display: inline-block;
@@ -120,7 +119,7 @@ body {
   input {
     width: 240px;
     height: 30px;
-    border: none;
+    border: #ececec 2px solid;
     border-radius: 8px;
     padding: 8px;
     margin: 0px;
@@ -200,7 +199,6 @@ body {
       }
 
       .title {
-        height: 24px;
         text-align: center;
         overflow: hidden;
 
@@ -287,22 +285,22 @@ body {
       }
     }
 
-    .use {
-      margin: auto;
+    .link {
+      margin: 1rem auto;
       font-size: 18px;
 
       a {
+        width: 12rem;
+        padding: 10px 25px;
         display: inline-flex;
         flex-direction: row;
+        justify-content: center;
         align-items: center;
 
+        color: rgb(7, 7, 43);
         i {
           font-size: 24px;
           margin-right: 5px;
-        }
-
-        &.btn-use {
-          padding: 10px 25px;
         }
       }
     }

@@ -1,18 +1,15 @@
 <!DOCTYPE html>
-<html lang="ja-JP">
+<html lang="ja">
   <!--
 	This file is part of d-comments.
-
 	d-comments is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
 	the Free Software Foundation, either version 3 of the License, or
 	(at your option) any later version.
-
 	d-comments is distributed in the hope that it will be useful,
 	but WITHOUT ANY WARRANTY; without even the implied warranty of
 	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 	GNU General Public License for more details.
-
 	You should have received a copy of the GNU General Public License
 	along with d-comments.  If not, see <https://www.gnu.org/licenses/>.
 -->
@@ -20,28 +17,27 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>設定</title>
-    <script src="js/vendor.js"></script>
     <style>
       @font-face {
         font-family: "BIZ_UDPGothic";
-        src: url(./fonts/BIZ_UDPGothic.ttf) format("truetype");
+        src: url(./assets/fonts/BIZ_UDPGothic.ttf) format("truetype");
         font-weight: normal;
         font-style: normal;
       }
       @font-face {
         font-family: "BIZ_UDPGothic";
-        src: url(./fonts/BIZ_UDPGothic-Bold.ttf) format("truetype");
+        src: url(./assets/fonts/BIZ_UDPGothic-Bold.ttf) format("truetype");
         font-weight: bold, bolder;
         font-style: normal;
       }
       body {
         font-family: "BIZ_UDPGothic";
+        box-sizing: border-box;
       }
     </style>
   </head>
-
   <body>
-    <div id="root"></div>
-    <script src="js/options.js"></script>
+    <div id="options"></div>
+    <script type="module" src="./src/options/render.tsx"></script>
   </body>
 </html>

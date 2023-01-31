@@ -16,35 +16,35 @@
 */
 
 const exportJson = (movieId: string) => {
-  chrome.runtime.sendMessage(
-    {
-      type: "movieData",
-      movieId: movieId,
-    },
-    (movieData) => {
-      if (!movieData || movieData["meta"]["status"] !== 200) {
-        window.alert("動画情報の取得に失敗しました");
-      } else {
-        chrome.runtime.sendMessage(
-          {
-            type: "threadData",
-            movieData: movieData,
-          },
-          (threadData) => {
-            const fileName = movieData["data"]["video"]["title"];
-            const jsonBody = {
-              version: 1,
-              movieId: movieId,
-              movieData: movieData,
-              threadData: threadData,
-            };
-            const data = JSON.stringify(jsonBody);
-            saveFile(fileName, data);
-          }
-        );
-      }
-    }
-  );
+	chrome.runtime.sendMessage(
+		{
+			type: "movieData",
+			movieId: movieId,
+		},
+		(movieData) => {
+			if (!movieData || movieData["meta"]["status"] !== 200) {
+				window.alert("動画情報の取得に失敗しました");
+			} else {
+				chrome.runtime.sendMessage(
+					{
+						type: "threadData",
+						movieData: movieData,
+					},
+					(threadData) => {
+						const fileName = movieData["data"]["video"]["title"];
+						const jsonBody = {
+							version: 1,
+							movieId: movieId,
+							movieData: movieData,
+							threadData: threadData,
+						};
+						const data = JSON.stringify(jsonBody);
+						saveFile(fileName, data);
+					},
+				);
+			}
+		},
+	);
 };
 
 /**
@@ -53,7 +53,7 @@ const exportJson = (movieId: string) => {
  * @param data 内容
  */
 const saveFile = async (fileName: string, data: string) => {
-  /*File System Access API が不安定なので現状では採用しない
+	/*File System Access API が不安定なので現状では採用しない
   const handle = await window.showSaveFilePicker({
     suggestedName: fileName,
     types: [
@@ -69,13 +69,13 @@ const saveFile = async (fileName: string, data: string) => {
   await writable.write(data);
   await writable.close();
   */
-  const blob = new Blob([data], { type: "application/json" });
-  const link = document.createElement("a");
-  document.body.appendChild(link);
-  link.href = window.URL.createObjectURL(blob);
-  link.download = fileName;
-  link.click();
-  document.body.removeChild(link);
+	const blob = new Blob([data], { type: "application/json" });
+	const link = document.createElement("a");
+	document.body.appendChild(link);
+	link.href = window.URL.createObjectURL(blob);
+	link.download = fileName;
+	link.click();
+	document.body.removeChild(link);
 };
 
 export default exportJson;
