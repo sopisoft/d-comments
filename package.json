@@ -15,7 +15,9 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
+    "zip": "@powershell Compress-Archive -Path dist -DestinationPath dist.zip",
     "preview": "npm run build && vite preview",
+    "clean:zip": "@powershell Remove-Item -Recurse -Force dist.zip",
     "format": "rome format src public --write ",
     "lint": "rome check src public --apply-suggested",
     "rome": "rome ci src public"
@@ -27,7 +29,7 @@
     "solid-js": "^1.6.10"
   },
   "devDependencies": {
-    "@crxjs/vite-plugin": "^2.0.0-beta.12",
+    "@crxjs/vite-plugin": "^1.0.14",
     "@types/chrome": "0.0.210",
     "@types/node": "^18.11.18",
     "babel-preset-solid": "^1.6.10",
