@@ -6,7 +6,7 @@ d アニメストアの動画再生画面でニコニコ動画のコメントを
 
 ## Requirements
 
-- node.js ^18.12.0 ([Node.js](https://nodejs.org/ja/))
+- node.js ^18.13.0 ([Node.js](https://nodejs.org/ja/))
 - Google Chrome (Latest) or Microsoft Edge (Latest)
 - [PowerShell](https://docs.microsoft.com/ja-jp/powershell/scripting/install/installing-powershell)
 - [Visual Studio Code](https://code.visualstudio.com/)
@@ -23,24 +23,28 @@ npm install
 npm run build
 ```
 
-## Build in watch mode
+## Build in dev mode
 
 ```PowerShell
-npm run watch
+npm run dev
 ```
 
 ## Format
 
 ```PowerShell
-npm run prettier
+npm run format
+```
+
+## Lint
+
+```PowerShell
+npm run lint
 ```
 
 ## Clean
 
 ```PowerShell
 # Remove build directory
-npm run clean:build
-# or
 Remove-Item -Recurse -Force dist
 
 # Remove zipped build file

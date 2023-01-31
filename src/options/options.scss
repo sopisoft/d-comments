@@ -17,11 +17,11 @@
 
 @use "../global.scss";
 
-body {
+body:has(#options) {
   margin: 0;
 }
 
-#root {
+#options {
   margin: auto;
   display: grid;
   grid-template-rows: auto 1fr auto;
@@ -155,7 +155,6 @@ body {
           display: inline-flex;
           flex-direction: row;
           align-items: center;
-          color: rgb(51 51 51);
 
           &:hover {
             color: rgb(5, 80, 192);

@@ -23,47 +23,47 @@ import exportJson from "./export";
 const href = window.location.href;
 
 const isMenuPage = href.match(
-  /https:\/\/animestore\.docomo\.ne\.jp\/animestore\/ci_pc\?workId=\d+/
+	/https:\/\/animestore\.docomo\.ne\.jp\/animestore\/ci_pc\?workId=\d+/,
 )
-  ? true
-  : false;
+	? true
+	: false;
 
 const isWatchPage = href.match(
-  /https:\/\/animestore\.docomo\.ne\.jp\/animestore\/sc_d_pc\?partId=\d+/
+	/https:\/\/animestore\.docomo\.ne\.jp\/animestore\/sc_d_pc\?partId=\d+/,
 )
-  ? true
-  : false;
+	? true
+	: false;
 
 document.addEventListener("DOMContentLoaded", () => {
-  switch (true) {
-    case isMenuPage:
-      Config.getConfig(
-        "作品ページに「コメントを表示しながら再生」ボタンを追加する",
-        (value) => {
-          value && util.addMenu();
-        }
-      );
-      break;
-    case isWatchPage: {
-      let url = new Object();
-      url = window.location.href;
-      setInterval(() => {
-        if (url !== window.location.href) {
-          url = window.location.href;
-          util.setInfo();
-        }
-      }, 1000);
-      util.setInfo();
-      break;
-    }
-  }
+	switch (true) {
+		case isMenuPage:
+			Config.getConfig(
+				"作品ページに「コメントを表示しながら再生」ボタンを追加する",
+				(value) => {
+					value && util.addMenu();
+				},
+			);
+			break;
+		case isWatchPage: {
+			let url = new Object();
+			url = window.location.href;
+			setInterval(() => {
+				if (url !== window.location.href) {
+					url = window.location.href;
+					util.setInfo();
+				}
+			}, 1000);
+			util.setInfo();
+			break;
+		}
+	}
 });
 
 chrome.runtime.onMessage.addListener((message) => {
-  if (message.type === "showComments" && isWatchPage) {
-    fire(message.movieId, message.data);
-  }
-  if (message.type === "exportJson" && isWatchPage) {
-    exportJson(message.movieId);
-  }
+	if (message.type === "showComments" && isWatchPage) {
+		fire(message.movieId, message.data);
+	}
+	if (message.type === "exportJson" && isWatchPage) {
+		exportJson(message.movieId);
+	}
 });

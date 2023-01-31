@@ -17,14 +17,14 @@
 
 @use "../global.scss";
 
-body {
+body:has(#use) {
   margin: 0px;
   display: flex;
   flex-direction: column;
   background-color: rgb(219, 219, 219);
 }
 
-#root {
+#use {
   margin: auto;
   max-width: 800px;
   font-size: 16px;
