@@ -16,6 +16,7 @@
 */
 
 import * as Config from "../config";
+import * as Util from "../util";
 
 const status = {
 	/** スクロールモードかどうか */
@@ -26,8 +27,6 @@ const status = {
 	isUlScrolling: false,
 	/** 作品再生時刻 */
 	time: "",
-	/** ページのURL */
-	href: window.location.href,
 	/** ビューポートの高さ */
 	windowHeight: window.innerHeight,
 	/** コメント欄のスクロール必要量 */
@@ -303,20 +302,16 @@ const play = (
 	};
 
 	/**
-	 * URLの変更を監視する
-	 * URLが変更されたら作品パートが変更されたと判断し、コメントの再読み込みを促す
+	 * フレームの読み込みが完了したとき作品パートが変更されたと判断し、コメントの再読み込みを促す
 	 */
-	const checkLocationNow = () => {
-		if (status.href !== location.href) {
-			ul.remove();
-			d.style.display = "block";
-			d.innerText =
-				"作品パートが変更されました。\nコメントを再取得してください。";
-			container.appendChild(b);
-			status.href = location.href;
-		}
-		window.requestAnimationFrame(checkLocationNow);
-	};
+	video.addEventListener("loadeddata", () => {
+		ul.remove();
+		d.style.display = "block";
+		d.innerText =
+			"作品パートが変更されました。\nコメントを再取得してください。";
+		container.appendChild(b);
+		Util.setInfo();
+	});
 
 	/** コメントを再生時刻に合わせてスクロールする */
 	const scroll = (callBack: number) => {
