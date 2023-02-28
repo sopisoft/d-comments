@@ -19,27 +19,19 @@ npm install
 
 ## Build
 
-```PowerShell
-npm run build
-```
+Command Palette (Ctrl+Shift+P) → `Tasks: build`
 
 ## Build in dev mode
 
-```PowerShell
-npm run dev
-```
+Command Palette (Ctrl+Shift+P) → `Tasks: dev`
 
 ## Format
 
-```PowerShell
-npm run format
-```
+Command Palette (Ctrl+Shift+P) → `Tasks: format`
 
 ## Lint
 
-```PowerShell
-npm run lint
-```
+Command Palette (Ctrl+Shift+P) → `Tasks: lint`
 
 ## Clean
 
