@@ -6,22 +6,97 @@
       "label": "install",
       "type": "shell",
       "command": "npm",
-      "args": ["install"],
+      "args": [
+        "install"
+      ],
+      "problemMatcher": [],
+      "group": {
+        "kind": "test",
+        "isDefault": true
+      }
+    },
+    {
+      "label": "dev",
+      "type": "shell",
+      "command": "npx",
+      "args": [
+        "vite"
+      ],
+      "dependsOrder": "sequence",
+      "dependsOn": [
+        "format",
+        "lint"
+      ],
       "problemMatcher": []
     },
     {
-      "label": "update",
+      "label": "format",
       "type": "shell",
-      "command": "npm",
-      "args": ["update"],
+      "command": "npx",
+      "args": [
+        "rome",
+        "format",
+        "${workspaceFolder}",
+        "--write"
+      ],
+      "problemMatcher": []
+    },
+    {
+      "label": "lint",
+      "type": "shell",
+      "command": "npx",
+      "args": [
+        "rome",
+        "check",
+        "${workspaceFolder}",
+        "--apply-suggested"
+      ],
+      "problemMatcher": []
+    },
+    {
+      "label": "rome",
+      "type": "shell",
+      "command": "npx",
+      "args": [
+        "rome",
+        "ci",
+        "src",
+        "public"
+      ],
+      "problemMatcher": []
+    },
+    {
+      "label": "compile",
+      "type": "shell",
+      "command": "npx",
+      "args": [
+        "tsc",
+        "--noEmit"
+      ],
+      "dependsOrder": "sequence",
+      "dependsOn": [
+        "format",
+        "lint",
+        "rome"
+      ],
       "problemMatcher": []
     },
     {
       "label": "build",
       "type": "shell",
-      "group": "build",
-      "command": "npm",
-      "args": ["run", "watch"],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "command": "npx",
+      "args": [
+        "vite",
+        "build"
+      ],
+      "dependsOrder": "sequence",
+      "dependsOn": [
+        "compile"
+      ],
       "problemMatcher": []
     }
   ]
