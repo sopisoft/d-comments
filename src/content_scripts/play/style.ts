@@ -18,22 +18,22 @@ along with d-comments.  If not, see <https://www.gnu.org/licenses/>.
 import * as Config from "../config";
 
 const configs = {
-	overlay: false,
-	width: 300,
-	height: 100,
-	top: 0,
-	left: 0,
-	r: 0,
-	g: 0,
-	b: 0,
-	a: 0.35,
-	color: "#FFFFFF",
-	scrollBar: false,
+  overlay: false,
+  width: 300,
+  height: 100,
+  top: 0,
+  left: 0,
+  r: 0,
+  g: 0,
+  b: 0,
+  a: 0.35,
+  color: "#FFFFFF",
+  scrollBar: false,
 };
 
 const setRoot = () => {
-	const rgba = `${configs.r} ${configs.g} ${configs.b} / ${configs.a}%`;
-	const root = `
+  const rgba = `${configs.r} ${configs.g} ${configs.b} / ${configs.a}%`;
+  const root = `
 :root {
   --d-comments-text-color:${configs.color};
   --d-comments-container-position:${configs.overlay ? "absolute" : "relative"};
@@ -44,21 +44,21 @@ const setRoot = () => {
   --d-comments-container-left:${configs.overlay ? configs.left : 0}%;
   --d-comments-container-background:rgba(${rgba})
 }`;
-	if (
-		window.location.href.match(
-			/https:\/\/animestore\.docomo\.ne\.jp\/animestore\/sc_d_pc\?partId=\d+/,
-		)
-	) {
-		const style = document.createElement("style");
-		style.id = "d-comments-style-root";
-		style.innerHTML = root;
-		document.getElementById("d-comments-style-root")?.remove();
-		document.head.appendChild(style);
-	}
+  if (
+    window.location.href.match(
+      /https:\/\/animestore\.docomo\.ne\.jp\/animestore\/sc_d_pc\?partId=\d+/
+    )
+  ) {
+    const style = document.createElement("style");
+    style.id = "d-comments-style-root";
+    style.innerHTML = root;
+    document.getElementById("d-comments-style-root")?.remove();
+    document.head.appendChild(style);
+  }
 };
 
 const setScrollBar = () => {
-	const scrollBar = `
+  const scrollBar = `
 #d-comments-container ul::-webkit-scrollbar {
   display:block;
 }
@@ -68,135 +68,137 @@ const setScrollBar = () => {
 #d-comments-container ul::-webkit-scrollbar-thumb {
   background-color: #f9fafe4a;
 }`;
-	const scrollBarNone = `
+  const scrollBarNone = `
 #d-comments-container ul::-webkit-scrollbar {
   display:none;
 }`;
-	if (
-		window.location.href.match(
-			/https:\/\/animestore\.docomo\.ne\.jp\/animestore\/sc_d_pc\?partId=\d+/,
-		)
-	) {
-		const style = document.createElement("style");
-		style.id = "d-comments-style-scrollBar";
-		const css = `${configs.scrollBar ? scrollBar : scrollBarNone}`;
-		style.innerHTML = css;
-		document.getElementById("d-comments-style-scrollBar")?.remove();
-		document.head.appendChild(style);
-	}
+  if (
+    window.location.href.match(
+      /https:\/\/animestore\.docomo\.ne\.jp\/animestore\/sc_d_pc\?partId=\d+/
+    )
+  ) {
+    const style = document.createElement("style");
+    style.id = "d-comments-style-scrollBar";
+    const css = `${configs.scrollBar ? scrollBar : scrollBarNone}`;
+    style.innerHTML = css;
+    document.getElementById("d-comments-style-scrollBar")?.remove();
+    document.head.appendChild(style);
+  }
 };
 
 const hexToRgb = (color: string) => {
-	return Object.fromEntries(
-		(
-			(color.match(/^#?[0-9A-Fa-f]{3}([0-9A-Fa-f]{3})?$/) ? color : "000")
-				.replace(/^#?(.*)$/, (_, hex) =>
-					hex.length === 3 ? hex.replace(/./g, "$&$&") : hex,
-				)
-				.match(/../g) ?? []
-		).map((c: string, i: number) => ["rgb".charAt(i), parseInt(`0x${c}`)]),
-	) as { r: number; g: number; b: number };
+  return Object.fromEntries(
+    (
+      (color.match(/^#?[0-9A-Fa-f]{3}([0-9A-Fa-f]{3})?$/) ? color : "000")
+        .replace(/^#?(.*)$/, (_, hex) =>
+          hex.length === 3 ? hex.replace(/./g, "$&$&") : hex
+        )
+        .match(/../g) ?? []
+    ).map((c: string, i: number) => ["rgb".charAt(i), parseInt(`0x${c}`)])
+  ) as { r: number; g: number; b: number };
 };
 
 export const init = () => {
-	Config.getConfig("コメント欄のスクールバーを表示する", (value) => {
-		configs.scrollBar = value as boolean;
-	});
-	Config.getConfig("作品再生画面にオーバーレイ表示", (value) => {
-		configs.overlay = value as boolean;
-	});
-	Config.getConfig("コメント欄の幅 (px)", (value) => {
-		configs.width = value as number;
-	});
-	Config.getConfig("コメント欄の高さ (%)", (value) => {
-		configs.height = value as number;
-	});
-	Config.getConfig("画面の上部分からの距離 (%)", (value) => {
-		configs.top = value as number;
-	});
-	Config.getConfig("画面の左部分からの距離 (%)", (value) => {
-		configs.left = value as number;
-	});
-	Config.getConfig("コメント欄の背景色", (value) => {
-		configs.r = hexToRgb(value as string).r;
-		configs.g = hexToRgb(value as string).g;
-		configs.b = hexToRgb(value as string).b;
-	});
-	Config.getConfig("コメント欄の背景不透明度 (%)", (value) => {
-		configs.a = value as number;
-	});
-	Config.getConfig("コメントの文字色", (value) => {
-		configs.color = value as string;
-		setTimeout(setRoot, 0);
-		setScrollBar();
-	});
+  Config.getConfig("コメント欄のスクールバーを表示する", (value) => {
+    configs.scrollBar = value as boolean;
+  });
+  Config.getConfig("作品再生画面にオーバーレイ表示", (value) => {
+    configs.overlay = value as boolean;
+  });
+  Config.getConfig("コメント欄の幅 (px)", (value) => {
+    configs.width = value as number;
+  });
+  Config.getConfig("コメント欄の高さ (%)", (value) => {
+    configs.height = value as number;
+  });
+  Config.getConfig("画面の上部分からの距離 (%)", (value) => {
+    configs.top = value as number;
+  });
+  Config.getConfig("画面の左部分からの距離 (%)", (value) => {
+    configs.left = value as number;
+  });
+  Config.getConfig("コメント欄の背景色", (value) => {
+    configs.r = hexToRgb(value as string).r;
+    configs.g = hexToRgb(value as string).g;
+    configs.b = hexToRgb(value as string).b;
+  });
+  Config.getConfig("コメント欄の背景不透明度 (%)", (value) => {
+    configs.a = value as number;
+  });
+  Config.getConfig("コメントの文字色", (value) => {
+    configs.color = value as string;
+    setTimeout(setRoot, 0);
+    setScrollBar();
+  });
 };
 
 chrome.storage.onChanged.addListener((changes, namespace) => {
-	for (let [key, { oldValue, newValue }] of Object.entries(changes)) {
-		switch (key) {
-			case "コメント欄のスクールバーを表示する": {
-				configs.scrollBar = newValue;
-				setScrollBar();
-				break;
-			}
-			case "作品再生画面にオーバーレイ表示": {
-				configs.overlay = newValue;
-				setTimeout(setRoot, 0);
-				break;
-			}
-			case "コメント欄の幅 (px)": {
-				configs.width = newValue;
-				setTimeout(setRoot, 0);
-				break;
-			}
-			case "コメント欄の高さ (%)": {
-				configs.height = newValue;
-				setTimeout(setRoot, 0);
-				break;
-			}
-			case "画面の上部分からの距離 (%)": {
-				configs.top = newValue;
-				setTimeout(setRoot, 0);
-				break;
-			}
-			case "画面の左部分からの距離 (%)": {
-				configs.left = newValue;
-				setTimeout(setRoot, 0);
-				break;
-			}
-			case "コメント欄の背景色": {
-				configs.r = hexToRgb(newValue).r;
-				configs.g = hexToRgb(newValue).g;
-				configs.b = hexToRgb(newValue).b;
-				setTimeout(setRoot, 0);
-				break;
-			}
-			case "コメント欄の背景不透明度 (%)": {
-				configs.a = newValue;
-				setTimeout(setRoot, 0);
-				break;
-			}
-			case "コメントの文字色": {
-				configs.color = newValue;
-				setTimeout(setRoot, 0);
-				break;
-			}
-		}
-	}
+  for (let [key, { oldValue, newValue }] of Object.entries(changes)) {
+    switch (key) {
+      case "コメント欄のスクールバーを表示する": {
+        configs.scrollBar = newValue;
+        setScrollBar();
+        break;
+      }
+      case "作品再生画面にオーバーレイ表示": {
+        configs.overlay = newValue;
+        setTimeout(setRoot, 0);
+        break;
+      }
+      case "コメント欄の幅 (px)": {
+        configs.width = newValue;
+        setTimeout(setRoot, 0);
+        break;
+      }
+      case "コメント欄の高さ (%)": {
+        configs.height = newValue;
+        setTimeout(setRoot, 0);
+        break;
+      }
+      case "画面の上部分からの距離 (%)": {
+        configs.top = newValue;
+        setTimeout(setRoot, 0);
+        break;
+      }
+      case "画面の左部分からの距離 (%)": {
+        configs.left = newValue;
+        setTimeout(setRoot, 0);
+        break;
+      }
+      case "コメント欄の背景色": {
+        configs.r = hexToRgb(newValue).r;
+        configs.g = hexToRgb(newValue).g;
+        configs.b = hexToRgb(newValue).b;
+        setTimeout(setRoot, 0);
+        break;
+      }
+      case "コメント欄の背景不透明度 (%)": {
+        configs.a = newValue;
+        setTimeout(setRoot, 0);
+        break;
+      }
+      case "コメントの文字色": {
+        configs.color = newValue;
+        setTimeout(setRoot, 0);
+        break;
+      }
+    }
+  }
 });
 
 /**
  * 視聴ページで追加する要素のスタイル
  */
 export const setDefaultStyle = () => {
-	const style = document.createElement("style");
-	style.id = "d-comments-style";
-	const normalFont = chrome.runtime.getURL("assets/fonts/BIZ_UDPGothic.ttf");
-	const bolderFont = chrome.runtime.getURL(
-		"assets/fonts/BIZ_UDPGothic-Bold.ttf",
-	);
-	const css = `
+  const style = document.createElement("style");
+  style.id = "d-comments-style";
+  const normalFont = chrome.runtime.getURL(
+    "src/assets/fonts/BIZ_UDPGothic.ttf"
+  );
+  const bolderFont = chrome.runtime.getURL(
+    "src/assets/fonts/BIZ_UDPGothic-Bold.ttf"
+  );
+  const css = `
 #d-comments-wrapper {
   display:flex;
   flex-direction:row;
@@ -272,7 +274,7 @@ export const setDefaultStyle = () => {
   font-weight:bolder;
 }
 `;
-	style.innerHTML = css;
-	document.getElementById("d-comments-style")?.remove();
-	document.head.appendChild(style);
+  style.innerHTML = css;
+  document.getElementById("d-comments-style")?.remove();
+  document.head.appendChild(style);
 };

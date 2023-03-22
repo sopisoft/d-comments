@@ -17,9 +17,9 @@
 
 import "./use.scss";
 
-import comments from "../../assets/img/comments.png";
-import menu from "../../assets/img/menu.png";
-import popup from "../../assets/img/popup.png";
+import comments from "../assets/img/comments.png";
+import menu from "../assets/img/menu.png";
+import popup from "../assets/img/popup.png";
 
 /*
 const url = (filename: string) => {

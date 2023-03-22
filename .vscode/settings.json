@@ -1,10 +1,12 @@
 {
   "cSpell.words": [
+    "additionals",
     "animestore",
     "codicon",
     "codicons",
     "crxjs",
     "docomo",
+    "nicovideo",
     "solidjs"
   ],
   "editor.defaultFormatter": "rome.rome",
@@ -13,9 +15,7 @@
   "files.eol": "\n",
   "json.schemas": [
     {
-      "fileMatch": [
-        "manifest.json"
-      ],
+      "fileMatch": ["manifest.json"],
       "url": "http://json.schemastore.org/chrome-manifest"
     }
   ],

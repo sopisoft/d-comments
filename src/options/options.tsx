@@ -112,6 +112,14 @@ const Options = () => {
 						<Editor p="投稿者コメント" o={options()} update={onChange} />
 						<Editor p="通常コメント" o={options()} update={onChange} />
 						<Editor p="かんたんコメント" o={options()} update={onChange} />
+					</div>{" "}
+					<div>
+						<h2>ニコニコ動画へのログイン</h2>
+						<Editor
+							p="allow_login_to_nicovideo"
+							o={options()}
+							update={onChange}
+						/>
 					</div>
 				</div>
 				<div id="right-side">
