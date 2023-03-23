@@ -84,6 +84,12 @@ export const defaultConfigs: Array<config> = [
 		type: "number",
 	},
 	{
+		key: "flow_comments",
+		value: false,
+		type: "checkbox",
+		text: "コメントを右から左へ流す",
+	},
+	{
 		key: "作品ページに「コメントを表示しながら再生」ボタンを追加する",
 		value: true,
 		type: "checkbox",

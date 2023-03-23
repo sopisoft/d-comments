@@ -75,7 +75,7 @@ const Popup = () => {
 		chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
 			isWatchPage(tabs[0]?.url ?? "") &&
 				chrome.tabs.sendMessage(tabs[0].id as number, {
-					type: "showComments",
+					type: "renderComments",
 					movieId: movieId(),
 					data: undefined,
 				}),
@@ -137,7 +137,7 @@ const Popup = () => {
 			chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
 				isWatchPage(tabs[0]?.url ?? "") &&
 					chrome.tabs.sendMessage(tabs[0].id as number, {
-						type: "showComments",
+						type: "renderComments",
 						movieId: movieId(),
 						data: data,
 					}),

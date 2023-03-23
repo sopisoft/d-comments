@@ -225,15 +225,6 @@ chrome.runtime.onInstalled.addListener((details) => {
 		chrome.tabs.create({
 			url: chrome.runtime.getURL("src/use/index.html"),
 		});
-	} else if (
-		details.reason === "update" &&
-		chrome.runtime.getManifest().version === "2023.3.23"
-	) {
-		chrome.tabs.create({
-			url: chrome.runtime.getURL(
-				"src/use/index.html#user-content-ニコニコ動画へのログイン",
-			),
-		});
 	}
 });
 

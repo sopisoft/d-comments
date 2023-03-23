@@ -23,8 +23,8 @@
     "rome": "rome ci src"
   },
   "dependencies": {
-    "@solidjs/router": "^0.8.1",
     "@vscode/codicons": "^0.0.32",
+    "@xpadev-net/niconicomments": "^0.2.48",
     "rehype-sanitize": "^5.0.1",
     "rehype-slug": "^5.1.0",
     "rehype-stringify": "^9.0.3",

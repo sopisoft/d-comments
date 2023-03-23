@@ -39,7 +39,7 @@ switch (true) {
 	): {
 		util.setInfo();
 		chrome.runtime.onMessage.addListener((message) => {
-			if (message.type === "showComments") {
+			if (message.type === "renderComments") {
 				fire(message.movieId, message.data);
 			}
 			if (message.type === "exportJson") {

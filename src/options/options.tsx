@@ -153,6 +153,16 @@ const Options = () => {
 						<Editor p="コメントの文字色" o={options()} update={onChange} />
 					</div>
 					<div>
+						<h2>コメント欄の表示方法</h2>
+						<Editor p="flow_comments" o={options()} update={onChange} />
+					</div>
+					<div
+						style={{
+							opacity: options().find((i) => i.key === "flow_comments")?.value
+								? 0.6
+								: 1,
+						}}
+					>
 						<h2>コメントリストのオーバーレイ （β版）</h2>
 						<Editor
 							p="作品再生画面にオーバーレイ表示"
