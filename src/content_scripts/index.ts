@@ -23,29 +23,29 @@ import exportJson from "./export";
 const href = window.location.href;
 
 switch (true) {
-  case /https:\/\/animestore\.docomo\.ne\.jp\/animestore\/ci_pc\?workId=\d+/.test(
-    href
-  ): {
-    Config.getConfig(
-      "作品ページに「コメントを表示しながら再生」ボタンを追加する",
-      (value) => {
-        value && util.addMenu();
-      }
-    );
-    break;
-  }
-  case /https:\/\/animestore\.docomo\.ne\.jp\/animestore\/sc_d_pc\?partId=\d+/.test(
-    href
-  ): {
-    util.setInfo();
-    chrome.runtime.onMessage.addListener((message) => {
-      if (message.type === "showComments") {
-        fire(message.movieId, message.data);
-      }
-      if (message.type === "exportJson") {
-        exportJson(message.movieId);
-      }
-    });
-    break;
-  }
+	case /https:\/\/animestore\.docomo\.ne\.jp\/animestore\/ci_pc\?workId=\d+/.test(
+		href,
+	): {
+		Config.getConfig(
+			"作品ページに「コメントを表示しながら再生」ボタンを追加する",
+			(value) => {
+				value && util.addMenu();
+			},
+		);
+		break;
+	}
+	case /https:\/\/animestore\.docomo\.ne\.jp\/animestore\/sc_d_pc\?partId=\d+/.test(
+		href,
+	): {
+		util.setInfo();
+		chrome.runtime.onMessage.addListener((message) => {
+			if (message.type === "showComments") {
+				fire(message.movieId, message.data);
+			}
+			if (message.type === "exportJson") {
+				exportJson(message.movieId);
+			}
+		});
+		break;
+	}
 }

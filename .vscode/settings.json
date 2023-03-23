@@ -7,7 +7,9 @@
     "crxjs",
     "docomo",
     "nicovideo",
-    "solidjs"
+    "rehype",
+    "solidjs",
+    "vpos"
   ],
   "editor.defaultFormatter": "rome.rome",
   "editor.formatOnSave": true,
