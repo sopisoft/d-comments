@@ -15,6 +15,8 @@
     along with d-comments.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+import * as Config from "./content_scripts/config";
+
 /**
  * 任意の範囲のランダムな整数を返す
  * @param min 最小値
@@ -30,30 +32,60 @@ const getRandomInt = (min: number, max: number) => {
 /**
  * 動画情報を取得する
  * @param movieId　ニコニコ動画の動画ID
- * @returns　Promise<Response>
+ * @param sendResponse (response?: any) => void
  */
-const getMovieData = (movieId: string) => {
-	const actionTrackId = `${Math.random()
-		.toString(36)
-		.slice(-10)}_${getRandomInt(10 ** 12, 10 ** 13)}`;
-	const url = `https://www.nicovideo.jp/api/watch/v3_guest/${movieId}`;
-	const params = {
-		_frontendId: "6",
-		_frontendVersion: "0",
-		actionTrackId: actionTrackId,
-	};
 
-	const d = fetch(`${url}?${new URLSearchParams(params)}`, {
-		credentials: "omit",
-		headers: {
-			"x-frontend-id": "6",
-			"x-frontend-version": "0",
-		},
-	}).then((res) => {
-		return res;
+// rome-ignore lint/suspicious/noExplicitAny: <explanation>
+const getMovieData = (movieId: string, sendResponse: (v: any) => void) => {
+	Config.getConfig("allow_login_to_nicovideo", (config) => {
+		const actionTrackId = `${Math.random()
+			.toString(36)
+			.slice(-10)}_${getRandomInt(10 ** 12, 10 ** 13)}`;
+		const url = `https://www.nicovideo.jp/api/watch/${
+			config ? "v3" : "v3_guest"
+		}/${movieId}`;
+		const params = {
+			_frontendId: "6",
+			_frontendVersion: "0",
+			actionTrackId: actionTrackId,
+		};
+
+		if (config) {
+			chrome.cookies.get(
+				{ url: "https://www.nicovideo.jp/", name: "user_session" },
+				(cookie) => {
+					fetch(`${url}?${new URLSearchParams(params)}`, {
+						credentials: "include",
+						headers: {
+							"x-frontend-id": "6",
+							"x-frontend-version": "0",
+							Cookie: `user_session=${cookie?.value}`,
+						},
+					})
+						.then((res) => {
+							return res.json();
+						})
+						.then((v) => {
+							sendResponse(v);
+						});
+				},
+			);
+		} else {
+			fetch(`${url}?${new URLSearchParams(params)}`, {
+				credentials: "omit",
+				headers: {
+					"x-frontend-id": "6",
+					"x-frontend-version": "0",
+				},
+			})
+				.then((res) => {
+					return res.json();
+				})
+				.then((v) => {
+					sendResponse(v);
+				});
+		}
 	});
-
-	return d;
 };
 
 /**
@@ -117,16 +149,7 @@ const search = (word: string, UserAgent: string) => {
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 	switch (message.type) {
 		case "movieData": {
-			getMovieData(message.movieId)
-				.then((res) => {
-					return res.json();
-				})
-				.then((json) => {
-					sendResponse(json);
-				})
-				.catch((err) => {
-					sendResponse(err);
-				});
+			getMovieData(message.movieId, sendResponse);
 			return true;
 		}
 		case "threadData": {
@@ -200,7 +223,16 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 chrome.runtime.onInstalled.addListener((details) => {
 	if (details.reason === "install") {
 		chrome.tabs.create({
-			url: chrome.runtime.getURL("use.html"),
+			url: chrome.runtime.getURL("src/use/index.html"),
+		});
+	} else if (
+		details.reason === "update" &&
+		chrome.runtime.getManifest().version === "2023.3.23"
+	) {
+		chrome.tabs.create({
+			url: chrome.runtime.getURL(
+				"src/use/index.html#user-content-ニコニコ動画へのログイン",
+			),
 		});
 	}
 });

@@ -1,11 +1,15 @@
 {
   "cSpell.words": [
+    "additionals",
     "animestore",
     "codicon",
     "codicons",
     "crxjs",
     "docomo",
-    "solidjs"
+    "nicovideo",
+    "rehype",
+    "solidjs",
+    "vpos"
   ],
   "editor.defaultFormatter": "rome.rome",
   "editor.formatOnSave": true,
@@ -13,9 +17,7 @@
   "files.eol": "\n",
   "json.schemas": [
     {
-      "fileMatch": [
-        "manifest.json"
-      ],
+      "fileMatch": ["manifest.json"],
       "url": "http://json.schemastore.org/chrome-manifest"
     }
   ],

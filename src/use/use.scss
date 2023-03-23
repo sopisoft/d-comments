@@ -18,69 +18,17 @@
 @use "../global.scss";
 
 body:has(#use) {
-  margin: 0px;
+  margin: 2rem;
   display: flex;
   flex-direction: column;
-  background-color: rgb(219, 219, 219);
+  align-items: center;
+  background-color: rgb(241, 241, 241);
 }
 
 #use {
-  margin: auto;
-  max-width: 800px;
-  font-size: 16px;
-
-  h1 {
-    display: inline-flex;
-    flex-direction: row;
-    align-items: center;
-    margin: 0px;
-    padding: 20px 0px 0px 0px;
-
-    i {
-      font-size: larger;
-      font-weight: 500;
-    }
-  }
-
-  section {
-    h2 {
-      padding: 10px;
-      background-color: rgb(34 72 120);
-
-      .number {
-        color: rgb(235, 186, 23);
-      }
-
-      .text {
-        color: rgb(254 252 255);
-      }
-    }
-
-    .step {
-      padding: 0px;
-      font-size: 1.2em;
-      margin: 10px 0px;
-
-      p {
-        padding: 10px;
-        background-color: rgb(60 60 60);
-
-        .number {
-          color: rgb(229 141 14);
-        }
-
-        .text {
-          color: rgb(240 240 240);
-        }
-      }
-
-      img {
-        margin: auto;
-        max-width: 100%;
-        max-height: 600px;
-        border: 2px solid rgb(60 60 60);
-        border-radius: 5px;
-      }
-    }
-  }
+  width: 800px;
+  padding: 1rem;
+  border-radius: 15px;
+  font-size: 14px;
+  background-color: rgb(255, 255, 255);
 }

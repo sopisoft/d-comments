@@ -19,6 +19,7 @@ export type config = {
 	key: string;
 	value: string | number | boolean;
 	type: string;
+	text?: string;
 };
 export const defaultConfigs: Array<config> = [
 	{
@@ -106,6 +107,12 @@ export const defaultConfigs: Array<config> = [
 		key: "かんたんコメント",
 		value: false,
 		type: "checkbox",
+	},
+	{
+		key: "allow_login_to_nicovideo",
+		value: false,
+		type: "checkbox",
+		text: "ニコニコ動画へのログインを許可する",
 	},
 ];
 

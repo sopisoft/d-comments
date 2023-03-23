@@ -17,6 +17,7 @@
 
 import { JSX } from "solid-js";
 import * as Config from "../content_scripts/config";
+import { defaultConfigs } from "../content_scripts/config";
 type Editor = {
 	p: string;
 	o: Array<Config.config>;
@@ -26,12 +27,13 @@ const Editor = (props: Editor) => {
 	const p = () => props.p;
 	const o = () => props.o;
 	const v = () => o().find((i) => i.key === p());
+	const t = () => defaultConfigs.find((item) => item.key === p())?.text;
 	const type = v()?.type;
 	const value = () => v()?.value;
 
 	return (
 		<div class="editor">
-			<label for={p()}>{p()}</label>
+			<label for={p()}>{t() ?? p()}</label>
 			{type === "text" ? (
 				<input
 					type="text"

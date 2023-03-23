@@ -192,9 +192,11 @@ chrome.storage.onChanged.addListener((changes, namespace) => {
 export const setDefaultStyle = () => {
 	const style = document.createElement("style");
 	style.id = "d-comments-style";
-	const normalFont = chrome.runtime.getURL("assets/fonts/BIZ_UDPGothic.ttf");
+	const normalFont = chrome.runtime.getURL(
+		"src/assets/fonts/BIZ_UDPGothic.ttf",
+	);
 	const bolderFont = chrome.runtime.getURL(
-		"assets/fonts/BIZ_UDPGothic-Bold.ttf",
+		"src/assets/fonts/BIZ_UDPGothic-Bold.ttf",
 	);
 	const css = `
 #d-comments-wrapper {

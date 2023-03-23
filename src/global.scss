@@ -17,6 +17,23 @@
 
 @use "@vscode/codicons/dist/codicon.css";
 
+@font-face {
+  font-family: "BIZ_UDPGothic";
+  src: url("./../assets/fonts/BIZ_UDPGothic.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: "BIZ_UDPGothic";
+  src: url("./../assets/fonts/BIZ_UDPGothic-Bold.ttf") format("truetype");
+  font-weight: bold, bolder;
+  font-style: normal;
+}
+
+body {
+  font-family: "BIZ_UDPGothic";
+}
+
 :root {
   box-sizing: border-box;
   user-select: none;
@@ -30,9 +47,4 @@
 
   word-break: break-word;
   word-wrap: break-word;
-
-  :any-link {
-    text-decoration: none;
-    color: rgb(6, 7, 133);
-  }
 }

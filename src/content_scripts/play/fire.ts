@@ -75,7 +75,8 @@ const fire = async (movieId: string, data: string) => {
 				movieId: movieId,
 			})
 			.then((movieData) => {
-				if (movieData["meta"]["status"] === 200) {
+				console.log(movieData);
+				if (movieData?.["meta"]["status"] === 200) {
 					// サーバーからコメントを取得する
 					chrome.runtime
 						.sendMessage({
@@ -85,7 +86,7 @@ const fire = async (movieId: string, data: string) => {
 						.then((threadData) => {
 							play(threadData, b, s, container, d, video);
 						});
-				} else if (movieData["data"]) {
+				} else if (movieData?.["data"]) {
 					setReason(movieData["data"]["reasonCode"]);
 				} else {
 					setMessage(

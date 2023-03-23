@@ -26,6 +26,11 @@ body {
   min-width: 400px;
   min-height: 580px;
 
+  :any-link {
+    text-decoration: none;
+    color: rgb(6, 7, 133);
+  }
+
   &::-webkit-scrollbar {
     display: none;
   }

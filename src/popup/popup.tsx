@@ -15,14 +15,14 @@
     along with d-comments.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { createSignal } from "solid-js";
+import { Match, Switch, createSignal } from "solid-js";
 import { render } from "solid-js/web";
 
 import * as Config from "../content_scripts/config";
 import "./popup.scss";
 
 const Popup = () => {
-	const [isActive, setIsActive] = createSignal(false);
+	const [tabPage, setTabPage] = createSignal("");
 
 	const [movieId, setMovieId] = createSignal("");
 	const [word, setWord] = createSignal("");
@@ -252,18 +252,18 @@ const Popup = () => {
 			},
 		);
 	};
+
 	chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
 		console.log(tabs[0]?.url);
-		isWatchPage(tabs[0]?.url ?? "")
-			? (setIsActive(true), init(tabs[0]?.title ?? ""))
-			: setIsActive(false);
+		isWatchPage(tabs[0]?.url ?? "") &&
+			(setTabPage("watch"), init(tabs[0]?.title ?? ""));
 	});
 
 	return (
 		<>
 			<a
 				aria-label="設定"
-				href="/options.html"
+				href={chrome.runtime.getURL("src/options/index.html")}
 				class="btn-option"
 				target="_blank"
 				rel="noopener noreferrer"
@@ -273,8 +273,8 @@ const Popup = () => {
 				</span>
 			</a>
 
-			{isActive() ? (
-				<>
+			<Switch fallback={NotActive}>
+				<Match when={tabPage() === "watch"}>
 					<label>
 						<p>
 							動画ID
@@ -408,38 +408,42 @@ const Popup = () => {
 								</li>
 							))}
 					</ul>
-				</>
-			) : (
-				<div class="not-active">
-					<div class="message">
-						<i class="codicon codicon-info" />
-						<p>現在のタブでは使用できません。</p>
-					</div>
-					<div class="link">
-						<a
-							href="/options.html"
-							target="_blank"
-							rel="noopener noreferrer"
-							class="btn"
-						>
-							<i class="codicon codicon-settings-gear" />
-							<span>設定</span>
-						</a>
-					</div>
-					<div class="link">
-						<a
-							href="/use.html"
-							target="_blank"
-							rel="noopener noreferrer"
-							class="btn"
-						>
-							<i class="codicon codicon-question" />
-							<span>つかいかた</span>
-						</a>
-					</div>
-				</div>
-			)}
+				</Match>
+			</Switch>
 		</>
+	);
+};
+
+const NotActive = () => {
+	return (
+		<div class="not-active">
+			<div class="message">
+				<i class="codicon codicon-info" />
+				<p>現在のタブでは使用できません。</p>
+			</div>
+			<div class="link">
+				<a
+					href={chrome.runtime.getURL("src/options/index.html")}
+					target="_blank"
+					rel="noopener noreferrer"
+					class="btn"
+				>
+					<i class="codicon codicon-settings-gear" />
+					<span>設定</span>
+				</a>
+			</div>
+			<div class="link">
+				<a
+					href={chrome.runtime.getURL("src/use/index.html")}
+					target="_blank"
+					rel="noopener noreferrer"
+					class="btn"
+				>
+					<i class="codicon codicon-question" />
+					<span>つかいかた</span>
+				</a>
+			</div>
+		</div>
 	);
 };
 

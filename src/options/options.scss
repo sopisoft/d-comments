@@ -19,6 +19,10 @@
 
 body:has(#options) {
   margin: 0;
+  :any-link {
+    text-decoration: none;
+    color: rgb(6, 7, 133);
+  }
 }
 
 #options {
