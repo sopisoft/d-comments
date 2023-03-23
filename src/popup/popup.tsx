@@ -69,19 +69,6 @@ const Popup = () => {
 	};
 
 	/**
-	 * 作品視聴ページか判定
-	 * @param href window.location.href
-	 * @returns boolean
-	 */
-	const isNicoPage = (href: string) => {
-		return href.match(
-			/(nicovideo\.jp|nico\.ms)\/watch\/(?:sm|nm|so|ca|ax|yo|nl|ig|na|cw|z[a-e]|om|sk|yk)\d{1,14}\b/,
-		)
-			? true
-			: false;
-	};
-
-	/**
 	 * 視聴ページでコメントを表示する
 	 */
 	const sendMessage = () => {
@@ -270,8 +257,6 @@ const Popup = () => {
 		console.log(tabs[0]?.url);
 		isWatchPage(tabs[0]?.url ?? "") &&
 			(setTabPage("watch"), init(tabs[0]?.title ?? ""));
-		isNicoPage(tabs[0]?.url ?? "") &&
-			(setTabPage("nico"), init(tabs[0]?.title ?? ""));
 	});
 
 	return (
@@ -423,23 +408,6 @@ const Popup = () => {
 								</li>
 							))}
 					</ul>
-				</Match>
-				<Match when={tabPage() === "nico"}>
-					<label>
-						<p>視聴中の動画</p>
-						<div>
-							<button
-								type="button"
-								aria-label="コメントをファイルで出力する"
-								class="btn btn-text"
-								onClick={() => {
-									exportJson();
-								}}
-							>
-								コメントを保存
-							</button>
-						</div>
-					</label>
 				</Match>
 			</Switch>
 		</>
