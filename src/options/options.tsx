@@ -153,7 +153,7 @@ const Options = () => {
 						<Editor p="コメントの文字色" o={options()} update={onChange} />
 					</div>
 					<div>
-						<h2>コメント欄の表示方法</h2>
+						<h2>コメントの表示方法</h2>
 						<Editor p="flow_comments" o={options()} update={onChange} />
 					</div>
 					<div

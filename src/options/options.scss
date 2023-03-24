@@ -19,6 +19,7 @@
 
 body:has(#options) {
   margin: 0;
+  user-select: none;
   :any-link {
     text-decoration: none;
     color: rgb(6, 7, 133);
