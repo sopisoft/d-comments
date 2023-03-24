@@ -18,6 +18,8 @@
 import * as Config from "../config";
 import * as Util from "../util";
 
+import NiconiComments from "@xpadev-net/niconicomments";
+
 const status = {
 	/** スクロールモードかどうか */
 	isScrollMode: false,
@@ -90,17 +92,21 @@ const play = (
 					break;
 				case "投稿者コメント": {
 					configs.ownerThread = newValue;
-					showComments();
+					renderComments();
 					break;
 				}
 				case "通常コメント": {
 					configs.mainThread = newValue;
-					showComments();
+					renderComments();
 					break;
 				}
 				case "かんたんコメント": {
 					configs.easyThread = newValue;
-					showComments();
+					renderComments();
+					break;
+				}
+				case "flow_comments": {
+					renderComments();
 					break;
 				}
 			}
@@ -131,7 +137,7 @@ const play = (
 	});
 	Config.getConfig("かんたんコメント", (value) => {
 		configs.easyThread = value as boolean;
-		showComments();
+		renderComments();
 	});
 
 	/**
@@ -299,6 +305,7 @@ const play = (
 			}
 			ul.appendChild(df);
 		});
+		window.requestAnimationFrame(scroll);
 	};
 
 	/**
@@ -359,20 +366,70 @@ const play = (
 	};
 
 	/**
+	 * 流れるコメントを設置
+	 */
+	const setFlowComments = () => {
+		const canvas = document.createElement("canvas");
+		canvas.width = 1920;
+		canvas.height = 1080;
+		canvas.id = "d-comments-canvas";
+		const setCanvasStyle = () => {
+			if (window.innerWidth / window.innerHeight > 1920 / 1080) {
+				canvas.style.height = `${video.clientHeight}px`;
+				canvas.style.width = `${(video.clientHeight / 1080) * 1920}px`;
+			} else {
+				canvas.style.width = `${video.clientWidth}px`;
+				canvas.style.height = `${(video.clientWidth / 1920) * 1080}px`;
+			}
+		};
+		video.parentElement?.appendChild(canvas);
+		setCanvasStyle();
+		window.addEventListener(
+			"resize",
+			() => {
+				setCanvasStyle();
+			},
+			{ passive: true },
+		);
+		container.style.display = "none";
+
+		const data = threadData["threads"];
+		const nicoComments = new NiconiComments(canvas, data, {
+			format: "v1",
+			keepCA: true,
+			scale: 1,
+		});
+		const render = (callBack: number) => {
+			if ((Math.round(callBack / 10) * 10) % 10 === 0) {
+				nicoComments.drawCanvas(Math.floor(video.currentTime * 100));
+			}
+			window.requestAnimationFrame(render);
+		};
+		window.requestAnimationFrame(render);
+	};
+
+	/**
 	 * コメントリストを表示する
 	 */
-	const showComments = () => {
+	const renderComments = () => {
+		document.getElementById("d-comments-canvas")?.remove();
+		container.style.display = "flex";
 		getComments((comments) => {
 			if (comments.length > 0) {
-				sortComments(comments).then((comments) => {
-					setComments(comments);
-					d.innerText = "";
-					d.style.display = "none";
-					b.remove();
-					ul.style.display = "block";
-					window.requestAnimationFrame(scroll);
-					window.requestAnimationFrame(setCurrentTime);
+				Config.getConfig("flow_comments", (value) => {
+					if (value) {
+						setFlowComments();
+					} else {
+						sortComments(comments).then((comments) => {
+							setComments(comments);
+							ul.style.display = "block";
+						});
+					}
 				});
+				d.innerText = "";
+				d.style.display = "none";
+				b.remove();
+				window.requestAnimationFrame(setCurrentTime);
 			} else {
 				d.style.display = "block";
 				d.innerText = "表示できるコメントはありません。";
