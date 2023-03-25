@@ -382,6 +382,7 @@ const play = (
 				canvas.style.height = `${(video.clientWidth / 1920) * 1080}px`;
 			}
 		};
+		document.getElementById("d-comments-canvas")?.remove();
 		video.parentElement?.appendChild(canvas);
 		setCanvasStyle();
 		window.addEventListener(
@@ -412,8 +413,8 @@ const play = (
 	 * コメントリストを表示する
 	 */
 	const renderComments = () => {
-		document.getElementById("d-comments-canvas")?.remove();
 		container.style.display = "flex";
+		document.getElementById("d-comments-canvas")?.remove();
 		getComments((comments) => {
 			if (comments.length > 0) {
 				Config.getConfig("flow_comments", (value) => {

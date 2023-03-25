@@ -214,6 +214,7 @@ export const setDefaultStyle = () => {
 	height:100%;
 }
 #d-comments-container {
+	display:flex;
 	position:var(--d-comments-container-position, relative);
 	z-index:var(--d-comments-container-z-index, 1);
 	width:var(--d-comments-container-width ,300px);
