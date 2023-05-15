@@ -24,9 +24,9 @@ import * as Config from "./content_scripts/config";
  * @returns min 以上 max 以下のランダムな整数
  */
 const getRandomInt = (min: number, max: number) => {
-	min = Math.ceil(min);
-	max = Math.floor(max);
-	return Math.floor(Math.random() * (max - min) + min);
+	const minNum = Math.ceil(min);
+	const maxNum = Math.floor(max);
+	return Math.floor(Math.random() * (maxNum - minNum) + minNum);
 };
 
 /**

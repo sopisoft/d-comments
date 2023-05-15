@@ -16,9 +16,9 @@
 */
 import { JSX, createEffect, createSignal } from "solid-js";
 
-import "./options.scss";
 import * as Config from "../content_scripts/config";
 import Editor from "./editor";
+import "./options.scss";
 
 const Options = () => {
 	const [options, setOptions] = createSignal<Array<Config.config>>(
@@ -66,7 +66,7 @@ const Options = () => {
 	};
 
 	chrome.storage.onChanged.addListener((changes, namespace) => {
-		for (let [key, { oldValue, newValue }] of Object.entries(changes)) {
+		for (const [key, { oldValue, newValue }] of Object.entries(changes)) {
 			setOption(key, newValue);
 		}
 	});

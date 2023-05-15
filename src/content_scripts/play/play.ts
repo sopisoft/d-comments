@@ -78,7 +78,7 @@ const play = (
 	 * 設定の変更を監視する
 	 */
 	chrome.storage.onChanged.addListener((changes, namespace) => {
-		for (let [key, { oldValue, newValue }] of Object.entries(changes)) {
+		for (const [key, { oldValue, newValue }] of Object.entries(changes)) {
 			console.log(
 				`設定 ${key} (${namespace}) が更新されました`,
 				`\n更新前 : ${oldValue} | 更新後 : ${newValue}`,
@@ -268,14 +268,28 @@ const play = (
 	 * コメントを再生時刻でソートする
 	 * @returns コメント
 	 */
-	const sortComments = async (comments: { [x: string]: number }[]) => {
-		comments.filter((comment: { [x: string]: number }) => {
-			return comment["score"] > 0;
-		});
-		comments.sort((a: { [x: string]: number }, b: { [x: string]: number }) => {
-			return a["vposMs"] - b["vposMs"];
-		});
-		return comments;
+	// rome-ignore lint/suspicious/noExplicitAny: <explanation>
+	const sortComments = async (comments: any[][]) => {
+		// rome-ignore lint/suspicious/noExplicitAny: <explanation>
+		function filterComments(comments: any[]) {
+			return comments.filter((comment: { [x: string]: number }) => {
+				return comment["score"] > 0;
+			});
+		}
+		// rome-ignore lint/suspicious/noExplicitAny: <explanation>
+		function sortComments(comments: any[][]) {
+			return comments.sort(
+				// rome-ignore lint/suspicious/noExplicitAny: <explanation>
+				(a: any[], b: any[]) => {
+					// @ts-ignore
+					return a["vposMs"] - b["vposMs"];
+				},
+			);
+		}
+		let result = [];
+		result = filterComments(comments);
+		result = sortComments(result);
+		return result;
 	};
 
 	/**
@@ -295,7 +309,8 @@ const play = (
 			});
 			return global.lists;
 		};
-		contents(comments).then((lists) => {
+		// rome-ignore lint/suspicious/noExplicitAny: <explanation>
+		const appendList = (lists: any[]) => {
 			const df = document.createDocumentFragment();
 			lists.map((list) => {
 				df.appendChild(list);
@@ -304,6 +319,9 @@ const play = (
 				ul.removeChild(ul.firstChild);
 			}
 			ul.appendChild(df);
+		};
+		contents(comments).then((lists) => {
+			appendList(lists);
 		});
 		window.requestAnimationFrame(scroll);
 	};
@@ -373,6 +391,8 @@ const play = (
 		canvas.width = 1920;
 		canvas.height = 1080;
 		canvas.id = "d-comments-canvas";
+		document.getElementById("d-comments-canvas")?.remove();
+		video.parentElement?.appendChild(canvas);
 		const setCanvasStyle = () => {
 			if (window.innerWidth / window.innerHeight > 1920 / 1080) {
 				canvas.style.height = `${video.clientHeight}px`;
@@ -382,8 +402,6 @@ const play = (
 				canvas.style.height = `${(video.clientWidth / 1920) * 1080}px`;
 			}
 		};
-		document.getElementById("d-comments-canvas")?.remove();
-		video.parentElement?.appendChild(canvas);
 		setCanvasStyle();
 		window.addEventListener(
 			"resize",
@@ -393,7 +411,6 @@ const play = (
 			{ passive: true },
 		);
 		container.style.display = "none";
-
 		const data = threadData["threads"];
 		const nicoComments = new NiconiComments(canvas, data, {
 			format: "v1",

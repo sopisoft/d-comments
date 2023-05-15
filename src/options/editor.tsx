@@ -15,9 +15,9 @@
     along with d-comments.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { JSX } from "solid-js";
 import * as Config from "../content_scripts/config";
 import { defaultConfigs } from "../content_scripts/config";
+import { JSX } from "solid-js";
 type Editor = {
 	p: string;
 	o: Array<Config.config>;

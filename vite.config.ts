@@ -8,7 +8,7 @@ const manifest = defineManifest({
   name: "__MSG_name__",
   description: "__MSG_description__",
   default_locale: "ja",
-  version: process.env.npm_package_version,
+  version: process.env.npm_package_version as string,
   author: "牛蒡",
   icons: {
     "16": "src/assets/icons/16.png",
