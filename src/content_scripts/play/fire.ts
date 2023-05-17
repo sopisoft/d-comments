@@ -34,8 +34,10 @@ const fire = async (movieId: string, data: string) => {
 	const setMessage = (message: string, code: string | null) => {
 		d.style.display = "block";
 		code
-			? (d.innerText = `${message}\nエラーコード : ${code}`)
-			: (d.innerText = `${message}`);
+			? // rome-ignore lint/suspicious/noAssignInExpressions: <explanation>
+			  (d.innerText = `${message}\nエラーコード : ${code}`)
+			: // rome-ignore lint/suspicious/noAssignInExpressions: <explanation>
+			  (d.innerText = `${message}`);
 		container.appendChild(b);
 		return;
 	};

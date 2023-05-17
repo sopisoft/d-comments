@@ -16,9 +16,9 @@
 */
 
 import * as Config from "./config";
-import * as util from "./util";
-import fire from "./play/fire";
 import exportJson from "./export";
+import fire from "./play/fire";
+import * as util from "./util";
 
 const href = window.location.href;
 

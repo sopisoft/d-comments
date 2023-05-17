@@ -15,18 +15,17 @@
     along with d-comments.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { unified } from "unified";
-import remarkParse from "remark-parse";
-import remarkGfm from "remark-gfm";
-import remarkRehype from "remark-rehype";
-import rehypeSanitize from "rehype-sanitize";
-import rehypeStringify from "rehype-stringify";
-import "zenn-content-css";
-import "./use.scss";
 import md from "./use.md?raw";
-import { Suspense, createSignal, onMount } from "solid-js";
-import remarkToc from "remark-toc";
+import "./use.scss";
 import rehypeSlug from "rehype-slug";
+import rehypeStringify from "rehype-stringify";
+import remarkGfm from "remark-gfm";
+import remarkParse from "remark-parse";
+import remarkRehype from "remark-rehype";
+import remarkToc from "remark-toc";
+import { Suspense, createSignal, onMount } from "solid-js";
+import { unified } from "unified";
+import "zenn-content-css";
 
 const parseMarkdown = async (text: string): Promise<string> => {
 	const file = await unified()
@@ -39,7 +38,6 @@ const parseMarkdown = async (text: string): Promise<string> => {
 		.use(remarkGfm)
 		.use(remarkRehype)
 		.use(rehypeSlug)
-		.use(rehypeSanitize)
 		.use(rehypeStringify)
 		.process(text);
 	return String(file);
