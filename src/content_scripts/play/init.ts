@@ -19,11 +19,6 @@ import * as Style from "./style";
 
 /**
  * ドキュメント要素の初期化
- * @returns b コメントコンテナを閉じるボタン
- * @returns s ステータス
- * @returns container コメントコンテナ
- * @returns d エラーメッセージ表示用 paragraph
- * @returns video
  */
 const init = () => {
 	const video = document.getElementById("video") as HTMLVideoElement;
@@ -55,33 +50,39 @@ const init = () => {
 	wrapper.appendChild(container);
 
 	/**
-	 * ステータスを表示する
-	 */
-	const s = document.createElement("div");
-	s.id = "d-comments-status";
-	container.appendChild(s);
-
-	/**
-	 * エラーメッセージ表示用 paragraph
-	 */
-	const d = document.createElement("div");
-	d.id = "d-comments-error";
-	d.innerText = "コメント取得中...";
-	d.style.display = "block";
-	container.appendChild(d);
-
-	/**
 	 * コメントコンテナを閉じるボタン
 	 */
-	const b = document.createElement("button");
-	b.id = "d-comments-close";
-	b.textContent = "サイドバーを閉じる";
-	b.setAttribute("type", "button");
-	b.addEventListener("click", () => {
+	const button_closes_comment_container = document.createElement("button");
+	button_closes_comment_container.id = "d-comments-close";
+	button_closes_comment_container.textContent = "サイドバーを閉じる";
+	button_closes_comment_container.setAttribute("type", "button");
+	button_closes_comment_container.addEventListener("click", () => {
 		container.remove();
 	});
 
-	return { b, s, container, d, video };
+	/**
+	 * ステータス表示バー
+	 */
+	const status_bar = document.createElement("div");
+	status_bar.id = "d-comments-status";
+	container.appendChild(status_bar);
+
+	/**
+	 * エラーメッセージ表示バー
+	 */
+	const error_messages_bar = document.createElement("div");
+	error_messages_bar.id = "d-comments-error";
+	error_messages_bar.innerText = "コメント取得中...";
+	error_messages_bar.style.display = "block";
+	container.appendChild(error_messages_bar);
+
+	return {
+		video,
+		container,
+		status_bar,
+		error_messages_bar,
+		button_closes_comment_container,
+	};
 };
 
 export default init;

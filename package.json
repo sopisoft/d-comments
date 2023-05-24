@@ -24,13 +24,13 @@
   },
   "dependencies": {
     "@vscode/codicons": "^0.0.33",
-    "@xpadev-net/niconicomments": "^0.2.50",
+    "@xpadev-net/niconicomments": "^0.2.51",
     "rehype-slug": "^5.1.0",
     "rehype-stringify": "^9.0.3",
-    "remark": "^14.0.2",
+    "remark": "^14.0.3",
     "remark-gfm": "^3.0.1",
     "remark-html": "^15.0.2",
-    "remark-parse": "^10.0.1",
+    "remark-parse": "^10.0.2",
     "remark-rehype": "^10.1.0",
     "remark-toc": "^8.0.1",
     "solid-js": "^1.7.5",
@@ -40,13 +40,13 @@
   "devDependencies": {
     "@crxjs/vite-plugin": "^2.0.0-beta.17",
     "@types/chrome": "0.0.236",
-    "@types/node": "^20.1.4",
+    "@types/node": "^20.2.3",
     "babel-preset-solid": "^1.7.4",
-    "rome": "^12.1.0",
+    "rome": "^12.1.2",
     "sass": "^1.62.1",
-    "terser": "^5.17.3",
+    "terser": "^5.17.6",
     "typescript": "^5.0.4",
-    "vite": "^4.3.5",
+    "vite": "^4.3.8",
     "vite-plugin-solid": "^2.7.0"
   }
 }
