@@ -59,19 +59,19 @@ const global = {
 /**
  * スレッドデータからコメントを設置する
  * @param threadData
- * @param b コメントコンテナを閉じるボタン
- * @param s ステータス
+ * @param button_closes_comment_container コメントコンテナを閉じるボタン
+ * @param status_bar ステータス表示バー
  * @param container コメントコンテナ
- * @param d エラーメッセージ表示用 paragraph
+ * @param error_messages_bar エラーメッセージ表示バー
  * @param video
  */
 const play = (
 	// rome-ignore lint/suspicious/noExplicitAny: <explanation>
 	threadData: any,
-	b: HTMLButtonElement,
-	s: HTMLDivElement,
+	button_closes_comment_container: HTMLButtonElement,
+	status_bar: HTMLDivElement,
 	container: HTMLDivElement,
-	d: HTMLDivElement,
+	error_messages_bar: HTMLDivElement,
 	video: HTMLVideoElement,
 ) => {
 	/**
@@ -183,12 +183,12 @@ const play = (
 	const checkIsScrollModeEnabled = () => {
 		if (configs.ScrollConfig && status.isMouseOver) {
 			status.isScrollMode = true;
-			s.innerText = "スクロールモード";
-			s.id = "d-comments-status-scrolling";
+			status_bar.innerText = "スクロールモード";
+			status_bar.id = "d-comments-status-scrolling";
 		} else if (!status.isMouseOver) {
 			status.isScrollMode = false;
 			window.requestAnimationFrame(setCurrentTime);
-			s.id = "d-comments-status";
+			status_bar.id = "d-comments-status";
 		}
 	};
 
@@ -208,9 +208,9 @@ const play = (
 					: ""
 			}`;
 			const seconds = `${Math.floor(video.currentTime % 60)} 秒`;
-			if (`${hours}${minutes}${seconds}` !== s.innerText) {
+			if (`${hours}${minutes}${seconds}` !== status_bar.innerText) {
 				status.time = `${hours}${minutes}${seconds}`;
-				s.innerText = status.time;
+				status_bar.innerText = status.time;
 			}
 		}
 		window.requestAnimationFrame(setCurrentTime);
@@ -331,10 +331,10 @@ const play = (
 	 */
 	video.addEventListener("loadeddata", () => {
 		ul.remove();
-		d.style.display = "block";
-		d.innerText =
+		error_messages_bar.style.display = "block";
+		error_messages_bar.innerText =
 			"作品パートが変更されました。\nコメントを再取得してください。";
-		container.appendChild(b);
+		container.appendChild(button_closes_comment_container);
 		Util.setInfo();
 	});
 
@@ -444,13 +444,13 @@ const play = (
 						});
 					}
 				});
-				d.innerText = "";
-				d.style.display = "none";
-				b.remove();
+				error_messages_bar.innerText = "";
+				error_messages_bar.style.display = "none";
+				button_closes_comment_container.remove();
 				window.requestAnimationFrame(setCurrentTime);
 			} else {
-				d.style.display = "block";
-				d.innerText = "表示できるコメントはありません。";
+				error_messages_bar.style.display = "block";
+				error_messages_bar.innerText = "表示できるコメントはありません。";
 				while (ul.firstChild) {
 					ul.removeChild(ul.firstChild);
 				}
