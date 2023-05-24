@@ -44,7 +44,7 @@ const fire = async (movieId: string, data: string) => {
 			  (error_messages_bar.innerText = `${message}\nエラーコード : ${code}`)
 			: // rome-ignore lint/suspicious/noAssignInExpressions: <explanation>
 			  (error_messages_bar.innerText = `${message}`);
-		container.appendChild(error_messages_bar);
+		container.appendChild(button_closes_comment_container);
 		return;
 	};
 

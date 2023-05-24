@@ -40,7 +40,7 @@ export const defaultConfigs: Array<config> = [
 	},
 	{
 		key: "コメント欄の幅 (px)",
-		value: 300,
+		value: 1000,
 		type: "number",
 	},
 	{

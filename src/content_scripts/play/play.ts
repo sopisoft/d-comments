@@ -273,7 +273,7 @@ const play = (
 		// rome-ignore lint/suspicious/noExplicitAny: <explanation>
 		function filterComments(comments: any[]) {
 			return comments.filter((comment: { [x: string]: number }) => {
-				return comment["score"] > 0;
+				return comment["score"] >= 0;
 			});
 		}
 		// rome-ignore lint/suspicious/noExplicitAny: <explanation>
