@@ -18,7 +18,7 @@
     "zip": "@powershell Compress-Archive -Path dist -DestinationPath dist.zip",
     "clean:dist": " @powershell Remove-Item -Recurse -Force dist",
     "clean:zip": "@powershell Remove-Item -Recurse -Force dist.zip",
-    "format": "rome format src --write ",
+    "format": "rome format src --write",
     "lint": "rome check src --apply-suggested",
     "rome": "rome ci src"
   },

@@ -67,7 +67,15 @@ const Editor = (props: Editor) => {
 					onChange={props.update}
 				/>
 			) : (
-				""
+				type === "select" && (
+					<select name={t()}>
+						{defaultConfigs
+							.find((item) => item.key === p())
+							?.options?.map((v) => {
+								return <option value={v.value}>{v.name}</option>;
+							})}
+					</select>
+				)
 			)}
 		</div>
 	);

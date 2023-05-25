@@ -18,7 +18,8 @@
 export type config = {
 	key: string;
 	value: string | number | boolean;
-	type: string;
+	options?: Array<{ name: string; value: string }>;
+	type: "text" | "checkbox" | "number" | "color" | "select";
 	text?: string;
 };
 export const defaultConfigs: Array<config> = [
@@ -40,7 +41,7 @@ export const defaultConfigs: Array<config> = [
 	},
 	{
 		key: "コメント欄の幅 (px)",
-		value: 300,
+		value: 1000,
 		type: "number",
 	},
 	{
@@ -88,6 +89,17 @@ export const defaultConfigs: Array<config> = [
 		value: false,
 		type: "checkbox",
 		text: "コメントを右から左へ流す",
+	},
+	{
+		key: "way_to_render_commenets",
+		value: "list",
+		options: [
+			{ value: "list", name: "リスト" },
+			{ value: "list_overlay", name: "リスト（オーバーレイ）" },
+			{ value: "right_to_left", name: "右から左に流す" },
+		],
+		type: "select",
+		text: "コメントの表示方法",
 	},
 	{
 		key: "作品ページに「コメントを表示しながら再生」ボタンを追加する",

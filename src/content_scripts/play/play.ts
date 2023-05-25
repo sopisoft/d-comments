@@ -366,7 +366,7 @@ const play = (
 	};
 
 	/**
-	 * 流れるコメントを設置
+	 * 右から左に流れるコメントを設置
 	 */
 	const setFlowComments = () => {
 		const canvas = document.createElement("canvas");

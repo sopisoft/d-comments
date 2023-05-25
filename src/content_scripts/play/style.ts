@@ -19,7 +19,7 @@ import * as Config from "../config";
 
 const configs = {
 	overlay: false,
-	width: 300,
+	width: 1000,
 	height: 100,
 	top: 0,
 	left: 0,
@@ -217,7 +217,7 @@ export const setDefaultStyle = () => {
 	display:flex;
 	position:var(--d-comments-container-position, relative);
 	z-index:var(--d-comments-container-z-index, 1);
-	width:var(--d-comments-container-width ,300px);
+	width:var(--d-comments-container-width ,1000px);
 	height:var(--d-comments-container-height, 100vh);
 	top:var(--d-comments-container-top, 0%);
 	left:var(--d-comments-container-left, 0%);
@@ -260,7 +260,7 @@ export const setDefaultStyle = () => {
 	margin-block-start:0px;
 	margin-block-end:0px;
 	padding-inline-start:0px;
-  z-index:1;
+	z-index:1;
 	list-style:none;
 	overflow:hidden;
 	overflow-y:scroll;
