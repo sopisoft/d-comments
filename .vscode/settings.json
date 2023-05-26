@@ -1,23 +1,19 @@
 {
-  "cSpell.words": [
-    "additionals",
-    "animestore",
-    "codicon",
-    "codicons",
-    "crxjs",
-    "docomo",
-    "nicovideo",
-    "rehype",
-    "solidjs",
-    "vpos"
-  ],
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
   "editor.defaultFormatter": "rome.rome",
   "editor.formatOnSave": true,
   "files.autoSave": "afterDelay",
   "files.eol": "\n",
+  "editor.codeActionsOnSave": {
+    "source.organizeImports.rome": true
+  },
   "json.schemas": [
     {
-      "fileMatch": ["manifest.json"],
+      "fileMatch": [
+        "manifest.json"
+      ],
       "url": "http://json.schemastore.org/chrome-manifest"
     }
   ],

@@ -6,7 +6,9 @@
       "label": "install",
       "type": "shell",
       "command": "npm",
-      "args": ["install"],
+      "args": [
+        "install"
+      ],
       "problemMatcher": [],
       "group": {
         "kind": "test",
@@ -17,39 +19,65 @@
       "label": "dev",
       "type": "shell",
       "command": "npx",
-      "args": ["vite"],
+      "args": [
+        "vite"
+      ],
       "dependsOrder": "sequence",
-      "dependsOn": ["format", "lint"],
+      "dependsOn": [
+        "format",
+        "lint"
+      ],
       "problemMatcher": []
     },
     {
       "label": "format",
       "type": "shell",
       "command": "npx",
-      "args": ["rome", "format", "${workspaceFolder}", "--write"],
+      "args": [
+        "rome",
+        "format",
+        "${workspaceFolder}",
+        "--write"
+      ],
       "problemMatcher": []
     },
     {
       "label": "lint",
       "type": "shell",
       "command": "npx",
-      "args": ["rome", "check", "${workspaceFolder}", "--apply-suggested"],
+      "args": [
+        "rome",
+        "check",
+        "${workspaceFolder}",
+        "--apply-suggested"
+      ],
       "problemMatcher": []
     },
     {
       "label": "rome",
       "type": "shell",
       "command": "npx",
-      "args": ["rome", "ci", "src"],
+      "args": [
+        "rome",
+        "ci",
+        "src"
+      ],
       "problemMatcher": []
     },
     {
       "label": "compile",
       "type": "shell",
       "command": "npx",
-      "args": ["tsc", "--noEmit"],
+      "args": [
+        "tsc",
+        "--noEmit"
+      ],
       "dependsOrder": "sequence",
-      "dependsOn": ["format", "lint", "rome"],
+      "dependsOn": [
+        "format",
+        "lint",
+        "rome"
+      ],
       "problemMatcher": []
     },
     {
@@ -60,9 +88,14 @@
         "isDefault": true
       },
       "command": "npx",
-      "args": ["vite", "build"],
+      "args": [
+        "vite",
+        "build"
+      ],
       "dependsOrder": "sequence",
-      "dependsOn": ["compile"],
+      "dependsOn": [
+        "compile"
+      ],
       "problemMatcher": []
     }
   ]

@@ -15,7 +15,11 @@
     along with d-comments.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { render } from "solid-js/web";
 import Options from "./options";
+import { render } from "solid-js/web";
 
-render(Options, document.getElementById("options")!);
+const root = document.createElement("div");
+root.id = "options";
+document.body.appendChild(root);
+
+render(Options, root);

@@ -15,7 +15,11 @@
     along with d-comments.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { render } from "solid-js/web";
 import Use from "./use";
+import { render } from "solid-js/web";
 
-render(Use, document.getElementById("use")!);
+const root = document.createElement("div");
+root.id = "use";
+document.body.appendChild(root);
+
+render(Use, root);

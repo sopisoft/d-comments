@@ -1,52 +1,53 @@
 {
-	"name": "d-comments",
-	"description": "Player addon for d-anime",
-	"version": "2023.5.15",
-	"private": true,
-	"license": "GPL-3.0",
-	"type": "module",
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/gobosan/d-comments.git"
-	},
-	"engines": {
-		"node": ">=18.16.0"
-	},
-	"scripts": {
-		"dev": "vite",
-		"build": "tsc --noEmit && vite build",
-		"zip": "@powershell Compress-Archive -Path dist -DestinationPath dist.zip",
-		"clean:dist": " @powershell Remove-Item -Recurse -Force dist",
-		"clean:zip": "@powershell Remove-Item -Recurse -Force dist.zip",
-		"format": "rome format src --write",
-		"lint": "rome check --apply-unsafe ./src",
-		"rome": "rome ci src"
-	},
-	"dependencies": {
-		"@vscode/codicons": "^0.0.33",
-		"@xpadev-net/niconicomments": "^0.2.51",
-		"rehype-slug": "^5.1.0",
-		"rehype-stringify": "^9.0.3",
-		"remark": "^14.0.3",
-		"remark-gfm": "^3.0.1",
-		"remark-html": "^15.0.2",
-		"remark-parse": "^10.0.2",
-		"remark-rehype": "^10.1.0",
-		"remark-toc": "^8.0.1",
-		"solid-js": "^1.7.5",
-		"unified": "^10.1.2",
-		"zenn-content-css": "^0.1.143"
-	},
-	"devDependencies": {
-		"@crxjs/vite-plugin": "^2.0.0-beta.17",
-		"@types/chrome": "0.0.237",
-		"@types/node": "^20.2.4",
-		"babel-preset-solid": "^1.7.4",
-		"rome": "^12.1.2",
-		"sass": "^1.62.1",
-		"terser": "^5.17.6",
-		"typescript": "^5.0.4",
-		"vite": "^4.3.8",
-		"vite-plugin-solid": "^2.7.0"
-	}
+  "name": "d-comments",
+  "description": "Player addon for d-anime",
+  "version": "2023.5.27",
+  "private": true,
+  "license": "GPL-3.0",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gobosan/d-comments.git"
+  },
+  "engines": {
+    "node": ">=18.16.0"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "zip": "@powershell Compress-Archive -Path dist -DestinationPath dist.zip",
+    "clean:dist": " @powershell Remove-Item -Recurse -Force dist",
+    "clean:zip": "@powershell Remove-Item -Recurse -Force dist.zip",
+    "format": "rome format src --write",
+    "lint": "rome check --apply-unsafe ./src",
+    "rome": "rome ci src"
+  },
+  "dependencies": {
+    "@vscode/codicons": "^0.0.33",
+    "@xpadev-net/niconicomments": "^0.2.51",
+    "rehype-sanitize": "^5.0.1",
+    "rehype-slug": "^5.1.0",
+    "rehype-stringify": "^9.0.3",
+    "remark": "^14.0.3",
+    "remark-gfm": "^3.0.1",
+    "remark-html": "^15.0.2",
+    "remark-parse": "^10.0.2",
+    "remark-rehype": "^10.1.0",
+    "remark-toc": "^8.0.1",
+    "solid-js": "^1.7.5",
+    "unified": "^10.1.2",
+    "zenn-content-css": "^0.1.143"
+  },
+  "devDependencies": {
+    "@crxjs/vite-plugin": "^2.0.0-beta.17",
+    "@types/chrome": "0.0.237",
+    "@types/node": "^20.2.5",
+    "babel-preset-solid": "^1.7.4",
+    "rome": "^12.1.2",
+    "sass": "^1.62.1",
+    "terser": "^5.17.6",
+    "typescript": "^5.0.4",
+    "vite": "^4.3.9",
+    "vite-plugin-solid": "^2.7.0"
+  }
 }

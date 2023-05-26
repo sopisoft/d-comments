@@ -16,9 +16,9 @@
 */
 import { JSX, createEffect, createSignal } from "solid-js";
 
-import "./options.scss";
 import * as Config from "../content_scripts/config";
 import Editor from "./editor";
+import "./options.scss";
 
 const Options = () => {
 	const [options, setOptions] = createSignal<Array<Config.config>>(

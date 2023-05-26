@@ -447,4 +447,4 @@ const NotActive = () => {
 	);
 };
 
-render(Popup, document.querySelector("body")!);
+render(Popup, document.body);
