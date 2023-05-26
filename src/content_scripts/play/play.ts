@@ -78,7 +78,7 @@ const play = (
 	 * 設定の変更を監視する
 	 */
 	chrome.storage.onChanged.addListener((changes, namespace) => {
-		for (let [key, { oldValue, newValue }] of Object.entries(changes)) {
+		for (const [key, { oldValue, newValue }] of Object.entries(changes)) {
 			console.log(
 				`設定 ${key} (${namespace}) が更新されました`,
 				`\n更新前 : ${oldValue} | 更新後 : ${newValue}`,
@@ -272,7 +272,7 @@ const play = (
 		comments.filter((comment: { [x: string]: number }) => {
 			return comment["score"] > 0;
 		});
-		comments.sort((a: { [x: string]: number }, b: { [x: string]: number }) => {
+		comments.sort((a: { [x: string]: number }, b: { [y: string]: number }) => {
 			return a["vposMs"] - b["vposMs"];
 		});
 		return comments;

@@ -18,4 +18,4 @@
 import { render } from "solid-js/web";
 import Use from "./use";
 
-render(() => Use, document.getElementById("use")!);
+render(Use, document.getElementById("use")!);

@@ -273,7 +273,7 @@ const Popup = () => {
 				</span>
 			</a>
 
-			<Switch fallback={NotActive}>
+			<Switch fallback={NotActive()}>
 				<Match when={tabPage() === "watch"}>
 					<label>
 						<p>
@@ -447,4 +447,4 @@ const NotActive = () => {
 	);
 };
 
-render(() => Popup, document.querySelector("body")!);
+render(Popup, document.querySelector("body")!);

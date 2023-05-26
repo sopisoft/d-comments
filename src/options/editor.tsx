@@ -68,7 +68,8 @@ const Editor = (props: Editor) => {
 				/>
 			) : (
 				type === "select" && (
-					<select name={t()}>
+					// rome-ignore lint/suspicious/noExplicitAny: <explanation>
+					<select name={t()} title={t()} onChange={props.update as any}>
 						{defaultConfigs
 							.find((item) => item.key === p())
 							?.options?.map((v) => {

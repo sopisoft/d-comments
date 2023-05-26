@@ -18,4 +18,4 @@
 import { render } from "solid-js/web";
 import Options from "./options";
 
-render(() => Options, document.getElementById("options")!);
+render(Options, document.getElementById("options")!);

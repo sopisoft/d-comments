@@ -19,7 +19,6 @@ import { unified } from "unified";
 import remarkParse from "remark-parse";
 import remarkGfm from "remark-gfm";
 import remarkRehype from "remark-rehype";
-import rehypeSanitize from "rehype-sanitize";
 import rehypeStringify from "rehype-stringify";
 import "zenn-content-css";
 import "./use.scss";
@@ -39,7 +38,6 @@ const parseMarkdown = async (text: string): Promise<string> => {
 		.use(remarkGfm)
 		.use(remarkRehype)
 		.use(rehypeSlug)
-		.use(rehypeSanitize)
 		.use(rehypeStringify)
 		.process(text);
 	return String(file);

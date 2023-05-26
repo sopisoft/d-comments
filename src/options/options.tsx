@@ -46,7 +46,7 @@ const Options = () => {
 		const r: Config.config = {
 			key: m,
 			value: v,
-			type: d as string,
+			type: d as "number" | "text" | "checkbox" | "color" | "select",
 		};
 		setOptions(t.concat(r));
 	};
@@ -66,7 +66,7 @@ const Options = () => {
 	};
 
 	chrome.storage.onChanged.addListener((changes, namespace) => {
-		for (let [key, { oldValue, newValue }] of Object.entries(changes)) {
+		for (const [key, { oldValue, newValue }] of Object.entries(changes)) {
 			setOption(key, newValue);
 		}
 	});
@@ -155,6 +155,11 @@ const Options = () => {
 					<div>
 						<h2>コメントの表示方法</h2>
 						<Editor p="flow_comments" o={options()} update={onChange} />
+						<Editor
+							p="way_to_render_comments"
+							o={options()}
+							update={onChange}
+						/>
 					</div>
 					<div
 						style={{

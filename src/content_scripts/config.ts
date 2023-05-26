@@ -91,7 +91,7 @@ export const defaultConfigs: Array<config> = [
 		text: "コメントを右から左へ流す",
 	},
 	{
-		key: "way_to_render_commenets",
+		key: "way_to_render_comments",
 		value: "list",
 		options: [
 			{ value: "list", name: "リスト" },

@@ -133,7 +133,7 @@ export const init = () => {
 };
 
 chrome.storage.onChanged.addListener((changes, namespace) => {
-	for (let [key, { oldValue, newValue }] of Object.entries(changes)) {
+	for (const [key, { oldValue, newValue }] of Object.entries(changes)) {
 		switch (key) {
 			case "コメント欄のスクールバーを表示する": {
 				configs.scrollBar = newValue;

@@ -1,8 +1,8 @@
 {
-  "name": {
-    "message": "d-comments"
-  },
-  "description": {
-    "message": "dアニメストアの動画再生画面にてニコニコ動画のコメントを表示します。"
-  }
+	"name": {
+		"message": "d-comments"
+	},
+	"description": {
+		"message": "dアニメストアの動画再生画面にてニコニコ動画のコメントを表示します。"
+	}
 }
