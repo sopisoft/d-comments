@@ -59,25 +59,26 @@ const global = {
 /**
  * スレッドデータからコメントを設置する
  * @param threadData
- * @param b コメントコンテナを閉じるボタン
- * @param s ステータス
+ * @param button_closes_comment_container コメントコンテナを閉じるボタン
+ * @param status_bar ステータス表示バー
  * @param container コメントコンテナ
- * @param d エラーメッセージ表示用 paragraph
+ * @param error_messages_bar エラーメッセージ表示バー
  * @param video
  */
 const play = (
 	// rome-ignore lint/suspicious/noExplicitAny: <explanation>
 	threadData: any,
-	b: HTMLButtonElement,
-	s: HTMLDivElement,
+	button_closes_comment_container: HTMLButtonElement,
+	status_bar: HTMLDivElement,
 	container: HTMLDivElement,
-	d: HTMLDivElement,
+	error_messages_bar: HTMLDivElement,
 	video: HTMLVideoElement,
 ) => {
 	/**
 	 * 設定の変更を監視する
 	 */
 	chrome.storage.onChanged.addListener((changes, namespace) => {
+		for (const [key, { oldValue, newValue }] of Object.entries(changes)) {
 		for (const [key, { oldValue, newValue }] of Object.entries(changes)) {
 			console.log(
 				`設定 ${key} (${namespace}) が更新されました`,
@@ -183,12 +184,12 @@ const play = (
 	const checkIsScrollModeEnabled = () => {
 		if (configs.ScrollConfig && status.isMouseOver) {
 			status.isScrollMode = true;
-			s.innerText = "スクロールモード";
-			s.id = "d-comments-status-scrolling";
+			status_bar.innerText = "スクロールモード";
+			status_bar.id = "d-comments-status-scrolling";
 		} else if (!status.isMouseOver) {
 			status.isScrollMode = false;
 			window.requestAnimationFrame(setCurrentTime);
-			s.id = "d-comments-status";
+			status_bar.id = "d-comments-status";
 		}
 	};
 
@@ -208,9 +209,9 @@ const play = (
 					: ""
 			}`;
 			const seconds = `${Math.floor(video.currentTime % 60)} 秒`;
-			if (`${hours}${minutes}${seconds}` !== s.innerText) {
+			if (`${hours}${minutes}${seconds}` !== status_bar.innerText) {
 				status.time = `${hours}${minutes}${seconds}`;
-				s.innerText = status.time;
+				status_bar.innerText = status.time;
 			}
 		}
 		window.requestAnimationFrame(setCurrentTime);
@@ -268,14 +269,28 @@ const play = (
 	 * コメントを再生時刻でソートする
 	 * @returns コメント
 	 */
-	const sortComments = async (comments: { [x: string]: number }[]) => {
-		comments.filter((comment: { [x: string]: number }) => {
-			return comment["score"] > 0;
-		});
-		comments.sort((a: { [x: string]: number }, b: { [y: string]: number }) => {
-			return a["vposMs"] - b["vposMs"];
-		});
-		return comments;
+	// rome-ignore lint/suspicious/noExplicitAny: <explanation>
+	const sortComments = async (comments: any[][]) => {
+		// rome-ignore lint/suspicious/noExplicitAny: <explanation>
+		function filterComments(comments: any[]) {
+			return comments.filter((comment: { [x: string]: number }) => {
+				return comment["score"] >= 0;
+			});
+		}
+		// rome-ignore lint/suspicious/noExplicitAny: <explanation>
+		function sortComments(comments: any[][]) {
+			return comments.sort(
+				// rome-ignore lint/suspicious/noExplicitAny: <explanation>
+				(a: any[], b: any[]) => {
+					// @ts-ignore
+					return a["vposMs"] - b["vposMs"];
+				},
+			);
+		}
+		let result = [];
+		result = filterComments(comments);
+		result = sortComments(result);
+		return result;
 	};
 
 	/**
@@ -295,7 +310,8 @@ const play = (
 			});
 			return global.lists;
 		};
-		contents(comments).then((lists) => {
+		// rome-ignore lint/suspicious/noExplicitAny: <explanation>
+		const appendList = (lists: any[]) => {
 			const df = document.createDocumentFragment();
 			lists.map((list) => {
 				df.appendChild(list);
@@ -304,6 +320,9 @@ const play = (
 				ul.removeChild(ul.firstChild);
 			}
 			ul.appendChild(df);
+		};
+		contents(comments).then((lists) => {
+			appendList(lists);
 		});
 		window.requestAnimationFrame(scroll);
 	};
@@ -313,10 +332,10 @@ const play = (
 	 */
 	video.addEventListener("loadeddata", () => {
 		ul.remove();
-		d.style.display = "block";
-		d.innerText =
+		error_messages_bar.style.display = "block";
+		error_messages_bar.innerText =
 			"作品パートが変更されました。\nコメントを再取得してください。";
-		container.appendChild(b);
+		container.appendChild(button_closes_comment_container);
 		Util.setInfo();
 	});
 
@@ -373,6 +392,8 @@ const play = (
 		canvas.width = 1920;
 		canvas.height = 1080;
 		canvas.id = "d-comments-canvas";
+		document.getElementById("d-comments-canvas")?.remove();
+		video.parentElement?.appendChild(canvas);
 		const setCanvasStyle = () => {
 			if (window.innerWidth / window.innerHeight > 1920 / 1080) {
 				canvas.style.height = `${video.clientHeight}px`;
@@ -382,8 +403,6 @@ const play = (
 				canvas.style.height = `${(video.clientWidth / 1920) * 1080}px`;
 			}
 		};
-		document.getElementById("d-comments-canvas")?.remove();
-		video.parentElement?.appendChild(canvas);
 		setCanvasStyle();
 		window.addEventListener(
 			"resize",
@@ -393,7 +412,6 @@ const play = (
 			{ passive: true },
 		);
 		container.style.display = "none";
-
 		const data = threadData["threads"];
 		const nicoComments = new NiconiComments(canvas, data, {
 			format: "v1",
@@ -427,13 +445,13 @@ const play = (
 						});
 					}
 				});
-				d.innerText = "";
-				d.style.display = "none";
-				b.remove();
+				error_messages_bar.innerText = "";
+				error_messages_bar.style.display = "none";
+				button_closes_comment_container.remove();
 				window.requestAnimationFrame(setCurrentTime);
 			} else {
-				d.style.display = "block";
-				d.innerText = "表示できるコメントはありません。";
+				error_messages_bar.style.display = "block";
+				error_messages_bar.innerText = "表示できるコメントはありません。";
 				while (ul.firstChild) {
 					ul.removeChild(ul.firstChild);
 				}

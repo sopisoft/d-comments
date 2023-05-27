@@ -24,7 +24,13 @@ import play from "./play";
  * @param data ファイルからコメントを読み込むときコメントデータ。ファイルからの読み込みでない場合は、undefined。
  */
 const fire = async (movieId: string, data: string) => {
-	const { b, s, container, d, video } = init();
+	const {
+		video,
+		container,
+		status_bar,
+		error_messages_bar,
+		button_closes_comment_container,
+	} = init();
 
 	/**
 	 * エラーメッセージを表示する
@@ -32,11 +38,13 @@ const fire = async (movieId: string, data: string) => {
 	 * @param code　エラーコード　もしくは　null
 	 */
 	const setMessage = (message: string, code: string | null) => {
-		d.style.display = "block";
+		error_messages_bar.style.display = "block";
 		code
-			? d.innerText === `${message}\nエラーコード : ${code}`
-			: d.innerText === `${message}`;
-		container.appendChild(b);
+			? // rome-ignore lint/suspicious/noAssignInExpressions: <explanation>
+			  (error_messages_bar.innerText = `${message}\nエラーコード : ${code}`)
+			: // rome-ignore lint/suspicious/noAssignInExpressions: <explanation>
+			  (error_messages_bar.innerText = `${message}`);
+		container.appendChild(button_closes_comment_container);
 		return;
 	};
 
@@ -61,7 +69,14 @@ const fire = async (movieId: string, data: string) => {
 	if (data) {
 		const e = JSON.parse(data);
 		if (e["threadData"]) {
-			play(e["threadData"], b, s, container, d, video);
+			play(
+				e["threadData"],
+				button_closes_comment_container,
+				status_bar,
+				container,
+				error_messages_bar,
+				video,
+			);
 		} else {
 			setMessage("コメントの取得に失敗しました。", null);
 		}
@@ -84,7 +99,14 @@ const fire = async (movieId: string, data: string) => {
 							movieData: movieData,
 						})
 						.then((threadData) => {
-							play(threadData, b, s, container, d, video);
+							play(
+								threadData,
+								button_closes_comment_container,
+								status_bar,
+								container,
+								error_messages_bar,
+								video,
+							);
 						});
 				} else if (movieData?.["data"]) {
 					setReason(movieData["data"]["reasonCode"]);

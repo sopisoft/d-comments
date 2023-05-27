@@ -39,7 +39,6 @@ const parseMarkdown = async (text: string): Promise<string> => {
 		.use(remarkGfm)
 		.use(remarkRehype)
 		.use(rehypeSlug)
-		.use(rehypeSanitize)
 		.use(rehypeStringify)
 		.process(text);
 	return String(file);

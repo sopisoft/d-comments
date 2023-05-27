@@ -11,11 +11,17 @@
 			"recommended": true,
 			"style": {
 				"noCommaOperator": "off"
-			}
+			},
+      "style": {
+        "noCommaOperator": "off"
+      }
 		}
 	},
 	"organizeImports": {
 		"enabled": true
 	},
+  "organizeImports": {
+    "enabled": true
+  },
 	"$schema": "./node_modules/rome/configuration_schema.json"
 }

@@ -16,6 +16,7 @@
 */
 
 import Use from "./use";
+import Use from "./use";
 import { render } from "solid-js/web";
 
 const root = document.createElement("div");
