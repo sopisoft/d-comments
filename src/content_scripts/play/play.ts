@@ -105,20 +105,16 @@ const play = (
 					renderComments();
 					break;
 				}
-				case "flow_comments": {
+				case "way_to_render_comments": {
 					renderComments();
 					break;
 				}
 			}
 		}
 	});
-	window.addEventListener(
-		"resize",
-		() => {
-			status.windowHeight = window.innerHeight;
-		},
-		{ passive: true },
-	);
+	window.addEventListener("resize", () => {
+		status.windowHeight = window.innerHeight;
+	});
 
 	/**
 	 * ステータスに設定値を設定する
@@ -403,14 +399,9 @@ const play = (
 			}
 		};
 		setCanvasStyle();
-		window.addEventListener(
-			"resize",
-			() => {
-				setCanvasStyle();
-			},
-			{ passive: true },
-		);
-		container.style.display = "none";
+		video.parentElement?.addEventListener("resize", () => {
+			setCanvasStyle(), { passive: true };
+		});
 		const data = threadData["threads"];
 		const nicoComments = new NiconiComments(canvas, data, {
 			format: "v1",
@@ -434,10 +425,17 @@ const play = (
 		document.getElementById("d-comments-canvas")?.remove();
 		getComments((comments) => {
 			if (comments.length > 0) {
-				Config.getConfig("flow_comments", (value) => {
-					if (value) {
+				Config.getConfig("way_to_render_comments", (value) => {
+					if (value === "right_to_left") {
+						container.style.display = "none";
 						setFlowComments();
-					} else {
+					} /*else if (value === "right_to_left_and_list") {
+						setFlowComments();
+						sortComments(comments).then((comments) => {
+							setComments(comments);
+							ul.style.display = "block";
+						});
+					} */ else {
 						sortComments(comments).then((comments) => {
 							setComments(comments);
 							ul.style.display = "block";

@@ -102,8 +102,12 @@ export const init = () => {
 	Config.getConfig("コメント欄のスクールバーを表示する", (value) => {
 		configs.scrollBar = value as boolean;
 	});
-	Config.getConfig("作品再生画面にオーバーレイ表示", (value) => {
-		configs.overlay = value as boolean;
+	Config.getConfig("way_to_render_comments", (value) => {
+		if (value === "list_overlay") {
+			configs.overlay = true;
+		} else {
+			configs.overlay = false;
+		}
 	});
 	Config.getConfig("コメント欄の幅 (px)", (value) => {
 		configs.width = value as number;
@@ -140,8 +144,12 @@ chrome.storage.onChanged.addListener((changes, namespace) => {
 				setScrollBar();
 				break;
 			}
-			case "作品再生画面にオーバーレイ表示": {
-				configs.overlay = newValue;
+			case "way_to_render_comments": {
+				if (newValue === "list_overlay") {
+					configs.overlay = true;
+				} else {
+					configs.overlay = false;
+				}
 				setTimeout(setRoot, 0);
 				break;
 			}

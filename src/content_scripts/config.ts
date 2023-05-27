@@ -97,6 +97,7 @@ export const defaultConfigs: Array<config> = [
 			{ value: "list", name: "リスト" },
 			{ value: "list_overlay", name: "リスト（オーバーレイ）" },
 			{ value: "right_to_left", name: "右から左に流す" },
+			// { value: "right_to_left_and_list", name: "右から左に流す + リスト" },
 		],
 		type: "select",
 		text: "コメントの表示方法",
