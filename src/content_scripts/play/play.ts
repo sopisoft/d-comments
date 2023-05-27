@@ -79,7 +79,6 @@ const play = (
 	 */
 	chrome.storage.onChanged.addListener((changes, namespace) => {
 		for (const [key, { oldValue, newValue }] of Object.entries(changes)) {
-		for (const [key, { oldValue, newValue }] of Object.entries(changes)) {
 			console.log(
 				`設定 ${key} (${namespace}) が更新されました`,
 				`\n更新前 : ${oldValue} | 更新後 : ${newValue}`,

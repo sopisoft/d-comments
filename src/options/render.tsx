@@ -16,7 +16,6 @@
 */
 
 import Options from "./options";
-import Options from "./options";
 import { render } from "solid-js/web";
 
 const root = document.createElement("div");
