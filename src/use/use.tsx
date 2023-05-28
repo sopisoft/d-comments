@@ -17,6 +17,7 @@
 
 import md from "./use.md?raw";
 import "./use.scss";
+import rehypeSanitize from "rehype-sanitize";
 import rehypeSlug from "rehype-slug";
 import rehypeStringify from "rehype-stringify";
 import remarkGfm from "remark-gfm";
@@ -38,6 +39,7 @@ const parseMarkdown = async (text: string): Promise<string> => {
 		.use(remarkGfm)
 		.use(remarkRehype)
 		.use(rehypeSlug)
+		.use(rehypeSanitize)
 		.use(rehypeStringify)
 		.process(text);
 	return String(file);
