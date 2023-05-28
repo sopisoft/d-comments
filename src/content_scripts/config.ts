@@ -65,11 +65,6 @@ export const defaultConfigs: Array<config> = [
 		type: "color",
 	},
 	{
-		key: "作品再生画面にオーバーレイ表示",
-		value: false,
-		type: "checkbox",
-	},
-	{
 		key: "画面の上部分からの距離 (%)",
 		value: 5,
 		type: "number",
@@ -83,12 +78,6 @@ export const defaultConfigs: Array<config> = [
 		key: "コメント欄の高さ (%)",
 		value: 85,
 		type: "number",
-	},
-	{
-		key: "flow_comments",
-		value: false,
-		type: "checkbox",
-		text: "コメントを右から左へ流す",
 	},
 	{
 		key: "way_to_render_comments",

@@ -161,38 +161,28 @@ const Options = () => {
 						/>
 					</div>
 					<div
-						style={{
-							opacity: options().find((i) => i.key === "flow_comments")?.value
-								? 0.6
-								: 1,
-						}}
-					>
-						<h2>コメントリストのオーバーレイ （β版）</h2>
-						<div
-							style={{
+						style={
+							{
 								opacity:
 									options().find((i) => i.key === "way_to_render_comments")
 										?.value === "list_overlay"
 										? 1
 										: 0.6,
-							}}
-						>
-							<Editor
-								p="画面の上部分からの距離 (%)"
-								o={options()}
-								update={onChange}
-							/>
-							<Editor
-								p="画面の左部分からの距離 (%)"
-								o={options()}
-								update={onChange}
-							/>
-							<Editor
-								p="コメント欄の高さ (%)"
-								o={options()}
-								update={onChange}
-							/>
-						</div>
+							} as JSX.CSSProperties
+						}
+					>
+						<h2>コメントリストのオーバーレイ （β版）</h2>
+						<Editor
+							p="画面の上部分からの距離 (%)"
+							o={options()}
+							update={onChange}
+						/>
+						<Editor
+							p="画面の左部分からの距離 (%)"
+							o={options()}
+							update={onChange}
+						/>
+						<Editor p="コメント欄の高さ (%)" o={options()} update={onChange} />
 					</div>
 				</div>
 			</div>
