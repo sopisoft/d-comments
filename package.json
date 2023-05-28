@@ -1,7 +1,7 @@
 {
   "name": "d-comments",
   "description": "Player addon for d-anime",
-  "version": "2023.5.27",
+  "version": "2023.5.28",
   "private": true,
   "license": "GPL-3.0",
   "type": "module",
