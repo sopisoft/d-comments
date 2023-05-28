@@ -390,7 +390,7 @@ const play = (
 		document.getElementById("d-comments-canvas")?.remove();
 		video.parentElement?.appendChild(canvas);
 		const setCanvasStyle = () => {
-			if (window.innerWidth / window.innerHeight > 1920 / 1080) {
+			if (video.clientWidth / video.clientHeight > 1920 / 1080) {
 				canvas.style.height = `${video.clientHeight}px`;
 				canvas.style.width = `${(video.clientHeight / 1080) * 1920}px`;
 			} else {
@@ -399,7 +399,7 @@ const play = (
 			}
 		};
 		setCanvasStyle();
-		video.parentElement?.addEventListener("resize", () => {
+		(window || video)?.addEventListener("resize", () => {
 			setCanvasStyle(), { passive: true };
 		});
 		const data = threadData["threads"];

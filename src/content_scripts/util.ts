@@ -36,8 +36,15 @@ export const addMenu = () => {
 					if (value) {
 						a.target = "_blank";
 						a.innerText = "新しいタブでコメントを表示しながら再生";
+						a.addEventListener("click", (e) => {
+							window.open(a.href);
+							e.preventDefault();
+						});
 					} else {
 						a.innerText = "現在のタブでコメントを表示しながら再生";
+						a.addEventListener("click", () => {
+							window.location.href = a.href;
+						});
 					}
 					item.parentElement?.parentElement?.appendChild(a);
 					const style = document.createElement("style");
