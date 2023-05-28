@@ -16,8 +16,9 @@
 */
 
 import * as Config from "../content_scripts/config";
-import { defaultConfigs } from "../content_scripts/config";
-import { JSX } from "solid-js";
+import { defaultConfigs, getConfig } from "../content_scripts/config";
+import { JSX, createSignal } from "solid-js";
+
 type Editor = {
 	p: string;
 	o: Array<Config.config>;
@@ -30,6 +31,11 @@ const Editor = (props: Editor) => {
 	const t = () => defaultConfigs.find((item) => item.key === p())?.text;
 	const type = v()?.type;
 	const value = () => v()?.value;
+
+	const [selected, setSelected] = createSignal("");
+	getConfig(p(), (val) => {
+		setSelected(val as string);
+	});
 
 	return (
 		<div class="editor">
@@ -67,7 +73,21 @@ const Editor = (props: Editor) => {
 					onChange={props.update}
 				/>
 			) : (
-				""
+				type === "select" && (
+					<select
+						name={p()}
+						value={selected()}
+						title={t()}
+						// rome-ignore lint/suspicious/noExplicitAny: <explanation>
+						onChange={props.update as any}
+					>
+						{defaultConfigs
+							.find((item) => item.key === p())
+							?.options?.map((v) => {
+								return <option value={v.value}>{v.name}</option>;
+							})}
+					</select>
+				)
 			)}
 		</div>
 	);

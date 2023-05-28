@@ -122,6 +122,13 @@ body:has(#options) {
         border-radius: 0.5rem;
         padding: 0rem;
       }
+
+      select {
+        margin: 1rem;
+        padding: 0.5rem;
+        font-size: larger;
+        font-weight: bold;
+      }
     }
   }
   @keyframes fadeIn {

@@ -18,4 +18,8 @@
 import Use from "./use";
 import { render } from "solid-js/web";
 
-render(Use, document.getElementById("use") as HTMLElement);
+const root = document.createElement("div");
+root.id = "use";
+document.body.appendChild(root);
+
+render(Use, root);

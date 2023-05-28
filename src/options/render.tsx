@@ -18,4 +18,8 @@
 import Options from "./options";
 import { render } from "solid-js/web";
 
-render(Options, document.getElementById("options") as HTMLElement);
+const root = document.createElement("div");
+root.id = "options";
+document.body.appendChild(root);
+
+render(Options, root);

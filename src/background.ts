@@ -16,6 +16,7 @@
 */
 
 import * as Config from "./content_scripts/config";
+import { migrate } from "./content_scripts/migrate";
 
 /**
  * 任意の範囲のランダムな整数を返す
@@ -221,6 +222,8 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
  * インストール直後につかいかたページを開く
  */
 chrome.runtime.onInstalled.addListener((details) => {
+	migrate();
+
 	if (details.reason === "install") {
 		chrome.tabs.create({
 			url: chrome.runtime.getURL("src/use/index.html"),

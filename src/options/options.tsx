@@ -46,7 +46,7 @@ const Options = () => {
 		const r: Config.config = {
 			key: m,
 			value: v,
-			type: d as string,
+			type: d as "number" | "text" | "checkbox" | "color" | "select",
 		};
 		setOptions(t.concat(r));
 	};
@@ -154,46 +154,35 @@ const Options = () => {
 					</div>
 					<div>
 						<h2>コメントの表示方法</h2>
-						<Editor p="flow_comments" o={options()} update={onChange} />
-					</div>
-					<div
-						style={{
-							opacity: options().find((i) => i.key === "flow_comments")?.value
-								? 0.6
-								: 1,
-						}}
-					>
-						<h2>コメントリストのオーバーレイ （β版）</h2>
 						<Editor
-							p="作品再生画面にオーバーレイ表示"
+							p="way_to_render_comments"
 							o={options()}
 							update={onChange}
 						/>
-						<div
-							style={{
-								opacity: options().find(
-									(i) => i.key === "作品再生画面にオーバーレイ表示",
-								)?.value
-									? 1
-									: 0.6,
-							}}
-						>
-							<Editor
-								p="画面の上部分からの距離 (%)"
-								o={options()}
-								update={onChange}
-							/>
-							<Editor
-								p="画面の左部分からの距離 (%)"
-								o={options()}
-								update={onChange}
-							/>
-							<Editor
-								p="コメント欄の高さ (%)"
-								o={options()}
-								update={onChange}
-							/>
-						</div>
+					</div>
+					<div
+						style={
+							{
+								opacity:
+									options().find((i) => i.key === "way_to_render_comments")
+										?.value === "list_overlay"
+										? 1
+										: 0.6,
+							} as JSX.CSSProperties
+						}
+					>
+						<h2>コメントリストのオーバーレイ （β版）</h2>
+						<Editor
+							p="画面の上部分からの距離 (%)"
+							o={options()}
+							update={onChange}
+						/>
+						<Editor
+							p="画面の左部分からの距離 (%)"
+							o={options()}
+							update={onChange}
+						/>
+						<Editor p="コメント欄の高さ (%)" o={options()} update={onChange} />
 					</div>
 				</div>
 			</div>

@@ -18,7 +18,8 @@
 export type config = {
 	key: string;
 	value: string | number | boolean;
-	type: string;
+	options?: Array<{ name: string; value: string }>;
+	type: "text" | "checkbox" | "number" | "color" | "select";
 	text?: string;
 };
 export const defaultConfigs: Array<config> = [
@@ -64,11 +65,6 @@ export const defaultConfigs: Array<config> = [
 		type: "color",
 	},
 	{
-		key: "作品再生画面にオーバーレイ表示",
-		value: false,
-		type: "checkbox",
-	},
-	{
 		key: "画面の上部分からの距離 (%)",
 		value: 5,
 		type: "number",
@@ -84,10 +80,16 @@ export const defaultConfigs: Array<config> = [
 		type: "number",
 	},
 	{
-		key: "flow_comments",
-		value: false,
-		type: "checkbox",
-		text: "コメントを右から左へ流す",
+		key: "way_to_render_comments",
+		value: "list",
+		options: [
+			{ value: "list", name: "リスト" },
+			{ value: "list_overlay", name: "リスト（オーバーレイ）" },
+			{ value: "right_to_left", name: "右から左に流す" },
+			// { value: "right_to_left_and_list", name: "右から左に流す + リスト" },
+		],
+		type: "select",
+		text: "コメントの表示方法",
 	},
 	{
 		key: "作品ページに「コメントを表示しながら再生」ボタンを追加する",

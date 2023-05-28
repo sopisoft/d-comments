@@ -19,7 +19,7 @@ import * as Config from "../config";
 
 const configs = {
 	overlay: false,
-	width: 300,
+	width: 1000,
 	height: 100,
 	top: 0,
 	left: 0,
@@ -102,8 +102,12 @@ export const init = () => {
 	Config.getConfig("コメント欄のスクールバーを表示する", (value) => {
 		configs.scrollBar = value as boolean;
 	});
-	Config.getConfig("作品再生画面にオーバーレイ表示", (value) => {
-		configs.overlay = value as boolean;
+	Config.getConfig("way_to_render_comments", (value) => {
+		if (value === "list_overlay") {
+			configs.overlay = true;
+		} else {
+			configs.overlay = false;
+		}
 	});
 	Config.getConfig("コメント欄の幅 (px)", (value) => {
 		configs.width = value as number;
@@ -140,8 +144,12 @@ chrome.storage.onChanged.addListener((changes, namespace) => {
 				setScrollBar();
 				break;
 			}
-			case "作品再生画面にオーバーレイ表示": {
-				configs.overlay = newValue;
+			case "way_to_render_comments": {
+				if (newValue === "list_overlay") {
+					configs.overlay = true;
+				} else {
+					configs.overlay = false;
+				}
 				setTimeout(setRoot, 0);
 				break;
 			}
@@ -217,7 +225,7 @@ export const setDefaultStyle = () => {
 	display:flex;
 	position:var(--d-comments-container-position, relative);
 	z-index:var(--d-comments-container-z-index, 1);
-	width:var(--d-comments-container-width ,300px);
+	width:var(--d-comments-container-width ,1000px);
 	height:var(--d-comments-container-height, 100vh);
 	top:var(--d-comments-container-top, 0%);
 	left:var(--d-comments-container-left, 0%);
@@ -260,7 +268,7 @@ export const setDefaultStyle = () => {
 	margin-block-start:0px;
 	margin-block-end:0px;
 	padding-inline-start:0px;
-  z-index:1;
+	z-index:1;
 	list-style:none;
 	overflow:hidden;
 	overflow-y:scroll;
