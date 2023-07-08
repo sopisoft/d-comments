@@ -1,5 +1,13 @@
 # d-comments
 
+![d-comments logo](./.store/d-comments.png)
+
+[![GitHub release (latest by date)](https://img.shields.io/github/v/release/gobosan/d-comments)](
+ https://github.com/gobosan/d-comments/releases/latest)
+![GitHub Code Size in Bytes](https://img.shields.io/github/languages/code-size/gobosan/d-comments)
+![GitHub Stars](https://img.shields.io/github/stars/gobosan/d-comments)
+[![GitHub](https://img.shields.io/github/license/gobosan/d-comments)](./LICENSE.txt)
+
 d アニメストアの動画再生画面でニコニコ動画のコメントを表示する Chromium 拡張機能です。
 
 [Chrome Web Store](https://chrome.google.com/webstore/detail/d-comments/jocjhkklfiaojhhnjiejmimlohaemiep)
@@ -15,6 +23,12 @@ d アニメストアの動画再生画面でニコニコ動画のコメントを
 
 ```PowerShell
 npm install
+```
+
+## Release
+
+```PowerShell
+npm run release
 ```
 
 ## Build
@@ -39,29 +53,6 @@ npm run format
 
 ```PowerShell
 npm run lint
-```
-
-## Clean
-
-```PowerShell
-# Remove build directory
-Remove-Item -Recurse -Force dist
-
-# Remove zipped build file
-npm run clean:zip
-# or
-Remove-Item -Recurse -Force dist.zip
-
-# Remove node_modules directory
-Remove-Item -Recurse -Force node_modules
-```
-
-## Zip
-
-```PowerShell
-npm run zip
-# or
-Compress-Archive -Path dist -DestinationPath dist.zip -Force
 ```
 
 ## License

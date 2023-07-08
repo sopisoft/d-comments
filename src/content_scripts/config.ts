@@ -46,7 +46,7 @@ export const defaultConfigs: Array<config> = [
 	},
 	{
 		key: "コメント欄のスクールバーを表示する",
-		value: false,
+		value: true,
 		type: "checkbox",
 	},
 	{
@@ -81,7 +81,7 @@ export const defaultConfigs: Array<config> = [
 	},
 	{
 		key: "way_to_render_comments",
-		value: "list",
+		value: "right_to_left",
 		options: [
 			{ value: "list", name: "リスト" },
 			{ value: "list_overlay", name: "リスト（オーバーレイ）" },
@@ -98,7 +98,7 @@ export const defaultConfigs: Array<config> = [
 	},
 	{
 		key: "「コメントを表示しながら再生」ボタンでは新しいタブで開く",
-		value: true,
+		value: false,
 		type: "checkbox",
 	},
 	{
