@@ -15,8 +15,8 @@
     along with d-comments.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-import init from "./init";
 import play from "./play";
+import uiInit from "./ui";
 
 /**
  * 発火用関数
@@ -30,7 +30,7 @@ const fire = async (movieId: string, data: string) => {
 		status_bar,
 		error_messages_bar,
 		button_closes_comment_container,
-	} = init();
+	} = uiInit();
 
 	/**
 	 * エラーメッセージを表示する

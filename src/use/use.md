@@ -21,7 +21,7 @@
 
 1. ドコモアニメストアで作品の視聴を開始します。
 
-   拡張機能のポップアップページを開けるよう拡張機能が追加した再生ボタンから視聴を開始することをお勧めします。
+   拡張機能のポップアップページを開けるよう拡張機能が追加した再生ボタンから視聴を開始することをオススメします。
 
 2. 再生ページで再生が開始されたら、拡張機能のポップアップページ（下のスクリーンショット）を開きます。
 
@@ -111,7 +111,7 @@
 ### この拡張機能について
 
 この拡張機能のソースコードは [GitHub のリポジトリ](https://github.com/gobosan/d-comments) で公開されています。
-ライセンスは[GPL-3.0 license](https://github.com/gobosan/d-comments/blob/master/LICENSE.txt)です。
+ライセンスは [GPL-3.0 license](https://github.com/gobosan/d-comments/blob/master/LICENSE.txt) です。
 
 ### つかいかたページについて
 
@@ -119,7 +119,7 @@
 
 ### 機能リクエストやバグ報告について
 
-[ここ](https://forms.office.com/r/JR9KksWHJD) で受け付けています。
+[Microsoft Forms](https://forms.office.com/r/JR9KksWHJD) で受け付けています。
 機能リクエストやバグ報告ができます。
 
 GitHub のアカウントをお持ちの方は [GitHub のリポジトリ](https://github.com/gobosan/d-comments) で Issue を立ててください。

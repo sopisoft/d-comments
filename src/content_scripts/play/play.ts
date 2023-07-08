@@ -16,7 +16,7 @@
 */
 
 import * as Config from "../config";
-import * as Util from "../util";
+import { setWorkInfo } from "../danime_dom/watch";
 
 import NiconiComments from "@xpadev-net/niconicomments";
 
@@ -140,8 +140,18 @@ const play = (
 	 * コメントリストのUl
 	 */
 	const ul = document.createElement("ul");
-	container.appendChild(ul);
+	Object.assign(ul.style, {
+		borderTop: "0.1px solid #484848",
+		marginBlockStart: "0px",
+		marginBlockEnd: "0px",
+		paddingInlineStart: "0px",
+		zIndex: 1,
+		listStyle: "none",
+		overflow: "hidden",
+		overflowY: "scroll",
+	});
 	ul.style.display = "none";
+	container.appendChild(ul);
 	status.scrolledHeight = ul.scrollTop;
 	ul.addEventListener(
 		"scroll",
@@ -180,11 +190,11 @@ const play = (
 		if (configs.ScrollConfig && status.isMouseOver) {
 			status.isScrollMode = true;
 			status_bar.innerText = "スクロールモード";
-			status_bar.id = "d-comments-status-scrolling";
+			status_bar.style.backgroundColor = "rgb(235 80 40 / 100%)";
 		} else if (!status.isMouseOver) {
 			status.isScrollMode = false;
 			window.requestAnimationFrame(setCurrentTime);
-			status_bar.id = "d-comments-status";
+			status_bar.style.backgroundColor = "rgba(0, 0, 0, 0)";
 		}
 	};
 
@@ -241,23 +251,14 @@ const play = (
 
 	// rome-ignore lint/suspicious/noExplicitAny: <explanation>
 	const getComments = async (callback: (comments: any) => any) => {
-		const a = async () => {
-			global.comments.length = 0;
+		global.comments.length = 0;
+		(async () => {
 			configs.ownerThread && global.comments.push(getThreadComments("owner"));
-		};
-		const b = async () => {
 			configs.mainThread && global.comments.push(getThreadComments("main"));
-		};
-		const c = async () => {
 			configs.easyThread && global.comments.push(getThreadComments("easy"));
-		};
-		const d = async () => {
+		})().then(() => {
 			callback(global.comments.flat(1));
-		};
-		a()
-			.then(() => b())
-			.then(() => c())
-			.then(() => d());
+		});
 	};
 
 	/**
@@ -300,6 +301,12 @@ const play = (
 			comments.map((comment: { [x: string]: string; body: string }) => {
 				const li = document.createElement("li");
 				li.innerText = comment.body;
+				Object.assign(li.style, {
+					fontSize: "16px",
+					lineHeight: 1.4,
+					padding: "5px",
+					borderBottom: "1px solid #484848d1",
+				});
 				li.setAttribute("data-time", comment["vposMs"]);
 				global.lists.push(li);
 			});
@@ -331,7 +338,7 @@ const play = (
 		error_messages_bar.innerText =
 			"作品パートが変更されました。\nコメントを再取得してください。";
 		container.appendChild(button_closes_comment_container);
-		Util.setInfo();
+		setWorkInfo();
 	});
 
 	/** コメントを再生時刻に合わせてスクロールする */
@@ -386,6 +393,14 @@ const play = (
 		const canvas = document.createElement("canvas");
 		canvas.width = 1920;
 		canvas.height = 1080;
+		Object.assign(canvas.style, {
+			position: "absolute",
+			top: "50%",
+			left: "50%",
+			transform: "translate(-50%, -50%)",
+			background: "transparent",
+			zIndex: 2,
+		});
 		canvas.id = "d-comments-canvas";
 		document.getElementById("d-comments-canvas")?.remove();
 		video.parentElement?.appendChild(canvas);

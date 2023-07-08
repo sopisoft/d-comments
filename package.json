@@ -1,7 +1,7 @@
 {
   "name": "d-comments",
   "description": "Player addon for d-anime",
-  "version": "2023.5.28",
+  "version": "2023.7.7",
   "private": true,
   "license": "GPL-3.0",
   "type": "module",
@@ -15,6 +15,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
+    "release": "@powershell .\\release.ps1",
     "zip": "@powershell Compress-Archive -Path dist -DestinationPath dist.zip",
     "clean:dist": " @powershell Remove-Item -Recurse -Force dist",
     "clean:zip": "@powershell Remove-Item -Recurse -Force dist.zip",
@@ -24,7 +25,7 @@
   },
   "dependencies": {
     "@vscode/codicons": "^0.0.33",
-    "@xpadev-net/niconicomments": "^0.2.51",
+    "@xpadev-net/niconicomments": "^0.2.53",
     "rehype-sanitize": "^5.0.1",
     "rehype-slug": "^5.1.0",
     "rehype-stringify": "^9.0.3",
@@ -34,20 +35,20 @@
     "remark-parse": "^10.0.2",
     "remark-rehype": "^10.1.0",
     "remark-toc": "^8.0.1",
-    "solid-js": "^1.7.5",
+    "solid-js": "^1.7.7",
     "unified": "^10.1.2",
-    "zenn-content-css": "^0.1.143"
+    "zenn-content-css": "^0.1.144"
   },
   "devDependencies": {
-    "@crxjs/vite-plugin": "^2.0.0-beta.17",
-    "@types/chrome": "0.0.237",
-    "@types/node": "^20.2.5",
-    "babel-preset-solid": "^1.7.4",
-    "rome": "^12.1.2",
-    "sass": "^1.62.1",
-    "terser": "^5.17.6",
-    "typescript": "^5.0.4",
-    "vite": "^4.3.9",
+    "@crxjs/vite-plugin": "^2.0.0-beta.18",
+    "@types/chrome": "0.0.240",
+    "@types/node": "^20.4.0",
+    "babel-preset-solid": "^1.7.7",
+    "rome": "^12.1.3",
+    "sass": "^1.63.6",
+    "terser": "^5.18.2",
+    "typescript": "^5.1.6",
+    "vite": "^4.4.2",
     "vite-plugin-solid": "^2.7.0"
   }
 }

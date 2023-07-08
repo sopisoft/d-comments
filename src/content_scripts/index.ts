@@ -16,9 +16,10 @@
 */
 
 import * as Config from "./config";
+import { addMenu } from "./danime_dom/mypage";
+import { setWorkInfo } from "./danime_dom/watch";
 import exportJson from "./export";
 import fire from "./play/fire";
-import * as util from "./util";
 
 const href = window.location.href;
 
@@ -29,7 +30,7 @@ switch (true) {
 		Config.getConfig(
 			"作品ページに「コメントを表示しながら再生」ボタンを追加する",
 			(value) => {
-				value && util.addMenu();
+				value && addMenu();
 			},
 		);
 		break;
@@ -37,7 +38,9 @@ switch (true) {
 	case /https:\/\/animestore\.docomo\.ne\.jp\/animestore\/sc_d_pc\?partId=\d+/.test(
 		href,
 	): {
-		util.setInfo();
+		setWorkInfo();
+
+		// called from popup/popup.tsx
 		chrome.runtime.onMessage.addListener((message) => {
 			if (message.type === "renderComments") {
 				fire(message.movieId, message.data);

@@ -207,77 +207,8 @@ export const setDefaultStyle = () => {
 		"src/assets/fonts/BIZ_UDPGothic-Bold.ttf",
 	);
 	const css = `
-#d-comments-canvas {
-	position:absolute;
-	top: 50%;
-	left: 50%;
-	transform:translate(-50%, -50%);
-	background:transparent;
-	z-index:2;
-}
-#d-comments-wrapper {
-	display:flex;
-	flex-direction:row;
-	width:100%;
-	height:100%;
-}
-#d-comments-container {
-	display:flex;
-	position:var(--d-comments-container-position, relative);
-	z-index:var(--d-comments-container-z-index, 1);
-	width:var(--d-comments-container-width ,1000px);
-	height:var(--d-comments-container-height, 100vh);
-	top:var(--d-comments-container-top, 0%);
-	left:var(--d-comments-container-left, 0%);
-	background:var(--d-comments-container-background, rgba(0,0,0,0.35));
-	flex-direction:column;
-	overflow:hidden;
-	overflow-y:scroll;
-	font-family:BIZ_UDPGothic;
-	font-size:medium;
-	font-weight:500;
-	font-style:normal;
-	color:var(--d-comments-text-color, white);
-}
 #d-comments-container::-webkit-scrollbar {
 	display:none;
-}
-#d-comments-container>[id*="d-comments-status"] {
-	text-align:center;
-	padding:4px;
-}
-#d-comments-container #d-comments-status-scrolling {
-	background:rgb(235 80 40 / 100%);
-}
-#d-comments-container #d-comments-error {
-	width:90%;
-	margin:1em auto;
-	z-index:-1;
-	line-height:2;
-}
-#d-comments-container #d-comments-close {
-	width:80%;
-	height:2em;
-	margin:0 auto;
-	padding:3px;
-	border-radius:15px;
-	cursor:pointer;
-}
-#d-comments-container ul {
-	border-top:0.1px solid #484848;
-	margin-block-start:0px;
-	margin-block-end:0px;
-	padding-inline-start:0px;
-	z-index:1;
-	list-style:none;
-	overflow:hidden;
-	overflow-y:scroll;
-}
-#d-comments-container ul li {
-	font-size:16px;
-	line-height:1.4;
-	padding:5px;
-	border-bottom:1px solid #484848d1;
 }
 @font-face {
 	font-family:"BIZ_UDPGothic";
