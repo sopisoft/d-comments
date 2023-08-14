@@ -65,6 +65,7 @@ export default defineConfig({
 	plugins: [solidPlugin(), crx({ manifest })],
 	build: {
 		target: "esnext",
+		minify: "terser",
 		rollupOptions: {
 			input: {
 				use: resolve(__dirname, "src", "use", "index.html"),
@@ -74,6 +75,23 @@ export default defineConfig({
 				chunkFileNames: "js/[hash].js",
 				assetFileNames: "assets/[hash].[ext]",
 			},
+		},
+		terserOptions: {
+			compress: {
+				drop_console: true,
+				drop_debugger: true,
+				module: true,
+				unused: true,
+				passes: 5,
+			},
+			mangle: {
+				toplevel: true,
+				module: true,
+			},
+			format: {
+				comments: false,
+			},
+			toplevel: true,
 		},
 	},
 });
