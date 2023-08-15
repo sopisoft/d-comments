@@ -20,6 +20,7 @@ import { addMenu } from "./danime_dom/mypage";
 import { setWorkInfo } from "./danime_dom/watch";
 import exportJson from "./export";
 import fire from "./play/fire";
+import browser from "webextension-polyfill";
 
 const href = window.location.href;
 
@@ -41,13 +42,14 @@ switch (true) {
 		setWorkInfo();
 
 		// called from popup/popup.tsx
-		chrome.runtime.onMessage.addListener((message) => {
+		browser.runtime.onMessage.addListener((message, sender) => {
 			if (message.type === "renderComments") {
 				fire(message.movieId, message.data);
 			}
 			if (message.type === "exportJson") {
 				exportJson(message.movieId);
 			}
+			return undefined;
 		});
 		break;
 	}

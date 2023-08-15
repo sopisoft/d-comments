@@ -17,9 +17,10 @@
 
 @use "../global.scss";
 
-body:has(#options) {
+body {
   margin: 0;
   user-select: none;
+
   :any-link {
     text-decoration: none;
     color: rgb(6, 7, 133);
@@ -38,6 +39,7 @@ body:has(#options) {
     flex-direction: row;
     align-items: center;
     margin: 1rem 15%;
+
     span {
       text-align: center;
       margin-right: 20px;
@@ -48,6 +50,7 @@ body:has(#options) {
       }
     }
   }
+
   .wrapper {
     display: flex;
     flex-direction: row;
@@ -66,6 +69,7 @@ body:has(#options) {
       flex-wrap: wrap;
       margin: 0;
       padding: 0;
+
       &:not(*:last-child) {
         gap: 0.5rem;
       }
@@ -131,10 +135,12 @@ body:has(#options) {
       }
     }
   }
+
   @keyframes fadeIn {
     from {
       opacity: 0;
     }
+
     to {
       opacity: 1;
     }

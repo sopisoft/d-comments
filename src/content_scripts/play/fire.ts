@@ -17,6 +17,7 @@
 
 import play from "./play";
 import uiInit from "./ui";
+import browser from "webextension-polyfill";
 
 /**
  * 発火用関数
@@ -84,7 +85,7 @@ const fire = async (movieId: string, data: string) => {
 	// サーバーからコメントを取得するとき
 	else {
 		// サーバーから動画情報を取得する
-		chrome.runtime
+		browser.runtime
 			.sendMessage({
 				type: "movieData",
 				movieId: movieId,
@@ -93,7 +94,7 @@ const fire = async (movieId: string, data: string) => {
 				console.log(movieData);
 				if (movieData?.["meta"]["status"] === 200) {
 					// サーバーからコメントを取得する
-					chrome.runtime
+					browser.runtime
 						.sendMessage({
 							type: "threadData",
 							movieData: movieData,

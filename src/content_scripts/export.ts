@@ -15,22 +15,24 @@
     along with d-comments.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+import browser from "webextension-polyfill";
+
 const exportJson = (movieId: string) => {
-	chrome.runtime.sendMessage(
-		{
+	browser.runtime
+		.sendMessage({
 			type: "movieData",
 			movieId: movieId,
-		},
-		(movieData) => {
+		})
+		.then((movieData) => {
 			if (!movieData || movieData["meta"]["status"] !== 200) {
 				window.alert("動画情報の取得に失敗しました");
 			} else {
-				chrome.runtime.sendMessage(
-					{
+				browser.runtime
+					.sendMessage({
 						type: "threadData",
 						movieData: movieData,
-					},
-					(threadData) => {
+					})
+					.then((threadData) => {
 						const fileName = movieData["data"]["video"]["title"];
 						const jsonBody = {
 							version: 1,
@@ -40,11 +42,9 @@ const exportJson = (movieId: string) => {
 						};
 						const data = JSON.stringify(jsonBody);
 						saveFile(fileName, data);
-					},
-				);
+					});
 			}
-		},
-	);
+		});
 };
 
 /**

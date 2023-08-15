@@ -1,0 +1,39 @@
+{
+	"manifest_version": 3,
+	"name": "__MSG_name__",
+	"description": "__MSG_description__",
+	"default_locale": "ja",
+	"version": "@see ./scripts/manifest_json.ps1",
+	"icons": {
+		"16": "icons/16.png",
+		"32": "icons/32.png",
+		"48": "icons/48.png",
+		"128": "icons/128.png",
+		"256": "icons/256.png"
+	},
+	"action": {
+		"default_popup": "popup.html"
+	},
+	"options_page": "options.html",
+	"background": {
+		"@see": "./scripts/manifest_json.ps1"
+	},
+	"content_scripts": [
+		{
+			"js": ["d_comments.js"],
+			"matches": ["*://animestore.docomo.ne.jp/*"],
+			"run_at": "document_start",
+			"all_frames": true
+		}
+	],
+	"web_accessible_resources": ["@see ./scripts/manifest_json.ps1"],
+	"permissions": ["cookies", "storage", "tabs"],
+	"host_permissions": [
+		"*://animestore.docomo.ne.jp/*",
+		"*://*.nicovideo.jp/*",
+		"*://nvcomment.nicovideo.jp/*",
+		"*://nvapi.nicovideo.jp/v1/users/*",
+		"*://public.api.nicovideo.jp/v1/channel/channelapp/channels/*",
+		"*://api.search.nicovideo.jp/*"
+	]
+}

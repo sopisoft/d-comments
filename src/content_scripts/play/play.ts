@@ -19,6 +19,7 @@ import * as Config from "../config";
 import { setWorkInfo } from "../danime_dom/watch";
 
 import NiconiComments from "@xpadev-net/niconicomments";
+import browser from "webextension-polyfill";
 
 const status = {
 	/** スクロールモードかどうか */
@@ -77,7 +78,7 @@ const play = (
 	/**
 	 * 設定の変更を監視する
 	 */
-	chrome.storage.onChanged.addListener((changes, namespace) => {
+	browser.storage.onChanged.addListener((changes, namespace) => {
 		for (const [key, { oldValue, newValue }] of Object.entries(changes)) {
 			console.log(
 				`設定 ${key} (${namespace}) が更新されました`,
@@ -111,6 +112,7 @@ const play = (
 				}
 			}
 		}
+		return undefined;
 	});
 	window.addEventListener("resize", () => {
 		status.windowHeight = window.innerHeight;
