@@ -15,6 +15,8 @@
     along with d-comments.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+import browser from "webextension-polyfill";
+
 export type config = {
 	key: string;
 	value: string | number | boolean;
@@ -133,7 +135,7 @@ export const getConfig = (
 	key: string,
 	callback: (value: string | number | boolean) => void,
 ) => {
-	chrome.storage.local.get([key]).then((result) => {
+	browser.storage.local.get([key]).then((result) => {
 		const defaultValue = defaultConfigs.find((item) => item.key === key)?.value;
 		if (result[key] === undefined || null) {
 			console.log(`${key} (${result[key]}) ${defaultValue}`);
@@ -150,7 +152,7 @@ export const getConfig = (
  * @param value 設定値
  */
 export const setConfig = (key: string, value: string | number | boolean) => {
-	chrome.storage.local.set({ [key]: value }).then(() => {
+	browser.storage.local.set({ [key]: value }).then(() => {
 		console.log(key, value);
 	});
 };

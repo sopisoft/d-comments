@@ -138,9 +138,11 @@ body {
       height: 22px;
       text-align: center;
     }
+
     &.input-search {
       width: 240px;
     }
+
     &.input-file {
       width: 100%;
     }
@@ -304,6 +306,7 @@ body {
         align-items: center;
 
         color: rgb(7, 7, 43);
+
         i {
           font-size: 24px;
           margin-right: 5px;

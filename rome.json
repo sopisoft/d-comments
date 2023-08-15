@@ -1,12 +1,18 @@
 {
   "formatter": {
     "enabled": true,
-    "ignore": ["node_modules"],
+    "ignore": [
+      "node_modules",
+      "dist"
+    ],
     "formatWithErrors": true
   },
   "linter": {
     "enabled": true,
-    "ignore": ["node_modules"],
+    "ignore": [
+      "node_modules",
+      "dist"
+    ],
     "rules": {
       "recommended": true,
       "style": {

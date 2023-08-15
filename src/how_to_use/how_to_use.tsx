@@ -15,8 +15,7 @@
     along with d-comments.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-import md from "./use.md?raw";
-import "./use.scss";
+import "./how_to_use.scss";
 import rehypeSanitize from "rehype-sanitize";
 import rehypeSlug from "rehype-slug";
 import rehypeStringify from "rehype-stringify";
@@ -25,7 +24,9 @@ import remarkParse from "remark-parse";
 import remarkRehype from "remark-rehype";
 import remarkToc from "remark-toc";
 import { Suspense, createSignal, onMount } from "solid-js";
+import { render } from "solid-js/web";
 import { unified } from "unified";
+import browser from "webextension-polyfill";
 import "zenn-content-css";
 
 const parseMarkdown = async (text: string): Promise<string> => {
@@ -44,10 +45,17 @@ const parseMarkdown = async (text: string): Promise<string> => {
 		.process(text);
 	return String(file);
 };
-const Use = () => {
+const how_to_use = () => {
 	const [content, setContent] = createSignal("");
-	parseMarkdown(md).then((html) => {
-		setContent(html);
+
+	const md = fetch(browser.runtime.getURL("how_to_use.md")).then((response) =>
+		response.text(),
+	);
+
+	md.then((text) => {
+		parseMarkdown(text).then((html) => {
+			setContent(html);
+		});
 	});
 
 	return (
@@ -59,4 +67,8 @@ const Use = () => {
 	);
 };
 
-export default Use;
+const root = document.createElement("div");
+root.id = "use";
+document.body.appendChild(root);
+
+render(how_to_use, root);

@@ -17,6 +17,7 @@
 
 import { Match, Switch, createSignal } from "solid-js";
 import { render } from "solid-js/web";
+import browser from "webextension-polyfill";
 
 import * as Config from "../content_scripts/config";
 import "./popup.scss";
@@ -72,9 +73,9 @@ const Popup = () => {
 	 * 視聴ページでコメントを表示する
 	 */
 	const sendMessage = () => {
-		chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+		browser.tabs.query({ active: true, currentWindow: true }).then((tabs) => {
 			isWatchPage(tabs[0]?.url ?? "") &&
-				chrome.tabs.sendMessage(tabs[0].id as number, {
+				browser.tabs.sendMessage(tabs[0].id as number, {
 					type: "renderComments",
 					movieId: movieId(),
 					data: undefined,
@@ -89,9 +90,9 @@ const Popup = () => {
 	 * コメントをファイルで出力する
 	 */
 	const exportJson = () => {
-		chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+		browser.tabs.query({ active: true, currentWindow: true }).then((tabs) => {
 			isWatchPage(tabs[0]?.url ?? "") &&
-				chrome.tabs.sendMessage(tabs[0].id as number, {
+				browser.tabs.sendMessage(tabs[0].id as number, {
 					type: "exportJson",
 					movieId: movieId(),
 				}),
@@ -134,9 +135,9 @@ const Popup = () => {
 	 */
 	const loadFile = (data: string) => {
 		if (data.length > 0) {
-			chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+			browser.tabs.query({ active: true, currentWindow: true }).then((tabs) => {
 				isWatchPage(tabs[0]?.url ?? "") &&
-					chrome.tabs.sendMessage(tabs[0].id as number, {
+					browser.tabs.sendMessage(tabs[0].id as number, {
 						type: "renderComments",
 						movieId: movieId(),
 						data: data,
@@ -155,15 +156,15 @@ const Popup = () => {
 	 * @see https://site.nicovideo.jp/search-api-docs/snapshot
 	 */
 	const search = async (word: string) => {
-		chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+		browser.tabs.query({ active: true, currentWindow: true }).then((tabs) => {
 			isWatchPage(tabs[0]?.url ?? "") &&
-				chrome.runtime.sendMessage(
-					{
+				browser.runtime
+					.sendMessage({
 						type: "search",
 						word: word,
 						UserAgent: "d-comments",
-					},
-					(response) => {
+					})
+					.then((response) => {
 						if (response.meta.status === 200) {
 							console.log("検索結果", response);
 							setResult(response);
@@ -184,8 +185,7 @@ const Popup = () => {
 						} else {
 							return;
 						}
-					},
-				);
+					});
 		});
 	};
 
@@ -202,13 +202,13 @@ const Popup = () => {
 		isUser: boolean,
 	) => {
 		const res: Owner = [];
-		chrome.runtime.sendMessage(
-			{
+		browser.runtime
+			.sendMessage({
 				type: isUser ? "user" : "channel",
 				id: ownerId,
 				UserAgent: navigator.userAgent ?? "",
-			},
-			(response) => {
+			})
+			.then((response) => {
 				if (response.meta.status === 200) {
 					const setOwnerInfo = async () => {
 						res.push({
@@ -228,8 +228,7 @@ const Popup = () => {
 				} else {
 					return;
 				}
-			},
-		);
+			});
 		return res;
 	};
 
@@ -253,7 +252,7 @@ const Popup = () => {
 		);
 	};
 
-	chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+	browser.tabs.query({ active: true, currentWindow: true }).then((tabs) => {
 		console.log(tabs[0]?.url);
 		isWatchPage(tabs[0]?.url ?? "") &&
 			(setTabPage("watch"), init(tabs[0]?.title ?? ""));
@@ -263,7 +262,7 @@ const Popup = () => {
 		<>
 			<a
 				aria-label="設定"
-				href={chrome.runtime.getURL("src/options/index.html")}
+				href={browser.runtime.getURL("options.html")}
 				class="btn-option"
 				target="_blank"
 				rel="noopener noreferrer"
@@ -423,7 +422,7 @@ const NotActive = () => {
 			</div>
 			<div class="link">
 				<a
-					href={chrome.runtime.getURL("src/options/index.html")}
+					href={browser.runtime.getURL("options.html")}
 					target="_blank"
 					rel="noopener noreferrer"
 					class="btn"
@@ -434,7 +433,7 @@ const NotActive = () => {
 			</div>
 			<div class="link">
 				<a
-					href={chrome.runtime.getURL("src/use/index.html")}
+					href={browser.runtime.getURL("how_to_use.html")}
 					target="_blank"
 					rel="noopener noreferrer"
 					class="btn"

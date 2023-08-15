@@ -17,7 +17,7 @@
 
 @use "../global.scss";
 
-body:has(#use) {
+body {
   margin: 2rem;
   display: flex;
   flex-direction: column;

@@ -15,6 +15,8 @@ You should have received a copy of the GNU General Public License
 along with d-comments.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+import browser from "webextension-polyfill";
+
 import * as Config from "../config";
 
 const configs = {
@@ -136,7 +138,7 @@ export const init = () => {
 	});
 };
 
-chrome.storage.onChanged.addListener((changes, namespace) => {
+browser.storage.onChanged.addListener((changes, namespace) => {
 	for (const [key, { oldValue, newValue }] of Object.entries(changes)) {
 		switch (key) {
 			case "コメント欄のスクールバーを表示する": {
@@ -192,6 +194,7 @@ chrome.storage.onChanged.addListener((changes, namespace) => {
 			}
 		}
 	}
+	return undefined;
 });
 
 /**
@@ -200,10 +203,10 @@ chrome.storage.onChanged.addListener((changes, namespace) => {
 export const setDefaultStyle = () => {
 	const style = document.createElement("style");
 	style.id = "d-comments-style";
-	const normalFont = chrome.runtime.getURL(
+	const normalFont = browser.runtime.getURL(
 		"src/assets/fonts/BIZ_UDPGothic.ttf",
 	);
-	const bolderFont = chrome.runtime.getURL(
+	const bolderFont = browser.runtime.getURL(
 		"src/assets/fonts/BIZ_UDPGothic-Bold.ttf",
 	);
 	const css = `

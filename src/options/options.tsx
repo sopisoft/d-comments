@@ -19,6 +19,8 @@ import { JSX, createEffect, createSignal } from "solid-js";
 import * as Config from "../content_scripts/config";
 import Editor from "./editor";
 import "./options.scss";
+import { render } from "solid-js/web";
+import browser from "webextension-polyfill";
 
 const Options = () => {
 	const [options, setOptions] = createSignal<Array<Config.config>>(
@@ -65,7 +67,7 @@ const Options = () => {
 		}
 	};
 
-	chrome.storage.onChanged.addListener((changes, namespace) => {
+	browser.storage.onChanged.addListener((changes, namespace) => {
 		for (const [key, { oldValue, newValue }] of Object.entries(changes)) {
 			setOption(key, newValue);
 		}
@@ -189,12 +191,12 @@ const Options = () => {
 
 			<footer>
 				<span class="info">
-					{chrome.runtime.getManifest().name}
-					&nbsp;-&nbsp;Version&nbsp;{chrome.runtime.getManifest().version}
+					{browser.runtime.getManifest().name}
+					&nbsp;-&nbsp;Version&nbsp;{browser.runtime.getManifest().version}
 				</span>
 				<span class="info">
 					&copy;&nbsp;{new Date().getFullYear()}&nbsp;
-					{chrome.runtime.getManifest().author}
+					{browser.runtime.getManifest().author}
 				</span>
 				<div class="links">
 					<span class="link">
@@ -225,4 +227,8 @@ const Options = () => {
 	);
 };
 
-export default Options;
+const root = document.createElement("div");
+root.id = "options";
+document.body.appendChild(root);
+
+render(Options, root);

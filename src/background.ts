@@ -16,7 +16,7 @@
 */
 
 import * as Config from "./content_scripts/config";
-import { migrate } from "./content_scripts/migrate";
+import browser from "webextension-polyfill";
 
 /**
  * 任意の範囲のランダムな整数を返す
@@ -52,9 +52,9 @@ const getMovieData = (movieId: string, sendResponse: (v: any) => void) => {
 		};
 
 		if (config) {
-			chrome.cookies.get(
-				{ url: "https://www.nicovideo.jp/", name: "user_session" },
-				(cookie) => {
+			browser.cookies
+				.get({ url: "https://www.nicovideo.jp/", name: "user_session" })
+				.then((cookie) => {
 					fetch(`${url}?${new URLSearchParams(params)}`, {
 						credentials: "include",
 						headers: {
@@ -69,8 +69,7 @@ const getMovieData = (movieId: string, sendResponse: (v: any) => void) => {
 						.then((v) => {
 							sendResponse(v);
 						});
-				},
-			);
+				});
 		} else {
 			fetch(`${url}?${new URLSearchParams(params)}`, {
 				credentials: "omit",
@@ -147,86 +146,74 @@ const search = (word: string, UserAgent: string) => {
 	return d;
 };
 
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-	switch (message.type) {
-		case "movieData": {
-			getMovieData(message.movieId, sendResponse);
-			return true;
+browser.runtime.onMessage.addListener(
+	// rome-ignore lint/suspicious/noExplicitAny: <explanation>
+	(message, sender, sendResponse: (v: any) => void) => {
+		switch (message.type) {
+			case "movieData": {
+				getMovieData(message.movieId, sendResponse);
+				return true;
+			}
+			case "threadData": {
+				getThreadComments(message.movieData)
+					.then((res) => {
+						return res.json();
+					})
+					.then((json) => {
+						sendResponse(json["data"]);
+					});
+				return true;
+			}
+			case "search": {
+				search(message.word, message.UserAgent)
+					.then((res) => {
+						return res.json();
+					})
+					.then((json) => {
+						sendResponse(json);
+					});
+				return true;
+			}
+			case "user": {
+				const url = `https://nvapi.nicovideo.jp/v1/users/${message.id}`;
+				fetch(url, {
+					headers: {
+						"User-Agent": message.UserAgent,
+						"x-frontend-id": "6",
+						"x-frontend-version": "0",
+					},
+				})
+					.then((res) => {
+						return res.json();
+					})
+					.then((json) => {
+						sendResponse(json);
+					});
+				return true;
+			}
+			case "channel": {
+				const url = `https://public.api.nicovideo.jp/v1/channel/channelapp/channels/${message.id}.json`;
+				fetch(url)
+					.then((res) => {
+						return res.json();
+					})
+					.then((json) => {
+						sendResponse(json);
+					});
+				return true;
+			}
 		}
-		case "threadData": {
-			getThreadComments(message.movieData)
-				.then((res) => {
-					return res.json();
-				})
-				.then((json) => {
-					sendResponse(json["data"]);
-				})
-				.catch((err) => {
-					sendResponse(err);
-				});
-			return true;
-		}
-		case "search": {
-			search(message.word, message.UserAgent)
-				.then((res) => {
-					return res.json();
-				})
-				.then((json) => {
-					sendResponse(json);
-				})
-				.catch((err) => {
-					sendResponse(err);
-				});
-			return true;
-		}
-		case "user": {
-			const url = `https://nvapi.nicovideo.jp/v1/users/${message.id}`;
-			fetch(url, {
-				headers: {
-					"User-Agent": message.UserAgent,
-					"x-frontend-id": "6",
-					"x-frontend-version": "0",
-				},
-			})
-				.then((res) => {
-					return res.json();
-				})
-				.then((json) => {
-					sendResponse(json);
-				})
-				.catch((err) => {
-					sendResponse(err);
-				});
-			return true;
-		}
-		case "channel": {
-			const url = `https://public.api.nicovideo.jp/v1/channel/channelapp/channels/${message.id}.json`;
-			fetch(url)
-				.then((res) => {
-					return res.json();
-				})
-				.then((json) => {
-					sendResponse(json);
-				})
-				.catch((err) => {
-					sendResponse(err);
-				});
-			return true;
-		}
-		default:
-			return false;
-	}
-});
+		return undefined;
+	},
+);
 
 /**
  * インストール直後につかいかたページを開く
  */
-chrome.runtime.onInstalled.addListener((details) => {
-	migrate();
-
+browser.runtime.onInstalled.addListener((details) => {
 	if (details.reason === "install") {
-		chrome.tabs.create({
-			url: chrome.runtime.getURL("src/use/index.html"),
+		browser.tabs.create({
+			url: browser.runtime.getURL("how_to_use.html"),
 		});
 	}
 });
