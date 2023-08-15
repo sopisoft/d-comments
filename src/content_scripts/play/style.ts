@@ -203,12 +203,8 @@ browser.storage.onChanged.addListener((changes, namespace) => {
 export const setDefaultStyle = () => {
 	const style = document.createElement("style");
 	style.id = "d-comments-style";
-	const normalFont = browser.runtime.getURL(
-		"src/assets/fonts/BIZ_UDPGothic.ttf",
-	);
-	const bolderFont = browser.runtime.getURL(
-		"src/assets/fonts/BIZ_UDPGothic-Bold.ttf",
-	);
+	const normalFont = browser.runtime.getURL("fonts/BIZ_UDPGothic.ttf");
+	const bolderFont = browser.runtime.getURL("fonts/BIZ_UDPGothic-Bold.ttf");
 	const css = `
 #d-comments-container::-webkit-scrollbar {
 	display:none;

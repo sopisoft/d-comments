@@ -30,7 +30,7 @@ $web_accessible_resources = @(
 )
 
 $background_chrome = @{
-	service_worker = "background.js";
+	service_worker = "js/background.js";
 	type = "module"
 }
 
