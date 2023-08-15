@@ -40,7 +40,10 @@ $background_firefox = @{
 	);
 }
 
+$node_package_version = Get-Content -Path "package.json" | ConvertFrom-Json | Select-Object -ExpandProperty version
+
 $manifest_common = Get-Content -Path "src/manifest_base.json" | ConvertFrom-Json
+$manifest_common.version = $node_package_version
 $manifest_common.web_accessible_resources = $web_accessible_resources
 $manifest_common.background = IF ($browser -eq "chrome") { $background_chrome } ELSE { $background_firefox }
 

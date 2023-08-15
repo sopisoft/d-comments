@@ -7,7 +7,6 @@ IF (Test-Path dist) {
 	Remove-Item dist -Recurse
 }
 
-
 Write-Output "Linting..."
 npx rome format ./src --write
 npx rome check ./src --apply-unsafe
