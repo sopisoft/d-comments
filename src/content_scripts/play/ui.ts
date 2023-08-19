@@ -65,8 +65,7 @@ const uiInit = () => {
 		background: "var(--d-comments-container-background, rgba(0,0,0,0.35))",
 		flexDirection: "column",
 		overflow: "hidden",
-		overflowY: "scroll",
-		fontFamily: "BIZ_UDPGothic",
+		fontFamily: "'Noto Sans JP', 'Noto Emoji', sans-serif",
 		fontSize: "medium",
 		fontWeight: 500,
 		fontStyle: "normal",
@@ -98,8 +97,10 @@ const uiInit = () => {
 	 */
 	const status_bar = document.createElement("div");
 	Object.assign(status_bar.style, {
-		textAlign: "center",
-		padding: "4px",
+		padding: "2px",
+		display: "flex",
+		justifyContent: "center",
+		alignItems: "center",
 	});
 
 	container.appendChild(status_bar);

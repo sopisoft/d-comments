@@ -18,15 +18,6 @@ $web_accessible_resources = @(
 			$js_files | ForEach-Object { "js/$($_.Name)"}
 		)
 	}
-	@{
-		matches = @(
-			"*://animestore.docomo.ne.jp/*"
-		)
-		resources = @(
-			"fonts/BIZ_UDPGothic.ttf",
-			"fonts/BIZ_UDPGothic-Bold.ttf"
-		)
-	}
 )
 
 $background_chrome = @{

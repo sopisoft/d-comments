@@ -203,24 +203,21 @@ browser.storage.onChanged.addListener((changes, namespace) => {
 export const setDefaultStyle = () => {
 	const style = document.createElement("style");
 	style.id = "d-comments-style";
-	const normalFont = browser.runtime.getURL("fonts/BIZ_UDPGothic.ttf");
-	const bolderFont = browser.runtime.getURL("fonts/BIZ_UDPGothic-Bold.ttf");
-	const css = `
-#d-comments-container::-webkit-scrollbar {
-	display:none;
-}
-@font-face {
-	font-family:"BIZ_UDPGothic";
-	src: url(${normalFont}) format("truetype");
-	font-weight:normal;
-}
-@font-face {
-	font-family:"BIZ_UDPGothic";
-	src: url(${bolderFont}) format("truetype");
-	font-weight:bolder;
-}
+	const css = `#d-comments-container::-webkit-scrollbar { display:none; }
 `;
 	style.innerHTML = css;
 	document.getElementById("d-comments-style")?.remove();
 	document.head.appendChild(style);
 };
+
+(function () {
+	if (!document.getElementById("d-comments-font")) {
+		const css = `
+		@import url('https://fonts.googleapis.com/css2?family=Noto+Emoji:wght@300;400;500;600;700');
+		@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@200;300;400;500;600;700;800;900');`;
+		const style = document.createElement("style");
+		style.id = "d-comments-font";
+		style.innerHTML = css;
+		document.head.appendChild(style);
+	}
+})();

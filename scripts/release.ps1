@@ -19,7 +19,7 @@ $browsers = @("chrome", "firefox")
 ForEach ($browser in $browsers) {
 	Get-ChildItem -Path dist/$browser/src -Recurse -Include *.html | Move-Item -Destination dist/$browser -Force
 	Remove-Item -Path dist/$browser/src -Recurse -Force
-	./scripts/manifest_json.ps1 $browser
+	./scripts/manifest_json $browser
 }
 
 Write-Output "Zipping..."
@@ -34,5 +34,6 @@ If ($Error) {
 	Exit 1
 } else {
 	Write-Output "`nDone!"
+	Get-ChildItem -Path dist -Recurse -Include *.zip -Depth 1 | Format-Table -Property Name, Length -AutoSize
 	Exit 0
 }

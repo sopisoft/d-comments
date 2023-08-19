@@ -14,8 +14,8 @@ d アニメストアの動画再生画面でニコニコ動画のコメントを
 
 ## Requirements
 
-- node.js ^18.16.0 ([Node.js](https://nodejs.org/ja/))
-- Google Chrome (Latest) or Microsoft Edge (Latest)
+- [Node.js](https://nodejs.org/ja/)
+- Google Chrome (Latest) or Microsoft Edge (Latest) and Firefox (Latest)
 - [PowerShell](https://docs.microsoft.com/ja-jp/powershell/scripting/install/installing-powershell)
 - [Visual Studio Code](https://code.visualstudio.com/)
 
@@ -29,18 +29,6 @@ npm install
 
 ```PowerShell
 npm run release
-```
-
-## Build
-
-```PowerShell
-npm run build
-```
-
-## Build in dev mode
-
-```PowerShell
-npm run dev
 ```
 
 ## Format
