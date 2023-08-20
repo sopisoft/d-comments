@@ -34,11 +34,15 @@ type work_info = {
 };
 
 export async function get_work_info(): Promise<work_info> {
-	const url_parm = new URLSearchParams(location.search);
-	const api_url = `${base_url}/?viewType=5&partId=${url_parm.get(
-		"partId",
-	)}&&defaultPlay=5`;
-	const res = await fetch(api_url, {
+	const partId =
+		new URLSearchParams(location.search).get("partId")?.toString() ?? "";
+	const params = {
+		viewType: "5",
+		partId: partId,
+		defaultPlay: "5",
+	};
+	const params_str = new URLSearchParams(params).toString();
+	const res = await fetch(`${base_url}?${params_str}`, {
 		method: "GET",
 		cache: "no-cache",
 	}).then((res) => {

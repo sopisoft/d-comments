@@ -32,9 +32,15 @@ export const setWorkInfo = async () => {
 		?.setAttribute("content", partExp);
 
 	const mediaSession = navigator.mediaSession;
-	while (document.querySelector(".playButton") === null) {
-		await new Promise((resolve) => setTimeout(resolve, 100));
-	}
+	await new Promise((resolve) => {
+		(function f() {
+			if (document.querySelector(".playButton") === null) {
+				setTimeout(f, 100);
+			} else {
+				resolve(null);
+			}
+		})();
+	});
 	const dom_play_button = document.querySelector(".playButton");
 	const dom_seekforward_button = document.querySelector(".backButton");
 	const dom_seekbackward_button = document.querySelector(".skipButton");
