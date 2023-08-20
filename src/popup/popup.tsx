@@ -58,15 +58,16 @@ const Popup = () => {
 
 	/**
 	 * 作品視聴ページか判定
-	 * @param href window.location.href
+	 * @param href window.location
 	 * @returns boolean
 	 */
-	const isWatchPage = (href: string) => {
-		return href.match(
-			/https:\/\/animestore\.docomo\.ne\.jp\/animestore\/sc_d_pc\?partId=\d+/,
-		)
-			? true
-			: false;
+	const isWatchPage = (location: string | undefined) => {
+		if (location) {
+			const url = new URL(location);
+			return url.pathname === "/animestore/ci_pc";
+		} else {
+			return false;
+		}
 	};
 
 	/**
@@ -74,7 +75,7 @@ const Popup = () => {
 	 */
 	const sendMessage = () => {
 		browser.tabs.query({ active: true, currentWindow: true }).then((tabs) => {
-			isWatchPage(tabs[0]?.url ?? "") &&
+			isWatchPage(tabs[0]?.url) &&
 				browser.tabs.sendMessage(tabs[0].id as number, {
 					type: "renderComments",
 					movieId: movieId(),
@@ -91,7 +92,7 @@ const Popup = () => {
 	 */
 	const exportJson = () => {
 		browser.tabs.query({ active: true, currentWindow: true }).then((tabs) => {
-			isWatchPage(tabs[0]?.url ?? "") &&
+			isWatchPage(tabs[0]?.url) &&
 				browser.tabs.sendMessage(tabs[0].id as number, {
 					type: "exportJson",
 					movieId: movieId(),
@@ -136,7 +137,7 @@ const Popup = () => {
 	const loadFile = (data: string) => {
 		if (data.length > 0) {
 			browser.tabs.query({ active: true, currentWindow: true }).then((tabs) => {
-				isWatchPage(tabs[0]?.url ?? "") &&
+				isWatchPage(tabs[0]?.url) &&
 					browser.tabs.sendMessage(tabs[0].id as number, {
 						type: "renderComments",
 						movieId: movieId(),
@@ -157,7 +158,7 @@ const Popup = () => {
 	 */
 	const search = async (word: string) => {
 		browser.tabs.query({ active: true, currentWindow: true }).then((tabs) => {
-			isWatchPage(tabs[0]?.url ?? "") &&
+			isWatchPage(tabs[0]?.url) &&
 				browser.runtime
 					.sendMessage({
 						type: "search",
@@ -254,7 +255,7 @@ const Popup = () => {
 
 	browser.tabs.query({ active: true, currentWindow: true }).then((tabs) => {
 		console.log(tabs[0]?.url);
-		isWatchPage(tabs[0]?.url ?? "") &&
+		isWatchPage(tabs[0]?.url) &&
 			(setTabPage("watch"), init(tabs[0]?.title ?? ""));
 	});
 

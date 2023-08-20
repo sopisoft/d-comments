@@ -46,11 +46,7 @@ const setRoot = () => {
 	--d-comments-container-left:${configs.overlay ? configs.left : 0}%;
 	--d-comments-container-background:rgba(${rgba})
 }`;
-	if (
-		window.location.href.match(
-			/https:\/\/animestore\.docomo\.ne\.jp\/animestore\/sc_d_pc\?partId=\d+/,
-		)
-	) {
+	if (window.location.pathname === "/animestore/sc_d_pc") {
 		const style = document.createElement("style");
 		style.id = "d-comments-style-root";
 		style.innerHTML = root;
@@ -74,11 +70,7 @@ const setScrollBar = () => {
 #d-comments-container ul::-webkit-scrollbar {
 	display:none;
 }`;
-	if (
-		window.location.href.match(
-			/https:\/\/animestore\.docomo\.ne\.jp\/animestore\/sc_d_pc\?partId=\d+/,
-		)
-	) {
+	if (window.location.pathname === "/animestore/sc_d_pc") {
 		const style = document.createElement("style");
 		style.id = "d-comments-style-scrollBar";
 		const css = `${configs.scrollBar ? scrollBar : scrollBarNone}`;
