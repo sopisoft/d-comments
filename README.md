@@ -15,7 +15,13 @@ d アニメストアの動画再生画面でニコニコ動画のコメントを
 ## Requirements
 
 - [Node.js](https://nodejs.org/ja/)
-- Google Chrome (Latest) or Microsoft Edge (Latest) and Firefox (Latest)
+- Latest Firefox Based Browser
+  - [Firefox](https://www.mozilla.org/ja/firefox/new/)
+  - etc...
+- Latest Chromium Based Browser
+  - [Google Chrome](https://www.google.com/intl/ja_jp/chrome/)
+  - [Microsoft Edge](https://www.microsoft.com/ja-jp/edge)
+  - etc...
 - [PowerShell](https://docs.microsoft.com/ja-jp/powershell/scripting/install/installing-powershell)
 - [Visual Studio Code](https://code.visualstudio.com/)
 
