@@ -65,7 +65,7 @@ const uiInit = () => {
 		background: "var(--d-comments-container-background, rgba(0,0,0,0.35))",
 		flexDirection: "column",
 		overflow: "hidden",
-		fontFamily: "'Noto Sans JP', 'Noto Emoji', sans-serif",
+		fontFamily: "'Noto Sans JP', 'Noto Color Emoji', sans-serif",
 		fontSize: "medium",
 		fontWeight: 500,
 		fontStyle: "normal",

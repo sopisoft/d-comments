@@ -213,7 +213,7 @@ export const setDefaultStyle = () => {
 (function () {
 	if (!document.getElementById("d-comments-font")) {
 		const css = `
-		@import url('https://fonts.googleapis.com/css2?family=Noto+Emoji:wght@300;400;500;600;700');
+		@import url('https://fonts.googleapis.com/css2?family=Noto+Color+Emoji');
 		@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@200;300;400;500;600;700;800;900');`;
 		const style = document.createElement("style");
 		style.id = "d-comments-font";

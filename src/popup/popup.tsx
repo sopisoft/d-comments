@@ -282,7 +282,7 @@ const Popup = () => {
 								target="_blank"
 								rel="noopener noreferrer"
 							>
-								【詳細】
+								【動画IDとは】
 							</a>
 						</p>
 						<div>
@@ -293,8 +293,8 @@ const Popup = () => {
 							/>
 							<button
 								type="button"
-								aria-label="コメントをファイルで出力する"
-								class="btn btn-text"
+								aria-label="コメントをファイルに出力する"
+								class="btn"
 								onClick={() => {
 									exportJson();
 								}}
@@ -304,7 +304,7 @@ const Popup = () => {
 							<button
 								type="button"
 								aria-label="視聴ページでコメントを表示する"
-								class="btn btn-text"
+								class="btn"
 								onClick={() => {
 									sendMessage();
 								}}
@@ -325,17 +325,18 @@ const Popup = () => {
 						</div>
 					</label>
 					<label>
-						<p>検索ワード</p>
+						<p>動画検索</p>
 						<div>
 							<input
 								class="input-search"
 								value={word()}
 								onChange={(e) => setWord((e.target as HTMLInputElement).value)}
+								placeholder="検索ワードを入力"
 							/>
 							<button
 								type="button"
 								aria-label="検索"
-								class="btn btn-icon"
+								class="btn"
 								onClick={() => {
 									search(word());
 								}}
