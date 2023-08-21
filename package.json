@@ -31,7 +31,7 @@
     "remark-rehype": "^10.1.0",
     "remark-toc": "^8.0.1",
     "solid-js": "^1.7.11",
-    "unified": "^11.0.1",
+    "unified": "^11.0.2",
     "webextension-polyfill": "^0.10.0",
     "zenn-content-css": "^0.1.144"
   },
