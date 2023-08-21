@@ -33,10 +33,9 @@ $background_firefox = @{
 	);
 }
 
-$guid = [Guid]::NewGuid().ToString()
 $firefox_specific_settings = @{
 	"gecko" = @{
-		"id" = "{${guid}}"
+		"id" = "{7817f7db-9b81-4857-8e67-d5c32aa6b52e}"
 	}
 }
 

@@ -64,7 +64,7 @@ const Popup = () => {
 	const isWatchPage = (location: string | undefined) => {
 		if (location) {
 			const url = new URL(location);
-			return url.pathname === "/animestore/ci_pc";
+			return url.pathname === "/animestore/sc_d_pc";
 		} else {
 			return false;
 		}

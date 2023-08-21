@@ -30,7 +30,11 @@ Write-Output "Zipping for Chrome..."
 #}
 
 Write-Output "Zipping for Firefox..."
+IF (Test-Path web-ext-artifacts) {
+	Remove-Item -Path web-ext-artifacts -Recurse
+}
 npx web-ext build --source-dir dist/firefox --overwrite-dest
+Copy-Item -Path web-ext-artifacts/*.zip -Destination dist/firefox.zip -Force
 
 If ($Error) {
 	Foreach ($error in $Error) {

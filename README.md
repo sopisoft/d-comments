@@ -49,11 +49,11 @@ If you have some errors, please try the following command with PowerShell in the
 ./scripts/release.ps1
 ```
 
-This will create a zip file in the `dist` directory and `web-ext-artifacts` directory.
+This will create a zip file in the `dist` directory.
 
-A zip file in the `dist` directory is for uploading to the Chrome Web Store.
+`dist/chrome.zip` is for Chromium based browsers.
 
-A zip file in the `web-ext-artifacts` directory is for uploading to the Firefox Add-ons site.
+`dist/firefox.zip` is for Firefox based browsers.
 
 ### Linter
 
