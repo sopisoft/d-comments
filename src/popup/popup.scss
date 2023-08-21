@@ -19,13 +19,10 @@
 
 body {
   margin: 0;
-  width: 400px;
-  height: 580px;
-  max-width: 480px;
-  max-height: 580px;
-  min-width: 400px;
-  min-height: 580px;
+  width: 35rem;
+  height: 100%;
   user-select: none;
+  overflow: hidden;
 
   :any-link {
     text-decoration: none;
@@ -80,7 +77,6 @@ body {
 
   .btn-option {
     margin: 0px;
-    overflow: hidden;
     padding: 0px;
     color: #060785;
     position: fixed;
@@ -93,7 +89,7 @@ body {
       transition: color 0.6s cubic-bezier(0.53, 0.21, 0, 1);
 
       i {
-        font-size: 25px;
+        font-size: 28px !important;
       }
     }
 
@@ -153,10 +149,12 @@ body {
   }
 
   label {
+    width: 22rem;
     font-size: large;
     font-weight: bold;
     display: flex;
     flex-direction: column;
+    margin: auto;
     padding: 0 24px;
 
     p {
@@ -169,16 +167,12 @@ body {
       justify-content: space-between;
       align-items: center;
 
-      .btn-text {
-        padding: 10px 25px;
-      }
-
-      .btn-icon {
+      .btn {
         padding: 10px 25px;
 
         i {
-          font-size: 24px;
-          font-weight: bold;
+          font-size: 24px !important;
+          font-weight: bold !important;
         }
       }
     }
@@ -300,16 +294,25 @@ body {
       a {
         width: 12rem;
         padding: 10px 25px;
-        display: inline-flex;
-        flex-direction: row;
+        display: inline-grid;
         justify-content: center;
         align-items: center;
+        grid-template-areas: "icon text";
+        grid-template-columns: 30% 70%;
+        grid-template-rows: auto;
+        grid-column-gap: 5px;
+        grid-row-gap: 0px;
 
         color: rgb(7, 7, 43);
 
         i {
           font-size: 24px;
           margin-right: 5px;
+          grid-area: icon;
+        }
+
+        span {
+          grid-area: text;
         }
       }
     }

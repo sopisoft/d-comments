@@ -30,21 +30,23 @@ import browser from "webextension-polyfill";
 import "zenn-content-css";
 
 const parseMarkdown = async (text: string): Promise<string> => {
-	const file = await unified()
-		.use(remarkParse)
-		.use(remarkToc, {
-			heading: "目次",
-			tight: true,
-			prefix: "user-content-",
-		})
-		.use(remarkGfm)
-		.use(remarkRehype)
-		.use(rehypeSlug)
-		.use(rehypeSanitize)
-		.use(rehypeStringify)
-		.process(text);
-	return String(file);
+	return String(
+		await unified()
+			.use(remarkParse)
+			.use(remarkToc, {
+				heading: "目次",
+				tight: true,
+				prefix: "user-content-",
+			})
+			.use(remarkGfm)
+			.use(remarkRehype)
+			.use(rehypeSlug)
+			.use(rehypeSanitize)
+			.use(rehypeStringify)
+			.process(text),
+	);
 };
+
 const how_to_use = () => {
 	const [content, setContent] = createSignal("");
 

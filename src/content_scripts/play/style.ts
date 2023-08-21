@@ -46,11 +46,7 @@ const setRoot = () => {
 	--d-comments-container-left:${configs.overlay ? configs.left : 0}%;
 	--d-comments-container-background:rgba(${rgba})
 }`;
-	if (
-		window.location.href.match(
-			/https:\/\/animestore\.docomo\.ne\.jp\/animestore\/sc_d_pc\?partId=\d+/,
-		)
-	) {
+	if (window.location.pathname === "/animestore/sc_d_pc") {
 		const style = document.createElement("style");
 		style.id = "d-comments-style-root";
 		style.innerHTML = root;
@@ -74,11 +70,7 @@ const setScrollBar = () => {
 #d-comments-container ul::-webkit-scrollbar {
 	display:none;
 }`;
-	if (
-		window.location.href.match(
-			/https:\/\/animestore\.docomo\.ne\.jp\/animestore\/sc_d_pc\?partId=\d+/,
-		)
-	) {
+	if (window.location.pathname === "/animestore/sc_d_pc") {
 		const style = document.createElement("style");
 		style.id = "d-comments-style-scrollBar";
 		const css = `${configs.scrollBar ? scrollBar : scrollBarNone}`;
@@ -203,24 +195,21 @@ browser.storage.onChanged.addListener((changes, namespace) => {
 export const setDefaultStyle = () => {
 	const style = document.createElement("style");
 	style.id = "d-comments-style";
-	const normalFont = browser.runtime.getURL("fonts/BIZ_UDPGothic.ttf");
-	const bolderFont = browser.runtime.getURL("fonts/BIZ_UDPGothic-Bold.ttf");
-	const css = `
-#d-comments-container::-webkit-scrollbar {
-	display:none;
-}
-@font-face {
-	font-family:"BIZ_UDPGothic";
-	src: url(${normalFont}) format("truetype");
-	font-weight:normal;
-}
-@font-face {
-	font-family:"BIZ_UDPGothic";
-	src: url(${bolderFont}) format("truetype");
-	font-weight:bolder;
-}
+	const css = `#d-comments-container::-webkit-scrollbar { display:none; }
 `;
 	style.innerHTML = css;
 	document.getElementById("d-comments-style")?.remove();
 	document.head.appendChild(style);
 };
+
+(function () {
+	if (!document.getElementById("d-comments-font")) {
+		const css = `
+		@import url('https://fonts.googleapis.com/css2?family=Noto+Color+Emoji');
+		@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@200;300;400;500;600;700;800;900');`;
+		const style = document.createElement("style");
+		style.id = "d-comments-font";
+		style.innerHTML = css;
+		document.head.appendChild(style);
+	}
+})();

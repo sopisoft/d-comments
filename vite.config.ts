@@ -4,7 +4,6 @@ import solidPlugin from "vite-plugin-solid";
 
 // https://ja.vitejs.dev/config/
 export default defineConfig({
-	// [Root](https://ja.vitejs.dev/config/shared-options.html#root) を src にすると何故か HMR が効かない
 	publicDir: "src/raw",
 	plugins: [solidPlugin()],
 	build: {

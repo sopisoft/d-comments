@@ -10,48 +10,58 @@
 
 d アニメストアの動画再生画面でニコニコ動画のコメントを表示する Chromium 拡張機能です。
 
+## Installation
+
 [Chrome Web Store](https://chrome.google.com/webstore/detail/d-comments/jocjhkklfiaojhhnjiejmimlohaemiep)
 
-## Requirements
+[Firefox Browser Add-ons](https://addons.mozilla.org/ja/firefox/addon/d-comments/)
 
-- node.js ^18.16.0 ([Node.js](https://nodejs.org/ja/))
-- Google Chrome (Latest) or Microsoft Edge (Latest)
+## Development
+
+### Requirements
+
+- [Node.js](https://nodejs.org/ja/)
+- Latest Firefox Based Browser
+  - [Firefox](https://www.mozilla.org/ja/firefox/new/)
+  - etc...
+- Latest Chromium Based Browser
+  - [Google Chrome](https://www.google.com/intl/ja_jp/chrome/)
+  - [Microsoft Edge](https://www.microsoft.com/ja-jp/edge)
+  - etc...
 - [PowerShell](https://docs.microsoft.com/ja-jp/powershell/scripting/install/installing-powershell)
 - [Visual Studio Code](https://code.visualstudio.com/)
 
-## Setup
+Install local dependencies by running:
 
-```PowerShell
+```sh
 npm install
 ```
 
-## Release
+### How to build
 
-```PowerShell
+Run the following command:
+
+```sh
 npm run release
 ```
 
-## Build
+If you have some errors, please try the following command with PowerShell in the project root directory:
 
-```PowerShell
-npm run build
+```powershell
+./scripts/release.ps1
 ```
 
-## Build in dev mode
+This will create a zip file in the `dist` directory.
 
-```PowerShell
-npm run dev
-```
+`dist/chrome.zip` is for Chromium based browsers.
 
-## Format
+`dist/firefox.zip` is for Firefox based browsers.
 
-```PowerShell
-npm run format
-```
+### Linter
 
-## Lint
+Run the following command:
 
-```PowerShell
+```sh
 npm run lint
 ```
 

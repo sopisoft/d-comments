@@ -9,6 +9,8 @@ $exclude_js_files = @(
 
 $js_files = Get-ChildItem -Path "dist/$browser/js" -Recurse -Exclude $exclude_js_files
 
+$node_package_version = Get-Content -Path "package.json" | ConvertFrom-Json | Select-Object -ExpandProperty version
+
 $web_accessible_resources = @(
 	@{
 		matches = @(
@@ -16,15 +18,6 @@ $web_accessible_resources = @(
 		)
 		resources = @(
 			$js_files | ForEach-Object { "js/$($_.Name)"}
-		)
-	}
-	@{
-		matches = @(
-			"*://animestore.docomo.ne.jp/*"
-		)
-		resources = @(
-			"fonts/BIZ_UDPGothic.ttf",
-			"fonts/BIZ_UDPGothic-Bold.ttf"
 		)
 	}
 )
@@ -40,12 +33,20 @@ $background_firefox = @{
 	);
 }
 
-$node_package_version = Get-Content -Path "package.json" | ConvertFrom-Json | Select-Object -ExpandProperty version
+$firefox_specific_settings = @{
+	"gecko" = @{
+		"id" = "{7817f7db-9b81-4857-8e67-d5c32aa6b52e}"
+	}
+}
+
 
 $manifest_common = Get-Content -Path "src/manifest_base.json" | ConvertFrom-Json
 $manifest_common.version = $node_package_version
 $manifest_common.web_accessible_resources = $web_accessible_resources
 $manifest_common.background = IF ($browser -eq "chrome") { $background_chrome } ELSE { $background_firefox }
+IF ($browser -eq "firefox") {
+	$manifest_common = $manifest_common | Add-Member -MemberType NoteProperty -Name "browser_specific_settings" -Value $firefox_specific_settings -PassThru
+}
 
 $manifest = $manifest_common[0] | ConvertTo-Json -Depth 100
 

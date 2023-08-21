@@ -22,12 +22,8 @@ import exportJson from "./export";
 import fire from "./play/fire";
 import browser from "webextension-polyfill";
 
-const href = window.location.href;
-
-switch (true) {
-	case /https:\/\/animestore\.docomo\.ne\.jp\/animestore\/ci_pc\?workId=\d+/.test(
-		href,
-	): {
+switch (location.pathname) {
+	case "/animestore/ci_pc": {
 		Config.getConfig(
 			"作品ページに「コメントを表示しながら再生」ボタンを追加する",
 			(value) => {
@@ -36,9 +32,7 @@ switch (true) {
 		);
 		break;
 	}
-	case /https:\/\/animestore\.docomo\.ne\.jp\/animestore\/sc_d_pc\?partId=\d+/.test(
-		href,
-	): {
+	case "/animestore/sc_d_pc": {
 		setWorkInfo();
 
 		// called from popup/popup.tsx
@@ -53,4 +47,6 @@ switch (true) {
 		});
 		break;
 	}
+	default:
+		break;
 }
