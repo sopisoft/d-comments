@@ -10,9 +10,13 @@
 
 d アニメストアの動画再生画面でニコニコ動画のコメントを表示する Chromium 拡張機能です。
 
+## Installation
+
 [Chrome Web Store](https://chrome.google.com/webstore/detail/d-comments/jocjhkklfiaojhhnjiejmimlohaemiep)
 
-## Requirements
+## Development
+
+### Requirements
 
 - [Node.js](https://nodejs.org/ja/)
 - Latest Firefox Based Browser
@@ -25,27 +29,37 @@ d アニメストアの動画再生画面でニコニコ動画のコメントを
 - [PowerShell](https://docs.microsoft.com/ja-jp/powershell/scripting/install/installing-powershell)
 - [Visual Studio Code](https://code.visualstudio.com/)
 
-## Setup
+Install local dependencies by running:
 
-```PowerShell
+```sh
 npm install
 ```
 
-## Release
+### How to build
 
-```PowerShell
+Run the following command:
+
+```sh
 npm run release
 ```
 
-## Format
+If you have some errors, please try the following command with PowerShell in the project root directory:
 
-```PowerShell
-npm run format
+```powershell
+./scripts/release.ps1
 ```
 
-## Lint
+This will create a zip file in the `dist` directory and `web-ext-artifacts` directory.
 
-```PowerShell
+A zip file in the `dist` directory is for uploading to the Chrome Web Store.
+
+A zip file in the `web-ext-artifacts` directory is for uploading to the Firefox Add-ons site.
+
+### Linter
+
+Run the following command:
+
+```sh
 npm run lint
 ```
 

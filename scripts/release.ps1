@@ -22,10 +22,15 @@ ForEach ($browser in $browsers) {
 	./scripts/manifest_json $browser
 }
 
-Write-Output "Zipping..."
-Foreach ($browser in $browsers) {
-	Compress-Archive -Path dist/$browser -DestinationPath dist/$browser.zip
-}
+Write-Output "Zipping for Chrome..."
+#Foreach ($browser in $browsers) {
+	$browser = "chrome"
+	$file = Get-ChildItem -Path dist/$browser -Recurse
+	Compress-Archive -Path $file -DestinationPath dist/$browser.zip
+#}
+
+Write-Output "Zipping for Firefox..."
+npx web-ext build --source-dir dist/firefox --overwrite-dest
 
 If ($Error) {
 	Foreach ($error in $Error) {
