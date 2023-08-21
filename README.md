@@ -14,6 +14,8 @@ d アニメストアの動画再生画面でニコニコ動画のコメントを
 
 [Chrome Web Store](https://chrome.google.com/webstore/detail/d-comments/jocjhkklfiaojhhnjiejmimlohaemiep)
 
+[Firefox Browser Add-ons](https://addons.mozilla.org/ja/firefox/addon/d-comments/)
+
 ## Development
 
 ### Requirements
