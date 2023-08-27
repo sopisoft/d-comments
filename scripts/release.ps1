@@ -24,9 +24,8 @@ ForEach ($browser in $browsers) {
 
 Write-Output "Zipping for Chrome..."
 #Foreach ($browser in $browsers) {
-	$browser = "chrome"
-	$file = Get-ChildItem -Path dist/$browser -Recurse
-	Compress-Archive -Path $file -DestinationPath dist/$browser.zip
+	$browser = "chrome"	
+	Compress-Archive -Path dist/$browser/* -DestinationPath dist/$browser.zip -Force
 #}
 
 Write-Output "Zipping for Firefox..."
