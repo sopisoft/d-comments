@@ -23,8 +23,8 @@ import { get_work_info } from "./api";
  */
 export const setWorkInfo = async () => {
 	const workInfo = await get_work_info();
-	const title = workInfo["data"]["title"];
-	const partExp = workInfo["data"]["partExp"];
+	const title = workInfo.data.title;
+	const partExp = workInfo.data.partExp;
 
 	document.title = title;
 	document
@@ -50,13 +50,10 @@ export const setWorkInfo = async () => {
 		mediaSession.metadata = new MediaMetadata({
 			title: title,
 			artist: "dアニメストア",
-			album: workInfo["data"]["workTitle"],
+			album: workInfo.data.workTitle,
 			artwork: [
 				{
-					src: workInfo["data"]["mainScenePath"].replace(
-						"_1_3.png",
-						"_1_1.png",
-					),
+					src: workInfo.data.mainScenePath.replace("_1_3.png", "_1_1.png"),
 					sizes: "640x360",
 					type: "image/jpeg",
 				},

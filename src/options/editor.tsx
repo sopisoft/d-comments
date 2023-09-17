@@ -15,9 +15,9 @@
     along with d-comments.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+import { JSX, createSignal } from "solid-js";
 import * as Config from "../content_scripts/config";
 import { defaultConfigs, getConfig } from "../content_scripts/config";
-import { JSX, createSignal } from "solid-js";
 
 type Editor = {
 	p: string;
@@ -78,7 +78,6 @@ const Editor = (props: Editor) => {
 						name={p()}
 						value={selected()}
 						title={t()}
-						// rome-ignore lint/suspicious/noExplicitAny: <explanation>
 						onChange={props.update as any}
 					>
 						{defaultConfigs

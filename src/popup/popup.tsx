@@ -115,8 +115,7 @@ const Popup = () => {
 	 * コメントファイル Input ハンドラ
 	 */
 
-	// rome-ignore lint/suspicious/noExplicitAny: <explanation>
-	const onFileInputChange = (e: any) => {
+	const onFileInputChange = (e) => {
 		console.log(e.target.files);
 		const f = e.target.files?.[0];
 		if (f) {
@@ -217,10 +216,10 @@ const Popup = () => {
 							ownerId: ownerId,
 							ownerName: isUser
 								? response.data.user.nickname
-								: response.data.channel.name,
+								: response.data.name,
 							ownerIconUrl: isUser
 								? response.data.user.icons.small
-								: response.data.channel.thumbnailSmallUrl,
+								: response.data.icon,
 						});
 					};
 					setOwnerInfo().then(() => {
@@ -351,16 +350,19 @@ const Popup = () => {
 					<ul class="result">
 						{result()?.meta?.status === 200 &&
 							result()?.data?.map((item, index) => (
-								// rome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
 								<li
 									onClick={() => {
 										handler(item.contentId);
 									}}
+									onKeyDown={(e) => {
+										if (e.key === "Enter") {
+											handler(item.contentId);
+										}
+									}}
 								>
-									{/* rome-ignore lint/a11y/useValidAnchor: <explanation> */}
-									<a class="title">
+									<span class="title">
 										<span>{item.title}</span>
-									</a>
+									</span>
 									<div class="wrapper">
 										<img src={item.thumbnailUrl} alt={item.title} />
 										<div class="info">
@@ -389,12 +391,11 @@ const Popup = () => {
 													}
 												</p>
 											</div>
-											{/* rome-ignore lint/a11y/useValidAnchor: <explanation> */}
-											<a>再生数&emsp;&emsp;&nbsp;:&nbsp;{item.viewCounter}</a>
-											{/* rome-ignore lint/a11y/useValidAnchor: <explanation> */}
-											<a>コメント数&nbsp;:&nbsp;{item.commentCounter}</a>
-											{/* rome-ignore lint/a11y/useValidAnchor: <explanation> */}
-											<a>
+											<span>
+												再生数&emsp;&emsp;&nbsp;:&nbsp;{item.viewCounter}
+											</span>
+											<span>コメント数&nbsp;:&nbsp;{item.commentCounter}</span>
+											<span>
 												動画の尺&emsp;&nbsp;:&nbsp;
 												{Math.floor(item.lengthSeconds / 3600) > 0
 													? `${Math.floor(item.lengthSeconds / 3600)}時間`
@@ -403,7 +404,7 @@ const Popup = () => {
 													? `${Math.floor(item.lengthSeconds / 60)}分`
 													: ""}
 												{item.lengthSeconds % 60}秒
-											</a>
+											</span>
 										</div>
 									</div>
 								</li>

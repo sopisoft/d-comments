@@ -24,7 +24,7 @@ const exportJson = (movieId: string) => {
 			movieId: movieId,
 		})
 		.then((movieData) => {
-			if (!movieData || movieData["meta"]["status"] !== 200) {
+			if (!movieData || movieData.meta.status !== 200) {
 				window.alert("動画情報の取得に失敗しました");
 			} else {
 				browser.runtime
@@ -33,7 +33,7 @@ const exportJson = (movieId: string) => {
 						movieData: movieData,
 					})
 					.then((threadData) => {
-						const fileName = movieData["data"]["video"]["title"];
+						const fileName = movieData.data.video.title;
 						const jsonBody = {
 							version: 1,
 							movieId: movieId,

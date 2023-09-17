@@ -9,7 +9,7 @@ $files = @(
 	"package-lock.json",
 	"package.json",
 	"README.md",
-	"rome.json",
+	"biome.json",
 	"tsconfig.json",
 	"vite.config.ts"
 )
