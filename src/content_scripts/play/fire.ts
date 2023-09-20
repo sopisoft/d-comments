@@ -15,9 +15,9 @@
     along with d-comments.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+import browser from "webextension-polyfill";
 import play from "./play";
 import uiInit from "./ui";
-import browser from "webextension-polyfill";
 
 /**
  * 発火用関数
@@ -41,10 +41,8 @@ const fire = async (movieId: string, data: string) => {
 	const setMessage = (message: string, code: string | null) => {
 		error_messages_bar.style.display = "block";
 		code
-			? // rome-ignore lint/suspicious/noAssignInExpressions: <explanation>
-			  (error_messages_bar.innerText = `${message}\nエラーコード : ${code}`)
-			: // rome-ignore lint/suspicious/noAssignInExpressions: <explanation>
-			  (error_messages_bar.innerText = `${message}`);
+			? error_messages_bar.innerText === `${message}\nエラーコード : ${code}`
+			: error_messages_bar.innerText === `${message}`;
 		container.appendChild(button_closes_comment_container);
 		return;
 	};
@@ -69,9 +67,9 @@ const fire = async (movieId: string, data: string) => {
 	// ファイルからコメントを読み込むとき
 	if (data) {
 		const e = JSON.parse(data);
-		if (e["threadData"]) {
+		if (e.threadData) {
 			play(
-				e["threadData"],
+				e.threadData,
 				button_closes_comment_container,
 				status_bar,
 				container,
@@ -92,7 +90,7 @@ const fire = async (movieId: string, data: string) => {
 			})
 			.then((movieData) => {
 				console.log(movieData);
-				if (movieData?.["meta"]["status"] === 200) {
+				if (movieData.meta.status === 200) {
 					// サーバーからコメントを取得する
 					browser.runtime
 						.sendMessage({
@@ -109,12 +107,12 @@ const fire = async (movieId: string, data: string) => {
 								video,
 							);
 						});
-				} else if (movieData?.["data"]) {
-					setReason(movieData["data"]["reasonCode"]);
+				} else if (movieData.data) {
+					setReason(movieData.data.reasonCode);
 				} else {
 					setMessage(
 						"動画情報の取得に失敗しました。",
-						movieData ? movieData["meta"]["status"] : null,
+						movieData ? movieData.meta.status : null,
 					);
 					console.log(movieData);
 				}

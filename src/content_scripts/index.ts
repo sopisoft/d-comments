@@ -15,12 +15,12 @@
     along with d-comments.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+import browser from "webextension-polyfill";
 import * as Config from "./config";
 import { addMenu } from "./danime_dom/mypage";
 import { setWorkInfo } from "./danime_dom/watch";
 import exportJson from "./export";
 import fire from "./play/fire";
-import browser from "webextension-polyfill";
 
 switch (location.pathname) {
 	case "/animestore/ci_pc": {

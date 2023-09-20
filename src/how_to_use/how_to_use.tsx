@@ -15,7 +15,6 @@
     along with d-comments.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-import "./how_to_use.scss";
 import rehypeSanitize from "rehype-sanitize";
 import rehypeSlug from "rehype-slug";
 import rehypeStringify from "rehype-stringify";
@@ -28,6 +27,7 @@ import { render } from "solid-js/web";
 import { unified } from "unified";
 import browser from "webextension-polyfill";
 import "zenn-content-css";
+import "./how_to_use.scss";
 
 const parseMarkdown = async (text: string): Promise<string> => {
 	return String(

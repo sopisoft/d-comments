@@ -8,9 +8,9 @@ IF (Test-Path dist) {
 }
 
 Write-Output "Linting..."
-npx rome format ./src --write
-npx rome check ./src --apply-unsafe
-npx rome ci ./src
+npx biome format ./src --write
+npx biome check ./src --apply-unsafe
+npx biome ci ./src
 
 Write-Output "Building..."
 npx tsx ./build.ts
@@ -32,7 +32,7 @@ Write-Output "Zipping for Firefox..."
 IF (Test-Path web-ext-artifacts) {
 	Remove-Item -Path web-ext-artifacts -Recurse
 }
-npx web-ext build --source-dir dist/firefox --overwrite-dest
+npx web-ext build --source-dir ./dist/firefox/ --overwrite-dest
 Copy-Item -Path web-ext-artifacts/*.zip -Destination dist/firefox.zip -Force
 
 If ($Error) {

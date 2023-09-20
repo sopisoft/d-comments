@@ -52,7 +52,6 @@ const configs = {
 };
 
 const global = {
-	// rome-ignore lint/suspicious/noExplicitAny: <explanation>
 	comments: [] as any,
 	lists: [] as HTMLElement[],
 };
@@ -67,7 +66,6 @@ const global = {
  * @param video
  */
 const play = (
-	// rome-ignore lint/suspicious/noExplicitAny: <explanation>
 	threadData: any,
 	button_closes_comment_container: HTMLButtonElement,
 	status_bar: HTMLDivElement,
@@ -231,19 +229,19 @@ const play = (
 	 * @returns コメント
 	 */
 	const getThreadComments = (fork: string) => {
-		const threads = threadData["threads"]
+		const threads = threadData.threads
 			.filter((thread: { [x: string]: string }) => {
-				return thread["fork"] === fork;
+				return thread.fork === fork;
 			})
-			// rome-ignore lint/suspicious/noExplicitAny: <explanation>
+
 			.map((thread: any) => {
 				return thread;
 			});
 		// main thread が二つある場合があり、この時 thread[1] を返す
 		if (threads.length > 1) {
-			return threads[1]["comments"];
+			return threads[1].comments;
 		}
-		return threads[0]["comments"];
+		return threads[0].comments;
 	};
 
 	/**
@@ -251,7 +249,6 @@ const play = (
 	 * @param Callback
 	 */
 
-	// rome-ignore lint/suspicious/noExplicitAny: <explanation>
 	const getComments = async (callback: (comments: any) => any) => {
 		global.comments.length = 0;
 		(async () => {
@@ -267,23 +264,19 @@ const play = (
 	 * コメントを再生時刻でソートする
 	 * @returns コメント
 	 */
-	// rome-ignore lint/suspicious/noExplicitAny: <explanation>
+
 	const sortComments = async (comments: any[][]) => {
-		// rome-ignore lint/suspicious/noExplicitAny: <explanation>
 		function filterComments(comments: any[]) {
 			return comments.filter((comment: { [x: string]: number }) => {
-				return comment["score"] >= 0;
+				return comment.score >= 0;
 			});
 		}
-		// rome-ignore lint/suspicious/noExplicitAny: <explanation>
+
 		function sortComments(comments: any[][]) {
-			return comments.sort(
-				// rome-ignore lint/suspicious/noExplicitAny: <explanation>
-				(a: any[], b: any[]) => {
-					// @ts-ignore
-					return a["vposMs"] - b["vposMs"];
-				},
-			);
+			return comments.sort((a: any[], b: any[]) => {
+				// @ts-ignore
+				return a.vposMs - b.vposMs;
+			});
 		}
 		let result = [];
 		result = filterComments(comments);
@@ -295,10 +288,9 @@ const play = (
 	 * コメントリストを設置する
 	 */
 
-	// rome-ignore lint/suspicious/noExplicitAny: <explanation>
 	const setComments = (comments: any[]) => {
 		global.lists.length = 0;
-		// rome-ignore lint/suspicious/noExplicitAny: <explanation>
+
 		const contents = async (comments: any[]) => {
 			comments.map((comment: { [x: string]: string; body: string }) => {
 				const li = document.createElement("li");
@@ -309,12 +301,12 @@ const play = (
 					padding: "5px",
 					borderBottom: "1px solid #484848d1",
 				});
-				li.setAttribute("data-time", comment["vposMs"]);
+				li.setAttribute("data-time", comment.vposMs);
 				global.lists.push(li);
 			});
 			return global.lists;
 		};
-		// rome-ignore lint/suspicious/noExplicitAny: <explanation>
+
 		const appendList = (lists: any[]) => {
 			const df = document.createDocumentFragment();
 			lists.map((list) => {
@@ -419,7 +411,7 @@ const play = (
 		(window || video)?.addEventListener("resize", () => {
 			setCanvasStyle(), { passive: true };
 		});
-		const data = threadData["threads"];
+		const data = threadData.threads;
 		const nicoComments = new NiconiComments(canvas, data, {
 			format: "v1",
 			keepCA: true,

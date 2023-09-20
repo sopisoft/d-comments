@@ -16,11 +16,11 @@
 */
 import { JSX, createEffect, createSignal } from "solid-js";
 
+import { render } from "solid-js/web";
+import browser from "webextension-polyfill";
 import * as Config from "../content_scripts/config";
 import Editor from "./editor";
 import "./options.scss";
-import { render } from "solid-js/web";
-import browser from "webextension-polyfill";
 
 const Options = () => {
 	const [options, setOptions] = createSignal<Array<Config.config>>(
@@ -53,7 +53,6 @@ const Options = () => {
 		setOptions(t.concat(r));
 	};
 
-	// rome-ignore lint/suspicious/noExplicitAny: <explanation>
 	const onChange = (e: any) => {
 		const n = e.target.name;
 		if (e.target.type === "checkbox") {

@@ -15,8 +15,8 @@
     along with d-comments.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-import * as Config from "./content_scripts/config";
 import browser from "webextension-polyfill";
+import * as Config from "./content_scripts/config";
 
 /**
  * 任意の範囲のランダムな整数を返す
@@ -33,11 +33,10 @@ const getRandomInt = (min: number, max: number) => {
 /**
  * 動画情報を取得する
  * @param movieId　ニコニコ動画の動画ID
- * @param sendResponse (response?: any) => void
+ * @param sendResponse (response) => void
  */
 
-// rome-ignore lint/suspicious/noExplicitAny: <explanation>
-const getMovieData = (movieId: string, sendResponse: (v: any) => void) => {
+const getMovieData = (movieId: string, sendResponse: (v) => void) => {
 	Config.getConfig("allow_login_to_nicovideo", (config) => {
 		const actionTrackId = `${Math.random()
 			.toString(36)
@@ -94,13 +93,12 @@ const getMovieData = (movieId: string, sendResponse: (v: any) => void) => {
  * @returns　Promise<Response>
  */
 
-// rome-ignore lint/suspicious/noExplicitAny: <explanation>
 const getThreadComments = (movieData: any) => {
-	const nvComment = movieData["data"]["comment"]["nvComment"];
-	const serverUrl = `${nvComment["server"]}/v1/threads`;
+	const nvComment = movieData.data.comment.nvComment;
+	const serverUrl = `${nvComment.server}/v1/threads`;
 	const jsonBody = {
-		threadKey: nvComment["threadKey"],
-		params: nvComment["params"],
+		threadKey: nvComment.threadKey,
+		params: nvComment.params,
 		additionals: {},
 	};
 
@@ -147,7 +145,6 @@ const search = (word: string, UserAgent: string) => {
 };
 
 browser.runtime.onMessage.addListener(
-	// rome-ignore lint/suspicious/noExplicitAny: <explanation>
 	(message, sender, sendResponse: (v: any) => void) => {
 		switch (message.type) {
 			case "movieData": {
@@ -160,7 +157,7 @@ browser.runtime.onMessage.addListener(
 						return res.json();
 					})
 					.then((json) => {
-						sendResponse(json["data"]);
+						sendResponse(json.data);
 					});
 				return true;
 			}
@@ -192,7 +189,7 @@ browser.runtime.onMessage.addListener(
 				return true;
 			}
 			case "channel": {
-				const url = `https://public.api.nicovideo.jp/v1/channel/channelapp/channels/${message.id}.json`;
+				const url = `https://api.cas.nicovideo.jp/v2/tanzakus/channel/ch${message.id}/`;
 				fetch(url)
 					.then((res) => {
 						return res.json();
