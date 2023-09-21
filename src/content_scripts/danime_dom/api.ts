@@ -16,40 +16,40 @@
 */
 
 export const base_url =
-	"https://animestore.docomo.ne.jp/animestore/rest/WS010105";
+  "https://animestore.docomo.ne.jp/animestore/rest/WS010105";
 
 type work_info = {
-	version: number;
-	data: {
-		partId: string;
-		workTitle: string;
-		workTitleKana: string;
-		mainKeyVisualPath: string;
-		partDispNumber: string;
-		partExp: string;
-		partTitle: string;
-		title: string;
-		mainScenePath: string;
-	};
+  version: number;
+  data: {
+    partId: string;
+    workTitle: string;
+    workTitleKana: string;
+    mainKeyVisualPath: string;
+    partDispNumber: string;
+    partExp: string;
+    partTitle: string;
+    title: string;
+    mainScenePath: string;
+  };
 };
 
 export async function get_work_info(): Promise<work_info> {
-	const partId =
-		new URLSearchParams(location.search).get("partId")?.toString() ?? "";
-	const params = {
-		viewType: "5",
-		partId: partId,
-		defaultPlay: "5",
-	};
-	const params_str = new URLSearchParams(params).toString();
-	const res = await fetch(`${base_url}?${params_str}`, {
-		method: "GET",
-		cache: "no-cache",
-	}).then((res) => {
-		if (!res.ok) {
-			return Promise.reject(res);
-		}
-		return res;
-	});
-	return await res.json();
+  const partId =
+    new URLSearchParams(location.search).get("partId")?.toString() ?? "";
+  const params = {
+    viewType: "5",
+    partId: partId,
+    defaultPlay: "5",
+  };
+  const params_str = new URLSearchParams(params).toString();
+  const res = await fetch(`${base_url}?${params_str}`, {
+    method: "GET",
+    cache: "no-cache",
+  }).then((res) => {
+    if (!res.ok) {
+      return Promise.reject(res);
+    }
+    return res;
+  });
+  return await res.json();
 }

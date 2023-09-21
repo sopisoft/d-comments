@@ -22,51 +22,52 @@ import remarkGfm from "remark-gfm";
 import remarkParse from "remark-parse";
 import remarkRehype from "remark-rehype";
 import remarkToc from "remark-toc";
-import { Suspense, createSignal, onMount } from "solid-js";
+import { Suspense, createSignal } from "solid-js";
 import { render } from "solid-js/web";
 import { unified } from "unified";
 import browser from "webextension-polyfill";
 import "zenn-content-css";
-import "./how_to_use.scss";
+import "../global.css";
+import "./how_to_use.css";
 
 const parseMarkdown = async (text: string): Promise<string> => {
-	return String(
-		await unified()
-			.use(remarkParse)
-			.use(remarkToc, {
-				heading: "目次",
-				tight: true,
-				prefix: "user-content-",
-			})
-			.use(remarkGfm)
-			.use(remarkRehype)
-			.use(rehypeSlug)
-			.use(rehypeSanitize)
-			.use(rehypeStringify)
-			.process(text),
-	);
+  return String(
+    await unified()
+      .use(remarkParse)
+      .use(remarkToc, {
+        heading: "目次",
+        tight: true,
+        prefix: "user-content-",
+      })
+      .use(remarkGfm)
+      .use(remarkRehype)
+      .use(rehypeSlug)
+      .use(rehypeSanitize)
+      .use(rehypeStringify)
+      .process(text)
+  );
 };
 
 const how_to_use = () => {
-	const [content, setContent] = createSignal("");
+  const [content, setContent] = createSignal("");
 
-	const md = fetch(browser.runtime.getURL("how_to_use.md")).then((response) =>
-		response.text(),
-	);
+  const md = fetch(browser.runtime.getURL("how_to_use.md")).then((response) =>
+    response.text()
+  );
 
-	md.then((text) => {
-		parseMarkdown(text).then((html) => {
-			setContent(html);
-		});
-	});
+  md.then((text) => {
+    parseMarkdown(text).then((html) => {
+      setContent(html);
+    });
+  });
 
-	return (
-		<>
-			<Suspense fallback={<div>Loading...</div>}>
-				<div class="znc" innerHTML={content()} />
-			</Suspense>
-		</>
-	);
+  return (
+    <>
+      <Suspense fallback={<div>Loading...</div>}>
+        <div class="znc" innerHTML={content()} />
+      </Suspense>
+    </>
+  );
 };
 
 const root = document.createElement("div");
