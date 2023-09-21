@@ -18,112 +18,112 @@
 import browser from "webextension-polyfill";
 
 export type config = {
-	key: string;
-	value: string | number | boolean;
-	options?: Array<{ name: string; value: string }>;
-	type: "text" | "checkbox" | "number" | "color" | "select";
-	text?: string;
+  key: string;
+  value: string | number | boolean;
+  options?: Array<{ name: string; value: string }>;
+  type: "text" | "checkbox" | "number" | "color" | "select";
+  text?: string;
 };
 export const defaultConfigs: Array<config> = [
-	{
-		key: "ポップアップを開いたとき最後に入力した動画IDを表示する",
-		value: true,
-		type: "checkbox",
-	},
-	{
-		key: "ポップアップを開いたとき自動で動画検索を開始する",
-		value: true,
-		type: "checkbox",
-	},
-	{ key: "スクロールモードを利用可能にする", value: true, type: "checkbox" },
-	{
-		key: "自動スクロールの実行間隔 (ミリ秒)",
-		value: 120,
-		type: "number",
-	},
-	{
-		key: "コメント欄の幅 (px)",
-		value: 1000,
-		type: "number",
-	},
-	{
-		key: "コメント欄のスクールバーを表示する",
-		value: true,
-		type: "checkbox",
-	},
-	{
-		key: "コメント欄の背景色",
-		value: "#000000",
-		type: "color",
-	},
-	{
-		key: "コメント欄の背景不透明度 (%)",
-		value: 35,
-		type: "number",
-	},
-	{
-		key: "コメントの文字色",
-		value: "#FFFFFF",
-		type: "color",
-	},
-	{
-		key: "画面の上部分からの距離 (%)",
-		value: 5,
-		type: "number",
-	},
-	{
-		key: "画面の左部分からの距離 (%)",
-		value: 10,
-		type: "number",
-	},
-	{
-		key: "コメント欄の高さ (%)",
-		value: 85,
-		type: "number",
-	},
-	{
-		key: "way_to_render_comments",
-		value: "right_to_left",
-		options: [
-			{ value: "list", name: "リスト" },
-			{ value: "list_overlay", name: "リスト（オーバーレイ）" },
-			{ value: "right_to_left", name: "右から左に流す" },
-			// { value: "right_to_left_and_list", name: "右から左に流す + リスト" },
-		],
-		type: "select",
-		text: "コメントの表示方法",
-	},
-	{
-		key: "作品ページに「コメントを表示しながら再生」ボタンを追加する",
-		value: true,
-		type: "checkbox",
-	},
-	{
-		key: "「コメントを表示しながら再生」ボタンでは新しいタブで開く",
-		value: false,
-		type: "checkbox",
-	},
-	{
-		key: "投稿者コメント",
-		value: false,
-		type: "checkbox",
-	},
-	{
-		key: "通常コメント",
-		value: true,
-		type: "checkbox",
-	},
-	{
-		key: "かんたんコメント",
-		value: false,
-		type: "checkbox",
-	},
-	{
-		key: "allow_login_to_nicovideo",
-		value: false,
-		type: "checkbox",
-		text: "ニコニコ動画へのログインを許可する",
-	},
+  {
+    key: "ポップアップを開いたとき最後に入力した動画IDを表示する",
+    value: true,
+    type: "checkbox",
+  },
+  {
+    key: "ポップアップを開いたとき自動で動画検索を開始する",
+    value: true,
+    type: "checkbox",
+  },
+  { key: "スクロールモードを利用可能にする", value: true, type: "checkbox" },
+  {
+    key: "自動スクロールの実行間隔 (ミリ秒)",
+    value: 120,
+    type: "number",
+  },
+  {
+    key: "コメント欄の幅 (px)",
+    value: 1000,
+    type: "number",
+  },
+  {
+    key: "コメント欄のスクールバーを表示する",
+    value: true,
+    type: "checkbox",
+  },
+  {
+    key: "コメント欄の背景色",
+    value: "#000000",
+    type: "color",
+  },
+  {
+    key: "コメント欄の背景不透明度 (%)",
+    value: 35,
+    type: "number",
+  },
+  {
+    key: "コメントの文字色",
+    value: "#FFFFFF",
+    type: "color",
+  },
+  {
+    key: "画面の上部分からの距離 (%)",
+    value: 5,
+    type: "number",
+  },
+  {
+    key: "画面の左部分からの距離 (%)",
+    value: 10,
+    type: "number",
+  },
+  {
+    key: "コメント欄の高さ (%)",
+    value: 85,
+    type: "number",
+  },
+  {
+    key: "way_to_render_comments",
+    value: "right_to_left",
+    options: [
+      { value: "list", name: "リスト" },
+      { value: "list_overlay", name: "リスト（オーバーレイ）" },
+      { value: "right_to_left", name: "右から左に流す" },
+      // { value: "right_to_left_and_list", name: "右から左に流す + リスト" },
+    ],
+    type: "select",
+    text: "コメントの表示方法",
+  },
+  {
+    key: "作品ページに「コメントを表示しながら再生」ボタンを追加する",
+    value: true,
+    type: "checkbox",
+  },
+  {
+    key: "「コメントを表示しながら再生」ボタンでは新しいタブで開く",
+    value: false,
+    type: "checkbox",
+  },
+  {
+    key: "投稿者コメント",
+    value: false,
+    type: "checkbox",
+  },
+  {
+    key: "通常コメント",
+    value: true,
+    type: "checkbox",
+  },
+  {
+    key: "かんたんコメント",
+    value: false,
+    type: "checkbox",
+  },
+  {
+    key: "allow_login_to_nicovideo",
+    value: false,
+    type: "checkbox",
+    text: "ニコニコ動画へのログインを許可する",
+  },
 ];
 
 /**
@@ -132,18 +132,18 @@ export const defaultConfigs: Array<config> = [
  * @param callback 設定値を取得した後に呼ばれる関数
  */
 export const getConfig = (
-	key: string,
-	callback: (value: string | number | boolean) => void,
+  key: string,
+  callback: (value: string | number | boolean) => void,
 ) => {
-	browser.storage.local.get([key]).then((result) => {
-		const defaultValue = defaultConfigs.find((item) => item.key === key)?.value;
-		if (result[key] === undefined || null) {
-			console.log(`${key} (${result[key]}) ${defaultValue}`);
-		} else {
-			console.log(key, result[key]);
-		}
-		callback(result[key] ?? defaultValue);
-	});
+  browser.storage.local.get([key]).then((result) => {
+    const defaultValue = defaultConfigs.find((item) => item.key === key)?.value;
+    if (result[key] === undefined || null) {
+      console.log(`${key} (${result[key]}) ${defaultValue}`);
+    } else {
+      console.log(key, result[key]);
+    }
+    callback(result[key] ?? defaultValue);
+  });
 };
 
 /**
@@ -152,7 +152,7 @@ export const getConfig = (
  * @param value 設定値
  */
 export const setConfig = (key: string, value: string | number | boolean) => {
-	browser.storage.local.set({ [key]: value }).then(() => {
-		console.log(key, value);
-	});
+  browser.storage.local.set({ [key]: value }).then(() => {
+    console.log(key, value);
+  });
 };

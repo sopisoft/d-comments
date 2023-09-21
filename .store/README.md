@@ -2,8 +2,8 @@
 
 ## Requirements
 
- [Figma](https://www.figma.com/)
+[Figma](https://www.figma.com/)
 
 ## Edit
 
- Open [assets.fig](./assets.fig) with Figma
+Open [assets.fig](./assets.fig) with Figma

@@ -2,8 +2,7 @@
 
 ![d-comments logo](./.store/d-comments.png)
 
-[![GitHub release (latest by date)](https://img.shields.io/github/v/release/gobosan/d-comments)](
- https://github.com/gobosan/d-comments/releases/latest)
+[![GitHub release (latest by date)](https://img.shields.io/github/v/release/gobosan/d-comments)](https://github.com/gobosan/d-comments/releases/latest)
 ![GitHub Code Size in Bytes](https://img.shields.io/github/languages/code-size/gobosan/d-comments)
 ![GitHub Stars](https://img.shields.io/github/stars/gobosan/d-comments)
 [![GitHub](https://img.shields.io/github/license/gobosan/d-comments)](./LICENSE.txt)
@@ -21,6 +20,7 @@ d アニメストアの動画再生画面でニコニコ動画のコメントを
 ### Requirements
 
 - [Node.js](https://nodejs.org/ja/)
+- [bun](https://bun.sh)
 - Latest Firefox Based Browser
   - [Firefox](https://www.mozilla.org/ja/firefox/new/)
   - etc...
@@ -28,13 +28,18 @@ d アニメストアの動画再生画面でニコニコ動画のコメントを
   - [Google Chrome](https://www.google.com/intl/ja_jp/chrome/)
   - [Microsoft Edge](https://www.microsoft.com/ja-jp/edge)
   - etc...
-- [PowerShell](https://docs.microsoft.com/ja-jp/powershell/scripting/install/installing-powershell)
 - [Visual Studio Code](https://code.visualstudio.com/)
+
+### Environment Requirements
+
+- `Bash`
+
+### How to setup
 
 Install local dependencies by running:
 
 ```sh
-npm install
+bun install
 ```
 
 ### How to build
@@ -42,13 +47,11 @@ npm install
 Run the following command:
 
 ```sh
-npm run release
-```
+bun run release
 
-If you have some errors, please try the following command with PowerShell in the project root directory:
+# or
 
-```powershell
-./scripts/release.ps1
+./scripts/release.bash
 ```
 
 This will create a zip file in the `dist` directory.
@@ -62,7 +65,27 @@ This will create a zip file in the `dist` directory.
 Run the following command:
 
 ```sh
-npm run lint
+bun run lint
+```
+
+### Formatter
+
+Run the following command:
+
+```sh
+bun run format
+```
+
+### Make source code zip
+
+Run the following command:
+
+```sh
+bun run zipsrc
+
+# or
+
+./scripts/zipsrc.bash
 ```
 
 ## License

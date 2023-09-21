@@ -14,216 +14,217 @@
     You should have received a copy of the GNU General Public License
     along with d-comments.  If not, see <https://www.gnu.org/licenses/>.
 */
-import { JSX, createEffect, createSignal } from "solid-js";
+import { JSX, createSignal } from "solid-js";
 
 import { render } from "solid-js/web";
 import browser from "webextension-polyfill";
 import * as Config from "../content_scripts/config";
 import Editor from "./editor";
+import "../global.css";
 import "./options.scss";
 
 const Options = () => {
-	const [options, setOptions] = createSignal<Array<Config.config>>(
-		Config.defaultConfigs,
-	);
+  const [options, setOptions] = createSignal<Array<Config.config>>(
+    Config.defaultConfigs,
+  );
 
-	const t: Array<Config.config> = [];
-	Config.defaultConfigs.forEach((i, idx, array) => {
-		Config.getConfig(i.key, (value) => {
-			const r: Config.config = {
-				key: i.key,
-				value: value,
-				type: i.type,
-			};
-			t.push(r);
-			if (idx === array.length - 1) {
-				setOptions(t);
-			}
-		});
-	});
+  const t: Array<Config.config> = [];
+  Config.defaultConfigs.forEach((i, idx, array) => {
+    Config.getConfig(i.key, (value) => {
+      const r: Config.config = {
+        key: i.key,
+        value: value,
+        type: i.type,
+      };
+      t.push(r);
+      if (idx === array.length - 1) {
+        setOptions(t);
+      }
+    });
+  });
 
-	const setOption = (m: string, v: string | number | boolean) => {
-		const d = Config.defaultConfigs.find((i) => i.key === m)?.type;
-		const t: Array<Config.config> = options().filter((n) => n.key !== m);
-		const r: Config.config = {
-			key: m,
-			value: v,
-			type: d as "number" | "text" | "checkbox" | "color" | "select",
-		};
-		setOptions(t.concat(r));
-	};
+  const setOption = (m: string, v: string | number | boolean) => {
+    const d = Config.defaultConfigs.find((i) => i.key === m)?.type;
+    const t: Array<Config.config> = options().filter((n) => n.key !== m);
+    const r: Config.config = {
+      key: m,
+      value: v,
+      type: d as "number" | "text" | "checkbox" | "color" | "select",
+    };
+    setOptions(t.concat(r));
+  };
 
-	const onChange = (e: any) => {
-		const n = e.target.name;
-		if (e.target.type === "checkbox") {
-			const v = options().find((i) => i.key === n)?.value;
-			setOption(n, !v);
-			Config.setConfig(n, !v);
-		} else {
-			const v = e.target.value;
-			setOption(n, v);
-			Config.setConfig(n, v);
-		}
-	};
+  const onChange = (e: any) => {
+    const n = e.target.name;
+    if (e.target.type === "checkbox") {
+      const v = options().find((i) => i.key === n)?.value;
+      setOption(n, !v);
+      Config.setConfig(n, !v);
+    } else {
+      const v = e.target.value;
+      setOption(n, v);
+      Config.setConfig(n, v);
+    }
+  };
 
-	browser.storage.onChanged.addListener((changes, namespace) => {
-		for (const [key, { oldValue, newValue }] of Object.entries(changes)) {
-			setOption(key, newValue);
-		}
-	});
+  browser.storage.onChanged.addListener((changes) => {
+    for (const [key, { newValue }] of Object.entries(changes)) {
+      setOption(key, newValue);
+    }
+  });
 
-	return (
-		<>
-			<header>
-				<span class="inner">
-					<i class="codicon codicon-settings-gear" />
-				</span>
-				<h1>設定</h1>
-			</header>
-			<div class="wrapper">
-				<div id="left-side">
-					<div>
-						<h2>ポップアップ</h2>
-						<Editor
-							p="ポップアップを開いたとき最後に入力した動画IDを表示する"
-							o={options()}
-							update={onChange}
-						/>
-						<Editor
-							p="ポップアップを開いたとき自動で動画検索を開始する"
-							o={options()}
-							update={onChange}
-						/>
-					</div>
-					<div>
-						<h2>作品ページ</h2>
-						<Editor
-							p="作品ページに「コメントを表示しながら再生」ボタンを追加する"
-							o={options()}
-							update={onChange}
-						/>
-						<Editor
-							p="「コメントを表示しながら再生」ボタンでは新しいタブで開く"
-							o={options()}
-							update={onChange}
-						/>
-					</div>
-					<div>
-						<h2>コメントの種類</h2>
-						<Editor p="投稿者コメント" o={options()} update={onChange} />
-						<Editor p="通常コメント" o={options()} update={onChange} />
-						<Editor p="かんたんコメント" o={options()} update={onChange} />
-					</div>{" "}
-					<div>
-						<h2>ニコニコ動画へのログイン</h2>
-						<Editor
-							p="allow_login_to_nicovideo"
-							o={options()}
-							update={onChange}
-						/>
-					</div>
-				</div>
-				<div id="right-side">
-					<div>
-						<h2>視聴ページ</h2>
-						<Editor
-							p="スクロールモードを利用可能にする"
-							o={options()}
-							update={onChange}
-						/>
-						<Editor
-							p="自動スクロールの実行間隔 (ミリ秒)"
-							o={options()}
-							update={onChange}
-						/>
-						<Editor p="コメント欄の幅 (px)" o={options()} update={onChange} />
-						<Editor
-							p="コメント欄のスクールバーを表示する"
-							o={options()}
-							update={onChange}
-						/>
-					</div>
-					<div>
-						<h2>コメント欄の色</h2>
-						<Editor p="コメント欄の背景色" o={options()} update={onChange} />
-						<Editor
-							p="コメント欄の背景不透明度 (%)"
-							o={options()}
-							update={onChange}
-						/>
-						<Editor p="コメントの文字色" o={options()} update={onChange} />
-					</div>
-					<div>
-						<h2>コメントの表示方法</h2>
-						<Editor
-							p="way_to_render_comments"
-							o={options()}
-							update={onChange}
-						/>
-					</div>
-					<div
-						style={
-							{
-								opacity:
-									options().find((i) => i.key === "way_to_render_comments")
-										?.value === "list_overlay"
-										? 1
-										: 0.6,
-							} as JSX.CSSProperties
-						}
-					>
-						<h2>コメントリストのオーバーレイ （β版）</h2>
-						<Editor
-							p="画面の上部分からの距離 (%)"
-							o={options()}
-							update={onChange}
-						/>
-						<Editor
-							p="画面の左部分からの距離 (%)"
-							o={options()}
-							update={onChange}
-						/>
-						<Editor p="コメント欄の高さ (%)" o={options()} update={onChange} />
-					</div>
-				</div>
-			</div>
+  return (
+    <>
+      <header>
+        <span class="inner">
+          <i class="codicon codicon-settings-gear" />
+        </span>
+        <h1>設定</h1>
+      </header>
+      <div class="wrapper">
+        <div id="left-side">
+          <div>
+            <h2>ポップアップ</h2>
+            <Editor
+              p="ポップアップを開いたとき最後に入力した動画IDを表示する"
+              o={options()}
+              update={onChange}
+            />
+            <Editor
+              p="ポップアップを開いたとき自動で動画検索を開始する"
+              o={options()}
+              update={onChange}
+            />
+          </div>
+          <div>
+            <h2>作品ページ</h2>
+            <Editor
+              p="作品ページに「コメントを表示しながら再生」ボタンを追加する"
+              o={options()}
+              update={onChange}
+            />
+            <Editor
+              p="「コメントを表示しながら再生」ボタンでは新しいタブで開く"
+              o={options()}
+              update={onChange}
+            />
+          </div>
+          <div>
+            <h2>コメントの種類</h2>
+            <Editor p="投稿者コメント" o={options()} update={onChange} />
+            <Editor p="通常コメント" o={options()} update={onChange} />
+            <Editor p="かんたんコメント" o={options()} update={onChange} />
+          </div>{" "}
+          <div>
+            <h2>ニコニコ動画へのログイン</h2>
+            <Editor
+              p="allow_login_to_nicovideo"
+              o={options()}
+              update={onChange}
+            />
+          </div>
+        </div>
+        <div id="right-side">
+          <div>
+            <h2>視聴ページ</h2>
+            <Editor
+              p="スクロールモードを利用可能にする"
+              o={options()}
+              update={onChange}
+            />
+            <Editor
+              p="自動スクロールの実行間隔 (ミリ秒)"
+              o={options()}
+              update={onChange}
+            />
+            <Editor p="コメント欄の幅 (px)" o={options()} update={onChange} />
+            <Editor
+              p="コメント欄のスクールバーを表示する"
+              o={options()}
+              update={onChange}
+            />
+          </div>
+          <div>
+            <h2>コメント欄の色</h2>
+            <Editor p="コメント欄の背景色" o={options()} update={onChange} />
+            <Editor
+              p="コメント欄の背景不透明度 (%)"
+              o={options()}
+              update={onChange}
+            />
+            <Editor p="コメントの文字色" o={options()} update={onChange} />
+          </div>
+          <div>
+            <h2>コメントの表示方法</h2>
+            <Editor
+              p="way_to_render_comments"
+              o={options()}
+              update={onChange}
+            />
+          </div>
+          <div
+            style={
+              {
+                opacity:
+                  options().find((i) => i.key === "way_to_render_comments")
+                    ?.value === "list_overlay"
+                    ? 1
+                    : 0.6,
+              } as JSX.CSSProperties
+            }
+          >
+            <h2>コメントリストのオーバーレイ （β版）</h2>
+            <Editor
+              p="画面の上部分からの距離 (%)"
+              o={options()}
+              update={onChange}
+            />
+            <Editor
+              p="画面の左部分からの距離 (%)"
+              o={options()}
+              update={onChange}
+            />
+            <Editor p="コメント欄の高さ (%)" o={options()} update={onChange} />
+          </div>
+        </div>
+      </div>
 
-			<footer>
-				<span class="info">
-					{browser.runtime.getManifest().name}
-					&nbsp;-&nbsp;Version&nbsp;{browser.runtime.getManifest().version}
-				</span>
-				<span class="info">
-					&copy;&nbsp;{new Date().getFullYear()}&nbsp;
-					{browser.runtime.getManifest().author}
-				</span>
-				<div class="links">
-					<span class="link">
-						<a
-							href="https://forms.office.com/r/JR9KksWHJD"
-							target="_blank"
-							rel="noreferrer"
-						>
-							<i class="codicon codicon-feedback" />
-							&nbsp;
-							<span>FeedBack</span>
-						</a>
-					</span>
-					<span class="link">
-						<a
-							href="https://github.com/gobosan/d-comments"
-							target="_blank"
-							rel="noreferrer"
-						>
-							<i class="codicon codicon-mark-github" />
-							&nbsp;
-							<span>GitHub</span>
-						</a>
-					</span>
-				</div>
-			</footer>
-		</>
-	);
+      <footer>
+        <span class="info">
+          {browser.runtime.getManifest().name}
+          &nbsp;-&nbsp;Version&nbsp;{browser.runtime.getManifest().version}
+        </span>
+        <span class="info">
+          &copy;&nbsp;{new Date().getFullYear()}&nbsp;
+          {browser.runtime.getManifest().author}
+        </span>
+        <div class="links">
+          <span class="link">
+            <a
+              href="https://forms.office.com/r/JR9KksWHJD"
+              target="_blank"
+              rel="noreferrer"
+            >
+              <i class="codicon codicon-feedback" />
+              &nbsp;
+              <span>FeedBack</span>
+            </a>
+          </span>
+          <span class="link">
+            <a
+              href="https://github.com/gobosan/d-comments"
+              target="_blank"
+              rel="noreferrer"
+            >
+              <i class="codicon codicon-mark-github" />
+              &nbsp;
+              <span>GitHub</span>
+            </a>
+          </span>
+        </div>
+      </footer>
+    </>
+  );
 };
 
 const root = document.createElement("div");

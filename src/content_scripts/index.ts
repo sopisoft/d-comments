@@ -23,30 +23,30 @@ import exportJson from "./export";
 import fire from "./play/fire";
 
 switch (location.pathname) {
-	case "/animestore/ci_pc": {
-		Config.getConfig(
-			"作品ページに「コメントを表示しながら再生」ボタンを追加する",
-			(value) => {
-				value && addMenu();
-			},
-		);
-		break;
-	}
-	case "/animestore/sc_d_pc": {
-		setWorkInfo();
+  case "/animestore/ci_pc": {
+    Config.getConfig(
+      "作品ページに「コメントを表示しながら再生」ボタンを追加する",
+      (value) => {
+        value && addMenu();
+      }
+    );
+    break;
+  }
+  case "/animestore/sc_d_pc": {
+    setWorkInfo();
 
-		// called from popup/popup.tsx
-		browser.runtime.onMessage.addListener((message, sender) => {
-			if (message.type === "renderComments") {
-				fire(message.movieId, message.data);
-			}
-			if (message.type === "exportJson") {
-				exportJson(message.movieId);
-			}
-			return undefined;
-		});
-		break;
-	}
-	default:
-		break;
+    // called from popup/popup.tsx
+    browser.runtime.onMessage.addListener((message) => {
+      if (message.type === "renderComments") {
+        fire(message.movieId, message.data);
+      }
+      if (message.type === "exportJson") {
+        exportJson(message.movieId);
+      }
+      return undefined;
+    });
+    break;
+  }
+  default:
+    break;
 }

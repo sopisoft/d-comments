@@ -11,7 +11,7 @@ on:
       - main
       - dmmtv
   schedule:
-    - cron: '0 10 * * 5'
+    - cron: "0 10 * * 5"
 
 jobs:
   analyze:
@@ -25,7 +25,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        language: [ 'javascript' ]
+        language: ["javascript"]
 
     steps:
       - name: Checkout repository

@@ -15,17 +15,18 @@
     along with d-comments.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-@import url('https://cdn.jsdelivr.net/npm/vscode-codicons/dist/codicon.min.css');
-@import url('https://fonts.googleapis.com/css2?family=Noto+Color+Emoji');
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@200;300;400;500;600;700;800;900');
-
 body {
-  font-family: 'Noto Sans JP', 'Noto Color Emoji', sans-serif;
+  margin: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: rgb(241, 241, 241);
 }
 
-:root {
-  box-sizing: border-box;
-
-  word-break: break-word;
-  word-wrap: break-word;
+#use {
+  width: 800px;
+  padding: 1rem;
+  border-radius: 15px;
+  font-size: 14px;
+  background-color: rgb(255, 255, 255);
 }
