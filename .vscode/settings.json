@@ -1,11 +1,14 @@
 {
-  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.defaultFormatter": "biomejs.biome",
   "editor.formatOnSave": true,
-  "files.autoSave": "afterDelay",
+  "editor.codeActionsOnSave": {
+    "source.organizeImports.biome": "always",
+    "quickfix.biome": "always"
+  },
   "files.eol": "\n",
   "json.schemas": [
     {
-      "fileMatch": ["manifest.json"],
+      "fileMatch": ["manifest.json", "manifest_base.json"],
       "url": "http://json.schemastore.org/chrome-manifest"
     }
   ],

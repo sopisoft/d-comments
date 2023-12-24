@@ -5,11 +5,12 @@ if [ -d dist ]; then
   rm -rf dist
 fi
 
-bunx prettier --check ./src
-bunx eslint --fix ./src
+chmod +x ./scripts/*.sh
+./scripts/format.sh
+./scripts/lint.sh
 
-npx tsx ./build.ts
-# bun run ./build.ts
+npx tsx ./scripts/build.ts
+# bun run ./scripts/build.ts
 
 if [ -d web-ext-artifacts ]; then
   rm -rf web-ext-artifacts

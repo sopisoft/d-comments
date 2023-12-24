@@ -56,7 +56,7 @@ const fire = async (movieId: string, data: string) => {
       case "PPV_VIDEO":
         setMessage(
           "有料動画のためコメントを取得できませんでした。",
-          reasonCode
+          reasonCode,
         );
         break;
       default:
@@ -74,7 +74,7 @@ const fire = async (movieId: string, data: string) => {
         status_bar,
         container,
         error_messages_bar,
-        video
+        video,
       );
     } else {
       setMessage("コメントの取得に失敗しました。", null);
@@ -104,7 +104,7 @@ const fire = async (movieId: string, data: string) => {
                 status_bar,
                 container,
                 error_messages_bar,
-                video
+                video,
               );
             });
         } else if (movieData.data) {
@@ -112,7 +112,7 @@ const fire = async (movieId: string, data: string) => {
         } else {
           setMessage(
             "動画情報の取得に失敗しました。",
-            movieData ? movieData.meta.status : null
+            movieData ? movieData.meta.status : null,
           );
           console.log(movieData);
         }

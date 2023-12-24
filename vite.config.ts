@@ -35,11 +35,15 @@ export default defineConfig({
       mangle: {
         toplevel: true,
         module: true,
+        properties: {
+          regex: "/^$.*/",
+        },
       },
       format: {
         comments: false,
       },
       toplevel: true,
+      nameCache: {},
     },
   },
 });

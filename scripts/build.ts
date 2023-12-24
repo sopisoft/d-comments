@@ -1,7 +1,7 @@
 import fs from "fs";
 import { build } from "vite";
 
-const browsers = ["chrome", "firefox"];
+const browsers = ["chrome", "firefox"] as const;
 
 Promise.all(
   browsers.map((browser) =>
@@ -19,7 +19,7 @@ Promise.all(
 /**
  * manifest.json を chrome, firefox 用にそれぞれ生成する
  */
-function makeManifestJson(browser: string) {
+function makeManifestJson(browser: (typeof browsers)[number]) {
   const base = {
     manifest_version: 3,
     name: "__MSG_name__",

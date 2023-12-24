@@ -28,7 +28,7 @@ switch (location.pathname) {
       "作品ページに「コメントを表示しながら再生」ボタンを追加する",
       (value) => {
         value && addMenu();
-      }
+      },
     );
     break;
   }

@@ -10,47 +10,42 @@
     "url": "https://github.com/gobosan/d-comments.git"
   },
   "engines": {
-    "node": ">=18.18"
+    "node": ">=21"
   },
   "scripts": {
-    "release": "bash ./scripts/release.bash",
-    "format": "prettier --write .",
-    "lint": "eslint --fix .",
+    "build": "bash ./scripts/build.bash",
+    "format": "bash ./scripts/format.sh",
+    "lint": "bash ./scripts/lint.sh",
     "zipsrc": "bash ./scripts/zipsrc.bash"
   },
   "dependencies": {
-    "@xpadev-net/niconicomments": "^0.2.56",
-    "babel-preset-solid": "^1.7.12",
-    "eslint-plugin-import": "^2.28.1",
+    "@biomejs/biome": "^1.4.1",
+    "@xpadev-net/niconicomments": "^0.2.67",
+    "babel-preset-solid": "^1.8.6",
+    "eslint-plugin-import": "^2.29.1",
     "rehype-sanitize": "^6.0.0",
     "rehype-slug": "^6.0.0",
     "rehype-stringify": "^10.0.0",
     "remark": "^15.0.1",
     "remark-gfm": "^4.0.0",
-    "remark-html": "^15.0.2",
+    "remark-html": "^16.0.1",
     "remark-parse": "^11.0.0",
     "remark-rehype": "^11.0.0",
     "remark-toc": "^9.0.0",
-    "solid-js": "^1.7.12",
-    "unified": "^11.0.3",
+    "solid-js": "^1.8.7",
+    "unified": "^11.0.4",
     "webextension-polyfill": "^0.10.0",
-    "zenn-content-css": "^0.1.146"
+    "zenn-content-css": "^0.1.150"
   },
   "devDependencies": {
-    "@types/node": "^20.6.3",
-    "@types/react-dom": "^18.2.7",
-    "@types/webextension-polyfill": "^0.10.2",
-    "@typescript-eslint/eslint-plugin": "^6.7.2",
-    "@typescript-eslint/parser": "^6.7.2",
-    "eslint": "^8.49.0",
-    "eslint-config-prettier": "^9.0.0",
-    "prettier": "^3.0.3",
-    "sass": "^1.68.0",
-    "terser": "^5.20.0",
-    "tsx": "^3.12.10",
-    "typescript": "^5.2.2",
-    "vite": "^4.4.9",
-    "vite-plugin-solid": "^2.7.0",
-    "web-ext": "^7.7.0"
+    "@types/node": "^20.10.5",
+    "@types/react-dom": "^18.2.18",
+    "@types/webextension-polyfill": "^0.10.7",
+    "sass": "^1.69.5",
+    "terser": "^5.26.0",
+    "typescript": "^5.3.3",
+    "vite": "^5.0.10",
+    "vite-plugin-solid": "^2.8.0",
+    "web-ext": "^7.9.0"
   }
 }

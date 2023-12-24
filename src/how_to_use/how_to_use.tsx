@@ -44,7 +44,7 @@ const parseMarkdown = async (text: string): Promise<string> => {
       .use(rehypeSlug)
       .use(rehypeSanitize)
       .use(rehypeStringify)
-      .process(text)
+      .process(text),
   );
 };
 
@@ -52,7 +52,7 @@ const how_to_use = () => {
   const [content, setContent] = createSignal("");
 
   const md = fetch(browser.runtime.getURL("how_to_use.md")).then((response) =>
-    response.text()
+    response.text(),
   );
 
   md.then((text) => {
