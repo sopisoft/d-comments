@@ -1,5 +1,5 @@
 {
-  "$schema": "https://biomejs.dev/schemas/1.4.1/schema.json",
+  "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
   "organizeImports": {
     "enabled": true
   },
@@ -8,13 +8,13 @@
     "rules": {
       "recommended": true
     },
-    "ignore": ["**/dist/**", "**/node_modules/**"]
+    "ignore": ["dist/*", "node_modules/*"]
   },
   "formatter": {
     "enabled": true,
     "formatWithErrors": true,
     "indentStyle": "space",
     "indentWidth": 2,
-    "ignore": ["**/dist/**", "**/node_modules/**"]
+    "ignore": ["dist/*", "node_modules/*"]
   }
 }

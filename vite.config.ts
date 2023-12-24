@@ -1,11 +1,11 @@
 import { resolve } from "path";
-import { defineConfig } from "vite";
+import { defineConfig, splitVendorChunkPlugin } from "vite";
 import solidPlugin from "vite-plugin-solid";
 
 // https://ja.vitejs.dev/config/
 export default defineConfig({
   publicDir: "src/raw",
-  plugins: [solidPlugin()],
+  plugins: [splitVendorChunkPlugin(), solidPlugin()],
   build: {
     target: "esnext",
     minify: "terser",

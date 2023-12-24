@@ -29,6 +29,13 @@
       "group": "build",
       "label": "bun: build",
       "detail": "bash ./scripts/build.bash"
+    },
+    {
+      "type": "bun",
+      "script": "bun run zipsrc",
+      "problemMatcher": [],
+      "label": "bun: zipsrc",
+      "detail": "bash ./scripts/zipsrc.bash"
     }
   ]
 }
