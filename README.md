@@ -47,11 +47,11 @@ bun install
 Run the following command:
 
 ```sh
-bun run release
+bun run build
 
 # or
 
-./scripts/release.bash
+./scripts/build.bash
 ```
 
 This will create a zip file in the `dist` directory.
@@ -66,6 +66,10 @@ Run the following command:
 
 ```sh
 bun run lint
+
+# or
+
+./scripts/lint.sh
 ```
 
 ### Formatter
@@ -74,6 +78,10 @@ Run the following command:
 
 ```sh
 bun run format
+
+# or
+
+./scripts/format.sh
 ```
 
 ### Make source code zip
