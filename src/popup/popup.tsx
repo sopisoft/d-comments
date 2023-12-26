@@ -66,9 +66,8 @@ const Popup = () => {
     if (location) {
       const url = new URL(location);
       return url.pathname === "/animestore/sc_d_pc";
-    } else {
-      return false;
     }
+    return false;
   };
 
   /**
@@ -81,10 +80,7 @@ const Popup = () => {
           type: "renderComments",
           movieId: movieId(),
           data: undefined,
-        }),
-        (response: string) => {
-          console.log(response);
-        };
+        });
     });
   };
 
@@ -97,10 +93,7 @@ const Popup = () => {
         browser.tabs.sendMessage(tabs[0].id as number, {
           type: "exportJson",
           movieId: movieId(),
-        }),
-        (response: string) => {
-          console.log(response);
-        };
+        });
     });
   };
 
@@ -142,10 +135,7 @@ const Popup = () => {
             type: "renderComments",
             movieId: movieId(),
             data: data,
-          }),
-          (response: string) => {
-            console.log(response);
-          };
+          });
       });
     }
   };
@@ -169,20 +159,14 @@ const Popup = () => {
             if (response.meta.status === 200) {
               console.log("検索結果", response);
               setResult(response);
-              response.data.forEach(
-                (item: {
-                  userId: string;
-                  contentId: string;
-                  channelId: string;
-                }) => {
-                  const isUser = item.userId ? true : false;
-                  getOwnerInfo(
-                    item.contentId,
-                    isUser ? item.userId : item.channelId,
-                    isUser ? true : false,
-                  );
-                },
-              );
+              for (const item of response.data) {
+                const isUser = item.userId ? true : false;
+                getOwnerInfo(
+                  item.contentId,
+                  isUser ? item.userId : item.channelId,
+                  isUser ? true : false,
+                );
+              }
             } else {
               return;
             }
@@ -255,8 +239,8 @@ const Popup = () => {
 
   browser.tabs.query({ active: true, currentWindow: true }).then((tabs) => {
     console.log(tabs[0]?.url);
-    isWatchPage(tabs[0]?.url) &&
-      (setTabPage("watch"), init(tabs[0]?.title ?? ""));
+    isWatchPage(tabs[0]?.url) && setTabPage("watch");
+    init(tabs[0]?.title ?? "");
   });
 
   return (
