@@ -201,7 +201,7 @@ browser.runtime.onMessage.addListener(
       }
     }
     return undefined;
-  },
+  }
 );
 
 /**

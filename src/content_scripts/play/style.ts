@@ -85,10 +85,10 @@ const hexToRgb = (color: string) => {
     (
       (color.match(/^#?[0-9A-Fa-f]{3}([0-9A-Fa-f]{3})?$/) ? color : "000")
         .replace(/^#?(.*)$/, (_, hex) =>
-          hex.length === 3 ? hex.replace(/./g, "$&$&") : hex,
+          hex.length === 3 ? hex.replace(/./g, "$&$&") : hex
         )
         .match(/../g) ?? []
-    ).map((c: string, i: number) => ["rgb".charAt(i), parseInt(`0x${c}`)]),
+    ).map((c: string, i: number) => ["rgb".charAt(i), parseInt(`0x${c}`)])
   ) as { r: number; g: number; b: number };
 };
 

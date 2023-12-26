@@ -25,7 +25,7 @@ import "./options.scss";
 
 const Options = () => {
   const [options, setOptions] = createSignal<Array<Config.config>>(
-    Config.defaultConfigs,
+    Config.defaultConfigs
   );
 
   const t: Array<Config.config> = [];
@@ -55,7 +55,7 @@ const Options = () => {
   };
 
   const onChange = (
-    e: Event & { currentTarget: HTMLInputElement; target: Element },
+    e: Event & { currentTarget: HTMLInputElement; target: Element }
   ) => {
     const target = e.target as HTMLInputElement;
     const name = target.name;

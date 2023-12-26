@@ -164,7 +164,7 @@ const Popup = () => {
                 getOwnerInfo(
                   item.contentId,
                   isUser ? item.userId : item.channelId,
-                  isUser ? true : false,
+                  isUser ? true : false
                 );
               }
             } else {
@@ -184,7 +184,7 @@ const Popup = () => {
   const getOwnerInfo = (
     contentId: string,
     ownerId: string,
-    isUser: boolean,
+    isUser: boolean
   ) => {
     const res: Owner = [];
     browser.runtime
@@ -224,7 +224,7 @@ const Popup = () => {
         if (value === true) {
           setMovieId(window.localStorage.getItem("movieId") ?? "");
         }
-      },
+      }
     );
     Config.getConfig(
       "ポップアップを開いたとき自動で動画検索を開始する",
@@ -233,7 +233,7 @@ const Popup = () => {
           setWord(title);
           search(title);
         }
-      },
+      }
     );
   };
 
@@ -357,13 +357,13 @@ const Popup = () => {
                           src={
                             owner()?.find(
                               (ownerItem) =>
-                                ownerItem.contentId === item.contentId,
+                                ownerItem.contentId === item.contentId
                             )?.ownerIconUrl
                           }
                           alt={
                             owner()?.find(
                               (ownerItem) =>
-                                ownerItem.contentId === item.contentId,
+                                ownerItem.contentId === item.contentId
                             )?.ownerName
                           }
                         />
@@ -371,7 +371,7 @@ const Popup = () => {
                           {
                             owner()?.find(
                               (ownerItem) =>
-                                ownerItem.contentId === item.contentId,
+                                ownerItem.contentId === item.contentId
                             )?.ownerName
                           }
                         </p>

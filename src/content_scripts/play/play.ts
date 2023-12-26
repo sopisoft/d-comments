@@ -71,7 +71,7 @@ const play = (
   status_bar: HTMLDivElement,
   container: HTMLDivElement,
   error_messages_bar: HTMLDivElement,
-  video: HTMLVideoElement,
+  video: HTMLVideoElement
 ) => {
   /**
    * 設定の変更を監視する
@@ -80,7 +80,7 @@ const play = (
     for (const [key, { oldValue, newValue }] of Object.entries(changes)) {
       console.log(
         `設定 ${key} (${namespace}) が更新されました`,
-        `\n更新前 : ${oldValue} | 更新後 : ${newValue}`,
+        `\n更新前 : ${oldValue} | 更新後 : ${newValue}`
       );
       switch (key) {
         case "スクロールモードを利用可能にする":
@@ -164,7 +164,7 @@ const play = (
         });
       }
     },
-    { passive: true },
+    { passive: true }
   );
   ul.addEventListener(
     "mouseover",
@@ -172,7 +172,7 @@ const play = (
       status.isMouseOver = true;
       checkIsScrollModeEnabled();
     },
-    { passive: true },
+    { passive: true }
   );
   ul.addEventListener(
     "mouseleave",
@@ -180,7 +180,7 @@ const play = (
       status.isMouseOver = false;
       checkIsScrollModeEnabled();
     },
-    { passive: true },
+    { passive: true }
   );
 
   /**
@@ -341,7 +341,7 @@ const play = (
       const currentTime = Math.round(video.currentTime * 1000);
 
       const li = ul.querySelectorAll(
-        "li[data-time]",
+        "li[data-time]"
       ) as NodeListOf<HTMLElement>;
 
       const list = new Array<HTMLElement>();
@@ -361,7 +361,7 @@ const play = (
         status.scrollHeight = target.offsetTop - ul.offsetHeight;
 
         const scrollLength = Math.abs(
-          status.scrollHeight - status.scrolledHeight,
+          status.scrollHeight - status.scrolledHeight
         );
         if (status.windowHeight / 2 - scrollLength > 0) {
           target.scrollIntoView({

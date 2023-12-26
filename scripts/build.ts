@@ -12,8 +12,8 @@ Promise.all(
       },
     }).then(() => {
       makeManifestJson(browser);
-    }),
-  ),
+    })
+  )
 );
 
 /**
@@ -57,7 +57,7 @@ function makeManifestJson(browser: (typeof browsers)[number]) {
                 "options.js",
                 "how_to_use.js",
                 "background.js",
-              ].includes(file),
+              ].includes(file)
           )
           .map((file: string) => `js/${file}`),
       },

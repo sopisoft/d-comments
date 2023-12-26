@@ -15,6 +15,12 @@
     "formatWithErrors": true,
     "indentStyle": "space",
     "indentWidth": 2,
+    "lineEnding": "lf",
     "ignore": ["dist/*", "node_modules/*"]
+  },
+  "javascript": {
+    "formatter": {
+      "trailingComma": "es5"
+    }
   }
 }
