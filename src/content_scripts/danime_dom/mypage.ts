@@ -64,9 +64,9 @@ export const addMenu = async () => {
             textAlign: "center",
             borderTop: "1px solid rgb(224 224 224)",
             backgroundColor: bgColor,
-          },
+          }
         );
       }
-    },
+    }
   );
 };

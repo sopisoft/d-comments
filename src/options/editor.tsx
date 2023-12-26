@@ -78,7 +78,12 @@ const Editor = (props: Editor) => {
             name={p()}
             value={selected()}
             title={t()}
-            onChange={props.update as any}
+            onChange={
+              props.update as unknown as JSX.ChangeEventHandlerUnion<
+                HTMLSelectElement,
+                Event
+              >
+            }
           >
             {defaultConfigs
               .find((item) => item.key === p())

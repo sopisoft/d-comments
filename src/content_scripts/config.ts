@@ -133,7 +133,7 @@ export const defaultConfigs: Array<config> = [
  */
 export const getConfig = (
   key: string,
-  callback: (value: string | number | boolean) => void,
+  callback: (value: string | number | boolean) => void
 ) => {
   browser.storage.local.get([key]).then((result) => {
     const defaultValue = defaultConfigs.find((item) => item.key === key)?.value;

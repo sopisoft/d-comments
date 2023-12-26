@@ -36,7 +36,7 @@ const getRandomInt = (min: number, max: number) => {
  * @param sendResponse (response) => void
  */
 
-const getMovieData = (movieId: string, sendResponse: (v) => void) => {
+const getMovieData = (movieId: string, sendResponse: (v: any) => void) => {
   Config.getConfig("allow_login_to_nicovideo", (config) => {
     const actionTrackId = `${Math.random()
       .toString(36)

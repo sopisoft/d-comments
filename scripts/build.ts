@@ -1,7 +1,7 @@
 import fs from "fs";
 import { build } from "vite";
 
-const browsers = ["chrome", "firefox"];
+const browsers = ["chrome", "firefox"] as const;
 
 Promise.all(
   browsers.map((browser) =>
@@ -12,16 +12,16 @@ Promise.all(
       },
     }).then(() => {
       makeManifestJson(browser);
-    }),
-  ),
+    })
+  )
 );
 
 /**
  * manifest.json を chrome, firefox 用にそれぞれ生成する
  */
-function makeManifestJson(browser: string) {
+function makeManifestJson(browser: (typeof browsers)[number]) {
   const base = {
-    manifest_version: 3,
+    manifest_version: undefined,
     name: "__MSG_name__",
     description: "__MSG_description__",
     default_locale: "ja",
@@ -33,10 +33,9 @@ function makeManifestJson(browser: string) {
       128: "icons/128.png",
       256: "icons/256.png",
     },
-    action: {
-      default_popup: "popup.html",
+    options_ui: {
+      page: "options.html",
     },
-    options_page: "options.html",
     background: {},
     content_scripts: [
       {
@@ -58,23 +57,17 @@ function makeManifestJson(browser: string) {
                 "options.js",
                 "how_to_use.js",
                 "background.js",
-              ].includes(file),
+              ].includes(file)
           )
           .map((file: string) => `js/${file}`),
       },
     ],
     permissions: ["cookies", "storage", "tabs"],
-    host_permissions: [
-      "*://animestore.docomo.ne.jp/*",
-      "*://*.nicovideo.jp/*",
-      "*://nvcomment.nicovideo.jp/*",
-      "*://nvapi.nicovideo.jp/v1/users/*",
-      "*://public.api.nicovideo.jp/v1/channel/channelapp/channels/*",
-      "*://api.search.nicovideo.jp/*",
-    ],
   };
+
   const manifest = {
     ...base,
+    manifest_version: browser === "chrome" ? 3 : 2,
     background:
       browser === "chrome"
         ? {
@@ -83,6 +76,7 @@ function makeManifestJson(browser: string) {
           }
         : {
             scripts: ["background.js"],
+            type: "module",
           },
     ...(browser === "firefox"
       ? {
@@ -93,6 +87,38 @@ function makeManifestJson(browser: string) {
           },
         }
       : {}),
+    ...(browser === "chrome"
+      ? {
+          action: {
+            default_popup: "popup.html",
+            default_title: process.env.npm_package_name,
+          },
+          options_page: "options.html",
+          host_permissions: [
+            "*://*.nicovideo.jp/*",
+            "*://animestore.docomo.ne.jp/*",
+            "*://nvcomment.nicovideo.jp/*",
+            "*://nvapi.nicovideo.jp/v1/users/*",
+            "*://public.api.nicovideo.jp/v1/channel/channelapp/channels/*",
+            "*://api.search.nicovideo.jp/*",
+          ],
+        }
+      : {
+          browser_action: {
+            default_title: process.env.npm_package_name,
+            default_popup: "popup.html",
+          },
+          web_accessible_resources: ["*"],
+          permissions: [
+            ...base.permissions,
+            "https://*.nicovideo.jp/*",
+            "https://animestore.docomo.ne.jp/*",
+            "https://nvcomment.nicovideo.jp/*",
+            "https://nvapi.nicovideo.jp/v1/users/*",
+            "https://public.api.nicovideo.jp/v1/channel/channelapp/channels/*",
+            "https://api.search.nicovideo.jp/*",
+          ],
+        }),
   };
   fs.writeFileSync(`dist/${browser}/manifest.json`, JSON.stringify(manifest));
 }

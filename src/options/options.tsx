@@ -19,17 +19,17 @@ import { JSX, createSignal } from "solid-js";
 import { render } from "solid-js/web";
 import browser from "webextension-polyfill";
 import * as Config from "../content_scripts/config";
-import Editor from "./editor";
 import "../global.css";
+import Editor from "./editor";
 import "./options.scss";
 
 const Options = () => {
   const [options, setOptions] = createSignal<Array<Config.config>>(
-    Config.defaultConfigs,
+    Config.defaultConfigs
   );
 
   const t: Array<Config.config> = [];
-  Config.defaultConfigs.forEach((i, idx, array) => {
+  for (const i of Config.defaultConfigs) {
     Config.getConfig(i.key, (value) => {
       const r: Config.config = {
         key: i.key,
@@ -37,11 +37,11 @@ const Options = () => {
         type: i.type,
       };
       t.push(r);
-      if (idx === array.length - 1) {
+      if (i === Config.defaultConfigs[Config.defaultConfigs.length - 1]) {
         setOptions(t);
       }
     });
-  });
+  }
 
   const setOption = (m: string, v: string | number | boolean) => {
     const d = Config.defaultConfigs.find((i) => i.key === m)?.type;
@@ -54,16 +54,19 @@ const Options = () => {
     setOptions(t.concat(r));
   };
 
-  const onChange = (e: any) => {
-    const n = e.target.name;
-    if (e.target.type === "checkbox") {
-      const v = options().find((i) => i.key === n)?.value;
-      setOption(n, !v);
-      Config.setConfig(n, !v);
+  const onChange = (
+    e: Event & { currentTarget: HTMLInputElement; target: Element }
+  ) => {
+    const target = e.target as HTMLInputElement;
+    const name = target.name;
+    if (target.type === "checkbox") {
+      const v = options().find((i) => i.key === name)?.value;
+      setOption(name, !v);
+      Config.setConfig(name, !v);
     } else {
-      const v = e.target.value;
-      setOption(n, v);
-      Config.setConfig(n, v);
+      const v = target.value;
+      setOption(name, v);
+      Config.setConfig(name, v);
     }
   };
 
