@@ -89,35 +89,31 @@ const Options = () => {
           <div>
             <h2>ポップアップ</h2>
             <Editor
-              p="ポップアップを開いたとき最後に入力した動画IDを表示する"
+              p="show_last_searched_video_id"
               o={options}
               update={onChange}
             />
-            <Editor
-              p="ポップアップを開いたとき自動で動画検索を開始する"
-              o={options}
-              update={onChange}
-            />
+            <Editor p="auto_search" o={options} update={onChange} />
           </div>
           <div>
             <h2>作品ページ</h2>
             <Editor
-              p="作品ページに「コメントを表示しながら再生」ボタンを追加する"
+              p="add_button_to_show_comments_while_playing"
               o={options}
               update={onChange}
             />
             <Editor
-              p="「コメントを表示しながら再生」ボタンでは新しいタブで開く"
+              p="open_in_new_tab_when_clicking_show_comments_while_playing_button"
               o={options}
               update={onChange}
             />
           </div>
           <div>
             <h2>コメントの種類</h2>
-            <Editor p="投稿者コメント" o={options} update={onChange} />
-            <Editor p="通常コメント" o={options} update={onChange} />
-            <Editor p="かんたんコメント" o={options} update={onChange} />
-          </div>{" "}
+            <Editor p="show_owner_comments" o={options} update={onChange} />
+            <Editor p="show_main_comments" o={options} update={onChange} />
+            <Editor p="show_easy_comments" o={options} update={onChange} />
+          </div>
           <div>
             <h2>ニコニコ動画へのログイン</h2>
             <Editor
@@ -130,58 +126,58 @@ const Options = () => {
         <div id="right-side">
           <div>
             <h2>視聴ページ</h2>
-            <Editor
-              p="スクロールモードを利用可能にする"
-              o={options}
-              update={onChange}
-            />
-            <Editor
-              p="自動スクロールの実行間隔 (ミリ秒)"
-              o={options}
-              update={onChange}
-            />
-            <Editor p="コメント欄の幅 (px)" o={options} update={onChange} />
-            <Editor
-              p="コメント欄のスクールバーを表示する"
-              o={options}
-              update={onChange}
-            />
+            <Editor p="enable_scroll_mode" o={options} update={onChange} />
+            <Editor p="scroll_interval_ms" o={options} update={onChange} />
+            <Editor p="comment_area_width_px" o={options} update={onChange} />
+            <Editor p="show_comment_scrollbar" o={options} update={onChange} />
           </div>
           <div>
             <h2>コメント欄の色</h2>
-            <Editor p="コメント欄の背景色" o={options} update={onChange} />
             <Editor
-              p="コメント欄の背景不透明度 (%)"
+              p="comment_area_background_color"
               o={options}
               update={onChange}
             />
-            <Editor p="コメントの文字色" o={options} update={onChange} />
+            <Editor
+              p="comment_area_opacity_percent"
+              o={options}
+              update={onChange}
+            />
+            <Editor p="comment_text_color" o={options} update={onChange} />
           </div>
           <div>
             <h2>コメントの表示方法</h2>
-            <Editor p="way_to_render_comments" o={options} update={onChange} />
+            <Editor
+              p="comment_rendering_method"
+              o={options}
+              update={onChange}
+            />
           </div>
           <div
             style={{
               opacity:
-                options.find((i) => i.key === "way_to_render_comments")
+                options.find((i) => i.key === "comment_rendering_method")
                   ?.value === "list_overlay"
                   ? 1
                   : 0.6,
             }}
           >
-            <h2>コメントリストのオーバーレイ （β版）</h2>
+            <h2>コメントリストのオーバーレイ</h2>
             <Editor
-              p="画面の上部分からの距離 (%)"
+              p="distance_from_top_percent"
               o={options}
               update={onChange}
             />
             <Editor
-              p="画面の左部分からの距離 (%)"
+              p="distance_from_left_percent"
               o={options}
               update={onChange}
             />
-            <Editor p="コメント欄の高さ (%)" o={options} update={onChange} />
+            <Editor
+              p="comment_area_height_percent"
+              o={options}
+              update={onChange}
+            />
           </div>
         </div>
       </div>

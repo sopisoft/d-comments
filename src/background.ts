@@ -213,6 +213,9 @@ browser.runtime.onInstalled.addListener((details) => {
       url: browser.runtime.getURL("how_to_use.html"),
     });
   }
+
+  // Config keys migration
+  Config.migrate();
 });
 
 export default {};

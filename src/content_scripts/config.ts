@@ -26,63 +26,79 @@ export type config = {
 };
 export const defaultConfigs: Array<config> = [
   {
-    key: "ポップアップを開いたとき最後に入力した動画IDを表示する",
+    key: "show_last_searched_video_id",
     value: true,
     type: "checkbox",
+    text: "ポップアップを開いたとき最後に入力した動画IDを表示する",
   },
   {
-    key: "ポップアップを開いたとき自動で動画検索を開始する",
+    key: "auto_search",
     value: true,
     type: "checkbox",
+    text: "ポップアップを開いたとき自動で動画検索を開始する",
   },
-  { key: "スクロールモードを利用可能にする", value: true, type: "checkbox" },
   {
-    key: "自動スクロールの実行間隔 (ミリ秒)",
+    key: "enable_scroll_mode",
+    value: true,
+    type: "checkbox",
+    text: "スクロールモードを利用可能にする",
+  },
+  {
+    key: "scroll_interval_ms",
     value: 120,
     type: "number",
+    text: "自動スクロールの実行間隔 (ミリ秒)",
   },
   {
-    key: "コメント欄の幅 (px)",
+    key: "comment_area_width_px",
     value: 1000,
     type: "number",
+    text: "コメント欄の幅 (px)",
   },
   {
-    key: "コメント欄のスクールバーを表示する",
+    key: "show_comment_scrollbar",
     value: true,
     type: "checkbox",
+    text: "コメント欄のスクールバーを表示する",
   },
   {
-    key: "コメント欄の背景色",
+    key: "comment_area_background_color",
     value: "#000000",
     type: "color",
+    text: "コメント欄の背景色",
   },
   {
-    key: "コメント欄の背景不透明度 (%)",
+    key: "comment_area_opacity_percent",
     value: 35,
     type: "number",
+    text: "コメント欄の背景不透明度 (%)",
   },
   {
-    key: "コメントの文字色",
+    key: "comment_text_color",
     value: "#FFFFFF",
     type: "color",
+    text: "コメントの文字色",
   },
   {
-    key: "画面の上部分からの距離 (%)",
+    key: "distance_from_top_percent",
     value: 5,
     type: "number",
+    text: "画面の上部分からの距離 (%)",
   },
   {
-    key: "画面の左部分からの距離 (%)",
+    key: "distance_from_left_percent",
     value: 10,
     type: "number",
+    text: "画面の左部分からの距離 (%)",
   },
   {
-    key: "コメント欄の高さ (%)",
+    key: "comment_area_height_percent",
     value: 85,
     type: "number",
+    text: "コメント欄の高さ (%)",
   },
   {
-    key: "way_to_render_comments",
+    key: "comment_rendering_method",
     value: "right_to_left",
     options: [
       { value: "list", name: "リスト" },
@@ -94,29 +110,34 @@ export const defaultConfigs: Array<config> = [
     text: "コメントの表示方法",
   },
   {
-    key: "作品ページに「コメントを表示しながら再生」ボタンを追加する",
+    key: "add_button_to_show_comments_while_playing",
     value: true,
     type: "checkbox",
+    text: "作品ページに「コメントを表示しながら再生」ボタンを追加する",
   },
   {
-    key: "「コメントを表示しながら再生」ボタンでは新しいタブで開く",
+    key: "open_in_new_tab_when_clicking_show_comments_while_playing_button",
     value: false,
     type: "checkbox",
+    text: "「コメントを表示しながら再生」ボタンでは新しいタブで開く",
   },
   {
-    key: "投稿者コメント",
+    key: "show_owner_comments",
     value: false,
     type: "checkbox",
+    text: "投稿者コメント",
   },
   {
-    key: "通常コメント",
+    key: "show_main_comments",
     value: true,
     type: "checkbox",
+    text: "通常コメント",
   },
   {
-    key: "かんたんコメント",
+    key: "show_easy_comments",
     value: false,
     type: "checkbox",
+    text: "かんたんコメント",
   },
   {
     key: "allow_login_to_nicovideo",
@@ -156,3 +177,66 @@ export const setConfig = (key: string, value: string | number | boolean) => {
     console.log(key, value);
   });
 };
+
+export function migrate() {
+  browser.storage.local.get(["version"]).then((result) => {
+    if (result.version === undefined || null) {
+      browser.storage.local.set({
+        version: browser.runtime.getManifest().version,
+      });
+    }
+  });
+
+  const oldKeys = [
+    "ポップアップを開いたとき最後に入力した動画IDを表示する",
+    "ポップアップを開いたとき自動で動画検索を開始する",
+    "スクロールモードを利用可能にする",
+    "自動スクロールの実行間隔 (ミリ秒)",
+    "コメント欄の幅 (px)",
+    "コメント欄のスクールバーを表示する",
+    "コメント欄の背景色",
+    "コメント欄の背景不透明度 (%)",
+    "コメントの文字色",
+    "画面の上部分からの距離 (%)",
+    "画面の左部分からの距離 (%)",
+    "コメント欄の高さ (%)",
+    "way_to_render_comments",
+    "作品ページに「コメントを表示しながら再生」ボタンを追加する",
+    "「コメントを表示しながら再生」ボタンでは新しいタブで開く",
+    "投稿者コメント",
+    "通常コメント",
+    "かんたんコメント",
+    "allow_login_to_nicovideo",
+  ];
+
+  const newKeys = [
+    "show_last_searched_video_id",
+    "auto_search",
+    "enable_scroll_mode",
+    "scroll_interval_ms",
+    "comment_area_width_px",
+    "show_comment_scrollbar",
+    "comment_area_background_color",
+    "comment_area_opacity_percent",
+    "comment_text_color",
+    "distance_from_top_percent",
+    "distance_from_left_percent",
+    "comment_area_height_percent",
+    "comment_rendering_method",
+    "add_button_to_show_comments_while_playing",
+    "open_in_new_tab_when_clicking_button",
+    "show_owner_comments",
+    "show_main_comments",
+    "show_easy_comments",
+    "allow_login_to_nicovideo",
+  ];
+
+  for (let i = 0; i < oldKeys.length; i++) {
+    browser.storage.local.get([oldKeys[i]]).then((result) => {
+      if (!result[oldKeys[i]]) {
+        return;
+      }
+      setConfig(newKeys[i], result[oldKeys[i]]);
+    });
+  }
+}

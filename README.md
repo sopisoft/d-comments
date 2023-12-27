@@ -48,10 +48,6 @@ Run the following command:
 
 ```sh
 bun run build
-
-# or
-
-./scripts/build.bash
 ```
 
 This will create a zip file in the `dist` directory.
@@ -66,10 +62,6 @@ Run the following command:
 
 ```sh
 bun run lint
-
-# or
-
-./scripts/lint.sh
 ```
 
 ### Formatter
@@ -78,10 +70,6 @@ Run the following command:
 
 ```sh
 bun run format
-
-# or
-
-./scripts/format.sh
 ```
 
 ### Make source code zip
@@ -90,10 +78,14 @@ Run the following command:
 
 ```sh
 bun run zipsrc
+```
 
-# or
+## Troubleshooting
 
-./scripts/zipsrc.bash
+If the build fails, try removing `node_modules` and reinstalling the dependencies.
+
+```sh
+rm -r node_modules && bun install
 ```
 
 ## License
