@@ -1,10 +1,15 @@
-import { resolve } from "path";
+import path, { resolve } from "path";
 import react from "@vitejs/plugin-react-swc";
 import { defineConfig } from "vite";
 // https://ja.vitejs.dev/config/
 export default defineConfig({
   publicDir: "src/raw",
   plugins: [react()],
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "./src"),
+    },
+  },
   build: {
     target: "esnext",
     minify: "terser",
