@@ -408,9 +408,13 @@ const play = (
       }
     };
     setCanvasStyle();
-    (window || video)?.addEventListener("resize", () => {
-      setCanvasStyle(), { passive: true };
-    });
+    (window || video)?.addEventListener(
+      "resize",
+      () => {
+        setCanvasStyle();
+      },
+      { passive: true }
+    );
     const data = threadData.threads;
     const nicoComments = new NiconiComments(canvas, data, {
       format: "v1",

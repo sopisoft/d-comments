@@ -202,7 +202,7 @@ export const setDefaultStyle = () => {
   document.head.appendChild(style);
 };
 
-(function () {
+(() => {
   if (!document.getElementById("d-comments-font")) {
     const css = `
 		@import url('https://fonts.googleapis.com/css2?family=Noto+Color+Emoji');
