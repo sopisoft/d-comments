@@ -18,8 +18,12 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": false,
-    "jsx": "preserve",
-    "jsxImportSource": "solid-js"
+    "jsx": "react",
+    "types": [
+      "vite/client",
+      "react",
+      "react-dom",
+    ]
   },
   "include": [
     "src",

@@ -15,56 +15,45 @@
     along with d-comments.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-import rehypeSanitize from "rehype-sanitize";
+import React, { Suspense, useState } from "react";
+import { createRoot } from "react-dom/client";
+import Markdown from "react-markdown";
+import rehypeRaw from "rehype-raw";
 import rehypeSlug from "rehype-slug";
-import rehypeStringify from "rehype-stringify";
 import remarkGfm from "remark-gfm";
-import remarkParse from "remark-parse";
-import remarkRehype from "remark-rehype";
 import remarkToc from "remark-toc";
-import { Suspense, createSignal } from "solid-js";
-import { render } from "solid-js/web";
-import { unified } from "unified";
 import browser from "webextension-polyfill";
 import "zenn-content-css";
 import "../global.css";
 import "./how_to_use.css";
 
-const parseMarkdown = async (text: string): Promise<string> => {
-  return String(
-    await unified()
-      .use(remarkParse)
-      .use(remarkToc, {
-        heading: "目次",
-        tight: true,
-        prefix: "user-content-",
-      })
-      .use(remarkGfm)
-      .use(remarkRehype)
-      .use(rehypeSlug)
-      .use(rehypeSanitize)
-      .use(rehypeStringify)
-      .process(text)
-  );
-};
+const HowToUse = () => {
+  const [md, setMd] = useState("");
 
-const how_to_use = () => {
-  const [content, setContent] = createSignal("");
-
-  const md = fetch(browser.runtime.getURL("how_to_use.md")).then((response) =>
-    response.text()
-  );
-
-  md.then((text) => {
-    parseMarkdown(text).then((html) => {
-      setContent(html);
+  fetch(browser.runtime.getURL("how_to_use.md"))
+    .then((response) => response.text())
+    .then((text) => {
+      setMd(text);
     });
-  });
 
   return (
     <>
       <Suspense fallback={<div>Loading...</div>}>
-        <div class="znc" innerHTML={content()} />
+        <Markdown
+          className="znc"
+          remarkPlugins={[
+            remarkGfm,
+            [
+              remarkToc,
+              {
+                heading: "目次",
+              },
+            ],
+          ]}
+          rehypePlugins={[rehypeRaw, rehypeSlug]}
+        >
+          {md}
+        </Markdown>
       </Suspense>
     </>
   );
@@ -74,4 +63,4 @@ const root = document.createElement("div");
 root.id = "use";
 document.body.appendChild(root);
 
-render(how_to_use, root);
+createRoot(root).render(<HowToUse />);

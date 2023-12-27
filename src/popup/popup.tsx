@@ -15,8 +15,8 @@
     along with d-comments.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { Match, Switch, createSignal } from "solid-js";
-import { render } from "solid-js/web";
+import React, { useState } from "react";
+import { createRoot } from "react-dom/client";
 import browser from "webextension-polyfill";
 
 import * as Config from "../content_scripts/config";
@@ -24,13 +24,13 @@ import "../global.css";
 import "./popup.scss";
 
 const Popup = () => {
-  const [tabPage, setTabPage] = createSignal("");
+  const [tabPage, setTabPage] = useState<"watch" | "other">("other");
 
-  const [movieId, setMovieId] = createSignal("");
-  const [word, setWord] = createSignal("");
+  const [movieId, setMovieId] = useState("");
+  const [word, setWord] = useState("");
 
-  const [owner, setOwner] = createSignal<Owner>();
-  const [result, setResult] = createSignal<SearchResult>();
+  const [owner, setOwner] = useState<Owner>();
+  const [result, setResult] = useState<SearchResult>();
 
   type SearchResult = {
     meta: {
@@ -78,7 +78,7 @@ const Popup = () => {
       isWatchPage(tabs[0]?.url) &&
         browser.tabs.sendMessage(tabs[0].id as number, {
           type: "renderComments",
-          movieId: movieId(),
+          movieId: movieId,
           data: undefined,
         });
     });
@@ -92,7 +92,7 @@ const Popup = () => {
       isWatchPage(tabs[0]?.url) &&
         browser.tabs.sendMessage(tabs[0].id as number, {
           type: "exportJson",
-          movieId: movieId(),
+          movieId: movieId,
         });
     });
   };
@@ -133,7 +133,7 @@ const Popup = () => {
         isWatchPage(tabs[0]?.url) &&
           browser.tabs.sendMessage(tabs[0].id as number, {
             type: "renderComments",
-            movieId: movieId(),
+            movieId: movieId,
             data: data,
           });
       });
@@ -248,17 +248,17 @@ const Popup = () => {
       <a
         aria-label="設定"
         href={browser.runtime.getURL("options.html")}
-        class="btn-option"
+        className="btn-option"
         target="_blank"
         rel="noopener noreferrer"
       >
         <span>
-          <i class="codicon codicon-settings-gear" />
+          <i className="codicon codicon-settings-gear" />
         </span>
       </a>
 
-      <Switch fallback={NotActive()}>
-        <Match when={tabPage() === "watch"}>
+      {tabPage === "watch" ? (
+        <>
           <label>
             <p>
               動画ID
@@ -272,14 +272,14 @@ const Popup = () => {
             </p>
             <div>
               <input
-                class="input-movieId"
-                value={movieId()}
+                className="input-movieId"
+                value={movieId}
                 onInput={(e) => handler((e.target as HTMLInputElement).value)}
               />
               <button
                 type="button"
                 aria-label="コメントをファイルに出力する"
-                class="btn"
+                className="btn"
                 onClick={() => {
                   exportJson();
                 }}
@@ -289,7 +289,7 @@ const Popup = () => {
               <button
                 type="button"
                 aria-label="視聴ページでコメントを表示する"
-                class="btn"
+                className="btn"
                 onClick={() => {
                   sendMessage();
                 }}
@@ -302,10 +302,12 @@ const Popup = () => {
             <p>コメントファイル読み込み</p>
             <div>
               <input
-                class="input-file"
+                className="input-file"
                 type="file"
                 accept=".json"
-                onChange={onFileInputChange}
+                onChange={() => {
+                  onFileInputChange;
+                }}
               />
             </div>
           </label>
@@ -313,28 +315,28 @@ const Popup = () => {
             <p>動画検索</p>
             <div>
               <input
-                class="input-search"
-                value={word()}
+                className="input-search"
+                value={word}
                 onChange={(e) => setWord((e.target as HTMLInputElement).value)}
                 placeholder="検索ワードを入力"
               />
               <button
                 type="button"
                 aria-label="検索"
-                class="btn"
+                className="btn"
                 onClick={() => {
-                  search(word());
+                  search(word);
                 }}
               >
                 <span>
-                  <i class="codicon codicon-search" />
+                  <i className="codicon codicon-search" />
                 </span>
               </button>
             </div>
           </label>
-          <ul class="result">
-            {result()?.meta?.status === 200 &&
-              result()?.data?.map((item) => (
+          <ul className="result">
+            {result?.meta?.status === 200 &&
+              result?.data?.map((item) => (
                 <li
                   onClick={() => {
                     handler(item.contentId);
@@ -345,23 +347,23 @@ const Popup = () => {
                     }
                   }}
                 >
-                  <span class="title">
+                  <span className="title">
                     <span>{item.title}</span>
                   </span>
-                  <div class="wrapper">
+                  <div className="wrapper">
                     <img src={item.thumbnailUrl} alt={item.title} />
-                    <div class="info">
+                    <div className="info">
                       <p>動画情報</p>
-                      <div class="owner">
+                      <div className="owner">
                         <img
                           src={
-                            owner()?.find(
+                            owner?.find(
                               (ownerItem) =>
                                 ownerItem.contentId === item.contentId
                             )?.ownerIconUrl
                           }
                           alt={
-                            owner()?.find(
+                            owner?.find(
                               (ownerItem) =>
                                 ownerItem.contentId === item.contentId
                             )?.ownerName
@@ -369,7 +371,7 @@ const Popup = () => {
                         />
                         <p>
                           {
-                            owner()?.find(
+                            owner?.find(
                               (ownerItem) =>
                                 ownerItem.contentId === item.contentId
                             )?.ownerName
@@ -382,12 +384,10 @@ const Popup = () => {
                       <span>コメント数&nbsp;:&nbsp;{item.commentCounter}</span>
                       <span>
                         動画の尺&emsp;&nbsp;:&nbsp;
-                        {Math.floor(item.lengthSeconds / 3600) > 0
-                          ? `${Math.floor(item.lengthSeconds / 3600)}時間`
-                          : ""}
-                        {Math.floor(item.lengthSeconds / 60) > 0
-                          ? `${Math.floor(item.lengthSeconds / 60)}分`
-                          : ""}
+                        {Math.floor(item.lengthSeconds / 3600) > 0 &&
+                          `${Math.floor(item.lengthSeconds / 3600)}時間`}
+                        {Math.floor(item.lengthSeconds / 60) > 0 &&
+                          `${Math.floor(item.lengthSeconds / 60)}分`}
                         {item.lengthSeconds % 60}秒
                       </span>
                     </div>
@@ -395,43 +395,39 @@ const Popup = () => {
                 </li>
               ))}
           </ul>
-        </Match>
-      </Switch>
+        </>
+      ) : (
+        <div className="not-active">
+          <div className="message">
+            <i className="codicon codicon-info" />
+            <p>現在のタブでは使用できません。</p>
+          </div>
+          <div className="link">
+            <a
+              href={browser.runtime.getURL("options.html")}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn"
+            >
+              <i className="codicon codicon-settings-gear" />
+              <span>設定</span>
+            </a>
+          </div>
+          <div className="link">
+            <a
+              href={browser.runtime.getURL("how_to_use.html")}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn"
+            >
+              <i className="codicon codicon-question" />
+              <span>つかいかた</span>
+            </a>
+          </div>
+        </div>
+      )}
     </>
   );
 };
 
-const NotActive = () => {
-  return (
-    <div class="not-active">
-      <div class="message">
-        <i class="codicon codicon-info" />
-        <p>現在のタブでは使用できません。</p>
-      </div>
-      <div class="link">
-        <a
-          href={browser.runtime.getURL("options.html")}
-          target="_blank"
-          rel="noopener noreferrer"
-          class="btn"
-        >
-          <i class="codicon codicon-settings-gear" />
-          <span>設定</span>
-        </a>
-      </div>
-      <div class="link">
-        <a
-          href={browser.runtime.getURL("how_to_use.html")}
-          target="_blank"
-          rel="noopener noreferrer"
-          class="btn"
-        >
-          <i class="codicon codicon-question" />
-          <span>つかいかた</span>
-        </a>
-      </div>
-    </div>
-  );
-};
-
-render(Popup, document.body);
+createRoot(document.body).render(<Popup />);

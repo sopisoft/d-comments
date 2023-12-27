@@ -15,14 +15,15 @@
     along with d-comments.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { JSX, createSignal } from "solid-js";
+import React, { useState } from "react";
 import * as Config from "../content_scripts/config";
 import { defaultConfigs, getConfig } from "../content_scripts/config";
 
 type Editor = {
   p: string;
   o: Array<Config.config>;
-  update: JSX.EventHandlerUnion<HTMLInputElement, Event>;
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+  update: any;
 };
 const Editor = (props: Editor) => {
   const p = () => props.p;
@@ -32,14 +33,14 @@ const Editor = (props: Editor) => {
   const type = v()?.type;
   const value = () => v()?.value;
 
-  const [selected, setSelected] = createSignal("");
+  const [selected, setSelected] = useState("");
   getConfig(p(), (val) => {
     setSelected(val as string);
   });
 
   return (
-    <div class="editor">
-      <label for={p()}>{t() ?? p()}</label>
+    <div className="editor">
+      <label htmlFor={p()}>{t() ?? p()}</label>
       {type === "text" ? (
         <input
           type="text"
@@ -76,14 +77,9 @@ const Editor = (props: Editor) => {
         type === "select" && (
           <select
             name={p()}
-            value={selected()}
+            value={selected}
             title={t()}
-            onChange={
-              props.update as unknown as JSX.ChangeEventHandlerUnion<
-                HTMLSelectElement,
-                Event
-              >
-            }
+            onChange={props.update}
           >
             {defaultConfigs
               .find((item) => item.key === p())

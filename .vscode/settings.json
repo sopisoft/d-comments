@@ -18,5 +18,17 @@
   "typescript.format.enable": false,
   "typescript.referencesCodeLens.enabled": true,
   "typescript.tsdk": "node_modules\\typescript\\lib",
-  "typescript.updateImportsOnFileMove.enabled": "always"
+  "typescript.updateImportsOnFileMove.enabled": "always",
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  },
+  "[json]": {
+    "editor.quickSuggestions": {
+      "strings": true
+    },
+    "editor.defaultFormatter": "biomejs.biome"
+  }
 }
