@@ -25,6 +25,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
 import React, { Suspense, useState } from "react";
 import browser from "webextension-polyfill";
 import {
@@ -125,6 +126,16 @@ const Editor = (props: { _key: config["key"]; text?: string }) => {
             })}
           </SelectContent>
         </Select>
+      );
+    case "switch":
+      return (
+        <Switch
+          id={key}
+          name={key}
+          title={text}
+          checked={value as boolean}
+          onCheckedChange={onCheckedChange}
+        />
       );
     default:
       return <div>An error has occurred.</div>;
