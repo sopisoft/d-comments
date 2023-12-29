@@ -168,28 +168,25 @@ export type config = {
  */
 export const getConfig = (
   key: config["key"],
-  callback: (value: config["value"]) => void
-) => {
-  browser.storage.local.get([key]).then((result) => {
-    const defaultValue = defaultConfigs.find((item) => item.key === key)?.value;
-    if (result[key] === undefined || null) {
-      console.log(`${key} (${result[key]}) ${defaultValue}`);
-    } else {
-      console.log(key, result[key]);
-    }
-    callback(result[key] ?? defaultValue);
-  });
-};
-
-export const getConfigsAll = () => {
-  const res: Array<config> = [];
-  for (const config of defaultConfigs) {
-    getConfig(config.key, (value) => {
-      const item = { ...config, value, options: [] };
-      res.push(item);
+  callback?: (value: config["value"]) => void
+): Promise<config["value"]> => {
+  return browser.storage.local
+    .get([key])
+    .then((result) => {
+      const defaultValue = defaultConfigs.find(
+        (item) => item.key === key
+      )?.value;
+      if (result[key] === undefined || null) {
+        console.log(`${key} (${result[key]}) ${defaultValue}`);
+      } else {
+        console.log(key, result[key]);
+      }
+      if (callback) callback(result[key] ?? defaultValue);
+      return result[key] ?? defaultValue;
+    })
+    .then((value) => {
+      return value as config["value"];
     });
-  }
-  return res;
 };
 
 /**

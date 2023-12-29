@@ -15,6 +15,7 @@ You should have received a copy of the GNU General Public License
 along with d-comments.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+/*
 import browser from "webextension-polyfill";
 import { configs } from "../../options/states";
 import * as Config from "../config";
@@ -103,10 +104,12 @@ const scrollBar = configs.find(
     document.head.appendChild(style);
   }
 })();
+*/
 
 /**
  * 視聴ページで追加する要素のスタイル
  */
+/*
 export const setDefaultStyle = () => {
   const style = document.createElement("style");
   style.id = "d-comments-style";
@@ -116,6 +119,7 @@ export const setDefaultStyle = () => {
   document.getElementById("d-comments-style")?.remove();
   document.head.appendChild(style);
 };
+
 
 (() => {
   if (!document.getElementById("d-comments-font")) {
@@ -128,3 +132,4 @@ export const setDefaultStyle = () => {
     document.head.appendChild(style);
   }
 })();
+*/

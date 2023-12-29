@@ -15,18 +15,17 @@
     along with d-comments.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-import React, { useState } from "react";
+import React from "react";
 import { createRoot } from "react-dom/client";
 import { RecoilRoot } from "recoil";
 import browser from "webextension-polyfill";
 import "../global.css";
 import Editor from "./editor";
 import "./options.scss";
-import { configs } from "./states";
 
 const Options = () => {
   return (
-    <RecoilRoot>
+    <>
       <header>
         <span className="inner">
           <i className="codicon codicon-settings-gear" />
@@ -74,23 +73,12 @@ const Options = () => {
             <h2>コメントの表示方法</h2>
             <Editor _key="comment_rendering_method" />
           </div>
-          <div
-            style={{
-              opacity:
-                configs.find((i) => i.key === "comment_rendering_method")
-                  ?.value === "list_overlay"
-                  ? 1
-                  : 0.6,
-            }}
-          >
-            <h2>コメントリストのオーバーレイ</h2>
-            <Editor _key="distance_from_top_percent" />
-            <Editor _key="distance_from_left_percent" />
-            <Editor _key="comment_area_height_percent" />
-          </div>
+          <h2>コメントリストのオーバーレイ</h2>
+          <Editor _key="distance_from_top_percent" />
+          <Editor _key="distance_from_left_percent" />
+          <Editor _key="comment_area_height_percent" />
         </div>
       </div>
-
       <footer>
         <span className="info">
           {browser.runtime.getManifest().name}
@@ -125,7 +113,7 @@ const Options = () => {
           </span>
         </div>
       </footer>
-    </RecoilRoot>
+    </>
   );
 };
 
@@ -133,4 +121,8 @@ const root = document.createElement("div");
 root.id = "options";
 document.body.appendChild(root);
 
-createRoot(root).render(<Options />);
+createRoot(root).render(
+  <RecoilRoot>
+    <Options />
+  </RecoilRoot>
+);

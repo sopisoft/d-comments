@@ -15,16 +15,29 @@
     along with d-comments.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-import React, { useState } from "react";
-import * as Config from "../content_scripts/config";
-import { config, defaultConfigs, getConfig } from "../content_scripts/config";
-import { configs, setOption } from "./states";
+import React, { Suspense, useState } from "react";
+import browser from "webextension-polyfill";
+import {
+  config,
+  defaultConfigs,
+  getConfig,
+  setConfig,
+} from "../content_scripts/config";
 
 const Editor = (props: { _key: config["key"]; text?: string }) => {
+  const [value, setValue] = useState<config["value"]>();
+  getConfig(props._key).then((v) => {
+    setValue(v);
+  });
+
+  const setOption = (key: config["key"], value: config["value"]) => {
+    setValue(value);
+    setConfig(key, value);
+  };
+
   const key = props._key;
   const text = props.text;
   const type = defaultConfigs.find((item) => item.key === key)?.type;
-  const value = configs.find((item) => item.key === key)?.value;
 
   const onChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -32,15 +45,21 @@ const Editor = (props: { _key: config["key"]; text?: string }) => {
     const target = e.target as HTMLInputElement;
     const name = target.name as typeof key;
     if (target.type === "checkbox") {
-      const v = configs.find((i) => i.key === name)?.value;
+      const v = value as boolean;
       setOption(name, !v);
-      Config.setConfig(name, !v);
     } else {
       const v = target.value;
       setOption(name, v);
-      Config.setConfig(name, v);
     }
   };
+
+  browser.storage.onChanged.addListener((changes) => {
+    for (const [key, { newValue }] of Object.entries(changes)) {
+      if (newValue && key === props._key) {
+        setOption(key as config["key"], newValue);
+      }
+    }
+  });
 
   switch (type) {
     case "number":
@@ -82,7 +101,7 @@ const Editor = (props: { _key: config["key"]; text?: string }) => {
           onChange={onChange}
         >
           {(
-            defaultConfigs.find((item) => item.key === key) as Config.config
+            defaultConfigs.find((item) => item.key === key) as config
           ).options?.map((option) => {
             return <option value={option.value}>{option.name}</option>;
           })}
@@ -99,7 +118,9 @@ const EditorWrapper = (props: { _key: config["key"] }) => {
   return (
     <div className="editor">
       <label htmlFor={key}>{text}</label>
-      <Editor _key={key} text={text} />
+      <Suspense fallback={<div>Loading...</div>}>
+        <Editor _key={key} text={text} />
+      </Suspense>
     </div>
   );
 };
