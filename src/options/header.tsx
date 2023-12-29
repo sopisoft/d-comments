@@ -15,17 +15,20 @@
     along with d-comments.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-@import url("https://cdn.jsdelivr.net/npm/vscode-codicons/dist/codicon.min.css");
-@import url("https://fonts.googleapis.com/css2?family=Noto+Color+Emoji");
-@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@200;300;400;500;600;700;800;900");
+import { ModeToggle } from "@/components/ui/mode-toggle";
+import { Settings } from "lucide-react";
+import React from "react";
 
-body {
-  font-family: "Noto Sans JP", "Noto Color Emoji", sans-serif;
+function Header() {
+  return (
+    <header className="flex items-center justify-between w-full px-4 py-2 bg-white border-b border-gray-200 dark:bg-gray-800 dark:border-gray-700">
+      <Settings className="w-10 h-10" />
+      <h1 className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight first:mt-0">
+        設定
+      </h1>
+      <ModeToggle />
+    </header>
+  );
 }
 
-:root {
-  box-sizing: border-box;
-
-  word-break: break-word;
-  word-wrap: break-word;
-}
+export default Header;

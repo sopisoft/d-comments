@@ -6,6 +6,9 @@
     "source.organizeImports.biome": "always",
     "quickfix.biome": "always"
   },
+  "editor.quickSuggestions": {
+    "strings": true
+  },
   "files.eol": "\n",
   "json.schemas": [
     {

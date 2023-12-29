@@ -23,27 +23,28 @@ import browser from "webextension-polyfill";
  *  key: string;
  *  value: string | number | boolean;
  *  options?: Array<{ name: string; value: string }> | undefined;
- *  type: "checkbox" | "number" | "select" | "color";
+ *  type: "checkbox" | "number" | "select" | "color" | "switch";
  *  text: string;
+ *  related?: string[];
  * }>}
  */
 export const defaultConfigs = [
   {
     key: "show_last_searched_video_id",
     value: true,
-    type: "checkbox",
+    type: "switch",
     text: "ポップアップを開いたとき最後に入力した動画IDを表示する",
   },
   {
     key: "auto_search",
     value: true,
-    type: "checkbox",
+    type: "switch",
     text: "ポップアップを開いたとき自動で動画検索を開始する",
   },
   {
     key: "enable_scroll_mode",
     value: true,
-    type: "checkbox",
+    type: "switch",
     text: "スクロールモードを利用可能にする",
   },
   {
@@ -61,7 +62,7 @@ export const defaultConfigs = [
   {
     key: "show_comment_scrollbar",
     value: true,
-    type: "checkbox",
+    type: "switch",
     text: "コメント欄のスクールバーを表示する",
   },
   {
@@ -115,14 +116,15 @@ export const defaultConfigs = [
   {
     key: "add_button_to_show_comments_while_playing",
     value: true,
-    type: "checkbox",
+    type: "switch",
     text: "作品ページに「コメントを表示しながら再生」ボタンを追加する",
   },
   {
     key: "open_in_new_tab_when_clicking_show_comments_while_playing_button",
     value: false,
-    type: "checkbox",
+    type: "switch",
     text: "「コメントを表示しながら再生」ボタンでは新しいタブで開く",
+    related: ["add_button_to_show_comments_while_playing"],
   },
   {
     key: "show_owner_comments",
@@ -145,7 +147,7 @@ export const defaultConfigs = [
   {
     key: "allow_login_to_nicovideo",
     value: false,
-    type: "checkbox",
+    type: "switch",
     text: "ニコニコ動画へのログインを許可する",
   },
 ] as const;
@@ -165,28 +167,16 @@ export type config = {
  * 設定を取得し、Callback を呼ぶ
  * @param key 設定キー
  * @param callback 設定値を取得した後に呼ばれる関数
+ * @returns 設定値
  */
-export const getConfig = (
+export const getConfig = async (
   key: config["key"],
   callback?: (value: config["value"]) => void
 ): Promise<config["value"]> => {
-  return browser.storage.local
-    .get([key])
-    .then((result) => {
-      const defaultValue = defaultConfigs.find(
-        (item) => item.key === key
-      )?.value;
-      if (result[key] === undefined || null) {
-        console.log(`${key} (${result[key]}) ${defaultValue}`);
-      } else {
-        console.log(key, result[key]);
-      }
-      if (callback) callback(result[key] ?? defaultValue);
-      return result[key] ?? defaultValue;
-    })
-    .then((value) => {
-      return value as config["value"];
-    });
+  const defaultValue = defaultConfigs.find((item) => item.key === key)?.value;
+  const result = (await browser.storage.local.get([key]))[key] ?? defaultValue;
+  if (callback) callback(result as config["value"]);
+  return result as config["value"];
 };
 
 /**

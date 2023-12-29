@@ -15,6 +15,16 @@
     along with d-comments.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+import { Checkbox } from "@/components/ui/checkbox";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import React, { Suspense, useState } from "react";
 import browser from "webextension-polyfill";
 import {
@@ -44,14 +54,19 @@ const Editor = (props: { _key: config["key"]; text?: string }) => {
   ) => {
     const target = e.target as HTMLInputElement;
     const name = target.name as typeof key;
-    if (target.type === "checkbox") {
-      const v = value as boolean;
-      setOption(name, !v);
-    } else {
-      const v = target.value;
-      setOption(name, v);
-    }
+    const v = target.value;
+    setOption(name, v);
   };
+
+  const onCheckedChange = (v: boolean) => {
+    setOption(key, v);
+  };
+
+  const onSelectedChange = (v: string) => {
+    setOption(key, v);
+  };
+  const options = (defaultConfigs.find((item) => item.key === key) as config)
+    .options;
 
   browser.storage.onChanged.addListener((changes) => {
     for (const [key, { newValue }] of Object.entries(changes)) {
@@ -64,7 +79,7 @@ const Editor = (props: { _key: config["key"]; text?: string }) => {
   switch (type) {
     case "number":
       return (
-        <input
+        <Input
           type="number"
           id={key}
           name={key}
@@ -74,17 +89,17 @@ const Editor = (props: { _key: config["key"]; text?: string }) => {
       );
     case "checkbox":
       return (
-        <input
-          type="checkbox"
+        <Checkbox
           id={key}
           name={key}
+          title={text}
           checked={value as boolean}
-          onChange={onChange}
+          onCheckedChange={onCheckedChange}
         />
       );
     case "color":
       return (
-        <input
+        <Input
           type="color"
           id={key}
           name={key}
@@ -94,18 +109,22 @@ const Editor = (props: { _key: config["key"]; text?: string }) => {
       );
     case "select":
       return (
-        <select
+        <Select
           name={key}
           value={value as string}
-          title={text}
-          onChange={onChange}
+          onValueChange={onSelectedChange}
         >
-          {(
-            defaultConfigs.find((item) => item.key === key) as config
-          ).options?.map((option) => {
-            return <option value={option.value}>{option.name}</option>;
-          })}
-        </select>
+          <SelectTrigger id={key} title={text} className="w-[180px]">
+            <SelectValue placeholder={text} />
+          </SelectTrigger>
+          <SelectContent>
+            {options?.map((option) => {
+              return (
+                <SelectItem value={option.value}>{option.name}</SelectItem>
+              );
+            })}
+          </SelectContent>
+        </Select>
       );
     default:
       return <div>An error has occurred.</div>;
@@ -115,12 +134,20 @@ const Editor = (props: { _key: config["key"]; text?: string }) => {
 const EditorWrapper = (props: { _key: config["key"] }) => {
   const key = props._key;
   const text = defaultConfigs.find((item) => item.key === key)?.text;
+  const type = defaultConfigs.find((item) => item.key === key)?.type;
   return (
-    <div className="editor">
-      <label htmlFor={key}>{text}</label>
-      <Suspense fallback={<div>Loading...</div>}>
-        <Editor _key={key} text={text} />
-      </Suspense>
+    <div
+      className={`flex items-center ${
+        type === "checkbox" && "flex-row-reverse justify-evenly"
+      }`}
+    >
+      <Label
+        htmlFor={key}
+        className="text-sm font-medium leading-tight basis-[80%]"
+      >
+        {text}
+      </Label>
+      <Editor _key={key} text={text} />
     </div>
   );
 };

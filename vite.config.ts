@@ -53,4 +53,7 @@ export default defineConfig({
       nameCache: {},
     },
   },
+  optimizeDeps: {
+    force: true,
+  },
 });

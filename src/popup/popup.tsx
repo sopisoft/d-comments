@@ -20,8 +20,7 @@ import { createRoot } from "react-dom/client";
 import browser from "webextension-polyfill";
 
 import * as Config from "../content_scripts/config";
-import "../global.css";
-import "./popup.scss";
+import "../index.css";
 
 const Popup = () => {
   const [tabPage, setTabPage] = useState<"watch" | "other">("other");

@@ -15,114 +15,138 @@
     along with d-comments.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+import { ThemeProvider } from "@/components/theme-provider";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Car } from "lucide-react";
 import React from "react";
 import { createRoot } from "react-dom/client";
-import { RecoilRoot } from "recoil";
-import browser from "webextension-polyfill";
-import "../global.css";
+import "../index.css";
 import Editor from "./editor";
-import "./options.scss";
+import Footer from "./footer";
+import Header from "./header";
+
+const CardWrapper = (props: {
+  title: string;
+  description: string;
+  content: React.ReactNode;
+}) => {
+  return (
+    <Card className="m-4 w-[30rem]">
+      <CardHeader>
+        <CardTitle>{props.title}</CardTitle>
+        <CardDescription>{props.description}</CardDescription>
+      </CardHeader>
+      <CardContent className="grid gap-4">{props.content}</CardContent>
+    </Card>
+  );
+};
 
 const Options = () => {
   return (
     <>
-      <header>
-        <span className="inner">
-          <i className="codicon codicon-settings-gear" />
-        </span>
-        <h1>設定</h1>
-      </header>
-      <div className="wrapper">
-        <div id="left-side">
-          <div>
-            <h2>ポップアップ</h2>
-            <Editor _key="show_last_searched_video_id" />
-            <Editor _key="auto_search" />
-          </div>
-          <div>
-            <h2>作品ページ</h2>
-            <Editor _key="add_button_to_show_comments_while_playing" />
-            <Editor _key="open_in_new_tab_when_clicking_show_comments_while_playing_button" />
-          </div>
-          <div>
-            <h2>コメントの種類</h2>
-            <Editor _key="show_owner_comments" />
-            <Editor _key="show_main_comments" />
-            <Editor _key="show_easy_comments" />
-          </div>
-          <div>
-            <h2>ニコニコ動画へのログイン</h2>
-            <Editor _key="allow_login_to_nicovideo" />
-          </div>
-        </div>
-        <div id="right-side">
-          <div>
-            <h2>視聴ページ</h2>
-            <Editor _key="enable_scroll_mode" />
-            <Editor _key="scroll_interval_ms" />
-            <Editor _key="comment_area_width_px" />
-            <Editor _key="show_comment_scrollbar" />
-          </div>
-          <div>
-            <h2>コメント欄の色</h2>
-            <Editor _key="comment_area_background_color" />
-            <Editor _key="comment_area_opacity_percent" />
-            <Editor _key="comment_text_color" />
-          </div>
-          <div>
-            <h2>コメントの表示方法</h2>
-            <Editor _key="comment_rendering_method" />
-          </div>
-          <h2>コメントリストのオーバーレイ</h2>
-          <Editor _key="distance_from_top_percent" />
-          <Editor _key="distance_from_left_percent" />
-          <Editor _key="comment_area_height_percent" />
-        </div>
+      <Header />
+
+      <div className="flex flex-wrap justify-center">
+        <CardWrapper
+          title="ポップアップ"
+          description="拡張機能のアイコンをクリックすると表示される、ポップアップページの設定です。"
+          content={
+            <>
+              <Editor _key="show_last_searched_video_id" />
+              <Editor _key="auto_search" />
+            </>
+          }
+        />
+
+        <CardWrapper
+          title="作品ページ"
+          description="作品ページの設定です。"
+          content={
+            <>
+              <Editor _key="add_button_to_show_comments_while_playing" />
+              <Editor _key="open_in_new_tab_when_clicking_show_comments_while_playing_button" />
+            </>
+          }
+        />
+
+        <CardWrapper
+          title="コメントの種類"
+          description="表示するコメントの種類を選択します。"
+          content={
+            <>
+              <Editor _key="show_owner_comments" />
+              <Editor _key="show_main_comments" />
+              <Editor _key="show_easy_comments" />
+            </>
+          }
+        />
+
+        <CardWrapper
+          title="ニコニコ動画へのログイン"
+          description="詳細は「つかいかた」をご覧ください。"
+          content={<Editor _key="allow_login_to_nicovideo" />}
+        />
+
+        <CardWrapper
+          title="視聴ページ"
+          description="作品視聴ページの設定です。"
+          content={
+            <>
+              <Editor _key="enable_scroll_mode" />
+              <Editor _key="scroll_interval_ms" />
+              <Editor _key="comment_area_width_px" />
+              <Editor _key="show_comment_scrollbar" />
+            </>
+          }
+        />
+
+        <CardWrapper
+          title="コメント欄の色"
+          description="コメント欄の色を設定します。"
+          content={
+            <>
+              <Editor _key="comment_area_background_color" />
+              <Editor _key="comment_area_opacity_percent" />
+              <Editor _key="comment_text_color" />
+            </>
+          }
+        />
+
+        <CardWrapper
+          title="コメントの表示方法"
+          description="コメントの表示方法を設定します。"
+          content={<Editor _key="comment_rendering_method" />}
+        />
+
+        <CardWrapper
+          title="コメントリストのオーバーレイ"
+          description="コメントリストのオーバーレイの設定です。"
+          content={
+            <>
+              <Editor _key="distance_from_top_percent" />
+              <Editor _key="distance_from_left_percent" />
+              <Editor _key="comment_area_height_percent" />
+            </>
+          }
+        />
       </div>
-      <footer>
-        <span className="info">
-          {browser.runtime.getManifest().name}
-          &nbsp;-&nbsp;Version&nbsp;{browser.runtime.getManifest().version}
-        </span>
-        <span className="info">
-          &copy;&nbsp;{new Date().getFullYear()}&nbsp;
-          {browser.runtime.getManifest().author}
-        </span>
-        <div className="links">
-          <span className="link">
-            <a
-              href="https://forms.office.com/r/JR9KksWHJD"
-              target="_blank"
-              rel="noreferrer"
-            >
-              <i className="codicon codicon-feedback" />
-              &nbsp;
-              <span>FeedBack</span>
-            </a>
-          </span>
-          <span className="link">
-            <a
-              href="https://github.com/gobosan/d-comments"
-              target="_blank"
-              rel="noreferrer"
-            >
-              <i className="codicon codicon-mark-github" />
-              &nbsp;
-              <span>GitHub</span>
-            </a>
-          </span>
-        </div>
-      </footer>
+
+      <Footer />
     </>
   );
 };
 
 const root = document.createElement("div");
-root.id = "options";
 document.body.appendChild(root);
 
 createRoot(root).render(
-  <RecoilRoot>
+  <ThemeProvider>
     <Options />
-  </RecoilRoot>
+  </ThemeProvider>
 );
