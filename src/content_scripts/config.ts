@@ -211,7 +211,14 @@ export function migrate() {
       if (!result[text]) {
         return;
       }
-      setConfig(key, result[text]);
+      browser.storage.local.remove([text]);
+
+      browser.storage.local.get([key]).then((result) => {
+        if (result[key]) {
+          return;
+        }
+        setConfig(key, result[text]);
+      });
     });
   });
 }
