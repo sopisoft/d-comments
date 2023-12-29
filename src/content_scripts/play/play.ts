@@ -119,19 +119,19 @@ const play = (
   /**
    * ステータスに設定値を設定する
    */
-  Config.getConfig("スクロールモードを利用可能にする", (value) => {
+  Config.getConfig("enable_scroll_mode", (value) => {
     configs.ScrollConfig = value as boolean;
   });
-  Config.getConfig("自動スクロールの実行間隔 (ミリ秒)", (value) => {
+  Config.getConfig("scroll_interval_ms", (value) => {
     configs.autoScrollInterval = value as number;
   });
-  Config.getConfig("投稿者コメント", (value) => {
+  Config.getConfig("show_owner_comments", (value) => {
     configs.ownerThread = value as boolean;
   });
-  Config.getConfig("通常コメント", (value) => {
+  Config.getConfig("show_main_comments", (value) => {
     configs.mainThread = value as boolean;
   });
-  Config.getConfig("かんたんコメント", (value) => {
+  Config.getConfig("show_easy_comments", (value) => {
     configs.easyThread = value as boolean;
     renderComments();
   });
@@ -438,7 +438,7 @@ const play = (
     document.getElementById("d-comments-canvas")?.remove();
     getComments((comments) => {
       if (comments.length > 0) {
-        Config.getConfig("way_to_render_comments", (value) => {
+        Config.getConfig("comment_rendering_method", (value) => {
           if (value === "right_to_left") {
             container.style.display = "none";
             setFlowComments();

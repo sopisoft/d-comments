@@ -16,34 +16,58 @@ along with d-comments.  If not, see <https://www.gnu.org/licenses/>.
 */
 
 import browser from "webextension-polyfill";
-
+import { configs } from "../../options/states";
 import * as Config from "../config";
 
-const configs = {
-  overlay: false,
-  width: 1000,
-  height: 100,
-  top: 0,
-  left: 0,
-  r: 0,
-  g: 0,
-  b: 0,
-  a: 0.35,
-  color: "#FFFFFF",
-  scrollBar: false,
+const hexToRgb = (color: string) => {
+  return Object.fromEntries(
+    (
+      (color.match(/^#?[0-9A-Fa-f]{3}([0-9A-Fa-f]{3})?$/) ? color : "000")
+        .replace(/^#?(.*)$/, (_, hex) =>
+          hex.length === 3 ? hex.replace(/./g, "$&$&") : hex
+        )
+        .match(/../g) ?? []
+    ).map((c: string, i: number) => ["rgb".charAt(i), parseInt(`0x${c}`)])
+  ) as { r: number; g: number; b: number };
 };
 
-const setRoot = () => {
-  const rgba = `${configs.r} ${configs.g} ${configs.b} / ${configs.a}%`;
+const overlay =
+  configs.find((config) => config.key === "comment_rendering_method")?.value ===
+  "list_overlay";
+const width = configs.find((config) => config.key === "comment_area_width_px")
+  ?.value as number;
+const height = configs.find(
+  (config) => config.key === "comment_area_height_percent"
+)?.value as number;
+const top = configs.find((config) => config.key === "distance_from_top_percent")
+  ?.value as number;
+const left = configs.find(
+  (config) => config.key === "distance_from_left_percent"
+)?.value as number;
+
+const { r, g, b } = hexToRgb(
+  configs.find((config) => config.key === "comment_area_background_color")
+    ?.value as string
+);
+const a = configs.find(
+  (config) => config.key === "comment_area_opacity_percent"
+);
+const color = configs.find((config) => config.key === "comment_text_color");
+const scrollBar = configs.find(
+  (config) => config.key === "show_comment_scrollbar"
+)?.value as boolean;
+
+(function setRoot() {
+  const rgba = `${r} ${g} ${b} / ${a}%`;
   const root = `
 :root {
-	--d-comments-text-color:${configs.color};
-	--d-comments-container-position:${configs.overlay ? "absolute" : "relative"};
-	--d-comments-container-z-index:${configs.overlay ? 1000 : 1};
-	--d-comments-container-width:${configs.width}px;
-	--d-comments-container-height:${configs.overlay ? configs.height : 100}vh;
-	--d-comments-container-top:${configs.overlay ? configs.top : 0}%;
-	--d-comments-container-left:${configs.overlay ? configs.left : 0}%;
+	--d-comments-text-color:${color};
+	--d-comments-container-position:${overlay ? "absolute" : "relative"};
+	--d-comments-container-z-index:${overlay ? 1000 : 1};
+	--d-comments-container-width:${width}px;
+	--d-comments-container-height:${overlay ? height : 100}vh;
+	--d-comments-container-top:${overlay ? top : 0}%;
+	--d-comments-container-left:${overlay ? left : 0}%;
 	--d-comments-container-background:rgba(${rgba})
 }`;
   if (window.location.pathname === "/animestore/sc_d_pc") {
@@ -53,10 +77,10 @@ const setRoot = () => {
     document.getElementById("d-comments-style-root")?.remove();
     document.head.appendChild(style);
   }
-};
+})();
 
-const setScrollBar = () => {
-  const scrollBar = `
+(function setScrollBar() {
+  const scrollBar_style = `
 #d-comments-container ul::-webkit-scrollbar {
 	display:block;
 }
@@ -73,121 +97,12 @@ const setScrollBar = () => {
   if (window.location.pathname === "/animestore/sc_d_pc") {
     const style = document.createElement("style");
     style.id = "d-comments-style-scrollBar";
-    const css = `${configs.scrollBar ? scrollBar : scrollBarNone}`;
+    const css = `${scrollBar ? scrollBar_style : scrollBarNone}`;
     style.innerHTML = css;
     document.getElementById("d-comments-style-scrollBar")?.remove();
     document.head.appendChild(style);
   }
-};
-
-const hexToRgb = (color: string) => {
-  return Object.fromEntries(
-    (
-      (color.match(/^#?[0-9A-Fa-f]{3}([0-9A-Fa-f]{3})?$/) ? color : "000")
-        .replace(/^#?(.*)$/, (_, hex) =>
-          hex.length === 3 ? hex.replace(/./g, "$&$&") : hex
-        )
-        .match(/../g) ?? []
-    ).map((c: string, i: number) => ["rgb".charAt(i), parseInt(`0x${c}`)])
-  ) as { r: number; g: number; b: number };
-};
-
-export const init = () => {
-  Config.getConfig("コメント欄のスクールバーを表示する", (value) => {
-    configs.scrollBar = value as boolean;
-  });
-  Config.getConfig("way_to_render_comments", (value) => {
-    if (value === "list_overlay") {
-      configs.overlay = true;
-    } else {
-      configs.overlay = false;
-    }
-  });
-  Config.getConfig("コメント欄の幅 (px)", (value) => {
-    configs.width = value as number;
-  });
-  Config.getConfig("コメント欄の高さ (%)", (value) => {
-    configs.height = value as number;
-  });
-  Config.getConfig("画面の上部分からの距離 (%)", (value) => {
-    configs.top = value as number;
-  });
-  Config.getConfig("画面の左部分からの距離 (%)", (value) => {
-    configs.left = value as number;
-  });
-  Config.getConfig("コメント欄の背景色", (value) => {
-    configs.r = hexToRgb(value as string).r;
-    configs.g = hexToRgb(value as string).g;
-    configs.b = hexToRgb(value as string).b;
-  });
-  Config.getConfig("コメント欄の背景不透明度 (%)", (value) => {
-    configs.a = value as number;
-  });
-  Config.getConfig("コメントの文字色", (value) => {
-    configs.color = value as string;
-    setTimeout(setRoot, 0);
-    setScrollBar();
-  });
-};
-
-browser.storage.onChanged.addListener((changes) => {
-  for (const [key, { newValue }] of Object.entries(changes)) {
-    switch (key) {
-      case "コメント欄のスクールバーを表示する": {
-        configs.scrollBar = newValue;
-        setScrollBar();
-        break;
-      }
-      case "way_to_render_comments": {
-        if (newValue === "list_overlay") {
-          configs.overlay = true;
-        } else {
-          configs.overlay = false;
-        }
-        setTimeout(setRoot, 0);
-        break;
-      }
-      case "コメント欄の幅 (px)": {
-        configs.width = newValue;
-        setTimeout(setRoot, 0);
-        break;
-      }
-      case "コメント欄の高さ (%)": {
-        configs.height = newValue;
-        setTimeout(setRoot, 0);
-        break;
-      }
-      case "画面の上部分からの距離 (%)": {
-        configs.top = newValue;
-        setTimeout(setRoot, 0);
-        break;
-      }
-      case "画面の左部分からの距離 (%)": {
-        configs.left = newValue;
-        setTimeout(setRoot, 0);
-        break;
-      }
-      case "コメント欄の背景色": {
-        configs.r = hexToRgb(newValue).r;
-        configs.g = hexToRgb(newValue).g;
-        configs.b = hexToRgb(newValue).b;
-        setTimeout(setRoot, 0);
-        break;
-      }
-      case "コメント欄の背景不透明度 (%)": {
-        configs.a = newValue;
-        setTimeout(setRoot, 0);
-        break;
-      }
-      case "コメントの文字色": {
-        configs.color = newValue;
-        setTimeout(setRoot, 0);
-        break;
-      }
-    }
-  }
-  return undefined;
-});
+})();
 
 /**
  * 視聴ページで追加する要素のスタイル

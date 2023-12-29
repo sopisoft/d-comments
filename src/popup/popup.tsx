@@ -218,23 +218,17 @@ const Popup = () => {
   };
 
   const init = (title: string) => {
-    Config.getConfig(
-      "ポップアップを開いたとき最後に入力した動画IDを表示する",
-      (value) => {
-        if (value === true) {
-          setMovieId(window.localStorage.getItem("movieId") ?? "");
-        }
+    Config.getConfig("show_last_searched_video_id", (value) => {
+      if (value === true) {
+        setMovieId(window.localStorage.getItem("movieId") ?? "");
       }
-    );
-    Config.getConfig(
-      "ポップアップを開いたとき自動で動画検索を開始する",
-      (value) => {
-        if (value === true) {
-          setWord(title);
-          search(title);
-        }
+    });
+    Config.getConfig("auto_search", (value) => {
+      if (value === true) {
+        setWord(title);
+        search(title);
       }
-    );
+    });
   };
 
   browser.tabs.query({ active: true, currentWindow: true }).then((tabs) => {

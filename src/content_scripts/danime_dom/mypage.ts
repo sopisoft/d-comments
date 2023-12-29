@@ -34,7 +34,7 @@ export const addMenu = async () => {
   });
 
   Config.getConfig(
-    "「コメントを表示しながら再生」ボタンでは新しいタブで開く",
+    "open_in_new_tab_when_clicking_show_comments_while_playing_button",
     (value) => {
       for (const item of items) {
         const partID = item?.getAttribute("href")?.replace(/[^0-9]/g, "");

@@ -17,67 +17,16 @@
 
 import React, { useState } from "react";
 import { createRoot } from "react-dom/client";
+import { RecoilRoot } from "recoil";
 import browser from "webextension-polyfill";
-import * as Config from "../content_scripts/config";
 import "../global.css";
 import Editor from "./editor";
 import "./options.scss";
+import { configs } from "./states";
 
 const Options = () => {
-  const [options, setOptions] = useState<Array<Config.config>>(
-    Config.defaultConfigs
-  );
-
-  const t: Array<Config.config> = [];
-  for (const i of Config.defaultConfigs) {
-    Config.getConfig(i.key, (value) => {
-      const r: Config.config = {
-        key: i.key,
-        value: value,
-        type: i.type,
-      };
-      t.push(r);
-      if (i === Config.defaultConfigs[Config.defaultConfigs.length - 1]) {
-        setOptions(t);
-      }
-    });
-  }
-
-  const setOption = (m: string, v: string | number | boolean) => {
-    const d = Config.defaultConfigs.find((i) => i.key === m)?.type;
-    const t: Array<Config.config> = options.filter((n) => n.key !== m);
-    const r: Config.config = {
-      key: m,
-      value: v,
-      type: d as "number" | "text" | "checkbox" | "color" | "select",
-    };
-    setOptions(t.concat(r));
-  };
-
-  const onChange = (
-    e: Event & { currentTarget: HTMLInputElement; target: Element }
-  ) => {
-    const target = e.target as HTMLInputElement;
-    const name = target.name;
-    if (target.type === "checkbox") {
-      const v = options.find((i) => i.key === name)?.value;
-      setOption(name, !v);
-      Config.setConfig(name, !v);
-    } else {
-      const v = target.value;
-      setOption(name, v);
-      Config.setConfig(name, v);
-    }
-  };
-
-  browser.storage.onChanged.addListener((changes) => {
-    for (const [key, { newValue }] of Object.entries(changes)) {
-      setOption(key, newValue);
-    }
-  });
-
   return (
-    <>
+    <RecoilRoot>
       <header>
         <span className="inner">
           <i className="codicon codicon-settings-gear" />
@@ -88,96 +37,56 @@ const Options = () => {
         <div id="left-side">
           <div>
             <h2>ポップアップ</h2>
-            <Editor
-              p="show_last_searched_video_id"
-              o={options}
-              update={onChange}
-            />
-            <Editor p="auto_search" o={options} update={onChange} />
+            <Editor _key="show_last_searched_video_id" />
+            <Editor _key="auto_search" />
           </div>
           <div>
             <h2>作品ページ</h2>
-            <Editor
-              p="add_button_to_show_comments_while_playing"
-              o={options}
-              update={onChange}
-            />
-            <Editor
-              p="open_in_new_tab_when_clicking_show_comments_while_playing_button"
-              o={options}
-              update={onChange}
-            />
+            <Editor _key="add_button_to_show_comments_while_playing" />
+            <Editor _key="open_in_new_tab_when_clicking_show_comments_while_playing_button" />
           </div>
           <div>
             <h2>コメントの種類</h2>
-            <Editor p="show_owner_comments" o={options} update={onChange} />
-            <Editor p="show_main_comments" o={options} update={onChange} />
-            <Editor p="show_easy_comments" o={options} update={onChange} />
+            <Editor _key="show_owner_comments" />
+            <Editor _key="show_main_comments" />
+            <Editor _key="show_easy_comments" />
           </div>
           <div>
             <h2>ニコニコ動画へのログイン</h2>
-            <Editor
-              p="allow_login_to_nicovideo"
-              o={options}
-              update={onChange}
-            />
+            <Editor _key="allow_login_to_nicovideo" />
           </div>
         </div>
         <div id="right-side">
           <div>
             <h2>視聴ページ</h2>
-            <Editor p="enable_scroll_mode" o={options} update={onChange} />
-            <Editor p="scroll_interval_ms" o={options} update={onChange} />
-            <Editor p="comment_area_width_px" o={options} update={onChange} />
-            <Editor p="show_comment_scrollbar" o={options} update={onChange} />
+            <Editor _key="enable_scroll_mode" />
+            <Editor _key="scroll_interval_ms" />
+            <Editor _key="comment_area_width_px" />
+            <Editor _key="show_comment_scrollbar" />
           </div>
           <div>
             <h2>コメント欄の色</h2>
-            <Editor
-              p="comment_area_background_color"
-              o={options}
-              update={onChange}
-            />
-            <Editor
-              p="comment_area_opacity_percent"
-              o={options}
-              update={onChange}
-            />
-            <Editor p="comment_text_color" o={options} update={onChange} />
+            <Editor _key="comment_area_background_color" />
+            <Editor _key="comment_area_opacity_percent" />
+            <Editor _key="comment_text_color" />
           </div>
           <div>
             <h2>コメントの表示方法</h2>
-            <Editor
-              p="comment_rendering_method"
-              o={options}
-              update={onChange}
-            />
+            <Editor _key="comment_rendering_method" />
           </div>
           <div
             style={{
               opacity:
-                options.find((i) => i.key === "comment_rendering_method")
+                configs.find((i) => i.key === "comment_rendering_method")
                   ?.value === "list_overlay"
                   ? 1
                   : 0.6,
             }}
           >
             <h2>コメントリストのオーバーレイ</h2>
-            <Editor
-              p="distance_from_top_percent"
-              o={options}
-              update={onChange}
-            />
-            <Editor
-              p="distance_from_left_percent"
-              o={options}
-              update={onChange}
-            />
-            <Editor
-              p="comment_area_height_percent"
-              o={options}
-              update={onChange}
-            />
+            <Editor _key="distance_from_top_percent" />
+            <Editor _key="distance_from_left_percent" />
+            <Editor _key="comment_area_height_percent" />
           </div>
         </div>
       </div>
@@ -216,7 +125,7 @@ const Options = () => {
           </span>
         </div>
       </footer>
-    </>
+    </RecoilRoot>
   );
 };
 

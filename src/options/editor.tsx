@@ -17,80 +17,91 @@
 
 import React, { useState } from "react";
 import * as Config from "../content_scripts/config";
-import { defaultConfigs, getConfig } from "../content_scripts/config";
+import { config, defaultConfigs, getConfig } from "../content_scripts/config";
+import { configs, setOption } from "./states";
 
-type Editor = {
-  p: string;
-  o: Array<Config.config>;
-  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-  update: any;
-};
-const Editor = (props: Editor) => {
-  const p = () => props.p;
-  const o = () => props.o;
-  const v = () => o().find((i) => i.key === p());
-  const t = () => defaultConfigs.find((item) => item.key === p())?.text;
-  const type = v()?.type;
-  const value = () => v()?.value;
+const Editor = (props: { _key: config["key"]; text?: string }) => {
+  const key = props._key;
+  const text = props.text;
+  const type = defaultConfigs.find((item) => item.key === key)?.type;
+  const value = configs.find((item) => item.key === key)?.value;
 
-  const [selected, setSelected] = useState("");
-  getConfig(p(), (val) => {
-    setSelected(val as string);
-  });
+  const onChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    const target = e.target as HTMLInputElement;
+    const name = target.name as typeof key;
+    if (target.type === "checkbox") {
+      const v = configs.find((i) => i.key === name)?.value;
+      setOption(name, !v);
+      Config.setConfig(name, !v);
+    } else {
+      const v = target.value;
+      setOption(name, v);
+      Config.setConfig(name, v);
+    }
+  };
 
-  return (
-    <div className="editor">
-      <label htmlFor={p()}>{t() ?? p()}</label>
-      {type === "text" ? (
-        <input
-          type="text"
-          id={p()}
-          name={p()}
-          value={value() as string}
-          onChange={props.update}
-        />
-      ) : type === "number" ? (
+  switch (type) {
+    case "number":
+      return (
         <input
           type="number"
-          id={p()}
-          name={p()}
-          value={value() as number}
-          onChange={props.update}
+          id={key}
+          name={key}
+          value={value as number}
+          onChange={onChange}
         />
-      ) : type === "checkbox" ? (
+      );
+    case "checkbox":
+      return (
         <input
           type="checkbox"
-          id={p()}
-          name={p()}
-          checked={value() as boolean}
-          onChange={props.update}
+          id={key}
+          name={key}
+          checked={value as boolean}
+          onChange={onChange}
         />
-      ) : type === "color" ? (
+      );
+    case "color":
+      return (
         <input
           type="color"
-          id={p()}
-          name={p()}
-          value={value() as string}
-          onChange={props.update}
+          id={key}
+          name={key}
+          value={value as string}
+          onChange={onChange}
         />
-      ) : (
-        type === "select" && (
-          <select
-            name={p()}
-            value={selected}
-            title={t()}
-            onChange={props.update}
-          >
-            {defaultConfigs
-              .find((item) => item.key === p())
-              ?.options?.map((v) => {
-                return <option value={v.value}>{v.name}</option>;
-              })}
-          </select>
-        )
-      )}
+      );
+    case "select":
+      return (
+        <select
+          name={key}
+          value={value as string}
+          title={text}
+          onChange={onChange}
+        >
+          {(
+            defaultConfigs.find((item) => item.key === key) as Config.config
+          ).options?.map((option) => {
+            return <option value={option.value}>{option.name}</option>;
+          })}
+        </select>
+      );
+    default:
+      return <div>An error has occurred.</div>;
+  }
+};
+
+const EditorWrapper = (props: { _key: config["key"] }) => {
+  const key = props._key;
+  const text = defaultConfigs.find((item) => item.key === key)?.text;
+  return (
+    <div className="editor">
+      <label htmlFor={key}>{text}</label>
+      <Editor _key={key} text={text} />
     </div>
   );
 };
 
-export default Editor;
+export default EditorWrapper;

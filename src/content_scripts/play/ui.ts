@@ -27,7 +27,6 @@ const uiInit = () => {
    * スタイル設定
    */
   Style.setDefaultStyle();
-  Style.init();
 
   /**
    * すべての要素をラップする

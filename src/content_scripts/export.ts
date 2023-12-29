@@ -53,22 +53,6 @@ const exportJson = (movieId: string) => {
  * @param data 内容
  */
 const saveFile = async (fileName: string, data: string) => {
-  /*File System Access API が不安定なので現状では採用しない
-  const handle = await window.showSaveFilePicker({
-    suggestedName: fileName,
-    types: [
-      {
-        description: "JSON File",
-        accept: {
-          "application/json": [".json"],
-        },
-      },
-    ],
-  });
-  const writable = await handle.createWritable();
-  await writable.write(data);
-  await writable.close();
-  */
   const blob = new Blob([data], { type: "application/json" });
   const link = document.createElement("a");
   document.body.appendChild(link);

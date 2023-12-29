@@ -17,14 +17,17 @@
 
 import browser from "webextension-polyfill";
 
-export type config = {
-  key: string;
-  value: string | number | boolean;
-  options?: Array<{ name: string; value: string }>;
-  type: "text" | "checkbox" | "number" | "color" | "select";
-  text?: string;
-};
-export const defaultConfigs: Array<config> = [
+/**
+ * 設定のデフォルト値
+ * @type {Array<{
+ *  key: string;
+ *  value: string | number | boolean;
+ *  options?: Array<{ name: string; value: string }> | undefined;
+ *  type: "checkbox" | "number" | "select" | "color";
+ *  text: string;
+ * }>}
+ */
+export const defaultConfigs = [
   {
     key: "show_last_searched_video_id",
     value: true,
@@ -145,7 +148,18 @@ export const defaultConfigs: Array<config> = [
     type: "checkbox",
     text: "ニコニコ動画へのログインを許可する",
   },
-];
+] as const;
+
+const keys = defaultConfigs.flatMap((item) => item.key);
+const types = defaultConfigs.flatMap((item) => item.type);
+
+export type config = {
+  key: (typeof keys)[number];
+  value: string | number | boolean;
+  options?: Array<{ name: string; value: string }> | undefined;
+  type: (typeof types)[number];
+  text: string;
+};
 
 /**
  * 設定を取得し、Callback を呼ぶ
@@ -153,8 +167,8 @@ export const defaultConfigs: Array<config> = [
  * @param callback 設定値を取得した後に呼ばれる関数
  */
 export const getConfig = (
-  key: string,
-  callback: (value: string | number | boolean) => void
+  key: config["key"],
+  callback: (value: config["value"]) => void
 ) => {
   browser.storage.local.get([key]).then((result) => {
     const defaultValue = defaultConfigs.find((item) => item.key === key)?.value;
@@ -167,76 +181,37 @@ export const getConfig = (
   });
 };
 
+export const getConfigsAll = () => {
+  const res: Array<config> = [];
+  for (const config of defaultConfigs) {
+    getConfig(config.key, (value) => {
+      const item = { ...config, value, options: [] };
+      res.push(item);
+    });
+  }
+  return res;
+};
+
 /**
  * 設定を保存する
  * @param key 設定キー
  * @param value 設定値
  */
-export const setConfig = (key: string, value: string | number | boolean) => {
+export const setConfig = (key: config["key"], value: config["value"]) => {
   browser.storage.local.set({ [key]: value }).then(() => {
     console.log(key, value);
   });
 };
 
 export function migrate() {
-  browser.storage.local.get(["version"]).then((result) => {
-    if (result.version === undefined || null) {
-      browser.storage.local.set({
-        version: browser.runtime.getManifest().version,
-      });
-    }
-  });
-
-  const oldKeys = [
-    "ポップアップを開いたとき最後に入力した動画IDを表示する",
-    "ポップアップを開いたとき自動で動画検索を開始する",
-    "スクロールモードを利用可能にする",
-    "自動スクロールの実行間隔 (ミリ秒)",
-    "コメント欄の幅 (px)",
-    "コメント欄のスクールバーを表示する",
-    "コメント欄の背景色",
-    "コメント欄の背景不透明度 (%)",
-    "コメントの文字色",
-    "画面の上部分からの距離 (%)",
-    "画面の左部分からの距離 (%)",
-    "コメント欄の高さ (%)",
-    "way_to_render_comments",
-    "作品ページに「コメントを表示しながら再生」ボタンを追加する",
-    "「コメントを表示しながら再生」ボタンでは新しいタブで開く",
-    "投稿者コメント",
-    "通常コメント",
-    "かんたんコメント",
-    "allow_login_to_nicovideo",
-  ];
-
-  const newKeys = [
-    "show_last_searched_video_id",
-    "auto_search",
-    "enable_scroll_mode",
-    "scroll_interval_ms",
-    "comment_area_width_px",
-    "show_comment_scrollbar",
-    "comment_area_background_color",
-    "comment_area_opacity_percent",
-    "comment_text_color",
-    "distance_from_top_percent",
-    "distance_from_left_percent",
-    "comment_area_height_percent",
-    "comment_rendering_method",
-    "add_button_to_show_comments_while_playing",
-    "open_in_new_tab_when_clicking_button",
-    "show_owner_comments",
-    "show_main_comments",
-    "show_easy_comments",
-    "allow_login_to_nicovideo",
-  ];
-
-  for (let i = 0; i < oldKeys.length; i++) {
-    browser.storage.local.get([oldKeys[i]]).then((result) => {
-      if (!result[oldKeys[i]]) {
+  defaultConfigs.map((item) => {
+    const key = item.key;
+    const text = item.text;
+    browser.storage.local.get([text]).then((result) => {
+      if (!result[text]) {
         return;
       }
-      setConfig(newKeys[i], result[oldKeys[i]]);
+      setConfig(key, result[text]);
     });
-  }
+  });
 }

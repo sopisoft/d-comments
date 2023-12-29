@@ -24,12 +24,9 @@ import fire from "./play/fire";
 
 switch (location.pathname) {
   case "/animestore/ci_pc": {
-    Config.getConfig(
-      "作品ページに「コメントを表示しながら再生」ボタンを追加する",
-      (value) => {
-        value && addMenu();
-      }
-    );
+    Config.getConfig("add_button_to_show_comments_while_playing", (value) => {
+      value && addMenu();
+    });
     break;
   }
   case "/animestore/sc_d_pc": {
@@ -49,4 +46,24 @@ switch (location.pathname) {
   }
   default:
     break;
+}
+
+const ua =
+  "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.3";
+
+function setUserAgent(userAgent: string) {
+  const userAgentProp: PropertyDescriptor = {
+    get: () => userAgent,
+  };
+  try {
+    Object.defineProperty(window.navigator, "userAgent", userAgentProp);
+  } catch (e) {
+    window.navigator = Object.create(navigator, {
+      userAgent: userAgentProp,
+    });
+  }
+}
+
+for (let i = 0; navigator.userAgent !== ua || i < 3; i++) {
+  setUserAgent(ua);
 }
