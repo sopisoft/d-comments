@@ -36,54 +36,44 @@ const getRandomInt = (min: number, max: number) => {
  * @param sendResponse (response) => void
  */
 
-const getMovieData = (movieId: string, sendResponse: (v: any) => void) => {
-  Config.getConfig("allow_login_to_nicovideo", (config) => {
-    const actionTrackId = `${Math.random()
-      .toString(36)
-      .slice(-10)}_${getRandomInt(10 ** 12, 10 ** 13)}`;
-    const url = `https://www.nicovideo.jp/api/watch/${
-      config ? "v3" : "v3_guest"
-    }/${movieId}`;
-    const params = {
-      _frontendId: "6",
-      _frontendVersion: "0",
-      actionTrackId: actionTrackId,
-    };
-
-    if (config) {
-      browser.cookies
-        .get({ url: "https://www.nicovideo.jp/", name: "user_session" })
-        .then((cookie) => {
-          fetch(`${url}?${new URLSearchParams(params)}`, {
-            credentials: "include",
-            headers: {
-              "x-frontend-id": "6",
-              "x-frontend-version": "0",
-              Cookie: `user_session=${cookie?.value}`,
-            },
-          })
-            .then((res) => {
-              return res.json();
-            })
-            .then((v) => {
-              sendResponse(v);
-            });
-        });
-    } else {
-      fetch(`${url}?${new URLSearchParams(params)}`, {
-        credentials: "omit",
+const getMovieData = async (movieId: string) => {
+  return new Promise<SearchResult>((resolve) => {
+    Config.getConfig("allow_login_to_nicovideo", (config) => {
+      const url = `https://www.nicovideo.jp/api/watch/${
+        config ? "v3" : "v3_guest"
+      }/${movieId}`;
+      const params = {
+        _frontendId: "6",
+        _frontendVersion: "0",
+        actionTrackId: `${Math.random().toString(36).slice(-10)}_${getRandomInt(
+          10 ** 12,
+          10 ** 13
+        )}`,
+      };
+      const fetch_options: RequestInit = {
+        credentials: config ? "include" : "omit",
         headers: {
           "x-frontend-id": "6",
           "x-frontend-version": "0",
         },
-      })
+      };
+      config &&
+        browser.cookies
+          .get({ url: "https://www.nicovideo.jp/", name: "user_session" })
+          .then((cookie) => {
+            Object.assign(fetch_options.headers as HeadersInit, {
+              Cookie: `user_session=${cookie?.value}`,
+            });
+          });
+
+      fetch(`${url}?${new URLSearchParams(params)}`, fetch_options)
         .then((res) => {
           return res.json();
         })
         .then((v) => {
-          sendResponse(v);
+          return resolve(v as SearchResult);
         });
-    }
+    });
   });
 };
 
@@ -93,31 +83,30 @@ const getMovieData = (movieId: string, sendResponse: (v: any) => void) => {
  * @returns Promise<Response>
  */
 
-const getThreadComments = (movieData: any) => {
+const getThreadComments = async (movieData: SearchResult): Promise<Threads> => {
   const nvComment = movieData.data.comment.nvComment;
   const serverUrl = `${nvComment.server}/v1/threads`;
-  const jsonBody = {
-    threadKey: nvComment.threadKey,
-    params: nvComment.params,
-    additionals: {},
-  };
-
-  const d = fetch(`${serverUrl}?_frontendId=6`, {
+  const headers: RequestInit = {
     headers: {
       "Content-Type": "application/json",
       "x-frontend-id": "6",
       "x-frontend-version": "0",
-    },
+    } as HeadersInit,
     method: "POST",
-    body: JSON.stringify(jsonBody),
-  }).then((res) => {
-    return res;
-  });
-
-  return d;
+    body: JSON.stringify({
+      threadKey: nvComment.threadKey,
+      params: nvComment.params,
+      additionals: {},
+    }),
+  };
+  const res = await fetch(`${serverUrl}?_frontendId=6`, headers);
+  if (!res.ok) {
+    throw new Error(res.statusText);
+  }
+  return res.json();
 };
 
-const search = (word: string, UserAgent: string) => {
+const search = async (word: string, UserAgent: string): Promise<Snapshot> => {
   const endpoint =
     "https://api.search.nicovideo.jp/api/v2/snapshot/video/contents/search";
   const params = {
@@ -133,76 +122,100 @@ const search = (word: string, UserAgent: string) => {
    * スナップショットAPIを使って動画を検索する
    * @see https://site.nicovideo.jp/search-api-docs/snapshot
    */
-  const d = fetch(`${endpoint}?${new URLSearchParams(params)}`, {
+  const res = await fetch(`${endpoint}?${new URLSearchParams(params)}`, {
     headers: {
       "User-Agent": UserAgent,
     },
-  }).then((res) => {
-    return res;
   });
-
-  return d;
+  if (!res.ok) {
+    throw new Error(res.statusText);
+  }
+  return res.json();
 };
 
-browser.runtime.onMessage.addListener(
-  (message, sender, sendResponse: (v: any) => void) => {
-    switch (message.type) {
-      case "movieData": {
-        getMovieData(message.movieId, sendResponse);
-        return true;
+/**
+ *
+ * @param type "user" | "channel"
+ * @param videoId 動画ID
+ * @param ownerId ユーザーID または チャンネルID
+ * @returns Owner
+ */
+const get_user_info = async (
+  type: "user" | "channel",
+  videoId: VideoId,
+  ownerId: string
+): Promise<Owner> => {
+  const owner: Owner = [];
+
+  switch (type) {
+    case "user": {
+      const url = `https://nvapi.nicovideo.jp/v1/users/${videoId}`;
+      const headers: RequestInit = {
+        headers: {
+          "User-Agent": navigator.userAgent ?? "",
+          "x-frontend-id": "6",
+          "x-frontend-version": "0",
+        },
+      };
+      const res = await fetch(url, headers).then((res) => {
+        return res.json();
+      });
+      if (!res.ok) {
+        throw new Error(res.statusText);
       }
-      case "threadData": {
-        getThreadComments(message.movieData)
-          .then((res) => {
-            return res.json();
-          })
-          .then((json) => {
-            sendResponse(json.data);
-          });
-        return true;
-      }
-      case "search": {
-        search(message.word, message.UserAgent)
-          .then((res) => {
-            return res.json();
-          })
-          .then((json) => {
-            sendResponse(json);
-          });
-        return true;
-      }
-      case "user": {
-        const url = `https://nvapi.nicovideo.jp/v1/users/${message.id}`;
-        fetch(url, {
-          headers: {
-            "User-Agent": message.UserAgent,
-            "x-frontend-id": "6",
-            "x-frontend-version": "0",
-          },
-        })
-          .then((res) => {
-            return res.json();
-          })
-          .then((json) => {
-            sendResponse(json);
-          });
-        return true;
-      }
-      case "channel": {
-        const url = `https://api.cas.nicovideo.jp/v2/tanzakus/channel/ch${message.id}/`;
-        fetch(url)
-          .then((res) => {
-            return res.json();
-          })
-          .then((json) => {
-            sendResponse(json);
-          });
-        return true;
-      }
+      owner.push({
+        contentId: videoId,
+        ownerId: ownerId,
+        ownerName: res.data.user.nickname,
+        ownerIconUrl: res.data.user.icons.small,
+      });
+      return owner;
     }
-    return undefined;
+    case "channel": {
+      const url = `https://api.cas.nicovideo.jp/v2/tanzakus/channel/ch${videoId}`;
+      const res = await fetch(url).then((res) => {
+        return res.json();
+      });
+      if (!res.ok) {
+        throw new Error(res.statusText);
+      }
+      owner.push({
+        contentId: videoId,
+        ownerId: ownerId,
+        ownerName: res.data.name,
+        ownerIconUrl: res.data.icon,
+      });
+      return owner;
+    }
+    default: {
+      throw new Error("invalid type");
+    }
   }
-);
+};
+
+browser.runtime.onMessage.addListener((message: bg_message_apis) => {
+  switch (message.type) {
+    case "video_data": {
+      const data = message.data as videoDataApi["data"];
+      return getMovieData(data.videoId);
+    }
+    case "thread_data": {
+      const data = message.data as threadDataApi["data"];
+      return getThreadComments(data.videoData);
+    }
+    case "search": {
+      const data = message.data as searchApi["data"];
+      return search(data.word, data.UserAgent);
+    }
+    case "owner_info": {
+      const data = message.data as ownerInfoApi["data"];
+      return get_user_info(data.type, data.videoId, data.ownerId);
+    }
+    default: {
+      throw new Error("invalid type");
+    }
+  }
+});
 
 /**
  * インストール直後につかいかたページを開く

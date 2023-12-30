@@ -16,13 +16,10 @@
 */
 
 import React, { useState } from "react";
-import { createRoot } from "react-dom/client";
 import browser from "webextension-polyfill";
-
 import * as Config from "../content_scripts/config";
-import "../index.css";
 
-const Popup = () => {
+export const Popup = () => {
   const [tabPage, setTabPage] = useState<"watch" | "other">("other");
 
   const [movieId, setMovieId] = useState("");
@@ -30,31 +27,6 @@ const Popup = () => {
 
   const [owner, setOwner] = useState<Owner>();
   const [result, setResult] = useState<SearchResult>();
-
-  type SearchResult = {
-    meta: {
-      status: number;
-      totalCount: number;
-      id: string;
-    };
-    data: {
-      contentId: string;
-      title: string;
-      userId: string;
-      channelId: string;
-      commentCounter: number;
-      thumbnailUrl: string;
-      viewCounter: number;
-      lengthSeconds: number;
-    }[];
-  };
-
-  type Owner = {
-    contentId: string;
-    ownerId: string;
-    ownerName: string;
-    ownerIconUrl: string;
-  }[];
 
   /**
    * 作品視聴ページか判定
@@ -84,19 +56,6 @@ const Popup = () => {
   };
 
   /**
-   * コメントをファイルで出力する
-   */
-  const exportJson = () => {
-    browser.tabs.query({ active: true, currentWindow: true }).then((tabs) => {
-      isWatchPage(tabs[0]?.url) &&
-        browser.tabs.sendMessage(tabs[0].id as number, {
-          type: "exportJson",
-          movieId: movieId,
-        });
-    });
-  };
-
-  /**
    * 動画ID用 Input ハンドラ
    */
   const handler = (value: string) => {
@@ -107,7 +66,6 @@ const Popup = () => {
   /**
    * コメントファイル Input ハンドラ
    */
-
   const onFileInputChange = (e: Event & { target: HTMLInputElement }) => {
     console.log(e.target.files);
     const f = e.target.files?.[0];
@@ -121,99 +79,6 @@ const Popup = () => {
     } else {
       return;
     }
-  };
-
-  /**
-   * コメントファイル読み込み
-   */
-  const loadFile = (data: string) => {
-    if (data.length > 0) {
-      browser.tabs.query({ active: true, currentWindow: true }).then((tabs) => {
-        isWatchPage(tabs[0]?.url) &&
-          browser.tabs.sendMessage(tabs[0].id as number, {
-            type: "renderComments",
-            movieId: movieId,
-            data: data,
-          });
-      });
-    }
-  };
-
-  /**
-   * スナップショットAPIを使ってキーワードで動画を検索
-   * @param word キーワード
-   * @returns 動画情報
-   * @see https://site.nicovideo.jp/search-api-docs/snapshot
-   */
-  const search = async (word: string) => {
-    browser.tabs.query({ active: true, currentWindow: true }).then((tabs) => {
-      isWatchPage(tabs[0]?.url) &&
-        browser.runtime
-          .sendMessage({
-            type: "search",
-            word: word,
-            UserAgent: "d-comments",
-          })
-          .then((response) => {
-            if (response.meta.status === 200) {
-              console.log("検索結果", response);
-              setResult(response);
-              for (const item of response.data) {
-                const isUser = item.userId ? true : false;
-                getOwnerInfo(
-                  item.contentId,
-                  isUser ? item.userId : item.channelId,
-                  isUser ? true : false
-                );
-              }
-            } else {
-              return;
-            }
-          });
-    });
-  };
-
-  /**
-   * 動画投稿者の名前、アイコンURLを取得
-   * @param contentId 動画ID
-   * @param ownerId ユーザーID または チャンネルID
-   * @param isUser ユーザーかチャンネルか
-   * @returns 動画投稿者の名前、アイコンURL
-   */
-  const getOwnerInfo = (
-    contentId: string,
-    ownerId: string,
-    isUser: boolean
-  ) => {
-    const res: Owner = [];
-    browser.runtime
-      .sendMessage({
-        type: isUser ? "user" : "channel",
-        id: ownerId,
-        UserAgent: navigator.userAgent ?? "",
-      })
-      .then((response) => {
-        if (response.meta.status === 200) {
-          const setOwnerInfo = async () => {
-            res.push({
-              contentId: contentId,
-              ownerId: ownerId,
-              ownerName: isUser
-                ? response.data.user.nickname
-                : response.data.name,
-              ownerIconUrl: isUser
-                ? response.data.user.icons.small
-                : response.data.icon,
-            });
-          };
-          setOwnerInfo().then(() => {
-            setOwner((owner) => (owner ? [...owner, ...res] : res));
-          });
-        } else {
-          return;
-        }
-      });
-    return res;
   };
 
   const init = (title: string) => {
@@ -422,5 +287,3 @@ const Popup = () => {
     </>
   );
 };
-
-createRoot(document.body).render(<Popup />);

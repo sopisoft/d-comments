@@ -153,10 +153,7 @@ const Options = () => {
   );
 };
 
-const root = document.createElement("div");
-document.body.appendChild(root);
-
-createRoot(root).render(
+createRoot(document.body).render(
   <ThemeProvider>
     <Options />
   </ThemeProvider>
