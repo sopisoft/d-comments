@@ -15,7 +15,6 @@
     along with d-comments.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { Separator } from "@/components/ui/separator";
 import React from "react";
 import browser from "webextension-polyfill";
 
@@ -30,12 +29,10 @@ function Footer() {
         rel="noreferrer"
         className="flex flex-row items-center justify-center w-full h-full"
       >
-        <span className="mr-2">{manifest.name}</span>
-        <Separator orientation="vertical" className="mr-1" />
+        <span className="mx-3">{manifest.name}</span>
         <span className="mx-1">2022 - {new Date().getFullYear()}</span>
         <span className="mx-1">{browser.runtime.getManifest().author}</span>
-        <Separator orientation="vertical" className="ml-1" />
-        <span className="ml-2">Version {manifest.version}</span>
+        <span className="mx-3">Version {manifest.version}</span>
       </a>
     </footer>
   );
