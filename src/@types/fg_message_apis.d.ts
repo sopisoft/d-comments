@@ -23,15 +23,33 @@ type renderCommentsApi = {
   active_tab: true;
   response: boolean;
 };
+
+type comments_json = {
+  version: 1;
+  movieData: SearchResult;
+  threadData: Threads;
+};
+type renderCommentsJsonApi = {
+  type: "render_comments";
+  data: {
+    comments: comments_json["threadData"];
+  };
+  active_tab: true;
+  response: boolean;
+};
 type exportCommentsJsonApi = {
   type: "export_comments_json";
   data: {
     videoId: VideoId;
   };
   active_tab: true;
-  response: boolean;
+  response: comments_json;
 };
-declare type fg_message = exportCommentsJsonApi | renderCommentsApi;
+
+declare type fg_message =
+  | renderCommentsApi
+  | renderCommentsJsonApi
+  | exportCommentsJsonApi;
 type fg_message_apis = {
   type: fg_message["type"];
   data: fg_message["data"];

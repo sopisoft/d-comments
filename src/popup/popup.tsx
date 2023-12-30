@@ -35,6 +35,7 @@ import {
 import { Toaster } from "@/components/ui/toaster";
 import { useToast } from "@/components/ui/use-toast";
 import search from "./api/search";
+import VideoIdInput from "./components/video_id_input";
 import Menu from "./menu";
 
 export const Popup = () => {
@@ -129,12 +130,13 @@ export const Popup = () => {
   return (
     <Card className="w-[32rem] h-[32rem]">
       <CardHeader>
-        <CardTitle>Popup</CardTitle>
+        <CardTitle>{browser.runtime.getManifest().name} Popup Page</CardTitle>
         <CardDescription className="text-stone-900">
           <Menu />
         </CardDescription>
       </CardHeader>
       <CardContent>
+        <VideoIdInput />
         <Button
           onClick={() => {
             render_comments(videoId as VideoId);

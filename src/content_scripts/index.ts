@@ -16,7 +16,7 @@
 */
 
 import browser from "webextension-polyfill";
-import * as Config from "./config";
+import { getConfig } from "./config";
 import { addMenu } from "./danime_dom/mypage";
 import { setWorkInfo } from "./danime_dom/watch";
 import exportJson from "./export";
@@ -24,7 +24,7 @@ import fire from "./play/fire";
 
 switch (location.pathname) {
   case "/animestore/ci_pc": {
-    Config.getConfig("add_button_to_show_comments_while_playing", (value) => {
+    getConfig("add_button_to_show_comments_while_playing", (value) => {
       value && addMenu();
     });
     break;

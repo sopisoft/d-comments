@@ -15,7 +15,7 @@
     along with d-comments.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-import * as Config from "../config";
+import { getConfig } from "../config";
 
 /**
  * 作品ページの各パートに新しいタブで開くボタンを追加する
@@ -33,7 +33,7 @@ export const addMenu = async () => {
     })();
   });
 
-  Config.getConfig(
+  getConfig(
     "open_in_new_tab_when_clicking_show_comments_while_playing_button",
     (value) => {
       for (const item of items) {

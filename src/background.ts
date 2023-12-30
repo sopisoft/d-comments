@@ -15,8 +15,8 @@
     along with d-comments.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+import { getConfig, migrate } from "@/content_scripts/config";
 import browser from "webextension-polyfill";
-import * as Config from "./content_scripts/config";
 
 /**
  * 任意の範囲のランダムな整数を返す
@@ -38,7 +38,7 @@ const getRandomInt = (min: number, max: number) => {
 
 const getMovieData = async (movieId: string) => {
   return new Promise<SearchResult | Error>((resolve) => {
-    Config.getConfig("allow_login_to_nicovideo", (config) => {
+    getConfig("allow_login_to_nicovideo", (config) => {
       const url = `https://www.nicovideo.jp/api/watch/${
         config ? "v3" : "v3_guest"
       }/${movieId}`;
@@ -245,7 +245,7 @@ browser.runtime.onInstalled.addListener((details) => {
   }
 
   // Config keys migration
-  Config.migrate();
+  migrate();
 });
 
 export default {};

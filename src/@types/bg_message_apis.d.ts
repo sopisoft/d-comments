@@ -51,6 +51,7 @@ type ownerInfoApi = {
   active_tab: false;
   response: Owner;
 };
+
 declare type bg_message =
   | videoDataApi
   | threadDataApi

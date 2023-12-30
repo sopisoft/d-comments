@@ -80,7 +80,7 @@ const ListItem = React.forwardRef<
 
 function Header() {
   return (
-    <header className="flex items-center justify-between w-full px-4 py-2 bg-white border-b border-gray-200 dark:bg-gray-800 dark:border-gray-700">
+    <header className="flex items-center justify-between w-full px-4 py-2 border-b border-gray-200">
       <div className="flex items-center space-x-4 basis-[calc(100%-10rem)]">
         <Settings className="w-10 h-10" />
         <h1 className="scroll-m-20 text-3xl font-semibold tracking-tight">
