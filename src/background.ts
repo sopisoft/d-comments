@@ -37,7 +37,7 @@ const getRandomInt = (min: number, max: number) => {
  */
 
 const getMovieData = async (movieId: string) => {
-  return new Promise<SearchResult>((resolve) => {
+  return new Promise<SearchResult | Error>((resolve) => {
     Config.getConfig("allow_login_to_nicovideo", (config) => {
       const url = `https://www.nicovideo.jp/api/watch/${
         config ? "v3" : "v3_guest"
@@ -72,6 +72,9 @@ const getMovieData = async (movieId: string) => {
         })
         .then((v) => {
           return resolve(v as SearchResult);
+        })
+        .catch((e) => {
+          return resolve(e);
         });
     });
   });
@@ -83,7 +86,9 @@ const getMovieData = async (movieId: string) => {
  * @returns Promise<Response>
  */
 
-const getThreadComments = async (movieData: SearchResult): Promise<Threads> => {
+const getThreadComments = async (
+  movieData: SearchResult
+): Promise<Threads | Error> => {
   const nvComment = movieData.data.comment.nvComment;
   const serverUrl = `${nvComment.server}/v1/threads`;
   const headers: RequestInit = {
@@ -99,9 +104,11 @@ const getThreadComments = async (movieData: SearchResult): Promise<Threads> => {
       additionals: {},
     }),
   };
-  const res = await fetch(`${serverUrl}?_frontendId=6`, headers);
+  const res = await fetch(`${serverUrl}?_frontendId=6`, headers).catch((e) => {
+    return e;
+  });
   if (!res.ok) {
-    throw new Error(res.statusText);
+    return res;
   }
   return res.json();
 };
@@ -126,9 +133,11 @@ const search = async (word: string, UserAgent: string): Promise<Snapshot> => {
     headers: {
       "User-Agent": UserAgent,
     },
+  }).catch((e) => {
+    return e;
   });
   if (!res.ok) {
-    throw new Error(res.statusText);
+    return res;
   }
   return res.json();
 };
@@ -144,7 +153,7 @@ const get_user_info = async (
   type: "user" | "channel",
   videoId: VideoId,
   ownerId: string
-): Promise<Owner> => {
+): Promise<Owner | Error> => {
   const owner: Owner = [];
 
   switch (type) {
@@ -157,11 +166,15 @@ const get_user_info = async (
           "x-frontend-version": "0",
         },
       };
-      const res = await fetch(url, headers).then((res) => {
-        return res.json();
-      });
+      const res = await fetch(url, headers)
+        .then((res) => {
+          return res.json();
+        })
+        .catch((e) => {
+          return e;
+        });
       if (!res.ok) {
-        throw new Error(res.statusText);
+        return res;
       }
       owner.push({
         contentId: videoId,
@@ -173,11 +186,15 @@ const get_user_info = async (
     }
     case "channel": {
       const url = `https://api.cas.nicovideo.jp/v2/tanzakus/channel/ch${videoId}`;
-      const res = await fetch(url).then((res) => {
-        return res.json();
-      });
+      const res = await fetch(url)
+        .then((res) => {
+          return res.json();
+        })
+        .catch((e) => {
+          return e;
+        });
       if (!res.ok) {
-        throw new Error(res.statusText);
+        return res;
       }
       owner.push({
         contentId: videoId,
@@ -188,7 +205,7 @@ const get_user_info = async (
       return owner;
     }
     default: {
-      throw new Error("invalid type");
+      throw new Error("invalid type of owner");
     }
   }
 };

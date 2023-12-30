@@ -15,15 +15,26 @@
     along with d-comments.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-import React from "react";
-import { createRoot } from "react-dom/client";
-
-import { ThemeProvider } from "@/components/theme-provider";
-import "../index.css";
-import { Popup } from "./popup";
-
-createRoot(document.body).render(
-  <ThemeProvider>
-    <Popup />
-  </ThemeProvider>
-);
+type renderCommentsApi = {
+  type: "render_comments";
+  data: {
+    videoId: VideoId;
+  };
+  active_tab: true;
+  response: boolean;
+};
+type exportCommentsJsonApi = {
+  type: "export_comments_json";
+  data: {
+    videoId: VideoId;
+  };
+  active_tab: true;
+  response: boolean;
+};
+declare type fg_message = exportCommentsJsonApi | renderCommentsApi;
+type fg_message_apis = {
+  type: fg_message["type"];
+  data: fg_message["data"];
+  active_tab?: boolean;
+  response?: fg_message["response"];
+};

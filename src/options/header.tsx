@@ -86,7 +86,7 @@ function Header() {
         <h1 className="scroll-m-20 text-3xl font-semibold tracking-tight">
           設定
         </h1>
-        <NavigationMenu className="ml-8">
+        <NavigationMenu className="ml-8 hidden md:block">
           <NavigationMenuList>
             <NavigationMenuItem>
               <NavigationMenuTrigger>メニュー</NavigationMenuTrigger>

@@ -17,13 +17,13 @@
 
 import send_message from "./send_message";
 
-async function bg_message_apis(query: {
-  type: bg_message_apis["type"];
-  data: bg_message_apis["data"];
-  active_tab?: bg_message_apis["active_tab"];
-}): Promise<bg_message_apis["response"] | Error> {
-  query.active_tab ??= false;
-  return (await send_message(query)) as bg_message_apis["response"];
+async function fg_message_apis(query: {
+  type: fg_message_apis["type"];
+  data: fg_message_apis["data"];
+  active_tab?: fg_message_apis["active_tab"];
+}): Promise<fg_message_apis["response"] | Error> {
+  query.active_tab ??= true;
+  return (await send_message(query)) as fg_message_apis["response"];
 }
 
-export default bg_message_apis;
+export default fg_message_apis;
