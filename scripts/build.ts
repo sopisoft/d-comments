@@ -26,6 +26,7 @@ function makeManifestJson(browser: (typeof browsers)[number]) {
     description: "__MSG_description__",
     default_locale: "ja",
     version: process.env.npm_package_version,
+    author: "sopi",
     icons: {
       16: "icons/16.png",
       32: "icons/32.png",

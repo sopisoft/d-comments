@@ -35,7 +35,11 @@ import {
   setConfig,
 } from "../content_scripts/config";
 
-const Editor = (props: { _key: config["key"]; text?: string }) => {
+const Editor = (props: {
+  _key: config["key"];
+  text?: string;
+  className?: string;
+}) => {
   const [value, setValue] = useState<config["value"]>();
   getConfig(props._key).then((v) => {
     setValue(v);
@@ -86,6 +90,7 @@ const Editor = (props: { _key: config["key"]; text?: string }) => {
           name={key}
           value={value as number}
           onChange={onChange}
+          className={`${props.className} w-24`}
         />
       );
     case "checkbox":
@@ -96,6 +101,7 @@ const Editor = (props: { _key: config["key"]; text?: string }) => {
           title={text}
           checked={value as boolean}
           onCheckedChange={onCheckedChange}
+          className={props.className}
         />
       );
     case "color":
@@ -106,6 +112,7 @@ const Editor = (props: { _key: config["key"]; text?: string }) => {
           name={key}
           value={value as string}
           onChange={onChange}
+          className={`${props.className} w-24`}
         />
       );
     case "select":
@@ -115,7 +122,11 @@ const Editor = (props: { _key: config["key"]; text?: string }) => {
           value={value as string}
           onValueChange={onSelectedChange}
         >
-          <SelectTrigger id={key} title={text} className="w-[180px]">
+          <SelectTrigger
+            id={key}
+            title={text}
+            className={`${props.className} w-24`}
+          >
             <SelectValue placeholder={text} />
           </SelectTrigger>
           <SelectContent>
@@ -135,6 +146,7 @@ const Editor = (props: { _key: config["key"]; text?: string }) => {
           title={text}
           checked={value as boolean}
           onCheckedChange={onCheckedChange}
+          className={props.className}
         />
       );
     default:
@@ -147,18 +159,20 @@ const EditorWrapper = (props: { _key: config["key"] }) => {
   const text = defaultConfigs.find((item) => item.key === key)?.text;
   const type = defaultConfigs.find((item) => item.key === key)?.type;
   return (
-    <div
-      className={`flex items-center ${
-        type === "checkbox" && "flex-row-reverse justify-evenly"
-      }`}
-    >
+    <div className="grid grid-cols-4 gap-1 justify-items-stretch items-center">
       <Label
         htmlFor={key}
-        className="text-sm font-medium leading-tight basis-[80%]"
+        className={`m-2 text-sm font-medium leading-tight col-span-3 ${
+          type === "checkbox" ? "order-1" : "-order-1"
+        }`}
       >
         {text}
       </Label>
-      <Editor _key={key} text={text} />
+      <Editor
+        _key={key}
+        text={text}
+        className="col-span-1 justify-self-center"
+      />
     </div>
   );
 };

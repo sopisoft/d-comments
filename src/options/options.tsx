@@ -23,7 +23,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Car } from "lucide-react";
+import { Separator } from "@/components/ui/separator";
 import React from "react";
 import { createRoot } from "react-dom/client";
 import "../index.css";
@@ -37,12 +37,12 @@ const CardWrapper = (props: {
   content: React.ReactNode;
 }) => {
   return (
-    <Card className="m-4 w-[30rem]">
+    <Card className="m-4 w-[32rem] border-2 border-gray-200">
       <CardHeader>
         <CardTitle>{props.title}</CardTitle>
         <CardDescription>{props.description}</CardDescription>
       </CardHeader>
-      <CardContent className="grid gap-4">{props.content}</CardContent>
+      <CardContent className="grid gap-4 m-auto">{props.content}</CardContent>
     </Card>
   );
 };
@@ -52,13 +52,14 @@ const Options = () => {
     <>
       <Header />
 
-      <div className="flex flex-wrap justify-center">
+      <div className="flex flex-wrap justify-center after:content-[''] after:block after:w-[32rem] after:m-4">
         <CardWrapper
           title="ポップアップ"
           description="拡張機能のアイコンをクリックすると表示される、ポップアップページの設定です。"
           content={
             <>
               <Editor _key="show_last_searched_video_id" />
+              <Separator />
               <Editor _key="auto_search" />
             </>
           }
@@ -70,6 +71,7 @@ const Options = () => {
           content={
             <>
               <Editor _key="add_button_to_show_comments_while_playing" />
+              <Separator />
               <Editor _key="open_in_new_tab_when_clicking_show_comments_while_playing_button" />
             </>
           }
@@ -81,7 +83,9 @@ const Options = () => {
           content={
             <>
               <Editor _key="show_owner_comments" />
+              <Separator />
               <Editor _key="show_main_comments" />
+              <Separator />
               <Editor _key="show_easy_comments" />
             </>
           }
@@ -99,8 +103,11 @@ const Options = () => {
           content={
             <>
               <Editor _key="enable_scroll_mode" />
+              <Separator />
               <Editor _key="scroll_interval_ms" />
+              <Separator />
               <Editor _key="comment_area_width_px" />
+              <Separator />
               <Editor _key="show_comment_scrollbar" />
             </>
           }
@@ -112,7 +119,9 @@ const Options = () => {
           content={
             <>
               <Editor _key="comment_area_background_color" />
+              <Separator />
               <Editor _key="comment_area_opacity_percent" />
+              <Separator />
               <Editor _key="comment_text_color" />
             </>
           }
@@ -130,7 +139,9 @@ const Options = () => {
           content={
             <>
               <Editor _key="distance_from_top_percent" />
+              <Separator />
               <Editor _key="distance_from_left_percent" />
+              <Separator />
               <Editor _key="comment_area_height_percent" />
             </>
           }
