@@ -64,7 +64,7 @@ export const load_comments_json = async (
     data: renderCommentsJsonApi["data"];
     active_tab: renderCommentsJsonApi["active_tab"];
   } = {
-    type: "render_comments",
+    type: "render_comments_json",
     data: {
       comments: json.threadData,
     },

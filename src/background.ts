@@ -210,29 +210,31 @@ const get_user_info = async (
   }
 };
 
-browser.runtime.onMessage.addListener((message: bg_message_apis) => {
-  switch (message.type) {
-    case "video_data": {
-      const data = message.data as videoDataApi["data"];
-      return getMovieData(data.videoId);
-    }
-    case "thread_data": {
-      const data = message.data as threadDataApi["data"];
-      return getThreadComments(data.videoData);
-    }
-    case "search": {
-      const data = message.data as searchApi["data"];
-      return search(data.word, data.UserAgent);
-    }
-    case "owner_info": {
-      const data = message.data as ownerInfoApi["data"];
-      return get_user_info(data.type, data.videoId, data.ownerId);
-    }
-    default: {
-      throw new Error("invalid type");
+browser.runtime.onMessage.addListener(
+  (message: messages): Promise<messages["response"] | Error> => {
+    switch (message.type) {
+      case "video_data": {
+        const data = message.data as videoDataApi["data"];
+        return getMovieData(data.videoId);
+      }
+      case "thread_data": {
+        const data = message.data as threadDataApi["data"];
+        return getThreadComments(data.videoData);
+      }
+      case "search": {
+        const data = message.data as searchApi["data"];
+        return search(data.word, data.UserAgent);
+      }
+      case "owner_info": {
+        const data = message.data as ownerInfoApi["data"];
+        return get_user_info(data.type, data.videoId, data.ownerId);
+      }
+      default: {
+        throw new Error("Invalid message type");
+      }
     }
   }
-});
+);
 
 /**
  * インストール直後につかいかたページを開く

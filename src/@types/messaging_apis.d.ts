@@ -61,7 +61,7 @@ type renderCommentsApi = {
 };
 
 type renderCommentsJsonApi = {
-  type: "render_comments";
+  type: "render_comments_json";
   data: {
     comments: comments_json["threadData"];
   };

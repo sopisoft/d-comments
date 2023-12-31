@@ -103,9 +103,8 @@ export const Popup = () => {
     (await isWatchPage()) && setTabPage(true);
 
     getConfig("show_last_searched_video_id", (value) => {
-      if (value === true) {
+      value === true &&
         setVideoId(window.localStorage.getItem("videoId") as VideoId);
-      }
     });
     getConfig("auto_search", async (value) => {
       if (value === true) {
@@ -116,13 +115,11 @@ export const Popup = () => {
           });
 
         setWord(work_title);
-        search(work_title)
-          .then((res) => {
-            setSnapshot(res);
-          })
-          .catch((error) => {
-            ErrorMessage({ error: error });
-          });
+        search(work_title).then((res) => {
+          typeof res === typeof Error
+            ? ErrorMessage({ error: res as Error })
+            : setSnapshot(res as Snapshot);
+        });
       }
     });
   };
