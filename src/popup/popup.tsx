@@ -21,8 +21,7 @@ import React, { useState } from "react";
 import { createRoot } from "react-dom/client";
 import browser, { Tabs } from "webextension-polyfill";
 import "../index.css";
-import bg_api from "./api/bg_api";
-import fg_api from "./api/fg_api";
+import api from "./api/api";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -35,8 +34,9 @@ import {
 import { Toaster } from "@/components/ui/toaster";
 import { useToast } from "@/components/ui/use-toast";
 import search from "./api/search";
+import JsonFileInput from "./components/json_file_input";
+import Menu from "./components/menu";
 import VideoIdInput from "./components/video_id_input";
-import Menu from "./menu";
 
 export const Popup = () => {
   const [tabPage, setTabPage] = useState<boolean>(false);
@@ -94,7 +94,7 @@ export const Popup = () => {
       },
       active_tab: true,
     };
-    return await fg_api(query).catch((error) => {
+    return await api(query).catch((error) => {
       ErrorMessage({ error: error });
     });
   };
@@ -137,6 +137,7 @@ export const Popup = () => {
       </CardHeader>
       <CardContent>
         <VideoIdInput />
+        <JsonFileInput />
         <Button
           onClick={() => {
             render_comments(videoId as VideoId);

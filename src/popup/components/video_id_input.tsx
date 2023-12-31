@@ -6,13 +6,13 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { HelpCircle } from "lucide-react";
+import { ExternalLink } from "lucide-react";
 import React from "react";
 
 function VideoIdInput() {
   return (
     <>
-      <TooltipProvider>
+      <TooltipProvider delayDuration={200}>
         <Tooltip>
           <TooltipTrigger>
             <span className="text-lg font-bold">
@@ -24,11 +24,10 @@ function VideoIdInput() {
               href="https://dic.nicovideo.jp/a/id"
               target="_blank"
               rel="noopener noreferrer"
+              className="flex items-center justify-center space-x-2"
             >
-              <span className="text-lg font-bold max-w-sm">
-                動画IDとは、ニコニコ動画の動画のURLの「sm」または「so」とその後に続く数字のことです。
-                <span>例: sm9, so123456</span>
-              </span>
+              <ExternalLink className="w-4 h-4 mx-2" />
+              動画ID（ニコニコ大百科）
             </a>
           </TooltipContent>
         </Tooltip>
@@ -36,8 +35,9 @@ function VideoIdInput() {
 
       <div className="grid grid-cols-7 gap-2 my-2">
         <Input placeholder="動画ID" className="col-span-3" />
+
         <div className="col-span-4 flex justify-end items-center space-x-2">
-          <TooltipProvider>
+          <TooltipProvider delayDuration={200}>
             <Tooltip>
               <TooltipTrigger>
                 <Button variant="outline">JSON に保存</Button>
@@ -48,7 +48,7 @@ function VideoIdInput() {
             </Tooltip>
           </TooltipProvider>
 
-          <TooltipProvider>
+          <TooltipProvider delayDuration={200}>
             <Tooltip>
               <TooltipTrigger>
                 <Button variant="outline">コメントを表示</Button>

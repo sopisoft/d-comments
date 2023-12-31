@@ -15,7 +15,7 @@
     along with d-comments.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-import api from "./bg_api";
+import api from "./api";
 
 /**
  * スナップショットAPIを使ってキーワードで動画を検索

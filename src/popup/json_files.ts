@@ -14,7 +14,7 @@
     You should have received a copy of the GNU General Public License
     along with d-comments.  If not, see <https://www.gnu.org/licenses/>.
 */
-import fg_api from "./api/fg_api";
+import api from "./api/api";
 
 /**
  * コメントをファイルで出力する
@@ -34,7 +34,7 @@ export const export_comment_json = async (
     },
     active_tab: true,
   };
-  const res = await fg_api(query).catch((e) => {
+  const res = await api(query).catch((e) => {
     return e;
   });
   return res;
@@ -43,14 +43,20 @@ export const export_comment_json = async (
 /**
  * コメントファイル読み込み
  */
-export const load_comment_json = async (file: File) => {
+export const load_comments_json = async (file: File) => {
   const reader = new FileReader();
+
+  let result: string | Error = "";
   reader.onload = () => {
+    result = reader.result as string;
     return reader.result;
   };
   reader.readAsText(file);
 
-  const json = JSON.parse(String(reader.result)) as comments_json;
+  const json = JSON.parse(String(result) || "{}") as comments_json;
+  if (!json.threadData) {
+    return new Error("threadDataがありません");
+  }
   const query: {
     type: renderCommentsJsonApi["type"];
     data: renderCommentsJsonApi["data"];
@@ -62,7 +68,7 @@ export const load_comment_json = async (file: File) => {
     },
     active_tab: true,
   };
-  await fg_api(query).catch((e) => {
-    return e;
+  await api(query).catch((e) => {
+    return e as Error;
   });
 };

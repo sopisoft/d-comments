@@ -190,6 +190,12 @@ type Threads = {
   ];
 };
 
+type comments_json = {
+  version: 1;
+  movieData: SearchResult;
+  threadData: Threads;
+};
+
 type Snapshot = {
   meta: {
     status: 200 | 400 | 500 | 503;

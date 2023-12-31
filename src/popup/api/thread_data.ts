@@ -15,7 +15,7 @@
     along with d-comments.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-import api from "./bg_api";
+import api from "./api";
 
 const get_thread_data: (
   video_data: threadDataApi["data"]["videoData"]

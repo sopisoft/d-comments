@@ -51,15 +51,44 @@ type ownerInfoApi = {
   active_tab: false;
   response: Owner;
 };
+type renderCommentsApi = {
+  type: "render_comments";
+  data: {
+    videoId: VideoId;
+  };
+  active_tab: true;
+  response: boolean;
+};
 
-declare type bg_message =
+type renderCommentsJsonApi = {
+  type: "render_comments";
+  data: {
+    comments: comments_json["threadData"];
+  };
+  active_tab: true;
+  response: boolean;
+};
+type exportCommentsJsonApi = {
+  type: "export_comments_json";
+  data: {
+    videoId: VideoId;
+  };
+  active_tab: true;
+  response: comments_json;
+};
+
+declare type messages =
   | videoDataApi
   | threadDataApi
   | searchApi
-  | ownerInfoApi;
-type bg_message_apis = {
-  type: bg_message["type"];
-  data: bg_message["data"];
+  | ownerInfoApi
+  | renderCommentsApi
+  | renderCommentsJsonApi
+  | exportCommentsJsonApi;
+
+type messaging_api = {
+  type: messages["type"];
+  data: messages["data"];
   active_tab?: boolean;
-  response?: bg_message["response"];
+  response?: messages["response"];
 };

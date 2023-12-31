@@ -18,12 +18,11 @@
 import send_message from "./send_message";
 
 async function bg_message_apis(query: {
-  type: bg_message_apis["type"];
-  data: bg_message_apis["data"];
-  active_tab?: bg_message_apis["active_tab"];
-}): Promise<bg_message_apis["response"] | Error> {
-  query.active_tab ??= false;
-  return (await send_message(query)) as bg_message_apis["response"];
+  type: messaging_api["type"];
+  data: messaging_api["data"];
+  active_tab: boolean;
+}): Promise<messaging_api["response"] | Error> {
+  return await send_message(query);
 }
 
 export default bg_message_apis;
