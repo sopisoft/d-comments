@@ -6,10 +6,50 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useToast } from "@/components/ui/use-toast";
+import { getConfig } from "@/content_scripts/config";
 import { ExternalLink } from "lucide-react";
-import React from "react";
+import React, { useEffect, useState } from "react";
+import api from "../api/api";
+import { ErrorMessage, isWatchPage } from "../util";
 
 function VideoIdInput() {
+  const [videoId, setVideoId] = useState<VideoId>();
+  const { toast } = useToast();
+
+  const render_comments = async (videoId: VideoId) => {
+    if (!(await isWatchPage())) {
+      ErrorMessage(toast, {
+        message: {
+          title: "作品視聴ページ以外で実行されました。",
+          description: "render_comments は作品視聴ページでのみ実行できます。",
+        },
+      });
+      return;
+    }
+    const query: {
+      type: renderCommentsApi["type"];
+      data: renderCommentsApi["data"];
+      active_tab: renderCommentsApi["active_tab"];
+    } = {
+      type: "render_comments",
+      data: {
+        videoId: videoId,
+      },
+      active_tab: true,
+    };
+    return await api(query).catch((error) => {
+      ErrorMessage(toast, { error: error });
+    });
+  };
+
+  useEffect(() => {
+    getConfig("show_last_searched_video_id", (value) => {
+      value === true &&
+        setVideoId(window.localStorage.getItem("videoId") as VideoId);
+    });
+  }, []);
+
   return (
     <>
       <TooltipProvider delayDuration={200}>

@@ -22,7 +22,7 @@ function Menu() {
                 href={browser.runtime.getURL("options.html")}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="grid w-full max-w-sm items-center gap-1.5 grid-cols-3"
+                className="grid items-center gap-1.5 grid-cols-3"
               >
                 <Settings className="w-5 h-5 mr-2" />
                 <span className="col-span-2">設定</span>
@@ -41,7 +41,7 @@ function Menu() {
                 href={browser.runtime.getURL("how_to_use.html")}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="grid w-full max-w-sm items-center gap-1.5 grid-cols-3"
+                className="grid items-center gap-1.5 grid-cols-3"
               >
                 <HelpCircle className="w-5 h-5 mr-2" />
                 <span className="col-span-2">つかいかた</span>

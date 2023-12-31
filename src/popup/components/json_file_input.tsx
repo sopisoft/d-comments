@@ -10,23 +10,11 @@ import {
 import { useToast } from "@/components/ui/use-toast";
 import React from "react";
 import { load_comments_json } from "../api/json_files";
+import { ErrorMessage } from "../util";
 
 function JsonFileInput() {
   const [file, setFile] = React.useState<File | null>(null);
   const { toast } = useToast();
-
-  function ErrorMessage(props: {
-    error?: Error;
-    message?: { title: string; description: string };
-  }) {
-    toast({
-      title: props.message?.title || props.error?.name || "エラー",
-      description:
-        props.message?.description ||
-        props.error?.message ||
-        "予期しないエラーが発生しました。",
-    });
-  }
 
   return (
     <>
@@ -68,14 +56,14 @@ function JsonFileInput() {
                   disabled={!file}
                   onClick={() => {
                     !file
-                      ? ErrorMessage({
+                      ? ErrorMessage(toast, {
                           message: {
                             title: "ファイルが選択されていません。",
                             description: "ファイルを選択してください。",
                           },
                         })
                       : load_comments_json(file).catch((e) =>
-                          ErrorMessage({ error: e })
+                          ErrorMessage(toast, { error: e })
                         );
                   }}
                 >

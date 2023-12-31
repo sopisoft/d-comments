@@ -113,6 +113,10 @@ const getThreadComments = async (
   return res.json();
 };
 
+/**
+ * スナップショットAPIを使って動画を検索する
+ * @see https://site.nicovideo.jp/search-api-docs/snapshot
+ */
 const search = async (word: string, UserAgent: string): Promise<Snapshot> => {
   const endpoint =
     "https://api.search.nicovideo.jp/api/v2/snapshot/video/contents/search";
@@ -125,10 +129,7 @@ const search = async (word: string, UserAgent: string): Promise<Snapshot> => {
     _limit: "40",
     _context: "d-comments",
   };
-  /**
-   * スナップショットAPIを使って動画を検索する
-   * @see https://site.nicovideo.jp/search-api-docs/snapshot
-   */
+
   const res = await fetch(`${endpoint}?${new URLSearchParams(params)}`, {
     headers: {
       "User-Agent": UserAgent,
@@ -136,10 +137,7 @@ const search = async (word: string, UserAgent: string): Promise<Snapshot> => {
   }).catch((e) => {
     return e;
   });
-  if (!res.ok) {
-    return res;
-  }
-  return res.json();
+  return !res.ok ? res : res.json();
 };
 
 /**
