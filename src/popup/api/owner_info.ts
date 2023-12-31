@@ -28,7 +28,11 @@ const get_owner_info: (
   type: "user" | "channel",
   videoId: VideoId,
   ownerId: string
-) => Promise<ownerInfoApi["response"]> = async (type, videoId, ownerId) => {
+) => Promise<ownerInfoApi["response"] | Error> = async (
+  type,
+  videoId,
+  ownerId
+) => {
   const query: {
     type: ownerInfoApi["type"];
     data: ownerInfoApi["data"];
@@ -42,7 +46,9 @@ const get_owner_info: (
     },
     active_tab: false as ownerInfoApi["active_tab"],
   };
-  return (await api(query)) as ownerInfoApi["response"];
+  return await api(query).catch((err) => {
+    return err;
+  });
 };
 
 export default get_owner_info;

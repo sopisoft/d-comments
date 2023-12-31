@@ -23,7 +23,7 @@ import api from "./api";
  * @returns 動画情報
  * @see https://site.nicovideo.jp/search-api-docs/snapshot
  */
-const search = async (word: string) => {
+async function search(word: string): Promise<searchApi["response"] | Error> {
   const query: {
     type: searchApi["type"];
     data: searchApi["data"];
@@ -36,7 +36,9 @@ const search = async (word: string) => {
     },
     active_tab: false,
   };
-  return (await api(query)) as searchApi["response"];
-};
+  return await api(query).catch((err) => {
+    return err;
+  });
+}
 
 export default search;

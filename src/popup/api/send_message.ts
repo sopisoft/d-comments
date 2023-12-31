@@ -17,13 +17,11 @@
 
 import browser from "webextension-polyfill";
 
-type message = bg_message_apis | fg_message_apis;
-
 async function send_message(props: {
-  type: message["type"];
-  data: message["data"];
-  active_tab?: message["active_tab"];
-}): Promise<message["response"] | Error> {
+  type: messages["type"];
+  data: messages["data"];
+  active_tab?: messages["active_tab"];
+}): Promise<messages["response"] | Error> {
   if (props.active_tab) {
     return browser.tabs
       .query({ active: true, currentWindow: true })
@@ -36,7 +34,7 @@ async function send_message(props: {
           .then((response) => {
             return response;
           });
-      }) as Promise<message["response"]>;
+      }) as Promise<messages["response"]>;
   }
   const res = await browser.runtime.sendMessage({
     type: props.type,

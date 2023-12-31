@@ -19,7 +19,7 @@ import api from "./api";
 
 const get_thread_data: (
   video_data: threadDataApi["data"]["videoData"]
-) => Promise<threadDataApi["response"]> = async (video_data) => {
+) => Promise<threadDataApi["response"] | Error> = async (video_data) => {
   const query: {
     type: threadDataApi["type"];
     data: threadDataApi["data"];
@@ -31,7 +31,9 @@ const get_thread_data: (
     },
     active_tab: false,
   };
-  return (await api(query)) as threadDataApi["response"];
+  return await api(query).catch((err) => {
+    return err;
+  });
 };
 
 export default get_thread_data;

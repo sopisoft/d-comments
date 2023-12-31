@@ -14,7 +14,7 @@
     You should have received a copy of the GNU General Public License
     along with d-comments.  If not, see <https://www.gnu.org/licenses/>.
 */
-import api from "./api/api";
+import api from "./api";
 
 /**
  * コメントをファイルで出力する
@@ -43,7 +43,9 @@ export const export_comment_json = async (
 /**
  * コメントファイル読み込み
  */
-export const load_comments_json = async (file: File) => {
+export const load_comments_json = async (
+  file: File
+): Promise<renderCommentsApi["response"] | Error> => {
   const reader = new FileReader();
 
   let result: string | Error = "";
@@ -68,7 +70,7 @@ export const load_comments_json = async (file: File) => {
     },
     active_tab: true,
   };
-  await api(query).catch((e) => {
-    return e as Error;
+  return await api(query).catch((e) => {
+    return e;
   });
 };

@@ -17,20 +17,23 @@
 
 import api from "./api";
 
-const get_video_data: (videoId: VideoId) => Promise<videoDataApi["response"]> =
-  async (videoId) => {
-    const query: {
-      type: videoDataApi["type"];
-      data: videoDataApi["data"];
-      active_tab: videoDataApi["active_tab"];
-    } = {
-      type: "video_data",
-      data: {
-        videoId: videoId,
-      },
-      active_tab: false,
-    };
-    return (await api(query)) as videoDataApi["response"];
+const get_video_data: (
+  videoId: VideoId
+) => Promise<videoDataApi["response"] | Error> = async (videoId) => {
+  const query: {
+    type: videoDataApi["type"];
+    data: videoDataApi["data"];
+    active_tab: videoDataApi["active_tab"];
+  } = {
+    type: "video_data",
+    data: {
+      videoId: videoId,
+    },
+    active_tab: false,
   };
+  return await api(query).catch((err) => {
+    return err;
+  });
+};
 
 export default get_video_data;
