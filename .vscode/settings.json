@@ -6,13 +6,12 @@
     "source.organizeImports.biome": "always",
     "quickfix.biome": "always"
   },
-  "editor.quickSuggestions": {
-    "strings": true
-  },
   "files.eol": "\n",
   "json.schemas": [
     {
-      "fileMatch": ["manifest.json"],
+      "fileMatch": [
+        "manifest.json"
+      ],
       "url": "http://json.schemastore.org/chrome-manifest"
     }
   ],
@@ -33,5 +32,8 @@
       "strings": true
     },
     "editor.defaultFormatter": "biomejs.biome"
+  },
+  "[html]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
   }
 }
