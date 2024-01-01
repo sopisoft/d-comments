@@ -8,7 +8,7 @@
     "rules": {
       "recommended": true
     },
-    "ignore": ["dist/*", "node_modules/*"]
+    "ignore": ["dist/*", "node_modules/*", "src/components/ui/*"]
   },
   "formatter": {
     "enabled": true,

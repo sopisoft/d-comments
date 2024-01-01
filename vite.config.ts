@@ -14,7 +14,6 @@ export default defineConfig({
     target: "esnext",
     minify: "terser",
     modulePreload: false,
-    polyfillModulePreload: false,
     rollupOptions: {
       input: {
         index: resolve(__dirname, "src", "content_scripts", "index.ts"),
@@ -27,7 +26,7 @@ export default defineConfig({
       output: {
         format: "module",
         entryFileNames: "js/[name].js",
-        chunkFileNames: "js/[name].js",
+        chunkFileNames: "js/[hash].js",
         assetFileNames: "assets/[ext]/[name].[ext]",
       },
     },
