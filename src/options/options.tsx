@@ -24,9 +24,9 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import "@/index.css";
 import React from "react";
 import { createRoot } from "react-dom/client";
-import "../index.css";
 import Editor from "./editor";
 import Footer from "./footer";
 import Header from "./header";

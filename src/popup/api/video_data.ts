@@ -15,7 +15,7 @@
     along with d-comments.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-import api from "./api";
+import api from "@/lib/api";
 
 const get_video_data: (
   videoId: VideoId

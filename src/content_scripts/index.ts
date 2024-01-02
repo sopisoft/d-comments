@@ -31,39 +31,23 @@ switch (location.pathname) {
   }
   case "/animestore/sc_d_pc": {
     setWorkInfo();
-
-    // called from popup/popup.tsx
-    browser.runtime.onMessage.addListener((message) => {
-      if (message.type === "renderComments") {
-        fire(message.movieId, message.data);
+    browser.runtime.onMessage.addListener((message: messages) => {
+      switch (message.type) {
+        case "render_comments":
+          fire(true, message.data.videoId);
+          break;
+        case "render_comments_json":
+          fire(false, message.data.comments);
+          break;
+        case "export_comments_json":
+          exportJson(message.data.videoId);
+          break;
+        default:
+          break;
       }
-      if (message.type === "exportJson") {
-        exportJson(message.movieId);
-      }
-      return undefined;
     });
     break;
   }
   default:
     break;
-}
-
-const ua =
-  "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.3";
-
-function setUserAgent(userAgent: string) {
-  const userAgentProp: PropertyDescriptor = {
-    get: () => userAgent,
-  };
-  try {
-    Object.defineProperty(window.navigator, "userAgent", userAgentProp);
-  } catch (e) {
-    window.navigator = Object.create(navigator, {
-      userAgent: userAgentProp,
-    });
-  }
-}
-
-for (let i = 0; navigator.userAgent !== ua || i < 3; i++) {
-  setUserAgent(ua);
 }

@@ -89,6 +89,6 @@ declare type messages =
 type messaging_api = {
   type: messages["type"];
   data: messages["data"];
-  active_tab?: boolean;
+  active_tab?: messages["active_tab"];
   response?: messages["response"];
 };

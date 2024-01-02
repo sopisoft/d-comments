@@ -16,45 +16,11 @@
 */
 
 import * as Config from "../config";
+import { config, getConfig } from "../config";
 import { setWorkInfo } from "../danime_dom/watch";
 
 import NiconiComments, { InputFormat } from "@xpadev-net/niconicomments";
 import browser from "webextension-polyfill";
-
-const status = {
-  /** スクロールモードかどうか */
-  isScrollMode: false,
-  /** コメントコンテナ上にマウスカーソルがあるか */
-  isMouseOver: false,
-  /** コメントリストのUlをスクール中か */
-  isUlScrolling: false,
-  /** 作品再生時刻 */
-  time: "",
-  /** ビューポートの高さ */
-  windowHeight: window.innerHeight,
-  /** コメント欄のスクロール必要量 */
-  scrollHeight: 0,
-  /** コメント欄のスクロール量 */
-  scrolledHeight: 0,
-};
-
-const configs = {
-  /** 設定「スクロールモードを利用可能にする」の値 */
-  ScrollConfig: true,
-  /** 設定「自動スクロールの実行間隔 (ミリ秒)」の値 */
-  autoScrollInterval: 600,
-  /** 投稿者コメントを表示するか */
-  ownerThread: false,
-  /** 通常コメントを表示するか */
-  mainThread: false,
-  /** かんたんコメントを表示するか */
-  easyThread: false,
-};
-
-const global = {
-  comments: [] as nv_comment[],
-  lists: [] as HTMLElement[],
-};
 
 /**
  * スレッドデータからコメントを設置する
@@ -76,64 +42,30 @@ const play = (
   /**
    * 設定の変更を監視する
    */
-  browser.storage.onChanged.addListener((changes, namespace) => {
-    for (const [key, { oldValue, newValue }] of Object.entries(changes)) {
-      console.log(
-        `設定 ${key} (${namespace}) が更新されました`,
-        `\n更新前 : ${oldValue} | 更新後 : ${newValue}`
-      );
+  browser.storage.onChanged.addListener((changes) => {
+    for (const [key] of Object.entries(changes) as [
+      config["key"],
+      browser.Storage.StorageChange,
+    ][]) {
       switch (key) {
-        case "スクロールモードを利用可能にする":
-          configs.ScrollConfig = newValue;
-          break;
-        case "自動スクロールの実行間隔 (ミリ秒)":
-          configs.autoScrollInterval = newValue;
-          break;
-        case "投稿者コメント": {
-          configs.ownerThread = newValue;
+        case "show_owner_comments": {
           renderComments();
           break;
         }
-        case "通常コメント": {
-          configs.mainThread = newValue;
+        case "show_main_comments": {
           renderComments();
           break;
         }
-        case "かんたんコメント": {
-          configs.easyThread = newValue;
+        case "show_easy_comments": {
           renderComments();
           break;
         }
-        case "way_to_render_comments": {
+        case "comment_rendering_method": {
           renderComments();
           break;
         }
       }
     }
-    return undefined;
-  });
-  window.addEventListener("resize", () => {
-    status.windowHeight = window.innerHeight;
-  });
-
-  /**
-   * ステータスに設定値を設定する
-   */
-  Config.getConfig("enable_scroll_mode", (value) => {
-    configs.ScrollConfig = value as boolean;
-  });
-  Config.getConfig("scroll_interval_ms", (value) => {
-    configs.autoScrollInterval = value as number;
-  });
-  Config.getConfig("show_owner_comments", (value) => {
-    configs.ownerThread = value as boolean;
-  });
-  Config.getConfig("show_main_comments", (value) => {
-    configs.mainThread = value as boolean;
-  });
-  Config.getConfig("show_easy_comments", (value) => {
-    configs.easyThread = value as boolean;
-    renderComments();
   });
 
   /**
@@ -152,57 +84,23 @@ const play = (
   });
   ul.style.display = "none";
   container.appendChild(ul);
-  status.scrolledHeight = ul.scrollTop;
-  ul.addEventListener(
-    "scroll",
-    () => {
-      if (!status.isUlScrolling) {
-        status.isUlScrolling = true;
-        window.requestAnimationFrame(() => {
-          status.scrolledHeight = ul.scrollTop;
-          status.isUlScrolling = false;
-        });
-      }
-    },
-    { passive: true }
-  );
-  ul.addEventListener(
-    "mouseover",
-    () => {
-      status.isMouseOver = true;
-      checkIsScrollModeEnabled();
-    },
-    { passive: true }
-  );
-  ul.addEventListener(
-    "mouseleave",
-    () => {
-      status.isMouseOver = false;
-      checkIsScrollModeEnabled();
-    },
-    { passive: true }
-  );
 
-  /**
-   * スクロールモード
-   */
-  const checkIsScrollModeEnabled = () => {
-    if (configs.ScrollConfig && status.isMouseOver) {
-      status.isScrollMode = true;
+  ul.addEventListener("mouseover" || "mouseleave", async () => {
+    const isMouseOver = ul.matches(":hover");
+    if ((await getConfig("enable_scroll_mode")) && isMouseOver) {
       status_bar.innerText = "スクロールモード";
       status_bar.style.backgroundColor = "rgb(235 80 40 / 100%)";
-    } else if (!status.isMouseOver) {
-      status.isScrollMode = false;
+    } else if (!isMouseOver) {
       window.requestAnimationFrame(setCurrentTime);
       status_bar.style.backgroundColor = "rgba(0, 0, 0, 0)";
     }
-  };
+  });
 
   /**
    * 再生時刻
    */
   const setCurrentTime = () => {
-    if (!status.isScrollMode) {
+    if (!ul.matches(":hover")) {
       const hours = `${
         Math.floor(video.currentTime / 3600) > 0
           ? `${Math.floor(video.currentTime / 3600)} 時間 `
@@ -215,8 +113,7 @@ const play = (
       }`;
       const seconds = `${Math.floor(video.currentTime % 60)} 秒`;
       if (`${hours}${minutes}${seconds}` !== status_bar.innerText) {
-        status.time = `${hours}${minutes}${seconds}`;
-        status_bar.innerText = status.time;
+        status_bar.innerText = `${hours}${minutes}${seconds}`;
       }
     }
     window.requestAnimationFrame(setCurrentTime);
@@ -224,36 +121,38 @@ const play = (
   window.requestAnimationFrame(setCurrentTime);
 
   /**
-   * 任意のスレッドのコメントを返す
-   * @param fork コメントの fork
-   * @returns コメント
-   */
-  const getThreadComments = (fork: thread["forkLabel"]): nv_comment[] => {
-    const threads = threadData.threads.filter((thread, index) => {
-      return thread[index].fork === fork;
-    });
-    // main thread が二つある場合があり、この時 thread[1] を返す
-    if (threads.length === 2) {
-      return threads[1][0].comments;
-    }
-    return threads[0][0].comments;
-  };
-
-  /**
    * 指定されたコメントを返す
    * @param Callback
    */
 
   const getComments = async (callback: (comments: nv_comment[]) => void) => {
-    global.comments.length = 0;
+    const threads = threadData.threads;
+    const comments: nv_comment[] = [];
 
-    const comments: nv_comment[][] = [];
-    configs.ownerThread && comments.push(getThreadComments("owner"));
-    configs.mainThread && comments.push(getThreadComments("main"));
-    configs.easyThread && comments.push(getThreadComments("easy"));
-    global.comments = comments.flat(1);
+    function f(fork: thread["forkLabel"]) {
+      for (const thread of threads) {
+        thread
+          .filter((thread) => thread.fork === fork)
+          .map((thread) => {
+            thread.comments.map((comment) => {
+              comments.push(comment);
+            });
+          });
+      }
+    }
+    switch (true) {
+      case await getConfig("show_owner_comments"):
+        f("owner");
+        break;
+      case await getConfig("show_main_comments"):
+        f("main");
+        break;
+      case await getConfig("show_easy_comments"):
+        f("easy");
+        break;
+    }
 
-    callback(global.comments);
+    callback(comments);
   };
 
   /**
@@ -284,9 +183,8 @@ const play = (
    */
 
   const setComments = (comments: nv_comment[]) => {
-    global.lists.length = 0;
-
     const contents = async (comments: nv_comment[]) => {
+      const lists: HTMLElement[] = [];
       comments.map((comment) => {
         const li = document.createElement("li");
         li.innerText = comment.body;
@@ -297,9 +195,9 @@ const play = (
           borderBottom: "1px solid #484848d1",
         });
         li.setAttribute("data-time", comment.vposMs.toString());
-        global.lists.push(li);
+        lists.push(li);
       });
-      return global.lists;
+      return lists;
     };
 
     const appendList = (lists: HTMLElement[]) => {
@@ -331,8 +229,12 @@ const play = (
   });
 
   /** コメントを再生時刻に合わせてスクロールする */
-  const scroll = (callBack: number) => {
-    if ((Math.round(callBack / 10) * 10) % configs.autoScrollInterval === 0) {
+  const scroll = async (callBack: number) => {
+    if (
+      (Math.round(callBack / 10) * 10) %
+        Number(await getConfig("scroll_interval_ms")) ===
+      0
+    ) {
       const currentTime = Math.round(video.currentTime * 1000);
 
       const li = ul.querySelectorAll(
@@ -352,13 +254,11 @@ const play = (
       const target =
         (list[li.length - 1] as HTMLElement) ?? (list[0] as HTMLElement);
 
-      if (target && !status.isScrollMode) {
-        status.scrollHeight = target.offsetTop - ul.offsetHeight;
+      if (target && !ul.matches(":hover")) {
+        const scrollHeight = target.offsetTop - ul.offsetHeight;
 
-        const scrollLength = Math.abs(
-          status.scrollHeight - status.scrolledHeight
-        );
-        if (status.windowHeight / 2 - scrollLength > 0) {
+        const scrollLength = Math.abs(scrollHeight - ul.scrollTop);
+        if (window.innerHeight / 2 - scrollLength > 0) {
           target.scrollIntoView({
             behavior: "smooth",
             block: "end",
@@ -366,7 +266,7 @@ const play = (
           });
         } else {
           ul.scroll({
-            top: status.scrollHeight,
+            top: scrollHeight,
             behavior: "instant" as ScrollBehavior,
           });
         }

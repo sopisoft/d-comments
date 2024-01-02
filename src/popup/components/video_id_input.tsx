@@ -8,9 +8,9 @@ import {
 } from "@/components/ui/tooltip";
 import { useToast } from "@/components/ui/use-toast";
 import { getConfig } from "@/content_scripts/config";
+import api from "@/lib/api";
 import { ExternalLink } from "lucide-react";
 import React, { useEffect, useState } from "react";
-import api from "../api/api";
 import { ErrorMessage, isWatchPage } from "../util";
 
 function VideoIdInput() {

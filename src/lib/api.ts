@@ -17,12 +17,12 @@
 
 import send_message from "./send_message";
 
-async function bg_message_apis(query: {
+async function messaging_api(query: {
   type: messaging_api["type"];
   data: messaging_api["data"];
-  active_tab: boolean;
+  active_tab: messaging_api["active_tab"];
 }): Promise<messaging_api["response"] | Error> {
   return await send_message(query);
 }
 
-export default bg_message_apis;
+export default messaging_api;

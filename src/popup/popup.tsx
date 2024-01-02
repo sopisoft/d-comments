@@ -24,10 +24,10 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Toaster } from "@/components/ui/toaster";
+import "@/index.css";
 import React from "react";
 import { createRoot } from "react-dom/client";
 import browser from "webextension-polyfill";
-import "../index.css";
 import JsonFileInput from "./components/json_file_input";
 import Menu from "./components/menu";
 import Search from "./components/search";

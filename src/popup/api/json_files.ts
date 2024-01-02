@@ -14,7 +14,7 @@
     You should have received a copy of the GNU General Public License
     along with d-comments.  If not, see <https://www.gnu.org/licenses/>.
 */
-import api from "./api";
+import api from "@/lib/api";
 
 /**
  * コメントをファイルで出力する

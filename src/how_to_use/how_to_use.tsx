@@ -15,6 +15,7 @@
     along with d-comments.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+import "@/index.css";
 import { Nodes } from "mdast";
 import { toc } from "mdast-util-toc";
 import { Options } from "mdast-util-toc/lib";
@@ -27,7 +28,6 @@ import remarkGfm from "remark-gfm";
 import remarkToc from "remark-toc";
 import browser from "webextension-polyfill";
 import "zenn-content-css";
-import "../index.css";
 import "./how_to_use.css";
 
 const HowToUse = () => {
