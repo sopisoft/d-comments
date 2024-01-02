@@ -26,14 +26,14 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import React, { Suspense, useState } from "react";
-import browser from "webextension-polyfill";
 import {
   config,
   defaultConfigs,
   getConfig,
   setConfig,
-} from "../content_scripts/config";
+} from "@/content_scripts/config";
+import React, { useState } from "react";
+import browser from "webextension-polyfill";
 
 const Editor = (props: {
   _key: config["key"];
@@ -41,9 +41,6 @@ const Editor = (props: {
   className?: string;
 }) => {
   const [value, setValue] = useState<config["value"]>();
-  getConfig(props._key).then((v) => {
-    setValue(v);
-  });
 
   const setOption = (key: config["key"], value: config["value"]) => {
     setValue(value);
@@ -70,16 +67,21 @@ const Editor = (props: {
   const onSelectedChange = (v: string) => {
     setOption(key, v);
   };
-  const options = (defaultConfigs.find((item) => item.key === key) as config)
-    .options;
+  const select_options = (
+    defaultConfigs.find((item) => item.key === key) as config
+  ).options;
 
   browser.storage.onChanged.addListener((changes) => {
-    for (const [key, { newValue }] of Object.entries(changes)) {
-      if (newValue && key === props._key) {
-        setOption(key as config["key"], newValue);
-      }
+    if (changes[key]) {
+      setValue(changes[key].newValue);
     }
   });
+
+  if (value === undefined) {
+    getConfig(key).then((v) => {
+      setValue(v);
+    });
+  }
 
   switch (type) {
     case "number":
@@ -130,7 +132,7 @@ const Editor = (props: {
             <SelectValue placeholder={text} />
           </SelectTrigger>
           <SelectContent>
-            {options?.map((option) => {
+            {select_options?.map((option) => {
               return (
                 <SelectItem value={option.value}>{option.name}</SelectItem>
               );

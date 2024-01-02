@@ -37,11 +37,15 @@ function Menu() {
             <TooltipTrigger
               className="flex flex-row items-center justify-center space-x-2 m-2 p-2 w-2/5"
               onClick={() => {
-                browser.runtime.openOptionsPage();
+                browser.tabs.create({
+                  url: browser.runtime.getURL("options.html"),
+                });
               }}
               onKeyDown={(e) => {
                 if (e.key === "Enter") {
-                  browser.runtime.openOptionsPage();
+                  browser.tabs.create({
+                    url: browser.runtime.getURL("options.html"),
+                  });
                 }
               }}
             >

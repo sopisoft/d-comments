@@ -62,9 +62,7 @@ export const Popup = () => {
             </>
           ) : (
             <div className="text-stone-900">
-              <p>
-                It seems you are not on a docomo anime store works watch page.
-              </p>
+              <p>Invalid page.</p>
             </div>
           )}
         </Suspense>
