@@ -1,3 +1,20 @@
+/*
+    This file is part of d-comments.
+
+    d-comments is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    d-comments is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with d-comments.  If not, see <https://www.gnu.org/licenses/>.
+*/
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -11,7 +28,7 @@ import { getConfig } from "@/content_scripts/config";
 import api from "@/lib/api";
 import { ExternalLink } from "lucide-react";
 import React, { useEffect, useState } from "react";
-import { ErrorMessage, isWatchPage } from "../util";
+import { ErrorMessage, isWatchPage } from "../utils";
 
 function VideoIdInput() {
   const [videoId, setVideoId] = useState<VideoId>();
@@ -74,7 +91,11 @@ function VideoIdInput() {
       </TooltipProvider>
 
       <div className="grid grid-cols-7 gap-2 my-2">
-        <Input placeholder="動画ID" className="col-span-3" />
+        <Input
+          id="video_id_input"
+          placeholder="動画ID"
+          className="col-span-3"
+        />
 
         <div className="col-span-4 flex justify-end items-center space-x-2">
           <Button variant="outline">JSON に保存</Button>

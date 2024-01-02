@@ -25,27 +25,49 @@ import {
 } from "@/components/ui/card";
 import { Toaster } from "@/components/ui/toaster";
 import "@/index.css";
-import React from "react";
+import React, { Suspense } from "react";
 import { createRoot } from "react-dom/client";
 import browser from "webextension-polyfill";
 import JsonFileInput from "./components/json_file_input";
 import Menu from "./components/menu";
 import Search from "./components/search";
 import VideoIdInput from "./components/video_id_input";
+import { isWatchPage as isWatchPageFn } from "./utils";
 
 export const Popup = () => {
+  const manifest = browser.runtime.getManifest();
+  const { name, version } = manifest;
+
+  const [isWatchPage, setIsWatchPage] = React.useState(false);
+
+  isWatchPageFn().then(setIsWatchPage);
+
   return (
-    <Card className="w-[32rem] h-[32rem]">
+    <Card className="w-[32rem] h-full">
       <CardHeader>
-        <CardTitle>{browser.runtime.getManifest().name} Popup Page</CardTitle>
+        <CardTitle className="text-lg">
+          {name} Popup Page (Version: {version})
+        </CardTitle>
         <CardDescription className="text-stone-900">
           <Menu />
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <VideoIdInput />
-        <JsonFileInput />
-        <Search />
+        <Suspense fallback={<div>Loading...</div>}>
+          {isWatchPage ? (
+            <>
+              <VideoIdInput />
+              <JsonFileInput />
+              <Search />
+            </>
+          ) : (
+            <div className="text-stone-900">
+              <p>
+                It seems you are not on a docomo anime store works watch page.
+              </p>
+            </div>
+          )}
+        </Suspense>
       </CardContent>
     </Card>
   );

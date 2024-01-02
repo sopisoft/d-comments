@@ -152,8 +152,6 @@ const get_user_info = async (
   videoId: VideoId,
   ownerId: string
 ): Promise<Owner | Error> => {
-  const owner: Owner = [];
-
   switch (type) {
     case "user": {
       const url = `https://nvapi.nicovideo.jp/v1/users/${videoId}`;
@@ -174,13 +172,13 @@ const get_user_info = async (
       if (!res.ok) {
         return res;
       }
-      owner.push({
+
+      return {
         contentId: videoId,
         ownerId: ownerId,
         ownerName: res.data.user.nickname,
         ownerIconUrl: res.data.user.icons.small,
-      });
-      return owner;
+      };
     }
     case "channel": {
       const url = `https://api.cas.nicovideo.jp/v2/tanzakus/channel/ch${videoId}`;
@@ -194,13 +192,12 @@ const get_user_info = async (
       if (!res.ok) {
         return res;
       }
-      owner.push({
+      return {
         contentId: videoId,
         ownerId: ownerId,
         ownerName: res.data.name,
         ownerIconUrl: res.data.icon,
-      });
-      return owner;
+      };
     }
     default: {
       throw new Error("invalid type of owner");

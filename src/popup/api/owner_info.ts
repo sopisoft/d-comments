@@ -17,22 +17,12 @@
 
 import api from "@/lib/api";
 
-/**
- * 動画投稿者の名前、アイコンURLを取得
- * @param type user | channel
- * @param videoId
- * @param ownerId
- * @returns
- */
-const get_owner_info: (
-  type: "user" | "channel",
-  videoId: VideoId,
-  ownerId: string
-) => Promise<ownerInfoApi["response"] | Error> = async (
-  type,
-  videoId,
-  ownerId
-) => {
+const get_owner_info: (arg: {
+  type: "user" | "channel";
+  videoId: VideoId;
+  ownerId: string;
+}) => Promise<ownerInfoApi["response"] | Error> = async (arg) => {
+  const { type, videoId, ownerId } = arg;
   const query: {
     type: ownerInfoApi["type"];
     data: ownerInfoApi["data"];
@@ -51,4 +41,29 @@ const get_owner_info: (
   });
 };
 
-export default get_owner_info;
+/**
+ * @param snapshot Snapshot
+ * @returns Owner[] | Error
+ */
+const get_owner_info_from_snapshot: (
+  snapshot: Snapshot
+) => Promise<ownerInfoApi["response"][] | Error> = async (snapshot) => {
+  const owners: ownerInfoApi["response"][] = [];
+  for (const data of snapshot.data) {
+    data.map((data) => {
+      get_owner_info({
+        type: data.userId ? "user" : data.contentId ? "channel" : "user",
+        videoId: data.contentId,
+        ownerId: (data.userId ?? data.channelId) as string,
+      }).then((res) => {
+        if (res instanceof Error) {
+          return res;
+        }
+        owners.push(res as Owner);
+      });
+    });
+  }
+  return owners;
+};
+
+export default get_owner_info_from_snapshot;

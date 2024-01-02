@@ -196,4 +196,4 @@ type Owner = {
   ownerId: string;
   ownerName: string;
   ownerIconUrl: string;
-}[];
+};
