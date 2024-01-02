@@ -168,7 +168,7 @@ type Snapshot = {
     id: string; // リクエストID
   };
   data: [
-    {
+    Array<{
       contentId: VideoId; // コンテンツID。https://nico.ms/ の後に連結することでコンテンツへのURLになります。
       title?: string; // タイトル
       description?: string; // 説明文
@@ -187,7 +187,7 @@ type Snapshot = {
       tags?: string; // タグ(空白区切り)
       tagsExact?: string; // タグ完全一致(空白区切り)
       genre?: string; // ジャンル
-    }[],
+    }>,
   ];
 };
 

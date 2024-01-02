@@ -15,33 +15,69 @@
     along with d-comments.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-import React from "react";
+import React, { useContext } from "react";
+import { VideoIdContext } from "../popup";
 
 function SearchResult(props: { snapshot: Snapshot; owners: Owner[] }) {
   const { snapshot, owners } = props;
 
+  const videoIdContext = useContext(VideoIdContext);
+
+  const videoId = videoIdContext?.videoId;
+  const setVideoId = videoIdContext?.setVideoId;
+
+  const data = snapshot.data;
+  const owner = (contentId?: string) => {
+    return owners.find((owner) => owner.contentId === contentId);
+  };
+  const video_length = (lengthSeconds: number | undefined) => {
+    if (lengthSeconds === undefined) {
+      return "は取得できませんでした";
+    }
+    const hour = Math.floor(lengthSeconds / 3600);
+    const minute = Math.floor(lengthSeconds / 60);
+    const second = lengthSeconds % 60;
+    return `${hour > 0 && `${hour}時間`} ${minute > 0 && `${minute}分`} ${
+      second > 0 && `${second}秒`
+    }`;
+  };
+
   return (
     <div className="grid grid-cols-7 gap-2 my-2">
-      {snapshot.data.map((video) => {
-        return video.map((video) => {
-          return (
-            <div className="col-span-7">
-              <div className="flex flex-row">
-                <div className="flex flex-col">
+      {data.map((item) =>
+        item.map((item) => (
+          <li
+            onClick={() => {
+              setVideoId?.(item.contentId);
+            }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                setVideoId?.(item.contentId);
+              }
+            }}
+          >
+            <span>
+              <span>{item.title}</span>
+            </span>
+            <div>
+              <img src={item.thumbnailUrl} alt={item.title} />
+              <div>
+                <p>動画情報</p>
+                <div>
                   <img
-                    src={video.thumbnailUrl}
-                    alt={`Thumbnail of ${video.title}`}
-                    className="w-20 h-20"
+                    src={owner(item.contentId)?.ownerIconUrl}
+                    alt={owner(item.contentId)?.ownerName}
                   />
+                  <p>{owner(item.contentId)?.ownerName}</p>
                 </div>
-                <div className="flex flex-col">
-                  <p className="text-lg">{video.title}</p>
-                </div>
+                <span>再生数 {item.viewCounter}</span>
+                <span>コメント数 {item.commentCounter}</span>
+                <span>動画の尺 {video_length(item.lengthSeconds)}</span>
               </div>
             </div>
-          );
-        });
-      })}
+          </li>
+        ))
+      )}
     </div>
   );
 }

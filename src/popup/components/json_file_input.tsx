@@ -25,12 +25,12 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useToast } from "@/components/ui/use-toast";
-import React from "react";
+import React, { useState } from "react";
 import { load_comments_json } from "../api/json_files";
 import { ErrorMessage } from "../utils";
 
 function JsonFileInput() {
-  const [file, setFile] = React.useState<File | null>(null);
+  const [file, setFile] = useState<File | null>(null);
   const { toast } = useToast();
 
   return (

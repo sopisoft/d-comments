@@ -25,23 +25,46 @@ import {
 } from "@/components/ui/tooltip";
 import { useToast } from "@/components/ui/use-toast";
 import { getConfig } from "@/content_scripts/config";
+import export_comments_json from "@/content_scripts/export";
 import api from "@/lib/api";
 import { ExternalLink } from "lucide-react";
-import React, { useEffect, useState } from "react";
-import { ErrorMessage, isWatchPage } from "../utils";
+import React, { useContext, useEffect, useState } from "react";
+import { VideoIdContext } from "../popup";
+import { ErrorMessage, isVideoId, isWatchPage } from "../utils";
 
 function VideoIdInput() {
-  const [videoId, setVideoId] = useState<VideoId>();
+  const videoIdContext = useContext(VideoIdContext);
+
+  const videoId = videoIdContext?.videoId;
+  const setVideoId = videoIdContext?.setVideoId;
+
   const { toast } = useToast();
 
-  const render_comments = async (videoId: VideoId) => {
-    if (!(await isWatchPage())) {
+  const check_video_id = async (videoId: string | undefined | null) => {
+    if (videoId === undefined || videoId === null) {
       ErrorMessage(toast, {
         message: {
-          title: "作品視聴ページ以外で実行されました。",
-          description: "render_comments は作品視聴ページでのみ実行できます。",
+          title: "動画IDが入力されていません。",
+          description: "動画IDを入力してください。",
         },
       });
+      return false;
+    }
+    if (isVideoId(videoId) === false) {
+      ErrorMessage(toast, {
+        message: {
+          title: "動画IDが不正です。",
+          description: "動画IDを正しく入力してください。",
+        },
+      });
+      return false;
+    }
+    return videoId as VideoId;
+  };
+
+  const render_comments = async () => {
+    const video_id = await check_video_id(videoId);
+    if (video_id === false) {
       return;
     }
     const query: {
@@ -51,7 +74,7 @@ function VideoIdInput() {
     } = {
       type: "render_comments",
       data: {
-        videoId: videoId,
+        videoId: video_id,
       },
       active_tab: true,
     };
@@ -60,12 +83,18 @@ function VideoIdInput() {
     });
   };
 
-  useEffect(() => {
-    getConfig("show_last_searched_video_id", (value) => {
-      value === true &&
-        setVideoId(window.localStorage.getItem("videoId") as VideoId);
-    });
-  }, []);
+  async function on_save_json_button_clicked() {
+    const video_id = await check_video_id(videoId);
+    if (video_id === false) {
+      return;
+    }
+    export_comments_json(video_id);
+  }
+
+  getConfig("show_last_searched_video_id", (value) => {
+    const last_id = window.localStorage.getItem("videoId");
+    value === true && setVideoId?.(last_id);
+  });
 
   return (
     <>
@@ -95,12 +124,37 @@ function VideoIdInput() {
           id="video_id_input"
           placeholder="動画ID"
           className="col-span-3"
+          value={videoId ?? ""}
+          onChange={(e) => {
+            setVideoId?.(e.target.value as VideoId);
+          }}
         />
 
         <div className="col-span-4 flex justify-end items-center space-x-2">
-          <Button variant="outline">JSON に保存</Button>
+          <Button
+            variant="outline"
+            onClick={on_save_json_button_clicked}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                on_save_json_button_clicked;
+              }
+            }}
+            disabled={!videoId}
+          >
+            JSON に保存
+          </Button>
 
-          <Button variant="outline" className="w-32">
+          <Button
+            variant="outline"
+            className="w-32"
+            onClick={render_comments}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                render_comments;
+              }
+            }}
+            disabled={!videoId}
+          >
             コメントを表示
           </Button>
         </div>

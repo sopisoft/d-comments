@@ -30,6 +30,30 @@ export const isWatchPage = async (location?: Tabs.Tab["url"] | URL) => {
   return url.pathname === "/animestore/sc_d_pc";
 };
 
+export const isVideoId = (id: string) => {
+  const videoId_prefix = [
+    "sm",
+    "nm",
+    "so",
+    "ca",
+    "ax",
+    "yo",
+    "nl",
+    "ig",
+    "na",
+    "cw",
+    "z[a-e]",
+    "om",
+    "sk",
+    "yk",
+  ];
+  const videoId_suffix = ["\\d{1,14}"];
+  const videoId = new RegExp(
+    `^(${videoId_prefix.join("|")})(${videoId_suffix.join("|")})$`
+  );
+  return videoId.test(id);
+};
+
 export function ErrorMessage(
   toast: (props: { title: string; description: string }) => void,
   props?: {
