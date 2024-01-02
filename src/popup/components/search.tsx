@@ -53,7 +53,6 @@ function Search() {
       <div className="grid grid-cols-7 gap-2 my-2">
         <Input
           placeholder="検索ワード"
-          id="json_file_input"
           className="col-span-5"
           type="text"
           value={word}

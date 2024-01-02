@@ -18,7 +18,7 @@
 import * as Config from "../config";
 import { setWorkInfo } from "../danime_dom/watch";
 
-import NiconiComments from "@xpadev-net/niconicomments";
+import NiconiComments, { InputFormat } from "@xpadev-net/niconicomments";
 import browser from "webextension-polyfill";
 
 const status = {
@@ -52,7 +52,7 @@ const configs = {
 };
 
 const global = {
-  comments: [] as any,
+  comments: [] as nv_comment[],
   lists: [] as HTMLElement[],
 };
 
@@ -66,7 +66,7 @@ const global = {
  * @param video
  */
 const play = (
-  threadData: any,
+  threadData: Threads,
   button_closes_comment_container: HTMLButtonElement,
   status_bar: HTMLDivElement,
   container: HTMLDivElement,
@@ -228,20 +228,15 @@ const play = (
    * @param fork コメントの fork
    * @returns コメント
    */
-  const getThreadComments = (fork: string) => {
-    const threads = threadData.threads
-      .filter((thread: { [x: string]: string }) => {
-        return thread.fork === fork;
-      })
-
-      .map((thread: any) => {
-        return thread;
-      });
+  const getThreadComments = (fork: thread["forkLabel"]): nv_comment[] => {
+    const threads = threadData.threads.filter((thread, index) => {
+      return thread[index].fork === fork;
+    });
     // main thread が二つある場合があり、この時 thread[1] を返す
-    if (threads.length > 1) {
-      return threads[1].comments;
+    if (threads.length === 2) {
+      return threads[1][0].comments;
     }
-    return threads[0].comments;
+    return threads[0][0].comments;
   };
 
   /**
@@ -249,15 +244,16 @@ const play = (
    * @param Callback
    */
 
-  const getComments = async (callback: (comments: any) => any) => {
+  const getComments = async (callback: (comments: nv_comment[]) => void) => {
     global.comments.length = 0;
-    (async () => {
-      configs.ownerThread && global.comments.push(getThreadComments("owner"));
-      configs.mainThread && global.comments.push(getThreadComments("main"));
-      configs.easyThread && global.comments.push(getThreadComments("easy"));
-    })().then(() => {
-      callback(global.comments.flat(1));
-    });
+
+    const comments: nv_comment[][] = [];
+    configs.ownerThread && comments.push(getThreadComments("owner"));
+    configs.mainThread && comments.push(getThreadComments("main"));
+    configs.easyThread && comments.push(getThreadComments("easy"));
+    global.comments = comments.flat(1);
+
+    callback(global.comments);
   };
 
   /**
@@ -265,16 +261,15 @@ const play = (
    * @returns コメント
    */
 
-  const sortComments = async (comments: any[][]) => {
-    function filterComments(comments: any[]) {
-      return comments.filter((comment: { [x: string]: number }) => {
+  const sortComments = async (comments: nv_comment[]) => {
+    function filterComments(comments: nv_comment[]) {
+      return comments.filter((comment) => {
         return comment.score >= 0;
       });
     }
 
-    function sortComments(comments: any[][]) {
-      return comments.sort((a: any[], b: any[]) => {
-        // @ts-ignore
+    function sortComments(comments: nv_comment[]) {
+      return comments.sort((a, b) => {
         return a.vposMs - b.vposMs;
       });
     }
@@ -288,11 +283,11 @@ const play = (
    * コメントリストを設置する
    */
 
-  const setComments = (comments: any[]) => {
+  const setComments = (comments: nv_comment[]) => {
     global.lists.length = 0;
 
-    const contents = async (comments: any[]) => {
-      comments.map((comment: { [x: string]: string; body: string }) => {
+    const contents = async (comments: nv_comment[]) => {
+      comments.map((comment) => {
         const li = document.createElement("li");
         li.innerText = comment.body;
         Object.assign(li.style, {
@@ -301,13 +296,13 @@ const play = (
           padding: "5px",
           borderBottom: "1px solid #484848d1",
         });
-        li.setAttribute("data-time", comment.vposMs);
+        li.setAttribute("data-time", comment.vposMs.toString());
         global.lists.push(li);
       });
       return global.lists;
     };
 
-    const appendList = (lists: any[]) => {
+    const appendList = (lists: HTMLElement[]) => {
       const df = document.createDocumentFragment();
       lists.map((list) => {
         df.appendChild(list);
@@ -415,12 +410,15 @@ const play = (
       },
       { passive: true }
     );
-    const data = threadData.threads;
-    const nicoComments = new NiconiComments(canvas, data, {
-      format: "v1",
-      keepCA: true,
-      scale: 1,
-    });
+    const nicoComments = new NiconiComments(
+      canvas,
+      threadData.threads as unknown as InputFormat,
+      {
+        format: "v1",
+        keepCA: true,
+        scale: 1,
+      }
+    );
     const render = (callBack: number) => {
       if ((Math.round(callBack / 10) * 10) % 10 === 0) {
         nicoComments.drawCanvas(Math.floor(video.currentTime * 100));

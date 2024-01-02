@@ -20,43 +20,8 @@ type thread = {
   forkLabel: "owner" | "main" | "easy";
 };
 
-const niconicoIdReg =
-  /(?:sm|nm|so|ca|ax|yo|nl|ig|na|cw|z[a-e]|om|sk|yk)\d{1,14}\b/;
-const nicovideoBaseReg = /https?:\/\/(?:www\.)?(?:nicovideo\.jp|nico\.ms)\//;
-const nicovideoWatchReg = `${nicovideoBaseReg}watch/`;
 declare const VideoIdSymbol: unique symbol;
 type VideoId = string & { [VideoIdSymbol]: never };
-const isVideoId = (value: string): value is VideoId => {
-  return niconicoIdReg.test(value);
-};
-const isVideoUrl = (value: string): value is VideoId => {
-  return nicovideoWatchReg.test(value);
-};
-const videoIdFromUrl = (value: string): VideoId => {
-  const match = value.match(nicovideoWatchReg);
-  if (match) {
-    return match[0] as VideoId;
-  }
-  throw new Error("Invalid video url");
-};
-
-type videoId_prefix =
-  | "sm"
-  | "nm"
-  | "so"
-  | "ca"
-  | "ax"
-  | "yo"
-  | "nl"
-  | "ig"
-  | "na"
-  | "cw"
-  | "z"
-  | "om"
-  | "sk"
-  | "yk";
-// videoId_prefix[0-9]{1,8}
-type videoId = `${videoId_prefix}${number}`;
 
 type SearchResult = {
   meta: {
@@ -165,29 +130,29 @@ type Threads = {
     }[],
   ];
   threads: [
-    {
+    Array<{
       id: string; // thread["id"] to stringify
-      fork: thread["fork"];
+      fork: thread["forkLabel"];
       commentCount: number;
-      comments: [
-        {
-          id: string; // 64bit integer
-          no: 1;
-          vposMs: number;
-          body: string;
-          commands: [];
-          userId: string;
-          isPremium: true;
-          score: 0;
-          postedAt: string; // ISO8601
-          nicoruCount: number;
-          nicoruId: null; // 自分がニコった場合26文字の大文字か数字で構成される文字列が返る(ULID?) @see https://gist.github.com/otya128/9c7499cf667e75964b43d46c8c567e37
-          source: "leaf" | "nicoru" | "trunk";
-          isMyPost: boolean;
-        }[],
-      ];
-    }[],
+      comments: nv_comment[];
+    }>,
   ];
+};
+
+type nv_comment = {
+  id: string; // 64bit integer
+  no: 1;
+  vposMs: number;
+  body: string;
+  commands: string[];
+  userId: string;
+  isPremium: boolean;
+  score: 0;
+  postedAt: string; // ISO8601
+  nicoruCount: number;
+  nicoruId: string | null; // 自分がニコった場合26文字の大文字か数字で構成される文字列が返る(ULID?) @see https://gist.github.com/otya128/9c7499cf667e75964b43d46c8c567e37
+  source: "leaf" | "nicoru" | "trunk";
+  isMyPost: boolean;
 };
 
 type comments_json = {

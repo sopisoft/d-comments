@@ -48,33 +48,25 @@ function JsonFileInput() {
         />
 
         <div className="col-span-2 flex justify-end items-center space-x-2">
-          <TooltipProvider delayDuration={200}>
-            <Tooltip>
-              <TooltipTrigger>
-                <Button
-                  variant="outline"
-                  disabled={!file}
-                  onClick={() => {
-                    !file
-                      ? ErrorMessage(toast, {
-                          message: {
-                            title: "ファイルが選択されていません。",
-                            description: "ファイルを選択してください。",
-                          },
-                        })
-                      : load_comments_json(file).catch((e) =>
-                          ErrorMessage(toast, { error: e })
-                        );
-                  }}
-                >
-                  コメントを表示
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                選択された JSON ファイルからコメントを読み込み、表示します。
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+          <Button
+            variant="outline"
+            className="w-32"
+            disabled={!file}
+            onClick={() => {
+              !file
+                ? ErrorMessage(toast, {
+                    message: {
+                      title: "ファイルが選択されていません。",
+                      description: "ファイルを選択してください。",
+                    },
+                  })
+                : load_comments_json(file).catch((e) =>
+                    ErrorMessage(toast, { error: e })
+                  );
+            }}
+          >
+            コメントを表示
+          </Button>
         </div>
       </div>
     </>

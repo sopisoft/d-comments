@@ -8,6 +8,7 @@ fi
 chmod +x ./scripts/*.sh
 ./scripts/format.sh
 ./scripts/lint.sh
+tsc --noEmit
 
 npx tsx ./scripts/build.ts
 # bun run ./scripts/build.ts

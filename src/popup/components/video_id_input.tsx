@@ -77,27 +77,11 @@ function VideoIdInput() {
         <Input placeholder="動画ID" className="col-span-3" />
 
         <div className="col-span-4 flex justify-end items-center space-x-2">
-          <TooltipProvider delayDuration={200}>
-            <Tooltip>
-              <TooltipTrigger>
-                <Button variant="outline">JSON に保存</Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>コメントを JSON に保存し、ダウンロードします。</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+          <Button variant="outline">JSON に保存</Button>
 
-          <TooltipProvider delayDuration={200}>
-            <Tooltip>
-              <TooltipTrigger>
-                <Button variant="outline">コメントを表示</Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>入力された動画IDのコメントを表示します。</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+          <Button variant="outline" className="w-32">
+            コメントを表示
+          </Button>
         </div>
       </div>
     </>
