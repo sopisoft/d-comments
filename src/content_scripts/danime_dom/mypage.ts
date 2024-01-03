@@ -21,52 +21,45 @@ import { getConfig } from "../config";
  * 作品ページの各パートに新しいタブで開くボタンを追加する
  */
 export const addMenu = async () => {
-  let items: NodeListOf<Element>;
-  await new Promise((resolve) => {
-    (function getItems() {
-      items = document.querySelectorAll(".itemModule.list a");
-      if (items.length <= 0) {
-        setTimeout(getItems, 100);
-      } else {
-        resolve(null);
-      }
-    })();
-  });
-
-  getConfig(
-    "open_in_new_tab_when_clicking_show_comments_while_playing_button",
-    (value) => {
-      for (const item of items) {
-        const partID = item?.getAttribute("href")?.replace(/[^0-9]/g, "");
-        const bgColor = window.getComputedStyle(item).backgroundColor;
-        const a = document.createElement("a");
-        a.href = `sc_d_pc?partId=${partID}`;
-        if (value) {
-          a.target = "_blank";
-          a.innerText = "新しいタブでコメントを表示しながら再生";
-          a.addEventListener("click", (e) => {
-            window.open(a.href);
-            e.preventDefault();
-          });
-        } else {
-          a.innerText = "現在のタブでコメントを表示しながら再生";
-          a.addEventListener("click", () => {
-            window.location.href = a.href;
-          });
-        }
-        item.parentElement?.parentElement?.appendChild(a);
-        Object.assign(
-          a.style,
-          { type: "text/css" },
-          {
-            width: "100%",
-            padding: "0.4rem 1.8rem",
-            textAlign: "center",
-            borderTop: "1px solid rgb(224 224 224)",
-            backgroundColor: bgColor,
-          }
-        );
-      }
+  for (let i = 0; i < 10; i++) {
+    const items = document.querySelectorAll(".itemModule.list a");
+    if (items.length > 0) {
+      break;
     }
-  );
+    await new Promise((resolve) => setTimeout(resolve, 100));
+  }
+
+  for (const item of document.querySelectorAll(".itemModule.list a")) {
+    const partID = item?.getAttribute("href")?.replace(/[^0-9]/g, "");
+    const bgColor = window.getComputedStyle(item).backgroundColor;
+    const a = document.createElement("a");
+    a.href = `sc_d_pc?partId=${partID}`;
+    getConfig("make_play_button_open_new_tab", (value) => {
+      if (value === false) {
+        a.innerText = "現在のタブでコメントを表示しながら再生";
+        a.addEventListener("click", () => {
+          window.location.href = a.href;
+        });
+      }
+      a.target = "_blank";
+      a.innerText = "新しいタブでコメントを表示しながら再生";
+      a.addEventListener("click", (e) => {
+        window.open(a.href);
+        e.preventDefault();
+      });
+
+      item.parentElement?.parentElement?.appendChild(a);
+      Object.assign(
+        a.style,
+        { type: "text/css" },
+        {
+          width: "100%",
+          padding: "0.4rem 1.8rem",
+          textAlign: "center",
+          borderTop: "1px solid rgb(224 224 224)",
+          backgroundColor: bgColor,
+        }
+      );
+    });
+  }
 };

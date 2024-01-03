@@ -9,37 +9,48 @@ const browsers: browsers = ["chrome", "firefox"];
 
 process.env.NODE_ENV = "production";
 
-Promise.all([
-  fs.rmdirSync("dist", { recursive: true }),
-  async () => {
-    const tsc = Bun.spawn(["bunx", "--bun", "tsc"]);
-    const output = await new Response(tsc.stdout).text();
-    console.log(output);
-  },
-]);
-
-const builds = browsers.map((browser) =>
-  build({
-    mode: browser,
-    build: {
-      outDir: `../dist/${browser}`,
-    },
-  })
-);
-
-Promise.all(builds).then(() => {
-  browsers.map((browser) => {
-    Promise.all([
-      manifest(browser).then((manifest) => {
-        Bun.write(
-          Bun.file(`dist/${browser}/manifest.json`),
-          JSON.stringify(manifest)
-        );
-      }),
-
-      minifyJs(browser).then(() => {
-        webExtBuild(browser);
-      }),
-    ]);
+function make_proc(cmd: string[]) {
+  return new Promise<void>((resolve) => {
+    const proc = Bun.spawn(["bunx", "--bun", ...cmd], {
+      stdout: "inherit",
+      onExit: async () => {
+        console.log(await new Response(proc.stdout).text());
+        resolve();
+      },
+    });
   });
-});
+}
+
+const tsc = make_proc(["tsc"]);
+const fmt = make_proc(["@biomejs/biome", "format", ".", "--write"]);
+const lint = make_proc(["@biomejs/biome", "lint", "."]);
+
+Promise.all([fs.rmdirSync("dist", { recursive: true }), tsc, fmt, lint]).then(
+  () => {
+    const builds = browsers.map((browser) =>
+      build({
+        mode: browser,
+        build: {
+          outDir: `../dist/${browser}`,
+        },
+      })
+    );
+
+    Promise.all(builds).then(() => {
+      browsers.map((browser) => {
+        Promise.all([
+          manifest(browser).then((manifest) => {
+            Bun.write(
+              Bun.file(`dist/${browser}/manifest.json`),
+              JSON.stringify(manifest)
+            );
+          }),
+
+          minifyJs(browser).then(() => {
+            webExtBuild(browser);
+          }),
+        ]);
+      });
+    });
+  }
+);

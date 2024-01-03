@@ -120,7 +120,7 @@ export const defaultConfigs = [
     text: "作品ページに「コメントを表示しながら再生」ボタンを追加する",
   },
   {
-    key: "open_in_new_tab_when_clicking_show_comments_while_playing_button",
+    key: "make_play_button_open_new_tab",
     value: false,
     type: "switch",
     text: "「コメントを表示しながら再生」ボタンでは新しいタブで開く",
@@ -205,17 +205,18 @@ export function migrate() {
   defaultConfigs.map((item) => {
     const key = item.key;
     const text = item.text;
+    // 旧バージョンの設定キーは text になっている
     browser.storage.local.get([text]).then((result) => {
       if (!result[text]) {
         return;
       }
-      browser.storage.local.remove([text]);
 
       browser.storage.local.get([key]).then((result) => {
-        if (result[key]) {
-          return;
+        if (!result[key]) {
+          // 旧バージョンの設定キーがあり、かつ新バージョンの設定キーがない場合
+          setConfig(key, result[text]);
+          browser.storage.local.remove([text]);
         }
-        setConfig(key, result[text]);
       });
     });
   });

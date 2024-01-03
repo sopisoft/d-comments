@@ -71,7 +71,7 @@ const Options = () => {
             <>
               <Editor _key="add_button_to_show_comments_while_playing" />
               <Separator />
-              <Editor _key="open_in_new_tab_when_clicking_show_comments_while_playing_button" />
+              <Editor _key="make_play_button_open_new_tab" />
             </>
           }
         />
