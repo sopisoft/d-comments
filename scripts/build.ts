@@ -11,7 +11,11 @@ process.env.NODE_ENV = "production";
 
 Promise.all([
   fs.rmdirSync("dist", { recursive: true }),
-  Bun.spawn(["bunx", "--bun", "tsc"]),
+  async () => {
+    const tsc = Bun.spawn(["bunx", "--bun", "tsc"]);
+    const output = await new Response(tsc.stdout).text();
+    console.log(output);
+  },
 ]);
 
 const builds = browsers.map((browser) =>

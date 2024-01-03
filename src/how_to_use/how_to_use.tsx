@@ -60,7 +60,7 @@ const HowToUse = () => {
 };
 
 const root = document.createElement("div");
-root.id = "use";
+root.id = "root";
 document.body.appendChild(root);
 
 createRoot(root).render(<HowToUse />);
