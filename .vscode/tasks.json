@@ -3,39 +3,22 @@
   "tasks": [
     {
       "type": "bun",
-      "script": "bun run dev",
-      "problemMatcher": [],
-      "label": "bun: dev",
-      "detail": "bash ./scripts/dev.sh"
-    },
-    {
-      "type": "bun",
       "script": "bun run lint",
       "problemMatcher": [],
-      "label": "bun: lint",
-      "detail": "bash ./scripts/lint.sh"
+      "label": "bun: lint"
     },
     {
       "type": "bun",
       "script": "bun run format",
       "problemMatcher": [],
-      "label": "bun: format",
-      "detail": "bash ./scripts/format.sh"
+      "label": "bun: format"
     },
     {
       "type": "bun",
       "script": "bun run build",
       "problemMatcher": [],
       "group": "build",
-      "label": "bun: build",
-      "detail": "bash ./scripts/build.bash"
-    },
-    {
-      "type": "bun",
-      "script": "bun run zipsrc",
-      "problemMatcher": [],
-      "label": "bun: zipsrc",
-      "detail": "bash ./scripts/zipsrc.bash"
+      "label": "bun: build"
     }
   ]
 }

@@ -31,20 +31,4 @@ body {
   border-radius: 15px;
   font-size: 14px;
   background-color: rgb(255, 255, 255);
-
-  h2 {
-    &#目次 {
-      width: 15rem;
-      position: sticky;
-      top: 3rem;
-      transform: translateX(900px);
-
-      &+ul {
-        width: 20rem;
-        position: sticky;
-        top: 8rem;
-        transform: translateX(900px);
-      }
-    }
-  }
 }

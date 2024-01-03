@@ -11,9 +11,9 @@
     "url": "https://github.com/gobosan/d-comments.git"
   },
   "scripts": {
-    "build": "bash ./scripts/build.bash",
-    "format": "bash ./scripts/format.sh",
-    "lint": "bash ./scripts/lint.sh"
+    "build": "bun --bun run ./scripts/build.ts",
+    "format": "bunx --bun @biomejs/biome format . --write",
+    "lint": "bunx --bun @biomejs/biome lint ."
   },
   "dependencies": {
     "@radix-ui/react-checkbox": "^1.0.4",
@@ -59,7 +59,6 @@
     "@vitejs/plugin-react-swc": "^3.5.0",
     "autoprefixer": "^10.4.16",
     "postcss": "^8.4.32",
-    "sass": "^1.69.7",
     "tailwindcss": "^3.4.0",
     "terser": "latest",
     "typescript": "^5.3.3",
