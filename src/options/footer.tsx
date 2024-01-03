@@ -15,7 +15,6 @@
     along with d-comments.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-import React from "react";
 import browser from "webextension-polyfill";
 
 function Footer() {

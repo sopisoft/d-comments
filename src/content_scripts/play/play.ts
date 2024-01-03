@@ -16,10 +16,10 @@
 */
 
 import * as Config from "../config";
-import { config, getConfig } from "../config";
+import { type config, getConfig } from "../config";
 import { setWorkInfo } from "../danime_dom/watch";
 
-import NiconiComments, { InputFormat } from "@xpadev-net/niconicomments";
+import NiconiComments, { type InputFormat } from "@xpadev-net/niconicomments";
 import browser from "webextension-polyfill";
 
 /**

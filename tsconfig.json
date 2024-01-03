@@ -2,19 +2,23 @@
   "compilerOptions": {
     "allowJs": false,
     "allowSyntheticDefaultImports": true,
+    "allowImportingTsExtensions": true,
     "baseUrl": ".",
     "esModuleInterop": false,
     "forceConsistentCasingInFileNames": true,
     "isolatedModules": true,
-    "jsx": "react",
+    "jsx": "react-jsx",
     "lib": [
       "DOM",
       "DOM.Iterable",
       "ESNext"
     ],
     "module": "ESNext",
-    "moduleResolution": "Node",
+    "moduleDetection": "force",
+    "moduleResolution": "Bundler",
     "noEmit": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
     "paths": {
       "@/*": [
         "./src/*"
@@ -24,16 +28,11 @@
     "skipLibCheck": true,
     "strict": true,
     "target": "ESNext",
-    "types": [
-      "vite/client",
-      "react",
-      "react-dom"
-    ],
+    "verbatimModuleSyntax": true
   },
   "include": [
     "src",
-    "scripts/build.ts",
-    "vite.config.ts"
+    "scripts",
   ],
   "exclude": [
     "node_modules"

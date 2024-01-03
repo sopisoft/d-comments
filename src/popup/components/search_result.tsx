@@ -15,7 +15,7 @@
     along with d-comments.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-import React, { useContext } from "react";
+import { useContext } from "react";
 import { VideoIdContext } from "../popup";
 
 function SearchResult(props: { snapshot: Snapshot; owners: Owner[] }) {

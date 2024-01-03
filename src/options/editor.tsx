@@ -27,12 +27,12 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import {
-  config,
+  type config,
   defaultConfigs,
   getConfig,
   setConfig,
 } from "@/content_scripts/config";
-import React, { useState } from "react";
+import { type ChangeEvent, useState } from "react";
 import browser from "webextension-polyfill";
 
 const Editor = (props: {
@@ -51,9 +51,7 @@ const Editor = (props: {
   const text = props.text;
   const type = defaultConfigs.find((item) => item.key === key)?.type;
 
-  const onChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
+  const onChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const target = e.target as HTMLInputElement;
     const name = target.name as typeof key;
     const v = target.value;

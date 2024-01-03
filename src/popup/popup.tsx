@@ -25,7 +25,7 @@ import {
 } from "@/components/ui/card";
 import { Toaster } from "@/components/ui/toaster";
 import "@/index.css";
-import React, { Suspense, createContext, useState } from "react";
+import { Suspense, createContext, useState } from "react";
 import { createRoot } from "react-dom/client";
 import browser from "webextension-polyfill";
 import JsonFileInput from "./components/json_file_input";
@@ -56,7 +56,7 @@ export const Popup = () => {
     <Card className="w-[32rem] h-full">
       <CardHeader>
         <CardTitle className="text-lg">
-          {name} Popup Page (Version: {version})
+          {name} (Version: {version})
         </CardTitle>
         <CardDescription className="text-stone-900">
           <Menu />

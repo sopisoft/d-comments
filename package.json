@@ -1,6 +1,7 @@
 {
-  "name": "d-comments",
+  "name": "d-anime_comments-viewer",
   "description": "Player addon for d-anime",
+  "author": "sopi",
   "version": "2023.12.24",
   "private": true,
   "license": "GPL-3.0",
@@ -9,14 +10,10 @@
     "type": "git",
     "url": "https://github.com/gobosan/d-comments.git"
   },
-  "engines": {
-    "node": ">=21"
-  },
   "scripts": {
     "build": "bash ./scripts/build.bash",
     "format": "bash ./scripts/format.sh",
-    "lint": "bash ./scripts/lint.sh",
-    "zipsrc": "bash ./scripts/zipsrc.bash"
+    "lint": "bash ./scripts/lint.sh"
   },
   "dependencies": {
     "@radix-ui/react-checkbox": "^1.0.4",
@@ -54,6 +51,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^1.4.1",
+    "@types/bun": "latest",
     "@types/node": "^20.10.6",
     "@types/react": "^18.2.46",
     "@types/react-dom": "^18.2.18",
@@ -61,9 +59,9 @@
     "@vitejs/plugin-react-swc": "^3.5.0",
     "autoprefixer": "^10.4.16",
     "postcss": "^8.4.32",
-    "sass": "^1.69.6",
+    "sass": "^1.69.7",
     "tailwindcss": "^3.4.0",
-    "terser": "^5.26.0",
+    "terser": "latest",
     "typescript": "^5.3.3",
     "vite": "^5.0.10",
     "web-ext": "^7.9.0"

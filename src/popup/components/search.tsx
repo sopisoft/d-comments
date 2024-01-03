@@ -26,7 +26,7 @@ import {
 import { useToast } from "@/components/ui/use-toast";
 import { getConfig } from "@/content_scripts/config";
 import { SearchIcon } from "lucide-react";
-import React, { useState } from "react";
+import { useState } from "react";
 import browser from "webextension-polyfill";
 import get_owner_info from "../api/owner_info";
 import search from "../api/search";

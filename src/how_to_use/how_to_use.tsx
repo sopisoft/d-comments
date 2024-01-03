@@ -16,10 +16,7 @@
 */
 
 import "@/index.css";
-import { Nodes } from "mdast";
-import { toc } from "mdast-util-toc";
-import { Options } from "mdast-util-toc/lib";
-import React, { Suspense, useState } from "react";
+import { Suspense, useState } from "react";
 import { createRoot } from "react-dom/client";
 import Markdown from "react-markdown";
 import rehypeRaw from "rehype-raw";

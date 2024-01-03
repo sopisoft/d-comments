@@ -23,7 +23,6 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { HelpCircle, Settings } from "lucide-react";
-import React from "react";
 import browser from "webextension-polyfill";
 
 function Menu() {
@@ -38,13 +37,13 @@ function Menu() {
               className="flex flex-row items-center justify-center space-x-2 m-2 p-2 w-2/5"
               onClick={() => {
                 browser.tabs.create({
-                  url: browser.runtime.getURL("options.html"),
+                  url: browser.runtime.getURL("options/options.html"),
                 });
               }}
               onKeyDown={(e) => {
                 if (e.key === "Enter") {
                   browser.tabs.create({
-                    url: browser.runtime.getURL("options.html"),
+                    url: browser.runtime.getURL("options/options.html"),
                   });
                 }
               }}
@@ -66,13 +65,13 @@ function Menu() {
               className="flex flex-row items-center justify-center space-x-2 m-2 p-2 w-2/5"
               onClick={() => {
                 browser.tabs.create({
-                  url: browser.runtime.getURL("how_to_use.html"),
+                  url: browser.runtime.getURL("how_to_use/how_to_use.html"),
                 });
               }}
               onKeyDown={(e) => {
                 if (e.key === "Enter") {
                   browser.tabs.create({
-                    url: browser.runtime.getURL("how_to_use.html"),
+                    url: browser.runtime.getURL("how_to_use/how_to_use.html"),
                   });
                 }
               }}

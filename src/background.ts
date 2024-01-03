@@ -237,7 +237,7 @@ browser.runtime.onMessage.addListener(
 browser.runtime.onInstalled.addListener((details) => {
   if (details.reason === "install") {
     browser.tabs.create({
-      url: browser.runtime.getURL("how_to_use.html"),
+      url: browser.runtime.getURL("how_to_use/how_to_use.html"),
     });
   }
 

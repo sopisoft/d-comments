@@ -25,7 +25,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useToast } from "@/components/ui/use-toast";
-import React, { useState } from "react";
+import { useState } from "react";
 import { load_comments_json } from "../api/json_files";
 import { ErrorMessage } from "../utils";
 

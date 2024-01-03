@@ -1,29 +1,20 @@
 #!/bin/bash -eu
 
-echo "Removing old dist..."
+browsers=("chrome" "firefox")
+
 if [ -d dist ]; then
-  rm -rf dist
+  rm -r dist
+fi
+
+if [ -d web-ext-artifacts ]; then
+  rm -r web-ext-artifacts
 fi
 
 chmod +x ./scripts/*.sh
 ./scripts/format.sh
 ./scripts/lint.sh
-tsc --noEmit
 
-npx tsx ./scripts/build.ts
-# bun run ./scripts/build.ts
+bunx --bun tsc
 
-if [ -d web-ext-artifacts ]; then
-  rm -rf web-ext-artifacts
-fi
-
-browsers=("chrome" "firefox")
-for browser in "${browsers[@]}"; do
-  find dist/${browser}/src -name '*.html' | xargs mv -t dist/${browser}
-  rm -rf dist/${browser}/src
-  bunx web-ext build --source-dir ./dist/${browser}/ --overwrite-dest
-  mv web-ext-artifacts/*.zip dist/${browser}.zip
-  rm -rf web-ext-artifacts
-done
-
-echo "Done!"
+export NODE_ENV=production
+bun --bun run ./scripts/build.ts

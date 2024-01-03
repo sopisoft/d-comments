@@ -15,7 +15,7 @@
     along with d-comments.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-import browser, { Tabs } from "webextension-polyfill";
+import browser, { type Tabs } from "webextension-polyfill";
 
 /**
  * 作品視聴ページか判定

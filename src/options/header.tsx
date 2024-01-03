@@ -19,16 +19,14 @@ import { ModeToggle } from "@/components/ui/mode-toggle";
 import {
   NavigationMenu,
   NavigationMenuContent,
-  NavigationMenuIndicator,
   NavigationMenuItem,
   NavigationMenuLink,
   NavigationMenuList,
   NavigationMenuTrigger,
-  NavigationMenuViewport,
 } from "@/components/ui/navigation-menu";
 import { cn } from "@/lib/utils";
 import { Settings } from "lucide-react";
-import React from "react";
+import { forwardRef } from "react";
 import browser from "webextension-polyfill";
 
 const contents: {
@@ -39,7 +37,7 @@ const contents: {
 }[] = [
   {
     title: "つかいかた",
-    href: browser.runtime.getURL("how_to_use.html"),
+    href: browser.runtime.getURL("how_to_use/how_to_use.html"),
     description: "この拡張機能の使い方を説明したページを開きます。",
   },
   {
@@ -51,7 +49,7 @@ const contents: {
   },
 ];
 
-const ListItem = React.forwardRef<
+const ListItem = forwardRef<
   React.ElementRef<"a">,
   React.ComponentPropsWithoutRef<"a">
 >(({ className, title, children, ...props }, ref) => {
