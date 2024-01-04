@@ -163,8 +163,6 @@ export type config = {
   text: string;
 };
 
-const cache: Map<config["key"], config["value"]> = new Map();
-
 /**
  * 設定を取得し、Callback を呼ぶ
  * @param key 設定キー
@@ -175,17 +173,9 @@ export const getConfig = async (
   key: config["key"],
   callback?: (value: config["value"]) => void
 ): Promise<config["value"]> => {
-  if (cache.has(key) && cache.get(key) !== undefined) {
-    const value = cache.get(key) as config["value"];
-    console.log(`get ${key} from cache : ${value}`);
-    if (callback) callback(value);
-    return value;
-  }
   const defaultValue = defaultConfigs.find((item) => item.key === key)?.value;
   const result = (await browser.storage.local.get([key]))[key] ?? defaultValue;
   if (callback) callback(result as config["value"]);
-  console.log(`get ${key} from storage : ${result}`);
-  cache.set(key, result);
   return result as config["value"];
 };
 
@@ -195,10 +185,7 @@ export const getConfig = async (
  * @param value 設定値
  */
 export const setConfig = (key: config["key"], value: config["value"]) => {
-  browser.storage.local.set({ [key]: value }).then(() => {
-    console.log(`key ${key} cached : ${value}`);
-    cache.set(key, value);
-  });
+  browser.storage.local.set({ [key]: value });
 };
 
 export function migrate() {

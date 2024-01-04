@@ -15,26 +15,24 @@
     along with d-comments.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+import { useEffect, useState } from "react";
 import browser from "webextension-polyfill";
 
-function Footer() {
-  const manifest = browser.runtime.getManifest();
+function ForDeveloper() {
+  const [storage, setStorage] = useState<Record<string, unknown>>({});
+
+  useEffect(() => {
+    browser.storage.local.get(null).then((result) => {
+      setStorage(result);
+    });
+  });
 
   return (
-    <footer className="flex flex-row w-full h-16 p-2 text-sm text-center border-spacing-1 border-t border-gray-200">
-      <a
-        href="https://github.com/gobosan/d-comments"
-        target="_blank"
-        rel="noreferrer"
-        className="flex flex-row items-center justify-center w-full h-full"
-      >
-        <span className="mx-3">{manifest.name}</span>
-        <span className="mx-1">2022 - {new Date().getFullYear()}</span>
-        <span className="mx-1">{browser.runtime.getManifest().author}</span>
-        <span className="mx-3">Version {manifest.version}</span>
-      </a>
-    </footer>
+    <div className="w-4/5 m-auto min-h-[80vh]">
+      <p className="text-xl font-bold mx-2">Local Storage</p>
+      <pre className="my-2 text-sm">{JSON.stringify(storage, null, 2)}</pre>
+    </div>
   );
 }
 
-export default Footer;
+export default ForDeveloper;

@@ -33,7 +33,6 @@ const contents: {
   title: string;
   href: string;
   description: string;
-  target?: "_blank";
 }[] = [
   {
     title: "つかいかた",
@@ -45,7 +44,6 @@ const contents: {
     href: "https://github.com/gobosan/d-comments/issues/new/choose",
     description:
       "バグ報告ページを開きます。報告には GitHub アカウントが必要です。",
-    target: "_blank",
   },
 ];
 
@@ -63,8 +61,8 @@ const ListItem = forwardRef<
             className
           )}
           {...props}
-          target={props.target}
-          rel={props.target === "_blank" ? "noopener noreferrer" : undefined}
+          target="_blank"
+          rel="noopener noreferrer"
         >
           <div className="text-sm font-medium leading-none">{title}</div>
           <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
@@ -76,7 +74,7 @@ const ListItem = forwardRef<
   );
 });
 
-function Header() {
+function Header(props: { tabsList: React.ReactNode }) {
   return (
     <header className="flex items-center justify-between w-full px-4 py-2 border-b border-gray-200">
       <div className="flex items-center space-x-4 basis-[calc(100%-10rem)]">
@@ -95,11 +93,22 @@ function Header() {
                       key={component.title}
                       title={component.title}
                       href={component.href}
-                      target={component.target}
                     >
                       {component.description}
                     </ListItem>
                   ))}
+                  <li>
+                    <NavigationMenuLink>
+                      <span className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
+                        <div className="text-sm font-medium leading-none">
+                          モード切替
+                        </div>
+                        <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                          {props.tabsList}
+                        </p>
+                      </span>
+                    </NavigationMenuLink>
+                  </li>
                 </ul>
               </NavigationMenuContent>
             </NavigationMenuItem>

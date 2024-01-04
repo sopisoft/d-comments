@@ -5,8 +5,8 @@ import { minify } from "terser";
 const option = {
   module: true,
   compress: {
-    drop_console: true,
-    drop_debugger: true,
+    // drop_console: true,
+    // drop_debugger: true,
     module: true,
     unused: true,
   },

@@ -5,7 +5,8 @@ const pkg = await Bun.file("package.json")
   .then((text) => JSON.parse(text));
 
 const base = {
-  name: pkg.name,
+  name: pkg.displayName,
+  short_name: pkg.name,
   description: pkg.description,
   version: pkg.version,
   author: pkg.author,
@@ -96,6 +97,10 @@ export async function manifest(browser: browsers[number]) {
           "https://public.api.nicovideo.jp/v1/channel/channelapp/channels/*",
           "https://api.search.nicovideo.jp/*",
         ],
+        developer: {
+          name: pkg.author,
+          url: pkg.repository.url,
+        },
       };
       break;
     }

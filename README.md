@@ -30,10 +30,6 @@ d アニメストアの動画再生画面でニコニコ動画のコメントを
   - etc...
 - [Visual Studio Code](https://code.visualstudio.com/)
 
-### Environment Requirements
-
-- `Bash`
-
 ### How to setup
 
 Install local dependencies by running:
