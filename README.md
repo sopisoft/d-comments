@@ -68,14 +68,6 @@ Run the following command:
 bun run format
 ```
 
-### Make source code zip
-
-Run the following command:
-
-```sh
-bun run zipsrc
-```
-
 ## Troubleshooting
 
 If the build fails, try removing `node_modules` and reinstalling the dependencies.

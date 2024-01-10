@@ -22,8 +22,8 @@ function make_proc(cmd: string[]) {
 }
 
 const tsc = make_proc(["tsc"]);
-const fmt = make_proc(["@biomejs/biome", "format", ".", "--write"]);
-const lint = make_proc(["@biomejs/biome", "lint", "."]);
+const fmt = make_proc(["bun", "run", "format"]);
+const lint = make_proc(["bun", "run", "lint"]);
 
 Promise.all([fs.rmdirSync("dist", { recursive: true }), tsc, fmt, lint]).then(
   () => {

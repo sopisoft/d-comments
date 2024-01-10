@@ -14,6 +14,9 @@
     You should have received a copy of the GNU General Public License
     along with d-comments.  If not, see <https://www.gnu.org/licenses/>.
 */
+
+declare module "*.md";
+
 type thread = {
   id: number;
   fork: number;

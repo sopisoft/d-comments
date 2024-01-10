@@ -9,6 +9,7 @@ const option = {
     // drop_debugger: true,
     module: true,
     unused: true,
+    passes: 5,
   },
   mangle: {
     toplevel: true,
@@ -21,6 +22,7 @@ const option = {
 };
 
 export async function minifyJs(browser: browsers[number]) {
+  console.log(`Minifying js for ${browser}`);
   const files = fs.readdirSync(`dist/${browser}/js`);
   Promise.all(
     files.map(async (file) => {

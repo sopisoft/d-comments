@@ -1,21 +1,28 @@
 import path, { resolve } from "path";
 import url from "url";
 import react from "@vitejs/plugin-react-swc";
-import { defineConfig } from "vite";
+import { type PluginOption, defineConfig } from "vite";
 
 const __filename = url.fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+function markdown(): PluginOption {
+  return {
+    name: "markdown-transformer",
+    transform(code: string, id: string) {
+      if (id.slice(-3) === ".md") {
+        return `export default ${JSON.stringify(code)};`;
+      }
+    },
+  };
+}
 
 // https://ja.vitejs.dev/config/
 export default defineConfig({
   root: "./src",
   base: "/",
   publicDir: "./raw",
-  plugins: [
-    react({
-      devTarget: "esnext",
-    }),
-  ],
+  plugins: [react() as PluginOption, markdown()],
   resolve: {
     alias: {
       "@": resolve(__dirname, "src"),

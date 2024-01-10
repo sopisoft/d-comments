@@ -16,46 +16,33 @@
 */
 
 import "@/index.css";
-import { Suspense, useState } from "react";
 import { createRoot } from "react-dom/client";
 import Markdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import rehypeSlug from "rehype-slug";
 import remarkGfm from "remark-gfm";
 import remarkToc from "remark-toc";
-import browser from "webextension-polyfill";
 import "zenn-content-css";
 import "./how_to_use.css";
+import md from "./how_to_use.md";
 
 const HowToUse = () => {
-  const [md, setMd] = useState("");
-
-  fetch(browser.runtime.getURL("how_to_use.md"))
-    .then((response) => response.text())
-    .then((text) => {
-      setMd(text);
-    });
-
   return (
-    <>
-      <Suspense fallback={<div>Loading...</div>}>
-        <Markdown
-          className="znc"
-          remarkPlugins={[
-            remarkGfm,
-            [
-              remarkToc,
-              {
-                heading: "目次",
-              },
-            ],
-          ]}
-          rehypePlugins={[rehypeRaw, rehypeSlug]}
-        >
-          {md}
-        </Markdown>
-      </Suspense>
-    </>
+    <Markdown
+      className="znc"
+      remarkPlugins={[
+        remarkGfm,
+        [
+          remarkToc,
+          {
+            heading: "目次",
+          },
+        ],
+      ]}
+      rehypePlugins={[rehypeRaw, rehypeSlug]}
+    >
+      {md}
+    </Markdown>
   );
 };
 
