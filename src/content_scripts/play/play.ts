@@ -47,24 +47,13 @@ const play = (
       config["key"],
       browser.Storage.StorageChange,
     ][]) {
-      switch (key) {
-        case "show_owner_comments": {
-          renderComments();
-          break;
-        }
-        case "show_main_comments": {
-          renderComments();
-          break;
-        }
-        case "show_easy_comments": {
-          renderComments();
-          break;
-        }
-        case "comment_rendering_method": {
-          renderComments();
-          break;
-        }
-      }
+      if (
+        key === "show_owner_comments" ||
+        key === "show_main_comments" ||
+        key === "show_easy_comments" ||
+        key === "comment_rendering_method"
+      )
+        renderComments();
     }
   });
 
@@ -288,6 +277,7 @@ const play = (
       left: "50%",
       transform: "translate(-50%, -50%)",
       background: "transparent",
+      opacity: Config.getConfig("comment_area_opacity_percentage"),
       zIndex: 2,
     });
     canvas.id = "d-comments-canvas";

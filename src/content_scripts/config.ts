@@ -72,7 +72,7 @@ export const defaultConfigs = [
     text: "コメント欄の背景色",
   },
   {
-    key: "comment_area_opacity_percent",
+    key: "comment_area_opacity_percentage",
     value: 35,
     type: "number",
     text: "コメント欄の背景不透明度 (%)",
