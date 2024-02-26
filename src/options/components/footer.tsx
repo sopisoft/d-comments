@@ -29,7 +29,7 @@ function Footer() {
   return (
     <footer className="flex flex-row w-full h-16 p-2 text-sm text-center border-spacing-1 border-t border-gray-200">
       <a
-        href="https://github.com/gobosan/d-comments"
+        href="https://github.com/sopisoft/d-comments"
         target="_blank"
         rel="noreferrer"
         className="flex flex-row items-center justify-center w-full h-full"
