@@ -26,7 +26,7 @@ import {
 import { useToast } from "@/components/ui/use-toast";
 import { getConfig } from "@/content_scripts/config";
 import { SearchIcon } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import browser from "webextension-polyfill";
 import get_owner_info from "../api/owner_info";
 import search from "../api/search";
@@ -39,16 +39,24 @@ function Search() {
   const [owner, setOwner] = useState<Owner[]>();
   const { toast } = useToast();
 
+  async function get_tabs_title() {
+    const tabs_title = await browser.tabs
+      .query({ active: true, currentWindow: true })
+      .then((tabs) => {
+        return tabs[0]?.title ?? "";
+      });
+    return tabs_title;
+  }
+
+  (async () => {
+    const tabs_title = await get_tabs_title();
+    setWord(tabs_title);
+  })();
+
   getConfig("auto_search", async (value) => {
     if (value === true) {
-      const work_title = await browser.tabs
-        .query({ active: true, currentWindow: true })
-        .then((tabs) => {
-          return tabs[0]?.title ?? "";
-        });
-
-      setWord(work_title);
-      search(work_title).then((res) => {
+      const tabs_title = await get_tabs_title();
+      search(tabs_title).then((res) => {
         typeof res === typeof Error
           ? ErrorMessage(toast, { error: res as Error })
           : setSnapshot(res as Snapshot);

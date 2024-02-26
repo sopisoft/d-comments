@@ -3,3 +3,5 @@
 /// <reference lib="esnext" />
 /// <reference types="react" />
 /// <reference types="react-dom" />
+
+declare module "*.md";

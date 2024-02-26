@@ -20,7 +20,7 @@ import api from "@/lib/api";
 /**
  * スナップショットAPIを使ってキーワードで動画を検索
  * @param word キーワード
- * @returns 動画情報
+ * @returns Snapshot | Error
  * @see https://site.nicovideo.jp/search-api-docs/snapshot
  */
 async function search(word: string): Promise<searchApi["response"] | Error> {

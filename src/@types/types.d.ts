@@ -15,8 +15,6 @@
     along with d-comments.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-declare module "*.md";
-
 type thread = {
   id: number;
   fork: number;
@@ -133,12 +131,12 @@ type Threads = {
     }[],
   ];
   threads: [
-    Array<{
+    {
       id: string; // thread["id"] to stringify
       fork: thread["forkLabel"];
       commentCount: number;
       comments: nv_comment[];
-    }>,
+    },
   ];
 };
 
@@ -171,7 +169,7 @@ type Snapshot = {
     id: string; // リクエストID
   };
   data: [
-    Array<{
+    {
       contentId: VideoId; // コンテンツID。https://nico.ms/ の後に連結することでコンテンツへのURLになります。
       title?: string; // タイトル
       description?: string; // 説明文
@@ -190,7 +188,7 @@ type Snapshot = {
       tags?: string; // タグ(空白区切り)
       tagsExact?: string; // タグ完全一致(空白区切り)
       genre?: string; // ジャンル
-    }>,
+    },
   ];
 };
 

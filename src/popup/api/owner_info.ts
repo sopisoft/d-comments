@@ -50,17 +50,15 @@ const get_owner_info_from_snapshot: (
 ) => Promise<ownerInfoApi["response"][] | Error> = async (snapshot) => {
   const owners: ownerInfoApi["response"][] = [];
   for (const data of snapshot.data) {
-    data.map((data) => {
-      get_owner_info({
-        type: data.userId ? "user" : data.contentId ? "channel" : "user",
-        videoId: data.contentId,
-        ownerId: (data.userId ?? data.channelId) as string,
-      }).then((res) => {
-        if (res instanceof Error) {
-          return res;
-        }
-        owners.push(res as Owner);
-      });
+    get_owner_info({
+      type: data.userId ? "user" : data.contentId ? "channel" : "user",
+      videoId: data.contentId,
+      ownerId: (data.userId ?? data.channelId) as string,
+    }).then((res) => {
+      if (res instanceof Error) {
+        return res;
+      }
+      owners.push(res as ownerInfoApi["response"]);
     });
   }
   return owners;

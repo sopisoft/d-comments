@@ -35,6 +35,8 @@ import { ErrorMessage, isVideoId, isWatchPage } from "../utils";
 function VideoIdInput() {
   const videoIdContext = useContext(VideoIdContext);
 
+  const [videoId_input, setVideoId_input] = useState<string | null>(null);
+
   const videoId = videoIdContext?.videoId;
   const setVideoId = videoIdContext?.setVideoId;
 
@@ -124,9 +126,12 @@ function VideoIdInput() {
           id="video_id_input"
           placeholder="動画ID"
           className="col-span-3"
-          value={videoId ?? ""}
+          value={videoId ?? videoId_input ?? ""}
           onChange={(e) => {
             setVideoId?.(e.target.value as VideoId);
+            if (isVideoId(e.target.value)) {
+              setVideoId_input(e.target.value);
+            }
           }}
         />
 

@@ -30,6 +30,12 @@ function SearchResult(props: { snapshot: Snapshot; owners: Owner[] }) {
   const owner = (contentId?: string) => {
     return owners.find((owner) => owner.contentId === contentId);
   };
+
+  /**
+   * lengthSeconds -> "〇時間〇分〇秒" | "〇分〇秒" | "〇秒" | "は取得できませんでした"
+   * @param lengthSeconds 動画の尺
+   * @returns "は取得できませんでした" | "〇時間〇分〇秒" | "〇分〇秒" | "〇秒
+   */
   const video_length = (lengthSeconds: number | undefined) => {
     if (lengthSeconds === undefined) {
       return "は取得できませんでした";
@@ -44,40 +50,38 @@ function SearchResult(props: { snapshot: Snapshot; owners: Owner[] }) {
 
   return (
     <div className="grid grid-cols-7 gap-2 my-2">
-      {data.map((item) =>
-        item.map((item) => (
-          <li
-            onClick={() => {
+      {data.map((item) => (
+        <li
+          onClick={() => {
+            setVideoId?.(item.contentId);
+          }}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
               setVideoId?.(item.contentId);
-            }}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                setVideoId?.(item.contentId);
-              }
-            }}
-          >
-            <span>
-              <span>{item.title}</span>
-            </span>
+            }
+          }}
+        >
+          <span>
+            <span>{item.title}</span>
+          </span>
+          <div>
+            <img src={item.thumbnailUrl} alt={item.title} />
             <div>
-              <img src={item.thumbnailUrl} alt={item.title} />
+              <p>動画情報</p>
               <div>
-                <p>動画情報</p>
-                <div>
-                  <img
-                    src={owner(item.contentId)?.ownerIconUrl}
-                    alt={owner(item.contentId)?.ownerName}
-                  />
-                  <p>{owner(item.contentId)?.ownerName}</p>
-                </div>
-                <span>再生数 {item.viewCounter}</span>
-                <span>コメント数 {item.commentCounter}</span>
-                <span>動画の尺 {video_length(item.lengthSeconds)}</span>
+                <img
+                  src={owner(item.contentId)?.ownerIconUrl}
+                  alt={owner(item.contentId)?.ownerName}
+                />
+                <p>{owner(item.contentId)?.ownerName}</p>
               </div>
+              <span>再生数 {item.viewCounter}</span>
+              <span>コメント数 {item.commentCounter}</span>
+              <span>動画の尺 {video_length(item.lengthSeconds)}</span>
             </div>
-          </li>
-        ))
-      )}
+          </div>
+        </li>
+      ))}
     </div>
   );
 }

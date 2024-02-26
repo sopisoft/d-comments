@@ -119,15 +119,13 @@ const play = (
     const comments: nv_comment[] = [];
 
     function f(fork: thread["forkLabel"]) {
-      for (const thread of threads) {
-        thread
-          .filter((thread) => thread.fork === fork)
-          .map((thread) => {
-            thread.comments.map((comment) => {
-              comments.push(comment);
-            });
+      threads
+        .filter((thread) => thread.fork === fork)
+        .map((thread) => {
+          thread.comments.map((comment) => {
+            comments.push(comment);
           });
-      }
+        });
     }
     switch (true) {
       case await getConfig("show_owner_comments"):
