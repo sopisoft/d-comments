@@ -30,9 +30,9 @@ const OptionsPage = () => {
       <Tabs defaultValue="options">
         <Header
           tabsList={
-            <TabsList className="flex space-x-4">
+            <TabsList className="flex space-x-4 max-md:hidden">
               <TabsTrigger value="options">設定</TabsTrigger>
-              <TabsTrigger value="developer">開発者向け</TabsTrigger>
+              <TabsTrigger value="developer">開発者</TabsTrigger>
             </TabsList>
           }
         />

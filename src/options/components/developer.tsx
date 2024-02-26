@@ -31,6 +31,17 @@ function ForDeveloper() {
     <div className="w-4/5 m-auto min-h-[80vh]">
       <p className="text-xl font-bold mx-2">Local Storage</p>
       <pre className="my-2 text-sm">{JSON.stringify(storage, null, 2)}</pre>
+
+      <p className="text-xl font-bold mx-2">Reset Local Storage</p>
+      <button
+        type="button"
+        className="bg-red-600 text-white px-3 py-1 rounded-md m-2"
+        onClick={() => {
+          browser.storage.local.clear();
+        }}
+      >
+        <span className="text-lg">Reset</span>
+      </button>
     </div>
   );
 }

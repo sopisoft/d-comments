@@ -15,8 +15,6 @@
     along with d-comments.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-// import * as Style from "./style";
-
 /**
  * ドキュメント要素の初期化
  */

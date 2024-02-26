@@ -74,7 +74,7 @@ export const defaultConfigs = [
   {
     key: "comment_area_opacity_percentage",
     value: 35,
-    type: "number",
+    type: "slider",
     text: "コメント欄の背景不透明度 (%)",
   },
   {
@@ -86,19 +86,19 @@ export const defaultConfigs = [
   {
     key: "distance_from_top_percent",
     value: 5,
-    type: "number",
+    type: "slider",
     text: "画面の上部分からの距離 (%)",
   },
   {
     key: "distance_from_left_percent",
     value: 10,
-    type: "number",
+    type: "slider",
     text: "画面の左部分からの距離 (%)",
   },
   {
     key: "comment_area_height_percent",
     value: 85,
-    type: "number",
+    type: "slider",
     text: "コメント欄の高さ (%)",
   },
   {

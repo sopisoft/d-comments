@@ -111,7 +111,7 @@ function Options() {
           <>
             <Editor _key="comment_area_background_color" />
             <Separator />
-            <Editor _key="comment_area_opacity_percent" />
+            <Editor _key="comment_area_opacity_percentage" />
             <Separator />
             <Editor _key="comment_text_color" />
           </>

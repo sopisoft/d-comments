@@ -25,6 +25,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 import {
   type config,
@@ -68,6 +69,10 @@ const Editor = (props: {
   const select_options = (
     defaultConfigs.find((item) => item.key === key) as config
   ).options;
+
+  const onSliderChange = (v: number) => {
+    setOption(key, v);
+  };
 
   browser.storage.onChanged.addListener((changes) => {
     if (changes[key]) {
@@ -113,6 +118,22 @@ const Editor = (props: {
           value={value as string}
           onChange={onChange}
           className={`${props.className} w-24`}
+        />
+      );
+    case "slider":
+      return (
+        <Slider
+          id={key}
+          name={key}
+          value={[value as number]}
+          defaultValue={[value as number]}
+          max={100}
+          step={1}
+          className={`${props.className} w-24`}
+          onValueChange={(v) => {
+            const target = v[0];
+            onSliderChange(target);
+          }}
         />
       );
     case "select":

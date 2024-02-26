@@ -16,17 +16,14 @@
 */
 
 import { ModeToggle } from "@/components/ui/mode-toggle";
+import { Separator } from "@/components/ui/separator";
 import {
-  NavigationMenu,
-  NavigationMenuContent,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
-  NavigationMenuTrigger,
-} from "@/components/ui/navigation-menu";
-import { cn } from "@/lib/utils";
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { Settings } from "lucide-react";
-import { forwardRef } from "react";
 import browser from "webextension-polyfill";
 
 const contents: {
@@ -47,33 +44,6 @@ const contents: {
   },
 ];
 
-const ListItem = forwardRef<
-  React.ElementRef<"a">,
-  React.ComponentPropsWithoutRef<"a">
->(({ className, title, children, ...props }, ref) => {
-  return (
-    <li>
-      <NavigationMenuLink asChild>
-        <a
-          ref={ref}
-          className={cn(
-            "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground",
-            className
-          )}
-          {...props}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <div className="text-sm font-medium leading-none">{title}</div>
-          <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-            {children}
-          </p>
-        </a>
-      </NavigationMenuLink>
-    </li>
-  );
-});
-
 function Header(props: { tabsList: React.ReactNode }) {
   return (
     <header className="flex items-center justify-between w-full px-4 py-2 border-b border-gray-200">
@@ -82,38 +52,30 @@ function Header(props: { tabsList: React.ReactNode }) {
         <h1 className="scroll-m-20 text-3xl font-semibold tracking-tight">
           設定
         </h1>
-        <NavigationMenu className="ml-8 hidden md:block">
-          <NavigationMenuList>
-            <NavigationMenuItem>
-              <NavigationMenuTrigger>メニュー</NavigationMenuTrigger>
-              <NavigationMenuContent>
-                <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px] list-none">
-                  {contents.map((component) => (
-                    <ListItem
-                      key={component.title}
-                      title={component.title}
+        <ul className="flex items-center list-none space-x-2 mx-2">
+          <li className="mx-3">{props.tabsList}</li>
+          {contents.map((component) => (
+            <li>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger>
+                    <a
                       href={component.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center p-2 border rounded-md border-gray-300"
                     >
-                      {component.description}
-                    </ListItem>
-                  ))}
-                  <li>
-                    <NavigationMenuLink>
-                      <span className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
-                        <div className="text-sm font-medium leading-none">
-                          モード切替
-                        </div>
-                        <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-                          {props.tabsList}
-                        </p>
-                      </span>
-                    </NavigationMenuLink>
-                  </li>
-                </ul>
-              </NavigationMenuContent>
-            </NavigationMenuItem>
-          </NavigationMenuList>
-        </NavigationMenu>
+                      <p>{component.title}</p>
+                    </a>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>{component.description}</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </li>
+          ))}
+        </ul>
       </div>
       <ModeToggle />
     </header>
