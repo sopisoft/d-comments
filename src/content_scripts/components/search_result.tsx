@@ -16,7 +16,7 @@
 */
 
 import { useContext } from "react";
-import { VideoIdContext } from "../popup";
+import { VideoIdContext } from "../../popup/popup";
 
 function SearchResult(props: { snapshot: Snapshot; owners: Owner[] }) {
   const { snapshot, owners } = props;

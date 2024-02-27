@@ -23,14 +23,12 @@ import { getConfig } from "../config";
 export const addMenu = async () => {
   for (let i = 0; i < 10; i++) {
     const items = document.querySelectorAll(".itemModule.list a");
-    if (items.length > 0) {
-      break;
-    }
-    await new Promise((resolve) => setTimeout(resolve, 100));
+    if (items.length === 0) setTimeout(addMenu, 100);
   }
 
   for (const item of document.querySelectorAll(".itemModule.list a")) {
     const partID = item?.getAttribute("href")?.replace(/[^0-9]/g, "");
+    if (!partID) continue;
     const bgColor = window.getComputedStyle(item).backgroundColor;
     const a = document.createElement("a");
     a.href = `sc_d_pc?partId=${partID}`;
@@ -47,6 +45,7 @@ export const addMenu = async () => {
     );
     item.parentElement?.parentElement?.appendChild(a);
 
+    const storage = window.sessionStorage;
     getConfig("make_play_button_open_new_tab", (value) => {
       if (value === true) {
         a.target = "_blank";
@@ -54,11 +53,13 @@ export const addMenu = async () => {
         a.addEventListener("click", (e) => {
           e.preventDefault();
           window.open(a.href);
+          storage.setItem(partID, "true");
         });
       } else {
         a.innerText = "現在のタブでコメントを表示しながら再生";
         a.addEventListener("click", () => {
           window.location.href = a.href;
+          storage.setItem(partID, "true");
         });
       }
     });

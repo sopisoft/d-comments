@@ -18,7 +18,7 @@
 import browser from "webextension-polyfill";
 import { getConfig } from "./config";
 import { addMenu } from "./danime_dom/mypage";
-import { setWorkInfo } from "./danime_dom/watch";
+import { openSideMenu, setWorkInfo } from "./danime_dom/watch";
 import exportJson from "./export";
 import fire from "./play/fire";
 
@@ -31,6 +31,7 @@ switch (location.pathname) {
   }
   case "/animestore/sc_d_pc": {
     setWorkInfo();
+    openSideMenu();
     browser.runtime.onMessage.addListener((message: messages) => {
       switch (message.type) {
         case "render_comments":

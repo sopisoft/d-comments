@@ -49,8 +49,11 @@ const OptionsPage = () => {
   );
 };
 
-createRoot(document.body).render(
-  <ThemeProvider>
-    <OptionsPage />
-  </ThemeProvider>
-);
+const root = document.getElementById("root");
+if (root) {
+  createRoot(root).render(
+    <ThemeProvider>
+      <OptionsPage />
+    </ThemeProvider>
+  );
+}

@@ -15,21 +15,6 @@
     along with d-comments.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-import browser, { type Tabs } from "webextension-polyfill";
-
-/**
- * 作品視聴ページか判定
- * @returns boolean
- */
-export const isWatchPage = async (location?: Tabs.Tab["url"] | URL) => {
-  const tabs = await browser.tabs.query({
-    active: true,
-    currentWindow: true,
-  });
-  const url = new URL(location ?? tabs[0]?.url ?? "");
-  return url.pathname === "/animestore/sc_d_pc";
-};
-
 export const isVideoId = (id: string) => {
   const videoId_prefix = [
     "sm",

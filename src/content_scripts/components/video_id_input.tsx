@@ -29,8 +29,8 @@ import export_comments_json from "@/content_scripts/export";
 import api from "@/lib/api";
 import { ExternalLink } from "lucide-react";
 import { useContext, useEffect, useState } from "react";
-import { VideoIdContext } from "../popup";
-import { ErrorMessage, isVideoId, isWatchPage } from "../utils";
+import { VideoIdContext } from "../../popup/popup";
+import { ErrorMessage, isVideoId } from "../utils";
 
 function VideoIdInput() {
   const { videoId, setVideoId } = useContext(VideoIdContext);
