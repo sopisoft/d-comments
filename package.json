@@ -52,7 +52,7 @@
     "@biomejs/biome": "latest",
     "@types/bun": "latest",
     "@types/node": "^20.11.20",
-    "@types/react": "^18.2.58",
+    "@types/react": "^18.2.59",
     "@types/react-dom": "^18.2.19",
     "@types/webextension-polyfill": "^0.10.7",
     "@vitejs/plugin-react-swc": "^3.6.0",

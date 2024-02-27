@@ -21,10 +21,7 @@ import { VideoIdContext } from "../popup";
 function SearchResult(props: { snapshot: Snapshot; owners: Owner[] }) {
   const { snapshot, owners } = props;
 
-  const videoIdContext = useContext(VideoIdContext);
-
-  const videoId = videoIdContext?.videoId;
-  const setVideoId = videoIdContext?.setVideoId;
+  const { videoId, setVideoId } = useContext(VideoIdContext);
 
   const data = snapshot.data;
   const owner = (contentId?: string) => {
@@ -43,13 +40,14 @@ function SearchResult(props: { snapshot: Snapshot; owners: Owner[] }) {
     const hour = Math.floor(lengthSeconds / 3600);
     const minute = Math.floor(lengthSeconds / 60);
     const second = lengthSeconds % 60;
-    return `${hour > 0 && `${hour}時間`} ${minute > 0 && `${minute}分`} ${
-      second > 0 && `${second}秒`
-    }`;
+    function toStr(l: number, s: string) {
+      return l > 0 ? l + s : "";
+    }
+    return toStr(hour, "時間") + toStr(minute, "分") + toStr(second, "秒");
   };
 
   return (
-    <div className="grid grid-cols-7 gap-2 my-2">
+    <div className="grid grid-cols-7 gap-2 my-2 list-none">
       {data.map((item) => (
         <li
           onClick={() => {
@@ -61,9 +59,7 @@ function SearchResult(props: { snapshot: Snapshot; owners: Owner[] }) {
             }
           }}
         >
-          <span>
-            <span>{item.title}</span>
-          </span>
+          <span>{item.title}</span>
           <div>
             <img src={item.thumbnailUrl} alt={item.title} />
             <div>

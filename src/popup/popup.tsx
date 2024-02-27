@@ -25,7 +25,7 @@ import {
 } from "@/components/ui/card";
 import { Toaster } from "@/components/ui/toaster";
 import "@/index.css";
-import { Suspense, createContext, useState } from "react";
+import { createContext, useState } from "react";
 import { createRoot } from "react-dom/client";
 import browser from "webextension-polyfill";
 import JsonFileInput from "./components/json_file_input";
@@ -34,21 +34,23 @@ import Search from "./components/search";
 import VideoIdInput from "./components/video_id_input";
 import { isWatchPage as isWatchPageFn } from "./utils";
 
-export const VideoIdContext = createContext<
-  | {
-      videoId?: string | null;
-      setVideoId?: React.Dispatch<React.SetStateAction<string | null>>;
-    }
-  | undefined
->(undefined);
+export const VideoIdContext = createContext<{
+  videoId: string;
+  setVideoId: (videoId: string) => void;
+}>({ videoId: "", setVideoId: () => {} });
 
 export const Popup = () => {
   const manifest = browser.runtime.getManifest();
   const { name, version } = manifest;
 
   const [isWatchPage, setIsWatchPage] = useState(false);
-  const [videoId, setVideoId] = useState<string | null>(null);
-  const value = { videoId, setVideoId };
+
+  const [videoId, _setVideoId] = useState("");
+
+  function setVideoId(video_id: string) {
+    window.localStorage.setItem("videoId", video_id);
+    _setVideoId(video_id);
+  }
 
   isWatchPageFn().then(setIsWatchPage);
 
@@ -63,19 +65,17 @@ export const Popup = () => {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <Suspense fallback={<div>Loading...</div>}>
-          {isWatchPage ? (
-            <VideoIdContext.Provider value={value}>
-              <VideoIdInput />
-              <JsonFileInput />
-              <Search />
-            </VideoIdContext.Provider>
-          ) : (
-            <div className="text-stone-900">
-              <p>Invalid page.</p>
-            </div>
-          )}
-        </Suspense>
+        {isWatchPage ? (
+          <VideoIdContext.Provider value={{ videoId, setVideoId }}>
+            <VideoIdInput />
+            <JsonFileInput />
+            <Search />
+          </VideoIdContext.Provider>
+        ) : (
+          <div className="text-stone-900">
+            <p>Invalid page.</p>
+          </div>
+        )}
       </CardContent>
     </Card>
   );

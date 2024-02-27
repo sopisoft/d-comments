@@ -34,32 +34,33 @@ export const addMenu = async () => {
     const bgColor = window.getComputedStyle(item).backgroundColor;
     const a = document.createElement("a");
     a.href = `sc_d_pc?partId=${partID}`;
+    Object.assign(
+      a.style,
+      { type: "text/css" },
+      {
+        width: "100%",
+        padding: "0.4rem 1.8rem",
+        textAlign: "center",
+        borderTop: "1px solid rgb(224 224 224)",
+        backgroundColor: bgColor,
+      }
+    );
+    item.parentElement?.parentElement?.appendChild(a);
+
     getConfig("make_play_button_open_new_tab", (value) => {
-      if (value === false) {
+      if (value === true) {
+        a.target = "_blank";
+        a.innerText = "新しいタブでコメントを表示しながら再生";
+        a.addEventListener("click", (e) => {
+          e.preventDefault();
+          window.open(a.href);
+        });
+      } else {
         a.innerText = "現在のタブでコメントを表示しながら再生";
         a.addEventListener("click", () => {
           window.location.href = a.href;
         });
       }
-      a.target = "_blank";
-      a.innerText = "新しいタブでコメントを表示しながら再生";
-      a.addEventListener("click", (e) => {
-        window.open(a.href);
-        e.preventDefault();
-      });
-
-      item.parentElement?.parentElement?.appendChild(a);
-      Object.assign(
-        a.style,
-        { type: "text/css" },
-        {
-          width: "100%",
-          padding: "0.4rem 1.8rem",
-          textAlign: "center",
-          borderTop: "1px solid rgb(224 224 224)",
-          backgroundColor: bgColor,
-        }
-      );
     });
   }
 };

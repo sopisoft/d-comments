@@ -33,12 +33,7 @@ import { VideoIdContext } from "../popup";
 import { ErrorMessage, isVideoId, isWatchPage } from "../utils";
 
 function VideoIdInput() {
-  const videoIdContext = useContext(VideoIdContext);
-
-  const [videoId_input, setVideoId_input] = useState<string | null>(null);
-
-  const videoId = videoIdContext?.videoId;
-  const setVideoId = videoIdContext?.setVideoId;
+  const { videoId, setVideoId } = useContext(VideoIdContext);
 
   const { toast } = useToast();
 
@@ -87,15 +82,16 @@ function VideoIdInput() {
 
   async function on_save_json_button_clicked() {
     const video_id = await check_video_id(videoId);
-    if (video_id === false) {
-      return;
-    }
+    if (video_id === false) return;
     export_comments_json(video_id);
   }
 
   getConfig("show_last_searched_video_id", (value) => {
-    const last_id = window.localStorage.getItem("videoId");
-    value === true && setVideoId?.(last_id);
+    if (value === true) {
+      const last_id = window.localStorage.getItem("videoId");
+      if (!last_id) return;
+      setVideoId(last_id);
+    }
   });
 
   return (
@@ -126,12 +122,17 @@ function VideoIdInput() {
           id="video_id_input"
           placeholder="動画ID"
           className="col-span-3"
-          value={videoId ?? videoId_input ?? ""}
+          value={videoId}
           onChange={(e) => {
-            setVideoId?.(e.target.value as VideoId);
-            if (isVideoId(e.target.value)) {
-              setVideoId_input(e.target.value);
-            }
+            const video_id = e.target.value;
+            if (isVideoId(video_id)) setVideoId?.(video_id);
+            else
+              ErrorMessage(toast, {
+                message: {
+                  title: "動画IDが不正です。",
+                  description: "動画IDを正しく入力してください。",
+                },
+              });
           }}
         />
 
