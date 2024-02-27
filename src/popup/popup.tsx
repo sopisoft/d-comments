@@ -32,7 +32,7 @@ import JsonFileInput from "./components/json_file_input";
 import Menu from "./components/menu";
 import Search from "./components/search";
 import VideoIdInput from "./components/video_id_input";
-import { isWatchPage as isWatchPageFn } from "./utils";
+import { isVideoId, isWatchPage as isWatchPageFn } from "./utils";
 
 export const VideoIdContext = createContext<{
   videoId: string;
@@ -48,8 +48,8 @@ export const Popup = () => {
   const [videoId, _setVideoId] = useState("");
 
   function setVideoId(video_id: string) {
-    window.localStorage.setItem("videoId", video_id);
     _setVideoId(video_id);
+    if (isVideoId(video_id)) window.localStorage.setItem("videoId", video_id);
   }
 
   isWatchPageFn().then(setIsWatchPage);
@@ -81,9 +81,12 @@ export const Popup = () => {
   );
 };
 
-createRoot(document.body).render(
-  <ThemeProvider>
-    <Popup />
-    <Toaster />
-  </ThemeProvider>
-);
+const root = document.getElementById("root");
+if (root) {
+  createRoot(root).render(
+    <ThemeProvider>
+      <Popup />
+      <Toaster />
+    </ThemeProvider>
+  );
+}

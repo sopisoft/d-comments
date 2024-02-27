@@ -48,10 +48,9 @@ function Search() {
     return tabs_title;
   }
 
-  (async () => {
-    const tabs_title = await get_tabs_title();
-    setWord(tabs_title);
-  })();
+  useEffect(() => {
+    get_tabs_title().then((w) => setWord(w));
+  }, []);
 
   getConfig("auto_search", async (value) => {
     if (value === true) {

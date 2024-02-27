@@ -61,9 +61,7 @@ function VideoIdInput() {
 
   const render_comments = async () => {
     const video_id = await check_video_id(videoId);
-    if (video_id === false) {
-      return;
-    }
+    if (!video_id) return;
     const query: {
       type: renderCommentsApi["type"];
       data: renderCommentsApi["data"];
@@ -82,7 +80,7 @@ function VideoIdInput() {
 
   async function on_save_json_button_clicked() {
     const video_id = await check_video_id(videoId);
-    if (video_id === false) return;
+    if (!video_id) return;
     export_comments_json(video_id);
   }
 
@@ -125,14 +123,7 @@ function VideoIdInput() {
           value={videoId}
           onChange={(e) => {
             const video_id = e.target.value;
-            if (isVideoId(video_id)) setVideoId?.(video_id);
-            else
-              ErrorMessage(toast, {
-                message: {
-                  title: "動画IDが不正です。",
-                  description: "動画IDを正しく入力してください。",
-                },
-              });
+            setVideoId(video_id);
           }}
         />
 

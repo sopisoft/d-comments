@@ -18,7 +18,7 @@
 import browser from "webextension-polyfill";
 import { getConfig } from "./config";
 import { addMenu } from "./danime_dom/mypage";
-import { setWorkInfo } from "./danime_dom/watch";
+import { setWorkInfo, videoEventsListener } from "./danime_dom/watch";
 import exportJson from "./export";
 import fire from "./play/fire";
 
@@ -30,7 +30,7 @@ switch (location.pathname) {
     break;
   }
   case "/animestore/sc_d_pc": {
-    setWorkInfo();
+    Promise.all([setWorkInfo(), videoEventsListener()]);
     browser.runtime.onMessage.addListener((message: messages) => {
       switch (message.type) {
         case "render_comments":

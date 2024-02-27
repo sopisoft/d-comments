@@ -75,9 +75,7 @@ const Editor = (props: {
   };
 
   browser.storage.onChanged.addListener((changes) => {
-    if (changes[key]) {
-      setValue(changes[key].newValue);
-    }
+    if (changes[key]) setValue(changes[key].newValue);
   });
 
   if (value === undefined) {

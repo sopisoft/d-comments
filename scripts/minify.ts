@@ -9,7 +9,7 @@ const option = {
     // drop_debugger: true,
     module: true,
     unused: true,
-    passes: 15,
+    passes: 5,
   },
   mangle: {
     toplevel: true,

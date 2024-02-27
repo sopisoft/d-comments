@@ -36,9 +36,7 @@ export const setWorkInfo = async () => {
     (function f() {
       if (document.querySelector(".playButton") === null) {
         setTimeout(f, 100);
-      } else {
-        resolve(null);
-      }
+      } else resolve(null);
     })();
   });
   const dom_play_button = document.querySelector(".playButton");
@@ -92,4 +90,17 @@ export const setWorkInfo = async () => {
       });
     }
   }
+};
+
+export const videoEventsListener = () => {
+  const video = document.querySelector("video");
+  if (!video) {
+    setTimeout(videoEventsListener, 100);
+    return;
+  }
+
+  video.addEventListener("canplay", async () => {
+    setWorkInfo();
+    window.dispatchEvent(new Event("video_loaded"));
+  });
 };

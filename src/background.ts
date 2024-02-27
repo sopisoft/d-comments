@@ -225,7 +225,7 @@ browser.runtime.onMessage.addListener(
         return get_user_info(data.type, data.videoId, data.ownerId);
       }
       default: {
-        throw new Error("Invalid message type");
+        return new Promise((r) => r(false));
       }
     }
   }
