@@ -22,9 +22,7 @@ async function send_message(props: {
   data: messages["data"];
   active_tab?: messages["active_tab"];
 }): Promise<messages["response"] | Error> {
-  const origin = window.location.origin;
-  const is_content_page = origin.startsWith("http"); // from watch page
-  if (props.active_tab && !is_content_page) {
+  if (props.active_tab) {
     return browser.tabs
       .query({ active: true, currentWindow: true })
       .then((tabs) => {

@@ -19,18 +19,16 @@ import browser from "webextension-polyfill";
 
 /**
  * 設定のデフォルト値
+ * @type {Array<{
+ *  key: string;
+ *  value: string | number | boolean;
+ *  options?: Array<{ name: string; value: string }> | undefined;
+ *  type: "checkbox" | "number" | "select" | "color" | "switch";
+ *  text: string;
+ *  related?: string[];
+ * }>}
  */
-export const defaultConfigs: Array<{
-  key: string;
-  value: string | number | boolean;
-  options?: Array<{ name: string; value: string }> | undefined;
-  type: "checkbox" | "number" | "select" | "slider" | "switch" | "color";
-  text: string;
-  bindings?: Array<{
-    key: (typeof defaultConfigs)[number]["key"];
-    value: (typeof defaultConfigs)[number]["value"];
-  }>;
-}> = [
+export const defaultConfigs = [
   {
     key: "show_last_searched_video_id",
     value: true,
@@ -72,75 +70,36 @@ export const defaultConfigs: Array<{
     value: "#000000",
     type: "color",
     text: "コメント欄の背景色",
-    bindings: [
-      {
-        key: "comment_rendering_method",
-        value: "list_overlay",
-      },
-      {
-        key: "comment_rendering_method",
-        value: "list",
-      },
-    ],
   },
   {
     key: "comment_area_opacity_percentage",
     value: 35,
     type: "slider",
     text: "コメント欄の背景不透明度 (%)",
-    // right_to_left でも有効
   },
   {
     key: "comment_text_color",
-    value: "#ffffff",
+    value: "#FFFFFF",
     type: "color",
     text: "コメントの文字色",
-    bindings: [
-      {
-        key: "comment_rendering_method",
-        value: "list_overlay",
-      },
-      {
-        key: "comment_rendering_method",
-        value: "list",
-      },
-    ],
   },
   {
     key: "distance_from_top_percent",
     value: 5,
     type: "slider",
     text: "画面の上部分からの距離 (%)",
-    bindings: [
-      {
-        key: "comment_rendering_method",
-        value: "list_overlay",
-      },
-    ],
   },
   {
     key: "distance_from_left_percent",
     value: 10,
     type: "slider",
     text: "画面の左部分からの距離 (%)",
-    bindings: [
-      {
-        key: "comment_rendering_method",
-        value: "list_overlay",
-      },
-    ],
   },
   {
     key: "comment_area_height_percent",
     value: 85,
     type: "slider",
     text: "コメント欄の高さ (%)",
-    bindings: [
-      {
-        key: "comment_rendering_method",
-        value: "list_overlay",
-      },
-    ],
   },
   {
     key: "comment_rendering_method",
@@ -165,12 +124,7 @@ export const defaultConfigs: Array<{
     value: false,
     type: "switch",
     text: "「コメントを表示しながら再生」ボタンでは新しいタブで開く",
-    bindings: [
-      {
-        key: "add_button_to_show_comments_while_playing",
-        value: true,
-      },
-    ],
+    related: ["add_button_to_show_comments_while_playing"],
   },
   {
     key: "show_owner_comments",

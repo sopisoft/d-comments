@@ -40,15 +40,11 @@ function Search() {
   const { toast } = useToast();
 
   async function get_tabs_title() {
-    const tabs_title =
-      new Promise<string>((resolve) => {
-        setTimeout(() => resolve(document.title), 300);
-      }) ??
-      (await browser.tabs
-        .query({ active: true, currentWindow: true })
-        .then((tabs) => {
-          return tabs[0]?.title ?? "";
-        }));
+    const tabs_title = await browser.tabs
+      .query({ active: true, currentWindow: true })
+      .then((tabs) => {
+        return tabs[0]?.title ?? "";
+      });
     return tabs_title;
   }
 

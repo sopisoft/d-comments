@@ -22,11 +22,17 @@ const uiInit = () => {
   const video = document.getElementById("video") as HTMLVideoElement;
 
   /**
+   * スタイル設定
+   */
+  // Style.setDefaultStyle();
+
+  /**
    * すべての要素をラップする
    */
-  const prev_wrapper = document.getElementById("d-comments-wrapper");
-  const wrapper = prev_wrapper || document.createElement("div");
-  if (!prev_wrapper) {
+  const wrapper =
+    document.getElementById("d-comments-wrapper") ??
+    document.createElement("div");
+  if (!document.getElementById("d-comments-wrapper")) {
     wrapper.id = "d-comments-wrapper";
     Object.assign(wrapper.style, {
       display: "flex",

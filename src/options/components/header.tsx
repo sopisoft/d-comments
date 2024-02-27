@@ -16,6 +16,7 @@
 */
 
 import { ModeToggle } from "@/components/ui/mode-toggle";
+import { Separator } from "@/components/ui/separator";
 import {
   Tooltip,
   TooltipContent,
@@ -47,8 +48,8 @@ function Header(props: { tabsList: React.ReactNode }) {
   return (
     <header className="flex items-center justify-between w-full px-4 py-2 border-b border-gray-200">
       <div className="flex items-center space-x-4 basis-[calc(100%-10rem)]">
-        <Settings className="w-10 h-10 max-md:w-4 maxmd:h-4" />
-        <h1 className="scroll-m-20 text-3xl font-semibold tracking-tight max-md:text-base">
+        <Settings className="w-10 h-10" />
+        <h1 className="scroll-m-20 text-3xl font-semibold tracking-tight">
           設定
         </h1>
         <ul className="flex items-center list-none space-x-2 mx-2">

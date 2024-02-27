@@ -16,12 +16,23 @@
 */
 
 import { ThemeProvider } from "@/components/theme-provider";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Toaster } from "@/components/ui/toaster";
 import "@/index.css";
 import { createContext, useState } from "react";
 import { createRoot } from "react-dom/client";
 import browser from "webextension-polyfill";
-import Menu from "../content_scripts/components/menu";
+import JsonFileInput from "./components/json_file_input";
+import Menu from "./components/menu";
+import Search from "./components/search";
+import VideoIdInput from "./components/video_id_input";
+import { isWatchPage as isWatchPageFn } from "./utils";
 
 export const VideoIdContext = createContext<{
   videoId: string;
@@ -32,21 +43,47 @@ export const Popup = () => {
   const manifest = browser.runtime.getManifest();
   const { name, version } = manifest;
 
+  const [isWatchPage, setIsWatchPage] = useState(false);
+
+  const [videoId, _setVideoId] = useState("");
+
+  function setVideoId(video_id: string) {
+    window.localStorage.setItem("videoId", video_id);
+    _setVideoId(video_id);
+  }
+
+  isWatchPageFn().then(setIsWatchPage);
+
   return (
-    <div className="w-96 h-full p-4">
-      <span className="text-lg">{name}</span>
-      <Menu />
-      <span className="flex justify-center text-sm mt-3">{`Version : ${version}`}</span>
-    </div>
+    <Card className="w-[32rem] h-full">
+      <CardHeader>
+        <CardTitle className="text-lg">
+          {name} (Version: {version})
+        </CardTitle>
+        <CardDescription className="text-stone-900">
+          <Menu />
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        {isWatchPage ? (
+          <VideoIdContext.Provider value={{ videoId, setVideoId }}>
+            <VideoIdInput />
+            <JsonFileInput />
+            <Search />
+          </VideoIdContext.Provider>
+        ) : (
+          <div className="text-stone-900">
+            <p>Invalid page.</p>
+          </div>
+        )}
+      </CardContent>
+    </Card>
   );
 };
 
-const root = document.getElementById("root");
-if (root) {
-  createRoot(root).render(
-    <ThemeProvider>
-      <Popup />
-      <Toaster />
-    </ThemeProvider>
-  );
-}
+createRoot(document.body).render(
+  <ThemeProvider>
+    <Popup />
+    <Toaster />
+  </ThemeProvider>
+);

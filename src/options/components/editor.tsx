@@ -33,7 +33,7 @@ import {
   getConfig,
   setConfig,
 } from "@/content_scripts/config";
-import { type ChangeEvent, useEffect, useState } from "react";
+import { type ChangeEvent, useState } from "react";
 import browser from "webextension-polyfill";
 
 const Editor = (props: {
@@ -75,7 +75,9 @@ const Editor = (props: {
   };
 
   browser.storage.onChanged.addListener((changes) => {
-    if (changes[key]) setValue(changes[key].newValue);
+    if (changes[key]) {
+      setValue(changes[key].newValue);
+    }
   });
 
   if (value === undefined) {

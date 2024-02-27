@@ -46,9 +46,9 @@ Promise.all([fs.rmdirSync("dist", { recursive: true }), tsc, fmt, lint]).then(
             );
           }),
 
-          // minifyJs(browser).then(() => {
-          webExtBuild(browser),
-          // }),
+          minifyJs(browser).then(() => {
+            webExtBuild(browser);
+          }),
 
           Bun.write(
             Bun.file(`dist/${browser}/meta.json`),
