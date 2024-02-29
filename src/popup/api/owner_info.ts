@@ -17,12 +17,12 @@
 
 import api from "@/lib/api";
 
-const get_owner_info: (arg: {
+export const get_owner_info: (arg: {
   type: "user" | "channel";
-  videoId: VideoId;
-  ownerId: string;
+  ownerId: string | undefined;
 }) => Promise<ownerInfoApi["response"] | Error> = async (arg) => {
-  const { type, videoId, ownerId } = arg;
+  if (!arg.ownerId) return new Error("ownerId is undefined");
+  const { type, ownerId } = arg;
   const query: {
     type: ownerInfoApi["type"];
     data: ownerInfoApi["data"];
@@ -31,37 +31,11 @@ const get_owner_info: (arg: {
     type: "owner_info",
     data: {
       type: type,
-      videoId: videoId,
-      ownerId: ownerId,
+      ownerId: ownerId, // userId or channelId
     },
-    active_tab: false as ownerInfoApi["active_tab"],
+    active_tab: false,
   };
   return await api(query).catch((err) => {
     return err;
   });
 };
-
-/**
- * @param snapshot Snapshot
- * @returns Owner[] | Error
- */
-const get_owner_info_from_snapshot: (
-  snapshot: Snapshot
-) => Promise<ownerInfoApi["response"][] | Error> = async (snapshot) => {
-  const owners: ownerInfoApi["response"][] = [];
-  for (const data of snapshot.data) {
-    get_owner_info({
-      type: data.userId ? "user" : data.contentId ? "channel" : "user",
-      videoId: data.contentId,
-      ownerId: (data.userId ?? data.channelId) as string,
-    }).then((res) => {
-      if (res instanceof Error) {
-        return res;
-      }
-      owners.push(res as ownerInfoApi["response"]);
-    });
-  }
-  return owners;
-};
-
-export default get_owner_info_from_snapshot;

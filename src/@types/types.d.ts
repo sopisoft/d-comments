@@ -193,7 +193,6 @@ type Snapshot = {
 };
 
 type Owner = {
-  contentId: string;
   ownerId: string;
   ownerName: string;
   ownerIconUrl: string;

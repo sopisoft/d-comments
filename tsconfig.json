@@ -31,7 +31,7 @@
     "verbatimModuleSyntax": true
   },
   "include": [
-    "src",
+    "src/**/*",
     "scripts",
     "vite.config.ts"
   ],

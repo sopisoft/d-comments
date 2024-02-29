@@ -15,15 +15,15 @@
     along with d-comments.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { getConfig } from "../config";
+import { getConfig } from "@/config";
 
 /**
  * 作品ページの各パートに新しいタブで開くボタンを追加する
  */
 export const addMenu = async () => {
-  for (let i = 0; i < 10; i++) {
+  for (let i = 0; i < 20; i++) {
     const items = document.querySelectorAll(".itemModule.list a");
-    if (items.length === 0) setTimeout(addMenu, 100);
+    if (items.length === 0) setTimeout(() => {}, 150);
   }
 
   for (const item of document.querySelectorAll(".itemModule.list a")) {
@@ -51,10 +51,11 @@ export const addMenu = async () => {
     const storage = window.sessionStorage;
     getConfig("make_play_button_open_new_tab", (value) => {
       if (value === true) {
-        a.target = "_blank";
         a.innerText = "新しいタブでコメントを表示しながら再生";
+        a.target = "_blank";
         a.addEventListener("click", (e) => {
           e.preventDefault();
+          e.stopPropagation();
           window.open(a.href);
           storage.setItem(partID, "true");
         });

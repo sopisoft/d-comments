@@ -23,8 +23,7 @@ import { get_work_info } from "./api";
  */
 export const setWorkInfo = async () => {
   const workInfo = await get_work_info();
-  const title = workInfo.data.title;
-  const partExp = workInfo.data.partExp;
+  const { title, partExp } = workInfo.data;
 
   document.title = title;
   document

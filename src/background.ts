@@ -15,7 +15,7 @@
     along with d-comments.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { getConfig, migrate } from "@/content_scripts/config";
+import { getConfig, migrate } from "@/config";
 import browser from "webextension-polyfill";
 
 /**
@@ -32,16 +32,16 @@ const getRandomInt = (min: number, max: number) => {
 
 /**
  * 動画情報を取得する
- * @param movieId ニコニコ動画の動画ID
+ * @param videoId ニコニコ動画の動画ID
  * @param sendResponse (response) => void
  */
 
-const getMovieData = async (movieId: string) => {
-  return new Promise<SearchResult | Error>((resolve) => {
+const getVideoData = async (videoId: string) => {
+  return new Promise<videoDataApi["response"] | Error>((resolve) => {
     getConfig("allow_login_to_nicovideo", (config) => {
       const url = `https://www.nicovideo.jp/api/watch/${
         config ? "v3" : "v3_guest"
-      }/${movieId}`;
+      }/${videoId}`;
       const params = {
         _frontendId: "6",
         _frontendVersion: "0",
@@ -88,7 +88,7 @@ const getMovieData = async (movieId: string) => {
 
 const getThreadComments = async (
   movieData: SearchResult
-): Promise<Threads | Error> => {
+): Promise<threadDataApi["response"] | Error> => {
   const nvComment = movieData.data.comment.nvComment;
   const serverUrl = `${nvComment.server}/v1/threads`;
   const headers: RequestInit = {
@@ -117,7 +117,10 @@ const getThreadComments = async (
  * スナップショットAPIを使って動画を検索する
  * @see https://site.nicovideo.jp/search-api-docs/snapshot
  */
-const search = async (word: string, UserAgent: string): Promise<Snapshot> => {
+const search = async (
+  word: string,
+  UserAgent: string
+): Promise<searchApi["response"] | Error> => {
   const endpoint =
     "https://api.search.nicovideo.jp/api/v2/snapshot/video/contents/search";
   const params = {
@@ -149,12 +152,11 @@ const search = async (word: string, UserAgent: string): Promise<Snapshot> => {
  */
 const get_user_info = async (
   type: "user" | "channel",
-  videoId: VideoId,
   ownerId: string
-): Promise<Owner | Error> => {
+): Promise<ownerInfoApi["response"] | Error> => {
   switch (type) {
     case "user": {
-      const url = `https://nvapi.nicovideo.jp/v1/users/${videoId}`;
+      const url = `https://nvapi.nicovideo.jp/v1/users/${ownerId}`;
       const headers: RequestInit = {
         headers: {
           "User-Agent": navigator.userAgent ?? "",
@@ -162,42 +164,37 @@ const get_user_info = async (
           "x-frontend-version": "0",
         },
       };
-      const res = await fetch(url, headers)
-        .then((res) => {
-          return res.json();
+      return await fetch(url, headers)
+        .then(async (res) => {
+          const json = await res.json();
+          const { nickname, icons } = json.data.user;
+          const owner: Owner = {
+            ownerId: ownerId,
+            ownerName: nickname,
+            ownerIconUrl: icons.small,
+          };
+          return owner;
         })
         .catch((e) => {
           return e;
         });
-      if (!res.ok) {
-        return res;
-      }
-
-      return {
-        contentId: videoId,
-        ownerId: ownerId,
-        ownerName: res.data.user.nickname,
-        ownerIconUrl: res.data.user.icons.small,
-      };
     }
     case "channel": {
-      const url = `https://api.cas.nicovideo.jp/v2/tanzakus/channel/ch${videoId}`;
-      const res = await fetch(url)
-        .then((res) => {
-          return res.json();
+      const url = `https://api.cas.nicovideo.jp/v2/tanzakus/channel/ch${ownerId}`;
+      return await fetch(url)
+        .then(async (res) => {
+          const json = await res.json();
+          const { name, icon } = json.data;
+          const owner: Owner = {
+            ownerId: ownerId,
+            ownerName: name,
+            ownerIconUrl: icon,
+          };
+          return owner;
         })
         .catch((e) => {
           return e;
         });
-      if (!res.ok) {
-        return res;
-      }
-      return {
-        contentId: videoId,
-        ownerId: ownerId,
-        ownerName: res.data.name,
-        ownerIconUrl: res.data.icon,
-      };
     }
     default: {
       throw new Error("invalid type of owner");
@@ -209,20 +206,21 @@ browser.runtime.onMessage.addListener(
   (message: messages): Promise<messages["response"] | Error> => {
     switch (message.type) {
       case "video_data": {
-        const data = message.data as videoDataApi["data"];
-        return getMovieData(data.videoId);
+        const data: videoDataApi["data"] = message.data;
+        return getVideoData(data.videoId);
       }
       case "thread_data": {
-        const data = message.data as threadDataApi["data"];
+        const data: threadDataApi["data"] = message.data;
         return getThreadComments(data.videoData);
       }
       case "search": {
-        const data = message.data as searchApi["data"];
+        const data: searchApi["data"] = message.data;
         return search(data.word, data.UserAgent);
       }
       case "owner_info": {
-        const data = message.data as ownerInfoApi["data"];
-        return get_user_info(data.type, data.videoId, data.ownerId);
+        const data: ownerInfoApi["data"] = message.data;
+        const { type, ownerId } = data;
+        return get_user_info(type, ownerId);
       }
       default: {
         return new Promise((r) => r(false));

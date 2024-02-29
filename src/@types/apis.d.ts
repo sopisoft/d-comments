@@ -45,7 +45,6 @@ type ownerInfoApi = {
   type: "owner_info";
   data: {
     type: "user" | "channel";
-    videoId: VideoId;
     ownerId: string;
   };
   active_tab: false;

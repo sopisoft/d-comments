@@ -55,16 +55,13 @@ export const Popup = () => {
   isWatchPageFn().then(setIsWatchPage);
 
   return (
-    <Card className="w-[32rem] h-full">
-      <CardHeader>
+    <Card className="w-[32rem] h-full overflow-hidden">
+      <CardHeader className="p-3">
         <CardTitle className="text-lg">
           {name} (Version: {version})
         </CardTitle>
-        <CardDescription className="text-stone-900">
-          <Menu />
-        </CardDescription>
       </CardHeader>
-      <CardContent>
+      <div className="px-3">
         {isWatchPage ? (
           <VideoIdContext.Provider value={{ videoId, setVideoId }}>
             <VideoIdInput />
@@ -72,11 +69,9 @@ export const Popup = () => {
             <Search />
           </VideoIdContext.Provider>
         ) : (
-          <div className="text-stone-900">
-            <p>Invalid page.</p>
-          </div>
+          <Menu />
         )}
-      </CardContent>
+      </div>
     </Card>
   );
 };

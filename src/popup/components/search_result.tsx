@@ -15,40 +15,83 @@
     along with d-comments.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { useContext } from "react";
+import { Suspense, useContext, useEffect, useState } from "react";
+import { get_owner_info } from "../api/owner_info";
 import { VideoIdContext } from "../popup";
 
-function SearchResult(props: { snapshot: Snapshot; owners: Owner[] }) {
-  const { snapshot, owners } = props;
+/**
+ * lengthSeconds -> "〇時間〇分〇秒" | "〇分〇秒" | "〇秒" | "は取得できませんでした"
+ * @param lengthSeconds 動画の尺
+ * @returns "は取得できませんでした" | "〇時間〇分〇秒" | "〇分〇秒" | "〇秒
+ */
+const video_length = (lengthSeconds: number | undefined) => {
+  if (lengthSeconds === undefined) {
+    return "は取得できませんでした";
+  }
+  const hour = Math.floor(lengthSeconds / 3600);
+  const minute = Math.floor(lengthSeconds / 60);
+  const second = lengthSeconds % 60;
+  function toStr(l: number, s: string) {
+    return l > 0 ? l + s : "";
+  }
+  return toStr(hour, "時間") + toStr(minute, "分") + toStr(second, "秒");
+};
+
+const storage = window.localStorage;
+
+function Owner(props: {
+  userId: string | undefined;
+  channelId: string | undefined;
+}) {
+  const { userId, channelId } = props;
+  if (!userId && !channelId) return null;
+
+  const key = userId ?? channelId;
+  const ownerInfo = storage.getItem(`${key}`);
+  const [owner, setOwner] = useState<ownerInfoApi["response"] | null>(
+    ownerInfo ? JSON.parse(ownerInfo) : null
+  );
+
+  useEffect(() => {
+    if (!storage.getItem(`${key}`)) {
+      get_owner_info({
+        type: userId ? "user" : "channel",
+        ownerId: userId ?? channelId,
+      }).then((res) => {
+        if (res instanceof Error) {
+        } else {
+          setOwner(res);
+          storage.setItem(`${key}`, JSON.stringify(res));
+        }
+      });
+    }
+  });
+
+  const { ownerName, ownerIconUrl } = owner ?? {};
+
+  return (
+    <div className="grid grid-cols-5 gap-2 justify-center items-center m-2 h-6">
+      <img
+        src={ownerIconUrl}
+        alt={ownerName}
+        className="aspect-square size-8"
+      />
+      <span className="col-span-4 p-0 m-0">{ownerName}</span>
+    </div>
+  );
+}
+
+function SearchResult(props: { snapshot: Snapshot }) {
+  const { snapshot } = props;
 
   const { videoId, setVideoId } = useContext(VideoIdContext);
 
-  const data = snapshot.data;
-  const owner = (contentId?: string) => {
-    return owners.find((owner) => owner.contentId === contentId);
-  };
-
-  /**
-   * lengthSeconds -> "〇時間〇分〇秒" | "〇分〇秒" | "〇秒" | "は取得できませんでした"
-   * @param lengthSeconds 動画の尺
-   * @returns "は取得できませんでした" | "〇時間〇分〇秒" | "〇分〇秒" | "〇秒
-   */
-  const video_length = (lengthSeconds: number | undefined) => {
-    if (lengthSeconds === undefined) {
-      return "は取得できませんでした";
-    }
-    const hour = Math.floor(lengthSeconds / 3600);
-    const minute = Math.floor(lengthSeconds / 60);
-    const second = lengthSeconds % 60;
-    function toStr(l: number, s: string) {
-      return l > 0 ? l + s : "";
-    }
-    return toStr(hour, "時間") + toStr(minute, "分") + toStr(second, "秒");
-  };
-
   return (
-    <div className="grid grid-cols-7 gap-2 my-2 list-none">
-      {data.map((item) => (
+    <ul
+      className="w-full max-h-80 list-none p-0 m-0 text-base overflow-y-scroll overflow-x-hidden"
+      aria-label="検索結果一覧 "
+    >
+      {snapshot.data.map((item, index) => (
         <li
           onClick={() => {
             setVideoId?.(item.contentId);
@@ -58,27 +101,40 @@ function SearchResult(props: { snapshot: Snapshot; owners: Owner[] }) {
               setVideoId?.(item.contentId);
             }
           }}
+          className="cursor-pointer rounded hover:bg-gray-200 border-t-2  border-gray-300"
         >
-          <span>{item.title}</span>
-          <div>
-            <img src={item.thumbnailUrl} alt={item.title} />
-            <div>
-              <p>動画情報</p>
-              <div>
-                <img
-                  src={owner(item.contentId)?.ownerIconUrl}
-                  alt={owner(item.contentId)?.ownerName}
-                />
-                <p>{owner(item.contentId)?.ownerName}</p>
+          <div className="flex flex-col my-1">
+            <div className="flex flex-row">
+              <img
+                src={item.thumbnailUrl}
+                alt={item.title}
+                className="object-cover aspect-video h-24"
+              />
+              <div className="mx-2 flex flex-col">
+                <span className="font-semibold overflow-y-auto">
+                  {item.title}
+                </span>
               </div>
-              <span>再生数 {item.viewCounter}</span>
-              <span>コメント数 {item.commentCounter}</span>
-              <span>動画の尺 {video_length(item.lengthSeconds)}</span>
             </div>
+            <Owner userId={item.userId} channelId={item.channelId} />
+            <table className="table-auto">
+              <tr>
+                <td>再生数</td>
+                <td>{item.viewCounter}</td>
+              </tr>
+              <tr>
+                <td>コメント数</td>
+                <td>{item.commentCounter}</td>
+              </tr>
+              <tr>
+                <td>動画の尺</td>
+                <td>{video_length(item.lengthSeconds)}</td>
+              </tr>
+            </table>
           </div>
         </li>
       ))}
-    </div>
+    </ul>
   );
 }
 

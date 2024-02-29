@@ -24,11 +24,10 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useToast } from "@/components/ui/use-toast";
-import { getConfig } from "@/content_scripts/config";
+import { getConfig } from "@/config";
 import { SearchIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import browser from "webextension-polyfill";
-import get_owner_info from "../api/owner_info";
 import search from "../api/search";
 import { ErrorMessage } from "../utils";
 import SearchResult from "./search_result";
@@ -36,7 +35,6 @@ import SearchResult from "./search_result";
 function Search() {
   const [word, setWord] = useState<searchApi["data"]["word"]>("");
   const [snapshot, setSnapshot] = useState<Snapshot>();
-  const [owner, setOwner] = useState<Owner[]>();
   const { toast } = useToast();
 
   async function get_tabs_title() {
@@ -63,27 +61,14 @@ function Search() {
     }
   });
 
-  function reset_search_result() {
-    setSnapshot(undefined);
-    setOwner(undefined);
-  }
-
   async function on_search_button_click() {
     const snapshot = await search(word);
     if (snapshot instanceof Error) {
       ErrorMessage(toast, { error: snapshot });
-      reset_search_result();
+      setSnapshot(undefined);
       return;
     }
     setSnapshot(snapshot);
-
-    const owners = await get_owner_info(snapshot);
-    if (owners instanceof Error) {
-      ErrorMessage(toast, { error: owners });
-      reset_search_result();
-      return;
-    }
-    setOwner(owners);
   }
 
   return (
@@ -123,7 +108,7 @@ function Search() {
         </Button>
       </div>
 
-      {snapshot && owner && <SearchResult snapshot={snapshot} owners={owner} />}
+      {snapshot && <SearchResult snapshot={snapshot} />}
     </>
   );
 }

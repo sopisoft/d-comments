@@ -24,7 +24,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useToast } from "@/components/ui/use-toast";
-import { getConfig } from "@/content_scripts/config";
+import { getConfig } from "@/config";
 import export_comments_json from "@/content_scripts/export";
 import api from "@/lib/api";
 import { ExternalLink } from "lucide-react";

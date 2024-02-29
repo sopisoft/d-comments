@@ -27,12 +27,7 @@ import {
 } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
-import {
-  type config,
-  defaultConfigs,
-  getConfig,
-  setConfig,
-} from "@/content_scripts/config";
+import { type config, defaultConfigs, getConfig, setConfig } from "@/config";
 import { type ChangeEvent, useState } from "react";
 import browser from "webextension-polyfill";
 

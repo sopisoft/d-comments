@@ -15,12 +15,11 @@
     along with d-comments.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+import { getConfig } from "@/config";
 import browser from "webextension-polyfill";
-import { getConfig } from "./config";
-import { addMenu } from "./danime_dom/mypage";
-import { setWorkInfo, videoEventsListener } from "./danime_dom/watch";
+import { addMenu } from "./danime/mypage";
+import { setWorkInfo, videoEventsListener } from "./danime/watch";
 import exportJson from "./export";
-import fire from "./play/fire";
 
 switch (location.pathname) {
   case "/animestore/ci_pc": {
@@ -33,12 +32,12 @@ switch (location.pathname) {
     Promise.all([setWorkInfo(), videoEventsListener()]);
     browser.runtime.onMessage.addListener((message: messages) => {
       switch (message.type) {
-        case "render_comments":
-          fire(true, message.data.videoId);
-          break;
-        case "render_comments_json":
-          fire(false, message.data.comments);
-          break;
+        // case "render_comments":
+        //   fire(true, message.data.videoId);
+        //   break;
+        // case "render_comments_json":
+        //   fire(false, message.data.comments);
+        //   break;
         case "export_comments_json":
           exportJson(message.data.videoId);
           break;
