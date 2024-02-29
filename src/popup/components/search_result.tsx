@@ -91,7 +91,7 @@ function SearchResult(props: { snapshot: Snapshot }) {
       className="w-full max-h-80 list-none p-0 m-0 text-base overflow-y-scroll overflow-x-hidden"
       aria-label="検索結果一覧 "
     >
-      {snapshot.data.map((item, index) => (
+      {snapshot.data.map((item) => (
         <li
           onClick={() => {
             setVideoId?.(item.contentId);

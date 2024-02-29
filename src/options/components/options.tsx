@@ -31,13 +31,14 @@ function Options() {
     description: string;
     content: React.ReactNode;
   }) => {
+    const { title, description, content } = props;
     return (
       <Card className="m-4 w-[32rem] border-2 border-gray-200">
         <CardHeader>
-          <CardTitle>{props.title}</CardTitle>
-          <CardDescription>{props.description}</CardDescription>
+          <CardTitle>{title}</CardTitle>
+          <CardDescription>{description}</CardDescription>
         </CardHeader>
-        <CardContent className="grid gap-4 m-auto">{props.content}</CardContent>
+        <CardContent className="grid gap-4 m-auto">{content}</CardContent>
       </Card>
     );
   };
@@ -122,20 +123,6 @@ function Options() {
         title="コメントの表示方法"
         description="コメントの表示方法を設定します。"
         content={<Editor _key="comment_rendering_method" />}
-      />
-
-      <CardWrapper
-        title="コメントリストのオーバーレイ"
-        description="コメントリストのオーバーレイの設定です。"
-        content={
-          <>
-            <Editor _key="distance_from_top_percent" />
-            <Separator />
-            <Editor _key="distance_from_left_percent" />
-            <Separator />
-            <Editor _key="comment_area_height_percent" />
-          </>
-        }
       />
     </div>
   );

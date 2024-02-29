@@ -16,17 +16,13 @@
 */
 
 import { getConfig } from "@/config";
+import { find_elements } from "./dom";
 
 /**
  * 作品ページの各パートに新しいタブで開くボタンを追加する
  */
 export const addMenu = async () => {
-  for (let i = 0; i < 20; i++) {
-    const items = document.querySelectorAll(".itemModule.list a");
-    if (items.length === 0) setTimeout(() => {}, 150);
-  }
-
-  for (const item of document.querySelectorAll(".itemModule.list a")) {
+  for (const item of await find_elements(".itemModule.list a", 100, 50)) {
     const partID = item?.getAttribute("href")?.replace(/[^0-9]/g, "");
     if (!partID) continue;
     const bgColor = window.getComputedStyle(item).backgroundColor;
@@ -48,24 +44,20 @@ export const addMenu = async () => {
     if (!target?.querySelector(`a[href="sc_d_pc?partId=${partID}"]`))
       target?.appendChild(a);
 
-    const storage = window.sessionStorage;
-    getConfig("make_play_button_open_new_tab", (value) => {
-      if (value === true) {
-        a.innerText = "新しいタブでコメントを表示しながら再生";
-        a.target = "_blank";
-        a.addEventListener("click", (e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          window.open(a.href);
-          storage.setItem(partID, "true");
-        });
-      } else {
-        a.innerText = "現在のタブでコメントを表示しながら再生";
-        a.addEventListener("click", () => {
-          window.location.href = a.href;
-          storage.setItem(partID, "true");
-        });
-      }
-    });
+    const config = await getConfig("make_play_button_open_new_tab");
+    if (config === true) {
+      a.innerText = "新しいタブでコメントを表示しながら再生";
+      a.target = "_blank";
+      a.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        window.open(a.href);
+      });
+    } else {
+      a.innerText = "現在のタブでコメントを表示しながら再生";
+      a.addEventListener("click", () => {
+        window.location.href = a.href;
+      });
+    }
   }
 };

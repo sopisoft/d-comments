@@ -16,6 +16,7 @@
 */
 
 import { get_work_info } from "./api";
+import { find_element } from "./dom";
 
 /**
  * 視聴ページで title と description をパートタイトルと説明に書き換える
@@ -31,18 +32,13 @@ export const setWorkInfo = async () => {
     ?.setAttribute("content", partExp);
 
   const mediaSession = navigator.mediaSession;
-  await new Promise((resolve) => {
-    (function f() {
-      if (document.querySelector(".playButton") === null) {
-        setTimeout(f, 100);
-      } else resolve(null);
-    })();
-  });
-  const dom_play_button = document.querySelector(".playButton");
-  const dom_seekforward_button = document.querySelector(".backButton");
-  const dom_seekbackward_button = document.querySelector(".skipButton");
-  const dom_prev_track_button = document.querySelector(".prevButton");
-  const dom_next_track_button = document.querySelector(".nextButton");
+
+  const dom_play_button = await find_element(".playButton");
+  const dom_seekforward_button = await find_element(".backButton");
+  const dom_seekbackward_button = await find_element(".skipButton");
+  const dom_prev_track_button = await find_element(".prevButton");
+  const dom_next_track_button = await find_element(".nextButton");
+
   if (mediaSession) {
     mediaSession.metadata = new MediaMetadata({
       title: title,
@@ -76,7 +72,7 @@ export const setWorkInfo = async () => {
       dom_next_track_button?.dispatchEvent(new MouseEvent("click"));
     });
 
-    const video = document.querySelector("video");
+    const video = await find_element("video");
     if (video) {
       video.addEventListener("play", () => {
         mediaSession.playbackState = "playing";
@@ -91,15 +87,13 @@ export const setWorkInfo = async () => {
   }
 };
 
-export const videoEventsListener = () => {
-  const video = document.querySelector("video");
-  if (!video) {
-    setTimeout(videoEventsListener, 100);
-    return;
+export const video_length = (video: HTMLVideoElement) => {
+  const { currentTime } = video;
+  const hours = Math.floor(currentTime / 3600);
+  const minutes = Math.floor(currentTime / 60) % 60;
+  const seconds = Math.floor(currentTime % 60);
+  function toStr(l: number, s: string) {
+    return l > 0 ? l + s : "";
   }
-
-  video.addEventListener("canplay", async () => {
-    setWorkInfo();
-    window.dispatchEvent(new Event("video_loaded"));
-  });
+  return toStr(hours, "時間") + toStr(minutes, "分") + toStr(seconds, "秒");
 };

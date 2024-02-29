@@ -88,7 +88,7 @@ const Editor = (props: {
           name={key}
           value={value as number}
           onChange={onChange}
-          className={`${props.className} w-24`}
+          className={`${props.className} w-32`}
         />
       );
     case "checkbox":
@@ -110,7 +110,7 @@ const Editor = (props: {
           name={key}
           value={value as string}
           onChange={onChange}
-          className={`${props.className} w-24`}
+          className={`${props.className} w-32`}
         />
       );
     case "slider":
@@ -122,7 +122,7 @@ const Editor = (props: {
           defaultValue={[value as number]}
           max={100}
           step={1}
-          className={`${props.className} w-24`}
+          className={`${props.className} w-32`}
           onValueChange={(v) => {
             const target = v[0];
             onSliderChange(target);
@@ -139,7 +139,7 @@ const Editor = (props: {
           <SelectTrigger
             id={key}
             title={text}
-            className={`${props.className} w-24`}
+            className={`${props.className} w-32`}
           >
             <SelectValue placeholder={text} />
           </SelectTrigger>
@@ -170,8 +170,10 @@ const Editor = (props: {
 
 const EditorWrapper = (props: { _key: config["key"] }) => {
   const key = props._key;
-  const text = defaultConfigs.find((item) => item.key === key)?.text;
-  const type = defaultConfigs.find((item) => item.key === key)?.type;
+  const { text, type } = defaultConfigs.find(
+    (item) => item.key === key
+  ) as config;
+
   return (
     <div className="grid grid-cols-4 gap-1 justify-items-stretch items-center">
       <Label

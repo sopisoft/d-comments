@@ -20,17 +20,7 @@ import browser from "webextension-polyfill";
 /**
  * 設定のデフォルト値
  */
-export const defaultConfigs: Array<{
-  key: string;
-  value: string | number | boolean;
-  options?: Array<{ name: string; value: string }> | undefined;
-  type: "checkbox" | "number" | "select" | "slider" | "switch" | "color";
-  text: string;
-  bindings?: Array<{
-    key: (typeof defaultConfigs)[number]["key"];
-    value: (typeof defaultConfigs)[number]["value"];
-  }>;
-}> = [
+export const defaultConfigs = [
   {
     key: "show_last_searched_video_id",
     value: true,
@@ -72,83 +62,25 @@ export const defaultConfigs: Array<{
     value: "#000000",
     type: "color",
     text: "コメント欄の背景色",
-    bindings: [
-      {
-        key: "comment_rendering_method",
-        value: "list_overlay",
-      },
-      {
-        key: "comment_rendering_method",
-        value: "list",
-      },
-    ],
   },
   {
     key: "comment_area_opacity_percentage",
-    value: 35,
+    value: 95,
     type: "slider",
-    text: "コメント欄の背景不透明度 (%)",
+    text: "コメント欄の不透明度 (%)",
   },
   {
     key: "comment_text_color",
     value: "#FFFFFF",
     type: "color",
     text: "コメントの文字色",
-    bindings: [
-      {
-        key: "comment_rendering_method",
-        value: "list_overlay",
-      },
-      {
-        key: "comment_rendering_method",
-        value: "list",
-      },
-    ],
-  },
-  {
-    key: "distance_from_top_percent",
-    value: 5,
-    type: "slider",
-    text: "画面の上部分からの距離 (%)",
-    bindings: [
-      {
-        key: "comment_rendering_method",
-        value: "list_overlay",
-      },
-    ],
-  },
-  {
-    key: "distance_from_left_percent",
-    value: 10,
-    type: "slider",
-    text: "画面の左部分からの距離 (%)",
-    bindings: [
-      {
-        key: "comment_rendering_method",
-        value: "list_overlay",
-      },
-    ],
-  },
-  {
-    key: "comment_area_height_percent",
-    value: 85,
-    type: "slider",
-    text: "コメント欄の高さ (%)",
-    bindings: [
-      {
-        key: "comment_rendering_method",
-        value: "list_overlay",
-      },
-    ],
   },
   {
     key: "comment_rendering_method",
     value: "right_to_left",
     options: [
       { value: "list", name: "リスト" },
-      { value: "list_overlay", name: "リスト（オーバーレイ）" },
-      { value: "right_to_left", name: "右から左に流す" },
-      // { value: "right_to_left_and_list", name: "右から左に流す + リスト" },
+      { value: "right_to_left", name: "ニコニコ" },
     ],
     type: "select",
     text: "コメントの表示方法",
@@ -161,7 +93,7 @@ export const defaultConfigs: Array<{
   },
   {
     key: "make_play_button_open_new_tab",
-    value: false,
+    value: true,
     type: "switch",
     text: "「コメントを表示しながら再生」ボタンでは新しいタブで開く",
     bindings: [

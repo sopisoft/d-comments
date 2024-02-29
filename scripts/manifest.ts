@@ -56,7 +56,7 @@ export async function manifest(browser: browsers[number]) {
         web_accessible_resources: [
           {
             matches: ["*://animestore.docomo.ne.jp/*"],
-            resources: ["js/*.js"],
+            resources: ["js/*.js", "assets/css/*.css"],
           },
         ],
         host_permissions: [
