@@ -32,7 +32,7 @@ async function canvasInit() {
   const video = (await find_element("video")) as HTMLVideoElement | undefined;
   if (!video) return;
 
-  let niconiComments: NiconiComments;
+  let niconiComments: NiconiComments | undefined;
   let threads = getThreads()?.threads;
   let loop: number = window.requestAnimationFrame(fn);
 
@@ -69,11 +69,12 @@ async function canvasInit() {
   }
   function end() {
     nico.style.visibility = "hidden";
-    niconiComments.clear();
+    niconiComments?.clear();
     window.cancelAnimationFrame(loop);
   }
 
   on_mode_change((_prev, next) => {
+    threads = getThreads()?.threads;
     if (!threads) return;
     next.includes("nico") ? start(threads) : end();
   });

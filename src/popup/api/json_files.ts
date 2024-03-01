@@ -43,19 +43,8 @@ export const export_comment_json = async (
 /**
  * コメントファイル読み込み
  */
-export const load_comments_json = async (
-  file: File
-): Promise<renderCommentsApi["response"] | Error> => {
-  const reader = new FileReader();
-
-  let result: string | Error = "";
-  reader.onload = () => {
-    result = reader.result as string;
-    return reader.result;
-  };
-  reader.readAsText(file);
-
-  const json = JSON.parse(String(result) || "{}") as comments_json;
+export const load_comments_from_json = async (file_str: string) => {
+  const json = JSON.parse(file_str);
   if (!json.threadData) {
     return new Error("threadDataがありません");
   }
@@ -70,7 +59,13 @@ export const load_comments_json = async (
     },
     active_tab: true,
   };
-  return await api(query).catch((e) => {
-    return e;
-  });
+
+  const res = await api(query)
+    .then((res) => {
+      return res as renderCommentsApi["response"];
+    })
+    .catch((e) => {
+      return e as Error;
+    });
+  return res;
 };

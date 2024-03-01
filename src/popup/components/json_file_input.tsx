@@ -25,18 +25,43 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useToast } from "@/components/ui/use-toast";
-import { useState } from "react";
-import { load_comments_json } from "../api/json_files";
+import { useRef, useState } from "react";
+import { load_comments_from_json } from "../api/json_files";
 import { ErrorMessage } from "../utils";
 
 function JsonFileInput() {
-  const [file, setFile] = useState<File | null>(null);
+  const input = useRef<HTMLInputElement>(null);
+  const [fileList, setFileList] = useState<FileList | null>(null);
+
+  const [fileStr, setFileStr] = useState<string>("");
   const { toast } = useToast();
 
-  function button_handler() {
+  function input_handler() {
+    const [file] = input.current?.files || [null];
+
+    const reader = new FileReader();
+    reader.addEventListener(
+      "load",
+      () => {
+        if (input.current?.files) {
+          setFileList(input.current.files);
+          const result = reader.result?.toString();
+          if (!result) return;
+          setFileStr(result);
+        }
+      },
+      false
+    );
     if (file) {
-      console.log(file);
-      load_comments_json(file).catch((e) => ErrorMessage(toast, { error: e }));
+      reader.readAsText(file);
+    }
+  }
+
+  function button_handler() {
+    if (fileList) {
+      load_comments_from_json(fileStr).catch((e) =>
+        ErrorMessage(toast, { error: e })
+      );
     } else {
       ErrorMessage(toast, {
         message: {
@@ -68,19 +93,17 @@ function JsonFileInput() {
 
       <div className="grid grid-cols-7 gap-2 my-2">
         <Input
-          id="json_file_input"
+          ref={input}
           className="col-span-5"
           type="file"
-          onChange={(e) => {
-            if (e.target.files) setFile(e.target.files[0]);
-          }}
+          onChange={input_handler}
         />
 
         <div className="col-span-2 flex justify-end items-center space-x-2">
           <Button
             variant="outline"
             className="w-32"
-            disabled={!file}
+            disabled={!fileList}
             onClick={button_handler}
           >
             コメントを表示

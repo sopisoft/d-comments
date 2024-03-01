@@ -71,6 +71,7 @@ const getVideoData = async (videoId: string) => {
 
   return await fetch(`${url}?${new URLSearchParams(params)}`, fetch_options)
     .then(async (res) => {
+      if (res.status !== 200) return new Error("Failed to fetch video data");
       const json = (await res.json()) as SearchResult;
       return json;
     })
@@ -100,6 +101,7 @@ const getThreadComments = async (movieData: SearchResult) => {
   };
   return await fetch(`${serverUrl}?_frontendId=6`, headers)
     .then(async (res) => {
+      if (res.status !== 200) return new Error("Failed to fetch threads");
       const json = (await res.json()) as Threads;
       return json;
     })

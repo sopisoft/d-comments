@@ -12,7 +12,7 @@
     "url": "https://github.com/gobosan/d-comments.git"
   },
   "scripts": {
-    "build": "bun run ./scripts/build.ts",
+    "build": "bun run --bun ./scripts/build.ts",
     "format": "bunx @biomejs/biome format --write .",
     "lint": "bunx @biomejs/biome check --apply ."
   },

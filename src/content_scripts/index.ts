@@ -67,9 +67,13 @@ async function render_comments(videoId: VideoId) {
     return;
   }
   set_threads(threads);
+
+  console.log(threads);
 }
 
-const ui_init = Promise.all([canvasInit(), wrap()]);
+function ui_init() {
+  return Promise.all([canvasInit(), wrap()]);
+}
 
 browser.runtime.onMessage.addListener(async (message: messages) => {
   if (url.pathname !== "/animestore/sc_d_pc") return;
@@ -77,7 +81,7 @@ browser.runtime.onMessage.addListener(async (message: messages) => {
     case "render_comments":
       {
         console.log("render_comments", message.data.videoId);
-        ui_init.then(async () => {
+        ui_init().then(async () => {
           await render_comments(message.data.videoId);
         });
       }
@@ -85,7 +89,7 @@ browser.runtime.onMessage.addListener(async (message: messages) => {
     case "render_comments_json":
       {
         console.log("render_comments_json", message.data.comments);
-        ui_init.then(async () => {
+        ui_init().then(async () => {
           await render_comments_common();
           set_threads(message.data.comments);
         });

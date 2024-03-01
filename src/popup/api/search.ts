@@ -36,9 +36,15 @@ async function search(word: string): Promise<searchApi["response"] | Error> {
     },
     active_tab: false,
   };
-  return await api(query).catch((err) => {
-    return err;
-  });
+
+  const res = await api(query)
+    .then((res) => {
+      return res as searchApi["response"];
+    })
+    .catch((e) => {
+      return e as Error;
+    });
+  return res;
 }
 
 export default search;
