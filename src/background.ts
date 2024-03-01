@@ -30,6 +30,12 @@ const getRandomInt = (min: number, max: number) => {
   return Math.floor(Math.random() * (maxNum - minNum) + minNum);
 };
 
+function getActionTrackId() {
+  const f = Math.random().toString(36).slice(-10);
+  const b = getRandomInt(10 ** 12, 10 ** 13);
+  return `${f}_${b}`;
+}
+
 /**
  * 動画情報を取得する
  * @param videoId ニコニコ動画の動画ID
@@ -37,58 +43,46 @@ const getRandomInt = (min: number, max: number) => {
  */
 
 const getVideoData = async (videoId: string) => {
-  return new Promise<videoDataApi["response"] | Error>((resolve) => {
-    getConfig("allow_login_to_nicovideo", (config) => {
-      const url = `https://www.nicovideo.jp/api/watch/${
-        config ? "v3" : "v3_guest"
-      }/${videoId}`;
-      const params = {
-        _frontendId: "6",
-        _frontendVersion: "0",
-        actionTrackId: `${Math.random().toString(36).slice(-10)}_${getRandomInt(
-          10 ** 12,
-          10 ** 13
-        )}`,
-      };
-      const fetch_options: RequestInit = {
-        credentials: config ? "include" : "omit",
-        headers: {
-          "x-frontend-id": "6",
-          "x-frontend-version": "0",
-        },
-      };
-      config &&
-        browser.cookies
-          .get({ url: "https://www.nicovideo.jp/", name: "user_session" })
-          .then((cookie) => {
-            Object.assign(fetch_options.headers as HeadersInit, {
-              Cookie: `user_session=${cookie?.value}`,
-            });
-          });
-
-      fetch(`${url}?${new URLSearchParams(params)}`, fetch_options)
-        .then((res) => {
-          return res.json();
-        })
-        .then((v) => {
-          return resolve(v as SearchResult);
-        })
-        .catch((e) => {
-          return resolve(e);
+  const config = await getConfig("allow_login_to_nicovideo");
+  const url = `https://www.nicovideo.jp/api/watch/${
+    config ? "v3" : "v3_guest"
+  }/${videoId}`;
+  const params = {
+    _frontendId: "6",
+    _frontendVersion: "0",
+    actionTrackId: getActionTrackId(),
+  };
+  const fetch_options: RequestInit = {
+    credentials: config ? "include" : "omit",
+    headers: {
+      "x-frontend-id": "6",
+      "x-frontend-version": "0",
+    },
+  };
+  if (config)
+    browser.cookies
+      .get({ url: "https://www.nicovideo.jp/", name: "user_session" })
+      .then((cookie) => {
+        if (!cookie) return;
+        Object.assign(fetch_options.headers as HeadersInit, {
+          Cookie: `user_session=${cookie.value}`,
         });
+      });
+
+  return await fetch(`${url}?${new URLSearchParams(params)}`, fetch_options)
+    .then(async (res) => {
+      const json = (await res.json()) as SearchResult;
+      return json;
+    })
+    .catch((e) => {
+      return e as Error;
     });
-  });
 };
 
 /**
  * コメントスレッドの情報とコメントを取得
- * @param movieData getMovieData で取得した動画情報
- * @returns Promise<Response>
  */
-
-const getThreadComments = async (
-  movieData: SearchResult
-): Promise<threadDataApi["response"] | Error> => {
+const getThreadComments = async (movieData: SearchResult) => {
   const nvComment = movieData.data.comment.nvComment;
   const serverUrl = `${nvComment.server}/v1/threads`;
   const headers: RequestInit = {
@@ -104,13 +98,14 @@ const getThreadComments = async (
       additionals: {},
     }),
   };
-  const res = await fetch(`${serverUrl}?_frontendId=6`, headers).catch((e) => {
-    return e;
-  });
-  if (!res.ok) {
-    return res;
-  }
-  return res.json();
+  return await fetch(`${serverUrl}?_frontendId=6`, headers)
+    .then(async (res) => {
+      const json = (await res.json()) as Threads;
+      return json;
+    })
+    .catch((e) => {
+      return e as Error;
+    });
 };
 
 /**

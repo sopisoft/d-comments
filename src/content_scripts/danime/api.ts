@@ -34,22 +34,17 @@ type work_info = {
 };
 
 export async function get_work_info(): Promise<work_info> {
-  const partId =
-    new URLSearchParams(location.search).get("partId")?.toString() ?? "";
+  const partId = new URLSearchParams(location.search).get("partId")?.toString();
   const params = {
     viewType: "5",
-    partId: partId,
+    partId: partId ?? "",
     defaultPlay: "5",
   };
   const params_str = new URLSearchParams(params).toString();
-  const res = await fetch(`${base_url}?${params_str}`, {
+  return await fetch(`${base_url}?${params_str}`, {
     method: "GET",
     cache: "no-cache",
-  }).then((res) => {
-    if (!res.ok) {
-      return Promise.reject(res);
-    }
-    return res;
+  }).then(async (res) => {
+    return await res.json();
   });
-  return await res.json();
 }

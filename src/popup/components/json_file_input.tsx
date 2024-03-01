@@ -33,6 +33,20 @@ function JsonFileInput() {
   const [file, setFile] = useState<File | null>(null);
   const { toast } = useToast();
 
+  function button_handler() {
+    if (file) {
+      console.log(file);
+      load_comments_json(file).catch((e) => ErrorMessage(toast, { error: e }));
+    } else {
+      ErrorMessage(toast, {
+        message: {
+          title: "ファイルが選択されていません。",
+          description: "ファイルを選択してください。",
+        },
+      });
+    }
+  }
+
   return (
     <>
       <TooltipProvider delayDuration={200}>
@@ -58,9 +72,7 @@ function JsonFileInput() {
           className="col-span-5"
           type="file"
           onChange={(e) => {
-            if (e.target.files) {
-              setFile(e.target.files[0]);
-            }
+            if (e.target.files) setFile(e.target.files[0]);
           }}
         />
 
@@ -69,18 +81,7 @@ function JsonFileInput() {
             variant="outline"
             className="w-32"
             disabled={!file}
-            onClick={() => {
-              !file
-                ? ErrorMessage(toast, {
-                    message: {
-                      title: "ファイルが選択されていません。",
-                      description: "ファイルを選択してください。",
-                    },
-                  })
-                : load_comments_json(file).catch((e) =>
-                    ErrorMessage(toast, { error: e })
-                  );
-            }}
+            onClick={button_handler}
           >
             コメントを表示
           </Button>

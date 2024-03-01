@@ -93,13 +93,9 @@ function SearchResult(props: { snapshot: Snapshot }) {
     >
       {snapshot.data.map((item) => (
         <li
-          onClick={() => {
-            setVideoId?.(item.contentId);
-          }}
+          onClick={() => setVideoId(item.contentId)}
           onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              setVideoId?.(item.contentId);
-            }
+            if (e.key === "Enter") setVideoId(item.contentId);
           }}
           className="cursor-pointer rounded hover:bg-gray-200 border-t-2  border-gray-300"
         >

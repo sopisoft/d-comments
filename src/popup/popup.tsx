@@ -32,7 +32,7 @@ import JsonFileInput from "./components/json_file_input";
 import Menu from "./components/menu";
 import Search from "./components/search";
 import VideoIdInput from "./components/video_id_input";
-import { isVideoId, isWatchPage as isWatchPageFn } from "./utils";
+import { isWatchPage as isWatchPageFn } from "./utils";
 
 export const VideoIdContext = createContext<{
   videoId: string;
@@ -44,12 +44,11 @@ export const Popup = () => {
   const { name, version } = manifest;
 
   const [isWatchPage, setIsWatchPage] = useState(false);
-
   const [videoId, _setVideoId] = useState("");
 
   function setVideoId(video_id: string) {
     _setVideoId(video_id);
-    if (isVideoId(video_id)) window.localStorage.setItem("videoId", video_id);
+    window.localStorage.setItem("videoId", video_id);
   }
 
   isWatchPageFn().then(setIsWatchPage);

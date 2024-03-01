@@ -15,70 +15,29 @@
     along with d-comments.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-import api from "@/lib/api";
+import get_threads from "./api/thread_data";
+import get_video_data from "./api/video_data";
 
 const exportJson = async (videoId: VideoId) => {
-  const video_data = async (): Promise<videoDataApi["response"] | Error> => {
-    const query: {
-      type: videoDataApi["type"];
-      data: videoDataApi["data"];
-      active_tab: videoDataApi["active_tab"];
-    } = {
-      type: "video_data",
-      data: {
-        videoId: videoId,
-      },
-      active_tab: false,
-    };
-    return await api(query)
-      .then((res) => {
-        return res;
-      })
-      .catch((e) => {
-        return e;
-      });
-  };
-
-  const threads_data = async (
-    videoData: videoDataApi["response"]
-  ): Promise<threadDataApi["response"] | Error> => {
-    const query: {
-      type: threadDataApi["type"];
-      data: threadDataApi["data"];
-      active_tab: threadDataApi["active_tab"];
-    } = {
-      type: "thread_data",
-      data: {
-        videoData: videoData,
-      },
-      active_tab: false,
-    };
-    return await api(query)
-      .then((res) => {
-        return res;
-      })
-      .catch((e) => {
-        return e;
-      });
-  };
-
-  const videoData = await video_data();
-  if (videoData instanceof Error) {
-    const e = videoData as Error;
-    return e;
-  }
-  const threadData = await threads_data(videoData);
-  if (threadData instanceof Error) {
-    const e = threadData as Error;
+  const video_data = await get_video_data(videoId);
+  if (video_data instanceof Error) {
+    const e = video_data as Error;
     return e;
   }
 
-  const fileName = `${videoData.data.video.title}.json`;
+  const thread_data = await get_threads(video_data);
+  if (thread_data instanceof Error) {
+    const e = thread_data as Error;
+    return e;
+  }
+
+  const fileName = `${video_data.data.video.title}.json`;
   const data: comments_json = {
     version: 1,
-    movieData: videoData,
-    threadData: threadData,
+    movieData: video_data,
+    threadData: thread_data,
   };
+
   return await saveFile(fileName, JSON.stringify(data));
 };
 
@@ -87,10 +46,7 @@ const exportJson = async (videoId: VideoId) => {
  * @param fileName ファイル名
  * @param data 内容
  */
-const saveFile = async (
-  fileName: string,
-  data: string
-): Promise<boolean | Error> => {
+const saveFile = async (fileName: string, data: string) => {
   try {
     const blob = new Blob([data], { type: "application/json" });
     const link = document.createElement("a");
@@ -102,7 +58,7 @@ const saveFile = async (
   } catch (e) {
     return e as Error;
   }
-  return true;
+  return true as const;
 };
 
 export default exportJson;

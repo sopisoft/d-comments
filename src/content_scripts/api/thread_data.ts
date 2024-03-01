@@ -17,23 +17,28 @@
 
 import api from "@/lib/api";
 
-const get_video_data: (
-  videoId: VideoId
-) => Promise<videoDataApi["response"] | Error> = async (videoId) => {
+const get_threads: (
+  video_data: threadDataApi["data"]["videoData"]
+) => Promise<threadDataApi["response"] | Error> = async (video_data) => {
   const query: {
-    type: videoDataApi["type"];
-    data: videoDataApi["data"];
-    active_tab: videoDataApi["active_tab"];
+    type: threadDataApi["type"];
+    data: threadDataApi["data"];
+    active_tab: threadDataApi["active_tab"];
   } = {
-    type: "video_data",
+    type: "thread_data",
     data: {
-      videoId: videoId,
+      videoData: video_data,
     },
     active_tab: false,
   };
-  return await api(query).catch((err) => {
-    return err;
-  });
+  const res = await api(query)
+    .then((v) => {
+      return v as threadDataApi["response"];
+    })
+    .catch((e) => {
+      return e as Error;
+    });
+  return res;
 };
 
-export default get_video_data;
+export default get_threads;

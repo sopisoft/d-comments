@@ -50,8 +50,6 @@ function Options() {
         description="拡張機能のアイコンをクリックすると表示される、ポップアップページの設定です。"
         content={
           <>
-            <Editor _key="show_last_searched_video_id" />
-            <Separator />
             <Editor _key="auto_search" />
           </>
         }
@@ -122,7 +120,12 @@ function Options() {
       <CardWrapper
         title="コメントの表示方法"
         description="コメントの表示方法を設定します。"
-        content={<Editor _key="comment_rendering_method" />}
+        content={
+          <>
+            <Editor _key="show_comments_in_list" />
+            <Editor _key="show_comments_in_niconico_style" />
+          </>
+        }
       />
     </div>
   );

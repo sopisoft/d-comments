@@ -23,8 +23,8 @@ import { find_element } from "./dom";
  * mediaSession を設定する
  */
 export const setWorkInfo = async () => {
-  const workInfo = await get_work_info();
-  const { title, partExp } = workInfo.data;
+  const { data } = await get_work_info();
+  const { title, partExp } = data;
 
   document.title = title;
   document
@@ -43,10 +43,10 @@ export const setWorkInfo = async () => {
     mediaSession.metadata = new MediaMetadata({
       title: title,
       artist: "dアニメストア",
-      album: workInfo.data.workTitle,
+      album: data.workTitle,
       artwork: [
         {
-          src: workInfo.data.mainScenePath.replace("_1_3.png", "_1_1.png"),
+          src: data.mainScenePath.replace("_1_3.png", "_1_1.png"),
           sizes: "640x360",
           type: "image/jpeg",
         },

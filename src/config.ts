@@ -22,12 +22,6 @@ import browser from "webextension-polyfill";
  */
 export const defaultConfigs = [
   {
-    key: "show_last_searched_video_id",
-    value: true,
-    type: "switch",
-    text: "ポップアップを開いたとき最後に入力した動画IDを表示する",
-  },
-  {
     key: "auto_search",
     value: true,
     type: "switch",
@@ -76,14 +70,16 @@ export const defaultConfigs = [
     text: "コメントの文字色",
   },
   {
-    key: "comment_rendering_method",
-    value: "right_to_left",
-    options: [
-      { value: "list", name: "リスト" },
-      { value: "right_to_left", name: "ニコニコ" },
-    ],
-    type: "select",
-    text: "コメントの表示方法",
+    key: "show_comments_in_list",
+    value: true,
+    type: "checkbox",
+    text: "リスト表示",
+  },
+  {
+    key: "show_comments_in_niconico_style",
+    value: true,
+    type: "checkbox",
+    text: "ニコニコ動画風",
   },
   {
     key: "add_button_to_show_comments_while_playing",

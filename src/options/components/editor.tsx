@@ -129,29 +129,29 @@ const Editor = (props: {
           }}
         />
       );
-    case "select":
-      return (
-        <Select
-          name={key}
-          value={value as string}
-          onValueChange={onSelectedChange}
-        >
-          <SelectTrigger
-            id={key}
-            title={text}
-            className={`${props.className} w-32`}
-          >
-            <SelectValue placeholder={text} />
-          </SelectTrigger>
-          <SelectContent>
-            {select_options?.map((option) => {
-              return (
-                <SelectItem value={option.value}>{option.name}</SelectItem>
-              );
-            })}
-          </SelectContent>
-        </Select>
-      );
+    // case "select":
+    //   return (
+    //     <Select
+    //       name={key}
+    //       value={value as string}
+    //       onValueChange={onSelectedChange}
+    //     >
+    //       <SelectTrigger
+    //         id={key}
+    //         title={text}
+    //         className={`${props.className} w-32`}
+    //       >
+    //         <SelectValue placeholder={text} />
+    //       </SelectTrigger>
+    //       <SelectContent>
+    //         {select_options?.map((option) => {
+    //           return (
+    //             <SelectItem value={option.value}>{option.name}</SelectItem>
+    //           );
+    //         })}
+    //       </SelectContent>
+    //     </Select>
+    //   );
     case "switch":
       return (
         <Switch

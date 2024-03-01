@@ -24,7 +24,6 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useToast } from "@/components/ui/use-toast";
-import { getConfig } from "@/config";
 import export_comments_json from "@/content_scripts/export";
 import api from "@/lib/api";
 import { ExternalLink } from "lucide-react";
@@ -79,18 +78,16 @@ function VideoIdInput() {
   };
 
   async function on_save_json_button_clicked() {
-    const video_id = await check_video_id(videoId);
-    if (!video_id) return;
-    export_comments_json(video_id);
+    check_video_id(videoId).then((id) => {
+      if (!id) return;
+      export_comments_json(id);
+    });
   }
 
-  getConfig("show_last_searched_video_id", (value) => {
-    if (value === true) {
-      const last_id = window.localStorage.getItem("videoId");
-      if (!last_id) return;
-      setVideoId(last_id);
-    }
-  });
+  useEffect(() => {
+    const last_id = window.localStorage.getItem("videoId");
+    setVideoId(last_id ?? "");
+  }, [setVideoId]);
 
   return (
     <>
