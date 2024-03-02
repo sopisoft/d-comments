@@ -24,10 +24,10 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useToast } from "@/components/ui/use-toast";
-import export_comments_json from "@/content_scripts/export";
 import api from "@/lib/api";
 import { ExternalLink } from "lucide-react";
-import { useContext, useEffect, useRef } from "react";
+import { useContext, useEffect } from "react";
+import export_comments_json from "../../content_scripts/export";
 import { VideoIdContext } from "../popup";
 import { ErrorMessage, isVideoId } from "../utils";
 

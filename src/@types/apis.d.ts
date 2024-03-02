@@ -58,15 +58,6 @@ type renderCommentsApi = {
   active_tab: true;
   response: boolean;
 };
-
-type renderCommentsJsonApi = {
-  type: "render_comments_json";
-  data: {
-    comments: Threds;
-  };
-  active_tab: true;
-  response: boolean;
-};
 type exportCommentsJsonApi = {
   type: "export_comments_json";
   data: {
@@ -82,7 +73,6 @@ declare type messages =
   | searchApi
   | ownerInfoApi
   | renderCommentsApi
-  | renderCommentsJsonApi
   | exportCommentsJsonApi;
 
 type messaging_api = {

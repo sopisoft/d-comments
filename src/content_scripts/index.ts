@@ -78,13 +78,6 @@ browser.runtime.onMessage.addListener(async (message: messages) => {
       });
       break;
     }
-    case "render_comments_json": {
-      console.log("render_comments_json", message.data.comments);
-      ui_init().then(async () => {
-        set_threads(message.data.comments);
-      });
-      break;
-    }
     case "export_comments_json": {
       console.log("export_comments_json", message.data.videoId);
       await exportJson(message.data.videoId);
