@@ -25,13 +25,13 @@ import {
 } from "@/components/ui/card";
 import { Toaster } from "@/components/ui/toaster";
 import "@/index.css";
+import { Settings } from "lucide-react";
 import { createContext, useState } from "react";
 import { createRoot } from "react-dom/client";
 import browser from "webextension-polyfill";
-import JsonFileInput from "./components/json_file_input";
+import Inputs from "./components/inputs";
 import Menu from "./components/menu";
 import Search from "./components/search";
-import VideoIdInput from "./components/video_id_input";
 import { isWatchPage as isWatchPageFn } from "./utils";
 
 export const VideoIdContext = createContext<{
@@ -56,15 +56,24 @@ export const Popup = () => {
   return (
     <Card className="w-[32rem] h-full overflow-hidden">
       <CardHeader className="p-3">
-        <CardTitle className="text-lg">
+        <CardTitle className="text-lg flex justify-around items-start">
           {name} (Version: {version})
+          {isWatchPage && (
+            <Settings
+              className="w-8 h-8 p-1 cursor-pointer rounded-md border border-solid border-transparent hover:border-gray-300 "
+              onClick={() => {
+                browser.tabs.create({
+                  url: browser.runtime.getURL("options/options.html"),
+                });
+              }}
+            />
+          )}
         </CardTitle>
       </CardHeader>
       <div className="px-3">
         {isWatchPage ? (
           <VideoIdContext.Provider value={{ videoId, setVideoId }}>
-            <VideoIdInput />
-            <JsonFileInput />
+            <Inputs />
             <Search />
           </VideoIdContext.Provider>
         ) : (

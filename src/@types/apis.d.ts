@@ -29,7 +29,7 @@ type threadDataApi = {
     videoData: SearchResult;
   };
   active_tab: false;
-  response: Threads;
+  response: ThreadsData;
 };
 
 type searchApi = {
@@ -62,7 +62,7 @@ type renderCommentsApi = {
 type renderCommentsJsonApi = {
   type: "render_comments_json";
   data: {
-    comments: comments_json["threadData"];
+    comments: Threds;
   };
   active_tab: true;
   response: boolean;

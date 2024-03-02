@@ -32,12 +32,10 @@ export function Scroll() {
     if (await getConfig("show_main_comments")) list.push("main");
     if (await getConfig("show_easy_comments")) list.push("easy");
 
-    const t = _threads || threads();
-    if (t) {
-      const c = await getComments(t, list);
-      _setComments(c);
-    }
+    const t = _threads || (await threads());
+    if (t) _setComments(await getComments(t, list));
   }
+
   browser.storage.onChanged.addListener((changes) => {
     for (const key in changes) {
       switch (key as config["key"]) {
@@ -53,10 +51,10 @@ export function Scroll() {
       }
     }
   });
-  on_threads_change((_prev, next) => {
-    set_comments(next);
-  });
 
+  on_threads_change((_prev, next) => {
+    if (next) set_comments(next);
+  });
   useEffect(() => {
     set_comments();
   }, []);
@@ -67,17 +65,19 @@ export function Scroll() {
     estimateSize: () => 20,
   });
 
-  function loop() {
-    window.requestAnimationFrame(loop);
-  }
-  window.requestAnimationFrame(loop);
+  // function loop() {
+  //   window.requestAnimationFrame(loop);
+  // }
+  // window.requestAnimationFrame(loop);
 
   return (
-    <ul ref={parentRef}>
-      {virtualizer.getVirtualItems().map((virtualItem) => (
-        <li>{comments[virtualItem.index]?.body}</li>
-      ))}
-    </ul>
+    comments && (
+      <ul ref={parentRef}>
+        {virtualizer.getVirtualItems().map((virtualItem) => (
+          <li>{comments[virtualItem.index]?.body}</li>
+        ))}
+      </ul>
+    )
   );
 }
 

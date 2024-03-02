@@ -19,78 +19,87 @@ import NiconiComments from "@xpadev-net/niconicomments";
 import { find_element } from "../danime/dom";
 import {
   mode,
+  onOpacityChange,
+  onTextColorChange,
   on_mode_change,
   on_threads_change,
+  opacity,
+  textColor,
   threads as getThreads,
 } from "../state";
+
+const video = (await find_element("video")) as HTMLVideoElement | undefined;
+
+let nc: NiconiComments | undefined;
+let nico: HTMLCanvasElement;
+
+const nico_id = "d-comments-nico";
+
+const nc_options = {
+  keepCA: true,
+  scale: 1,
+};
+
+function start(threads: Threads["threads"]) {
+  console.log("nico_started");
+  nico.style.visibility = "visible";
+  nc = new NiconiComments(nico, threads, nc_options);
+}
+function end() {
+  console.log("nico_ended");
+  nico.style.visibility = "hidden";
+}
+
+onTextColorChange((_prev, next) => {
+  nico.style.color = next;
+});
+onOpacityChange((_prev, next) => {
+  nico.style.opacity = (next / 100).toString();
+});
+on_mode_change(async (_prev, next) => {
+  const threads = (await getThreads())?.threads;
+  console.log("nico_mode_chamged", next, "threads", threads);
+  if (next.includes("nico") && threads) start(threads);
+  else end();
+});
+on_threads_change(async (_prev, next) => {
+  const modes = await mode();
+  console.log("nico_threads_changed", next, "mode", modes);
+  const threads = next?.threads;
+  if (modes.includes("nico") && threads) start(threads);
+  else end();
+});
 
 /**
  * @description
  * This function initializes the canvas for the niconico comments.
  */
 async function canvasInit() {
-  const video = (await find_element("video")) as HTMLVideoElement | undefined;
-  if (!video) return;
-
-  let niconiComments: NiconiComments | undefined;
-  let threads = getThreads()?.threads;
-  let loop: number = window.requestAnimationFrame(fn);
-
-  const nico_id = "d-comments-nico";
   const prev_nico = document.getElementById(nico_id);
-  let nico = prev_nico ?? document.createElement("canvas");
+  nico = (prev_nico ?? document.createElement("canvas")) as HTMLCanvasElement;
   if (!prev_nico) {
-    const canvas = nico as HTMLCanvasElement;
-    canvas.id = nico_id;
-    // canvas.width = 1920;
-    // canvas.height = 1080;
-    Object.assign(canvas.style, {
-      aspectRatio: "16/9",
-      objectFit: "cover",
+    nico.id = nico_id;
+    nico.width = 1920;
+    nico.height = 1080;
+    Object.assign(nico.style, {
+      objectFit: "contain",
       width: "100%",
       height: "100%",
       position: "absolute",
       background: "transparent",
+      color: textColor(),
+      opacity: ((await opacity()) / 100).toString(),
       zIndex: "2",
-      visibility: mode().includes("nico") ? "visible" : "hidden",
+      visibility: (await mode()).includes("nico") ? "visible" : "hidden",
     });
-    nico = canvas;
-    video.parentElement?.appendChild(nico);
+    video?.parentElement?.appendChild(nico);
   }
 
-  function start(threads: Threads["threads"]) {
-    nico.style.visibility = "visible";
-    niconiComments = new NiconiComments(nico as HTMLCanvasElement, threads, {
-      format: "v1",
-      keepCA: true,
-      scale: 1,
-    });
-    loop = window.requestAnimationFrame(fn);
-  }
-  function end() {
-    nico.style.visibility = "hidden";
-    niconiComments?.clear();
-    window.cancelAnimationFrame(loop);
-  }
-
-  on_mode_change((_prev, next) => {
-    threads = getThreads()?.threads;
-    if (!threads) return;
-    next.includes("nico") ? start(threads) : end();
-  });
-  on_threads_change((_prev, next) => {
-    threads = next?.threads;
-    if (mode().includes("nico") && threads) start(threads);
-    else end();
-  });
-
-  function fn(callBack: number) {
+  requestAnimationFrame(function loop(callBack: number) {
     if (video && (Math.round(callBack / 10) * 10) % 10 === 0)
-      niconiComments?.drawCanvas(Math.floor(video.currentTime * 100));
-    window.requestAnimationFrame(fn);
-  }
-
-  if (mode().includes("nico") && threads) start(threads);
+      nc?.drawCanvas(Math.floor(video.currentTime * 100));
+    window.requestAnimationFrame(loop);
+  });
 }
 
 export default canvasInit;

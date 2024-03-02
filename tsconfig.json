@@ -29,13 +29,5 @@
     "strict": true,
     "target": "ESNext",
     "verbatimModuleSyntax": true
-  },
-  "include": [
-    "src/**/*",
-    "scripts",
-    "vite.config.ts"
-  ],
-  "exclude": [
-    "node_modules"
-  ]
+  }
 }

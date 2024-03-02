@@ -85,7 +85,8 @@ const getVideoData = async (videoId: string) => {
  */
 const getThreadComments = async (movieData: SearchResult) => {
   const nvComment = movieData.data.comment.nvComment;
-  const serverUrl = `${nvComment.server}/v1/threads`;
+  const { server, threadKey, params } = nvComment;
+  const serverUrl = `${server}/v1/threads`;
   const headers: RequestInit = {
     headers: {
       "Content-Type": "application/json",
@@ -94,15 +95,15 @@ const getThreadComments = async (movieData: SearchResult) => {
     } as HeadersInit,
     method: "POST",
     body: JSON.stringify({
-      threadKey: nvComment.threadKey,
-      params: nvComment.params,
+      threadKey: threadKey,
+      params: params,
       additionals: {},
     }),
   };
   return await fetch(`${serverUrl}?_frontendId=6`, headers)
     .then(async (res) => {
       if (res.status !== 200) return new Error("Failed to fetch threads");
-      const json = (await res.json()) as Threads;
+      const json = (await res.json()) as ThreadsData;
       return json;
     })
     .catch((e) => {

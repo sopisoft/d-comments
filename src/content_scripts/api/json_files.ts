@@ -34,9 +34,13 @@ export const export_comment_json = async (
     },
     active_tab: true,
   };
-  const res = await api(query).catch((e) => {
-    return e;
-  });
+  const res = await api(query)
+    .then((res) => {
+      return res as exportCommentsJsonApi["response"];
+    })
+    .catch((e) => {
+      return e as Error;
+    });
   return res;
 };
 
@@ -44,7 +48,7 @@ export const export_comment_json = async (
  * コメントファイル読み込み
  */
 export const load_comments_from_json = async (file_str: string) => {
-  const json = JSON.parse(file_str);
+  const json = JSON.parse(file_str) as comments_json;
   if (!json.threadData) {
     return new Error("threadDataがありません");
   }
@@ -55,7 +59,7 @@ export const load_comments_from_json = async (file_str: string) => {
   } = {
     type: "render_comments_json",
     data: {
-      comments: json.threadData,
+      comments: json.threadData.data,
     },
     active_tab: true,
   };

@@ -19,6 +19,7 @@ import { type config, getConfig } from "@/config";
 import { createRoot } from "react-dom/client";
 import browser from "webextension-polyfill";
 import { find_element } from "../danime/dom";
+import { mode, on_mode_change } from "../state";
 import Root from "./root";
 
 /**
@@ -70,7 +71,7 @@ async function wrap(): Promise<void> {
       height: "100%",
       width: `${await getConfig("comment_area_width_px")}px`,
       backgroundColor: "rgb(0, 0, 0)",
-      display: (await getConfig("show_comments_in_list")) ? "block" : "none",
+      display: (await mode()).includes("list") ? "block" : "none",
     });
     wrapper.appendChild(side_menu);
   }
@@ -89,14 +90,15 @@ async function wrap(): Promise<void> {
   //   resize_handle.releasePointerCapture(event.pointerId);
   // };
 
+  on_mode_change((_prec, next) => {
+    side_menu.style.display = next.includes("list") ? "block" : "none";
+  });
+
   browser.storage.onChanged.addListener((changes) => {
     for (const key in changes) {
       switch (key as config["key"]) {
         case "comment_area_width_px":
           side_menu.style.width = `${changes[key].newValue}px`;
-          break;
-        case "show_comments_in_list":
-          side_menu.style.display = changes[key].newValue ? "block" : "none";
           break;
       }
     }

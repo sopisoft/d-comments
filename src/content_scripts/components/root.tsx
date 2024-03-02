@@ -16,48 +16,48 @@
 */
 
 import { ThemeProvider } from "@/components/theme-provider";
-import { type config, getConfig } from "@/config";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import browser from "webextension-polyfill";
+import {
+  bgColor as bgColorFn,
+  onBgColorChange,
+  onOpacityChange,
+  onTextColorChange,
+  opacity as opacityFn,
+  textColor as textColorFn,
+} from "../state";
+import Scroll from "./scroll";
 
 function Root() {
-  const [bgColor, setBgColor] = useState<string>("black");
-  const [textColor, setTextColor] = useState<string>("white");
-  const [opacity, setOpacity] = useState<number>(100);
+  const [bgColor, setBgColor] = useState<string>();
+  const [textColor, setTextColor] = useState<string>();
+  const [opacity, setOpacity] = useState<number>();
 
-  getConfig("comment_area_background_color", (value) => {
-    setBgColor(value as string);
-  });
-  getConfig("comment_text_color", (value) => {
-    setTextColor(value as string);
-  });
-  getConfig("comment_area_opacity_percentage", (value) => {
-    setOpacity(value as number);
-  });
+  useEffect(() => {
+    (async () => {
+      setBgColor(await bgColorFn());
+      setTextColor(await textColorFn());
+      setOpacity(await opacityFn());
+    })();
+  }, []);
 
-  browser.storage.onChanged.addListener((changes) => {
-    for (const key in changes) {
-      switch (key as config["key"]) {
-        case "comment_area_background_color":
-          setBgColor(changes[key].newValue);
-          break;
-        case "comment_text_color":
-          setTextColor(changes[key].newValue);
-          break;
-        case "comment_area_opacity_percentage":
-          setOpacity(changes[key].newValue);
-          break;
-      }
-    }
+  onBgColorChange((_prev, next) => {
+    setBgColor(next);
+  });
+  onTextColorChange((_prev, next) => {
+    setTextColor(next);
+  });
+  onOpacityChange((_prev, next) => {
+    setOpacity(next);
   });
 
   return (
     <div
-      className="w-[32rem] h-full"
+      className="w-full h-full"
       style={{
         backgroundColor: bgColor,
         color: textColor,
-        opacity: opacity / 100,
+        opacity: (opacity ?? 100) / 100,
       }}
     >
       <link
@@ -65,10 +65,8 @@ function Root() {
         href={browser.runtime.getURL("assets/css/index.css")}
       />
       <ThemeProvider>
-        <div className="h-full p-4 bg-transparent">
-          <div className="flex items-center justify-between">
-            <h1 className="text-2xl font-bold">d-comments</h1>
-          </div>
+        <div className="h-full w-full p-4 bg-transparent">
+          <Scroll />
         </div>
       </ThemeProvider>
     </div>

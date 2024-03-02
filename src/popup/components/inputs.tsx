@@ -27,16 +27,16 @@ import { useToast } from "@/components/ui/use-toast";
 import export_comments_json from "@/content_scripts/export";
 import api from "@/lib/api";
 import { ExternalLink } from "lucide-react";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef } from "react";
 import { VideoIdContext } from "../popup";
-import { ErrorMessage, isVideoId, isWatchPage } from "../utils";
+import { ErrorMessage, isVideoId } from "../utils";
 
-function VideoIdInput() {
+function Inputs() {
   const { videoId, setVideoId } = useContext(VideoIdContext);
 
   const { toast } = useToast();
 
-  const check_video_id = async (videoId: string | undefined | null) => {
+  async function check_video_id(videoId: string | undefined | null) {
     if (videoId === undefined || videoId === null) {
       ErrorMessage(toast, {
         message: {
@@ -56,9 +56,9 @@ function VideoIdInput() {
       return false;
     }
     return videoId as VideoId;
-  };
+  }
 
-  const render_comments = async () => {
+  async function render_comments() {
     const video_id = await check_video_id(videoId);
     if (!video_id) return;
     const query: {
@@ -75,12 +75,11 @@ function VideoIdInput() {
     return await api(query).catch((error) => {
       ErrorMessage(toast, { error: error });
     });
-  };
+  }
 
   async function on_save_json_button_clicked() {
     check_video_id(videoId).then((id) => {
-      if (!id) return;
-      export_comments_json(id);
+      if (id) export_comments_json(id);
     });
   }
 
@@ -157,4 +156,4 @@ function VideoIdInput() {
   );
 }
 
-export default VideoIdInput;
+export default Inputs;

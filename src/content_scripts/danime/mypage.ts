@@ -22,19 +22,29 @@ import { find_elements } from "./dom";
  * 作品ページの各パートに新しいタブで開くボタンを追加する
  */
 export const addMenu = async () => {
-  for (const item of await find_elements(".itemModule.list a", 100, 50)) {
+  const a_array = await find_elements(".itemModule.list a");
+  const config = await getConfig("make_play_button_open_new_tab");
+
+  const inner_text = config
+    ? "新しいタブでコメントを表示しながら再生"
+    : "現在のタブでコメントを表示しながら再生";
+
+  for (const item of a_array) {
     const partID = item?.getAttribute("href")?.replace(/[^0-9]/g, "");
     if (!partID) continue;
     const bgColor = window.getComputedStyle(item).backgroundColor;
     const a = document.createElement("a");
     a.href = `sc_d_pc?partId=${partID}`;
+    a.innerText = inner_text;
     Object.assign(
       a.style,
       { type: "text/css" },
       {
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
         width: "100%",
-        padding: "0.4rem 1.8rem",
-        textAlign: "center",
+        padding: "1.4rem 1.8rem",
         borderTop: "1px solid rgb(224 224 224)",
         backgroundColor: bgColor,
       }
@@ -44,9 +54,7 @@ export const addMenu = async () => {
     if (!target?.querySelector(`a[href="sc_d_pc?partId=${partID}"]`))
       target?.appendChild(a);
 
-    const config = await getConfig("make_play_button_open_new_tab");
     if (config === true) {
-      a.innerText = "新しいタブでコメントを表示しながら再生";
       a.target = "_blank";
       a.addEventListener("click", (e) => {
         e.preventDefault();
@@ -54,7 +62,6 @@ export const addMenu = async () => {
         window.open(a.href);
       });
     } else {
-      a.innerText = "現在のタブでコメントを表示しながら再生";
       a.addEventListener("click", () => {
         window.location.href = a.href;
       });

@@ -123,12 +123,25 @@ type SearchResult = {
   };
 };
 
+type ThreadsData = {
+  meta: {
+    status: number;
+  };
+  data: Threads;
+};
+
+type comments_json = {
+  version: 1;
+  movieData: SearchResult;
+  threadData: ThreadsData;
+};
+
 type Threads = {
   globalComments: [
     {
       id: string; // thread["id"] to stringify
       count: number;
-    }[],
+    },
   ];
   threads: [
     {
@@ -154,12 +167,6 @@ type nv_comment = {
   nicoruId: string | null; // 自分がニコった場合26文字の大文字か数字で構成される文字列が返る(ULID?) @see https://gist.github.com/otya128/9c7499cf667e75964b43d46c8c567e37
   source: "leaf" | "nicoru" | "trunk";
   isMyPost: boolean;
-};
-
-type comments_json = {
-  version: 1;
-  movieData: SearchResult;
-  threadData: Threads;
 };
 
 type Snapshot = {

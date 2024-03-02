@@ -17,17 +17,15 @@
 
 export const getComments = async (
   Threads: Threads,
-  forks: thread["forkLabel"][],
-  filter = true,
-  sort = true
+  forks: thread["forkLabel"][]
 ) => {
-  const { threads } = Threads;
+  const threads = Threads.threads;
   const comments: nv_comment[] = [];
 
   function f(fork: thread["forkLabel"]) {
     threads
-      .filter((thread) => thread.fork === fork)
-      .map((thread) => {
+      ?.filter((thread) => thread.fork === fork)
+      ?.map((thread) => {
         thread.comments.map((comment) => {
           comments.push(comment);
         });
@@ -36,20 +34,11 @@ export const getComments = async (
 
   for (const fork of forks) f(fork);
 
-  if (filter) filterComments(comments);
-  if (sort) sortComments(comments);
+  comments?.filter((comment) => comment.score > 0);
+
+  comments?.sort((a, b) => {
+    return a.vposMs - b.vposMs;
+  });
 
   return comments;
 };
-
-export function filterComments(comments: nv_comment[], level = 0) {
-  return comments.filter((comment) => {
-    return comment.score >= level;
-  });
-}
-
-export function sortComments(comments: nv_comment[]) {
-  return comments.sort((a, b) => {
-    return a.vposMs - b.vposMs;
-  });
-}

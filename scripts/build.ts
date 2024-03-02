@@ -45,18 +45,13 @@ Promise.all([fs.rmdirSync("dist", { recursive: true }), tsc, fmt, lint]).then(
               JSON.stringify(manifest)
             );
           }),
-
-          minifyJs(browser).then(() => {
-            webExtBuild(browser);
-          }),
-
           Bun.write(
             Bun.file(`dist/${browser}/meta.json`),
             JSON.stringify({
               updated: new Date().toISOString(),
             })
           ),
-        ]);
+        ]).then(() => webExtBuild(browser));
       });
     });
   }

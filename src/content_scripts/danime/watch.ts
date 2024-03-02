@@ -15,8 +15,9 @@
     along with d-comments.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+import { on_partId_change } from "../state";
 import { get_work_info } from "./api";
-import { find_element } from "./dom";
+import { find_element, find_elements } from "./dom";
 
 /**
  * 視聴ページで title と description をパートタイトルと説明に書き換える
@@ -87,13 +88,53 @@ export const setWorkInfo = async () => {
   }
 };
 
-export const video_length = (video: HTMLVideoElement) => {
-  const { currentTime } = video;
-  const hours = Math.floor(currentTime / 3600);
-  const minutes = Math.floor(currentTime / 60) % 60;
-  const seconds = Math.floor(currentTime % 60);
-  function toStr(l: number, s: string) {
-    return l > 0 ? l + s : "";
+on_partId_change((_prev, next) => {
+  if (next) setWorkInfo();
+});
+
+/**
+ * Firefoxで再生開始後やシーク移動後に、映像が止まり音声だけが流れるのを防ぐ
+ * Inspired by dアニメストア スムーズプレイヤー
+ * @see https://github.com/hamachi25/dAnimeSmoothPlayer
+ */
+if ("MozAppearance" in document.documentElement.style) {
+  async function unzip(t = 300) {
+    const video = (await find_element("video")) as HTMLVideoElement | undefined;
+    if (!video) return;
+    const observer = new MutationObserver(() => {
+      observer.disconnect();
+      const time = video.currentTime;
+      video.currentTime = time - 3;
+      video.pause();
+      setTimeout(() => {
+        video.currentTime = time;
+        video.play();
+      }, t);
+    });
+    const time = await find_element("#time");
+    if (time) observer.observe(time, { childList: true });
   }
-  return toStr(hours, "時間") + toStr(minutes, "分") + toStr(seconds, "秒");
-};
+
+  // シークバーをクリックしたとき
+  const seekbar = await find_element(".seekArea");
+  seekbar?.addEventListener("mouseup", () => {
+    unzip();
+  });
+
+  // シークバー下の戻るボタンを押したとき
+  const buttons = await find_elements(".back.mainButton button");
+  for (const button of buttons) {
+    button.addEventListener("click", () => {
+      unzip();
+    });
+  }
+
+  // 左矢印キー or jキーを押したとき
+  document.addEventListener("keyup", (e) => {
+    if (e.key === "ArrowLeft" || e.key === "j") {
+      unzip();
+    }
+  });
+
+  unzip();
+}
