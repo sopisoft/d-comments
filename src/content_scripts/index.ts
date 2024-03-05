@@ -56,7 +56,6 @@ switch (url.pathname) {
     });
 
     on_partId_change(async (prev, next) => {
-      console.log("partId changed", next);
       if (prev && next) {
         const message = {
           title: "再生中のパートが切り替わりました",

@@ -15,7 +15,7 @@
     along with d-comments.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { type config, type config_keys, getConfig } from "@/config";
+import { type config_keys, getConfig } from "@/config";
 import NiconiComments, {
   type Options,
   type V1Thread,

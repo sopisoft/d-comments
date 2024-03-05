@@ -57,12 +57,10 @@ export function Scroll() {
 
   async function start() {
     set_comments().then((comments) => {
-      if (comments) {
-        console.log("list_started", "comments", comments);
-      }
+      if (comments) console.log("list_started", "comments", comments);
     });
     getConfig("comment_area_width_px").then((width) => {
-      setWidth(width as number);
+      setWidth(width);
     });
     find_element<HTMLVideoElement>("video").then((video) => {
       videoEl.current = video;
@@ -73,7 +71,6 @@ export function Scroll() {
   }
 
   function end() {
-    if (!comments) return; // already ended
     console.log("list_ended");
     setComments(undefined);
     loop.stop();
@@ -93,8 +90,8 @@ export function Scroll() {
   }
 
   function scroll() {
-    if (!isAutoScrollEnabled.current) return;
-    if (comments && videoEl.current && !videoEl.current.paused) {
+    if (!comments || !isAutoScrollEnabled.current) return;
+    if (videoEl.current && !videoEl.current.paused) {
       const currentTimeMs = videoEl.current.currentTime * 1000;
       const id = get_item_id(currentTimeMs);
       if (virtuoso.current && typeof id === "number") {
@@ -176,8 +173,8 @@ export function Scroll() {
           backgroundColor: bgColor,
           color: textColor,
           opacity: (opacity ?? 100) / 100,
-          maxWidth: `${width}px`,
-          minWidth: `${width}px`,
+          maxWidth: comments ? `${width}px` : "0",
+          minWidth: comments ? `${width}px` : "0",
         }}
       >
         <Virtuoso

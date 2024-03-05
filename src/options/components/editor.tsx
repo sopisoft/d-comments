@@ -21,7 +21,6 @@ import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 import {
-  type config,
   type config_keys,
   type config_value,
   defaultConfigs,
