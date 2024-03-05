@@ -26,7 +26,6 @@ const base = {
       js: ["d_comments.js"],
       matches: ["*://animestore.docomo.ne.jp/*"],
       run_at: "document_start",
-      all_frames: true,
     },
   ],
   web_accessible_resources: [],

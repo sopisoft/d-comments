@@ -18,34 +18,38 @@
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
-import { type config, defaultConfigs, getConfig, setConfig } from "@/config";
-import { type ChangeEvent, useState } from "react";
+import {
+  type config,
+  type config_keys,
+  type config_value,
+  defaultConfigs,
+  getConfig,
+  setConfig,
+} from "@/config";
+import { type ChangeEvent, useEffect, useMemo, useState } from "react";
 import browser from "webextension-polyfill";
 
-const Editor = (props: {
-  _key: config["key"];
+function Editor<T extends config_keys>(props: {
+  _key: T;
   text?: string;
   className?: string;
-}) => {
-  const [value, setValue] = useState<config["value"]>();
+}) {
+  const key = useMemo(() => props._key, [props._key]);
+  const text = useMemo(() => props.text, [props.text]);
+  const type = useMemo(() => {
+    return defaultConfigs[key].type;
+  }, [key]);
 
-  const setOption = (key: config["key"], value: config["value"]) => {
+  const [value, setValue] = useState<config_value<T>>(
+    defaultConfigs[key].value
+  );
+
+  const setOption = (key: T, value: config_value<T>) => {
     setValue(value);
     setConfig(key, value);
   };
-
-  const key = props._key;
-  const text = props.text;
-  const type = defaultConfigs.find((item) => item.key === key)?.type;
 
   const onChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const target = e.target as HTMLInputElement;
@@ -57,27 +61,16 @@ const Editor = (props: {
   const onCheckedChange = (v: boolean) => {
     setOption(key, v);
   };
-
-  const onSelectedChange = (v: string) => {
-    setOption(key, v);
-  };
-  const select_options = (
-    defaultConfigs.find((item) => item.key === key) as config
-  ).options;
-
   const onSliderChange = (v: number) => {
     setOption(key, v);
   };
 
-  browser.storage.onChanged.addListener((changes) => {
-    if (changes[key]) setValue(changes[key].newValue);
-  });
-
-  if (value === undefined) {
-    getConfig(key).then((v) => {
-      setValue(v);
+  useEffect(() => {
+    browser.storage.onChanged.addListener((changes) => {
+      if (changes[key]) setValue(changes[key].newValue);
     });
-  }
+    getConfig(key).then((v) => setValue(v));
+  }, [key]);
 
   switch (type) {
     case "number":
@@ -129,29 +122,6 @@ const Editor = (props: {
           }}
         />
       );
-    // case "select":
-    //   return (
-    //     <Select
-    //       name={key}
-    //       value={value as string}
-    //       onValueChange={onSelectedChange}
-    //     >
-    //       <SelectTrigger
-    //         id={key}
-    //         title={text}
-    //         className={`${props.className} w-32`}
-    //       >
-    //         <SelectValue placeholder={text} />
-    //       </SelectTrigger>
-    //       <SelectContent>
-    //         {select_options?.map((option) => {
-    //           return (
-    //             <SelectItem value={option.value}>{option.name}</SelectItem>
-    //           );
-    //         })}
-    //       </SelectContent>
-    //     </Select>
-    //   );
     case "switch":
       return (
         <Switch
@@ -166,13 +136,13 @@ const Editor = (props: {
     default:
       return <div>An error has occurred.</div>;
   }
-};
+}
 
-const EditorWrapper = (props: { _key: config["key"] }) => {
-  const key = props._key;
-  const { text, type } = defaultConfigs.find(
-    (item) => item.key === key
-  ) as config;
+const EditorWrapper = (props: { _key: config_keys }) => {
+  const key = useMemo(() => props._key, [props._key]);
+  const { text, type } = useMemo(() => {
+    return defaultConfigs[key];
+  }, [key]);
 
   return (
     <div className="grid grid-cols-4 gap-1 justify-items-stretch items-center">

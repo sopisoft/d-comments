@@ -19,27 +19,29 @@ function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-export async function find_element(
+export async function find_element<T extends Element = Element>(
   selector: string,
-  trials = 100,
-  interval = 10
+  trials = 50,
+  interval = 100
 ) {
-  for (let i = 0; i < trials; i++) {
+  for (let i = 0; i <= trials; i++) {
     const element = document.querySelector(selector);
-    if (element !== null) return element;
+    if (element !== null) return element as T | null;
     await sleep(interval);
   }
+  return null;
 }
 
-export async function find_elements(
+export async function find_elements<T extends Element = Element>(
   selector: string,
-  trials = 100,
-  interval = 10
-): Promise<NodeListOf<Element>> {
+  target: Element | Document = document,
+  trials = 50,
+  interval = 100
+) {
   for (let i = 0; i < trials; i++) {
-    const elements = document.querySelectorAll(selector);
-    if (elements.length === 0) await sleep(interval);
-    else break;
+    const elements = target.querySelectorAll(selector);
+    if (elements.length > 0) return elements as NodeListOf<T>;
+    await sleep(interval);
   }
-  return document.querySelectorAll(selector);
+  return target.querySelectorAll(selector) as NodeListOf<T>;
 }

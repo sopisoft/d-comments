@@ -24,6 +24,17 @@ type thread = {
 declare const VideoIdSymbol: unique symbol;
 type VideoId = string & { [VideoIdSymbol]: never };
 
+type SearchResponse = SearchResult | SearchErrorResponse;
+
+type SearchErrorResponse = {
+  meta: {
+    errorCode: string;
+  };
+  data: {
+    reasonCode: string | undefined;
+  };
+};
+
 type SearchResult = {
   meta: {
     status: number;
@@ -127,7 +138,7 @@ type ThreadsData = {
   meta: {
     status: number;
   };
-  data: Threads;
+  data: Threads | undefined;
 };
 
 type comments_json = {

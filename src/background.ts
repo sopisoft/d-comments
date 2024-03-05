@@ -15,7 +15,7 @@
     along with d-comments.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { getConfig, migrate } from "@/config";
+import { getConfig } from "@/config";
 import browser from "webextension-polyfill";
 
 /**
@@ -71,8 +71,7 @@ const getVideoData = async (videoId: string) => {
 
   return await fetch(`${url}?${new URLSearchParams(params)}`, fetch_options)
     .then(async (res) => {
-      if (res.status !== 200) return new Error("Failed to fetch video data");
-      const json = (await res.json()) as SearchResult;
+      const json = (await res.json()) as SearchResponse;
       return json;
     })
     .catch((e) => {
@@ -83,8 +82,9 @@ const getVideoData = async (videoId: string) => {
 /**
  * コメントスレッドの情報とコメントを取得
  */
-const getThreadComments = async (movieData: SearchResult) => {
-  const nvComment = movieData.data.comment.nvComment;
+const getThreadComments = async (
+  nvComment: SearchResult["data"]["comment"]["nvComment"]
+) => {
   const { server, threadKey, params } = nvComment;
   const serverUrl = `${server}/v1/threads`;
   const headers: RequestInit = {
@@ -100,7 +100,7 @@ const getThreadComments = async (movieData: SearchResult) => {
       additionals: {},
     }),
   };
-  return await fetch(`${serverUrl}?_frontendId=6`, headers)
+  const res = await fetch(`${serverUrl}?_frontendId=6`, headers)
     .then(async (res) => {
       if (res.status !== 200) return new Error("Failed to fetch threads");
       const json = (await res.json()) as ThreadsData;
@@ -109,6 +109,7 @@ const getThreadComments = async (movieData: SearchResult) => {
     .catch((e) => {
       return e as Error;
     });
+  return res;
 };
 
 /**
@@ -135,10 +136,16 @@ const search = async (
     headers: {
       "User-Agent": UserAgent,
     },
-  }).catch((e) => {
-    return e;
-  });
-  return !res.ok ? res : res.json();
+  })
+    .then(async (res) => {
+      const json = await res.json();
+      return json as searchApi["response"];
+    })
+    .catch((e) => {
+      return e as Error;
+    });
+
+  return res;
 };
 
 /**
@@ -204,19 +211,19 @@ browser.runtime.onMessage.addListener(
   (message: messages): Promise<messages["response"] | Error> => {
     switch (message.type) {
       case "video_data": {
-        const data: videoDataApi["data"] = message.data;
+        const data = message.data;
         return getVideoData(data.videoId);
       }
       case "thread_data": {
-        const data: threadDataApi["data"] = message.data;
+        const data = message.data;
         return getThreadComments(data.videoData);
       }
       case "search": {
-        const data: searchApi["data"] = message.data;
+        const data = message.data;
         return search(data.word, data.UserAgent);
       }
       case "owner_info": {
-        const data: ownerInfoApi["data"] = message.data;
+        const data = message.data;
         const { type, ownerId } = data;
         return get_user_info(type, ownerId);
       }
@@ -236,9 +243,4 @@ browser.runtime.onInstalled.addListener((details) => {
       url: browser.runtime.getURL("how_to_use/how_to_use.html"),
     });
   }
-
-  // Config keys migration
-  migrate();
 });
-
-export default {};

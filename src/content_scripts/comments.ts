@@ -15,12 +15,23 @@
     along with d-comments.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+import { getConfig } from "@/config";
+
+async function getConfigedForks() {
+  const list: thread["forkLabel"][] = [];
+  if (await getConfig("show_owner_comments")) list.push("owner");
+  if (await getConfig("show_main_comments")) list.push("main");
+  if (await getConfig("show_easy_comments")) list.push("easy");
+  return list;
+}
+
 export const getComments = async (
   Threads: Threads,
-  forks: thread["forkLabel"][]
+  forks?: thread["forkLabel"][]
 ) => {
   const threads = Threads.threads;
   const comments: nv_comment[] = [];
+  const _forks = forks ?? (await getConfigedForks());
 
   function f(fork: thread["forkLabel"]) {
     threads
@@ -32,13 +43,21 @@ export const getComments = async (
       });
   }
 
-  for (const fork of forks) f(fork);
+  for (const fork of _forks) f(fork);
 
-  comments?.filter((comment) => comment.score > 0);
-
-  comments?.sort((a, b) => {
-    return a.vposMs - b.vposMs;
-  });
+  filterComments(comments, 0);
+  sortComments(comments);
 
   return comments;
 };
+
+function filterComments(comments: nv_comment[], score: number) {
+  const filtered = comments.filter((comment) => comment.score > score);
+  return filtered;
+}
+function sortComments(comments: nv_comment[]) {
+  const sorted = comments.sort((a, b) => {
+    return a.vposMs - b.vposMs;
+  });
+  return sorted;
+}

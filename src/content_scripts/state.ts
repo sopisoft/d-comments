@@ -15,28 +15,22 @@
     along with d-comments.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { type config, getConfig } from "@/config";
+import { type config, type config_keys, getConfig } from "@/config";
 import browser from "webextension-polyfill";
 
-function use_state<T>(initial: T, key: string) {
+function use_state<T>(initial: T) {
   let state = initial;
   const listeners = new Set<(prev: T, next: T) => void>();
-  const storage = browser.storage.local;
 
-  storage.set({ [key]: state });
-
-  async function get_state(): Promise<T> {
-    const storedValue = await storage.get([key]);
-    if (state || !storedValue[key]) return state;
-    if (storedValue[key]) return storedValue[key];
+  function get_state() {
     return state;
   }
 
   function set_state(next: T) {
-    if (Object.is(state, next)) return;
     const prev = state;
+    if (Object.is(prev, next)) return;
+    console.log("state changed", prev, next);
     state = next;
-    storage.set({ [key]: next });
     for (const listener of listeners) listener(prev, next);
   }
 
@@ -52,35 +46,25 @@ function use_state<T>(initial: T, key: string) {
   return [get_state, set_state, on_change] as const;
 }
 
-const prefix = "_state:";
-
 type mode = ("list" | "nico")[];
 export const [mode, set_mode, on_mode_change] = use_state<mode>(
-  await get_mode_arr(),
-  `${prefix}mode`
+  await get_mode_arr()
 );
 export const [partId, set_partId, on_partId_change] = use_state<
   string | undefined
->(undefined, `${prefix}partId`);
+>(undefined);
 export const [threads, set_threads, on_threads_change] = use_state<
   Threads | undefined
->(undefined, `${prefix}threads`);
-export const [bgColor, setBgColor, onBgColorChange] = use_state(
-  (await getConfig("comment_area_background_color")) as string,
-  `${prefix}bgColor`
-);
-export const [textColor, setTextColor, onTextColorChange] = use_state(
-  (await getConfig("comment_text_color")) as string,
-  `${prefix}textColor`
-);
-export const [opacity, setOpacity, onOpacityChange] = use_state(
-  (await getConfig("comment_area_opacity_percentage")) as number,
-  `${prefix}opacity`
+>(undefined);
+
+type message = { title: string; description: string };
+type messages = (Error | message)[];
+export const [messages, set_messages, on_messages_change] = use_state<messages>(
+  []
 );
 
 async function get_mode_arr(): Promise<mode> {
   const arr: mode = [];
-
   if (await getConfig("show_comments_in_list")) arr.push("list");
   if (await getConfig("show_comments_in_niconico_style")) arr.push("nico");
 
@@ -89,16 +73,7 @@ async function get_mode_arr(): Promise<mode> {
 
 browser.storage.onChanged.addListener(async (changes) => {
   for (const key in changes) {
-    switch (key as config["key"]) {
-      case "comment_area_background_color":
-        setBgColor(changes[key].newValue);
-        break;
-      case "comment_text_color":
-        setTextColor(changes[key].newValue);
-        break;
-      case "comment_area_opacity_percentage":
-        setOpacity(changes[key].newValue);
-        break;
+    switch (key as config_keys) {
       case "show_comments_in_list":
         set_mode(await get_mode_arr());
         break;

@@ -25,20 +25,24 @@ const exportJson = async (videoId: VideoId) => {
     return e;
   }
 
-  const thread_data = await get_threads(video_data);
+  if (!(video_data as SearchResult).data?.comment) return;
+  const { data } = video_data as SearchResult;
+
+  const thread_data = await get_threads(data.comment.nvComment);
   if (thread_data instanceof Error) {
     const e = thread_data as Error;
     return e;
   }
+  if (!video_data.data) return new Error("Cannot get video data");
 
-  const fileName = `${video_data.data.video.title}.json`;
-  const data: comments_json = {
+  const fileName = `${data.video.title}.json`;
+  const _data: comments_json = {
     version: 1,
-    movieData: video_data,
+    movieData: video_data as SearchResult,
     threadData: thread_data,
   };
 
-  return await saveFile(fileName, JSON.stringify(data));
+  return await saveFile(fileName, JSON.stringify(_data));
 };
 
 /**

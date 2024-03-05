@@ -28,6 +28,7 @@
     "skipLibCheck": true,
     "strict": true,
     "target": "ESNext",
+    "useDefineForClassFields": true,
     "verbatimModuleSyntax": true
   }
 }

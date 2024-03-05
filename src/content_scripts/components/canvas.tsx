@@ -15,68 +15,76 @@
     along with d-comments.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-import NiconiComments from "@xpadev-net/niconicomments";
+import { type config, type config_keys, getConfig } from "@/config";
+import NiconiComments, {
+  type Options,
+  type V1Thread,
+} from "@xpadev-net/niconicomments";
+import browser from "webextension-polyfill";
 import { find_element } from "../danime/dom";
 import {
   mode,
-  onOpacityChange,
-  onTextColorChange,
   on_mode_change,
+  on_partId_change,
   on_threads_change,
-  opacity,
-  textColor,
   threads as getThreads,
 } from "../state";
 
-const video = (await find_element("video")) as HTMLVideoElement | undefined;
-
-let nc: NiconiComments | undefined;
-let nico: HTMLCanvasElement;
-
 const nico_id = "d-comments-nico";
 
-const nc_options = {
-  keepCA: true,
-  scale: 1,
-};
+let video: HTMLVideoElement | null;
+let nico: HTMLCanvasElement | null;
+let nc: NiconiComments | undefined;
+let loop: number | undefined;
 
-function start(threads: Threads["threads"]) {
-  console.log("nico_started");
-  nico.style.visibility = "visible";
-  nc = new NiconiComments(nico, threads, nc_options);
+async function start(threads: Threads["threads"]) {
+  console.log("nico_started", "threads", threads);
+  if (nico && video && threads.length > 0) {
+    nico.style.visibility = "visible";
+    const v1: V1Thread[] = threads;
+    const renderer = new NiconiComments.internal.renderer.CanvasRenderer(nico);
+    const nc_options: Options = {
+      format: "v1",
+      keepCA: true,
+      scale: 1,
+    };
+    nc = new NiconiComments(renderer, v1, nc_options);
+
+    if (loop) cancelAnimationFrame(loop);
+    function loop_fn(callBack: number) {
+      if (video && nc && (Math.round(callBack / 10) * 10) % 10 === 0) {
+        nc.drawCanvas(video.currentTime * 100);
+      }
+      requestAnimationFrame(loop_fn);
+    }
+    loop = requestAnimationFrame(loop_fn);
+  } else if (!nico) {
+    nico = await find_element(nico_id);
+    setTimeout(() => canvasInit().then(() => start(threads)), 0);
+    return;
+  } else if (!video) {
+    video = await find_element("video");
+    setTimeout(() => start(threads), 0);
+  }
 }
+
 function end() {
-  console.log("nico_ended");
-  nico.style.visibility = "hidden";
+  if (nico && nico.style.visibility !== "hidden") {
+    console.log("nico_ended");
+    nico.style.visibility = "hidden";
+  }
+  if (loop) cancelAnimationFrame(loop);
+  if (nc) nc.clear();
 }
-
-onTextColorChange((_prev, next) => {
-  nico.style.color = next;
-});
-onOpacityChange((_prev, next) => {
-  nico.style.opacity = (next / 100).toString();
-});
-on_mode_change(async (_prev, next) => {
-  const threads = (await getThreads())?.threads;
-  console.log("nico_mode_chamged", next, "threads", threads);
-  if (next.includes("nico") && threads) start(threads);
-  else end();
-});
-on_threads_change(async (_prev, next) => {
-  const modes = await mode();
-  console.log("nico_threads_changed", next, "mode", modes);
-  const threads = next?.threads;
-  if (modes.includes("nico") && threads) start(threads);
-  else end();
-});
 
 /**
  * @description
  * This function initializes the canvas for the niconico comments.
  */
 async function canvasInit() {
-  const prev_nico = document.getElementById(nico_id);
-  nico = (prev_nico ?? document.createElement("canvas")) as HTMLCanvasElement;
+  video = await find_element("video");
+  const prev_nico = document.getElementById(nico_id) as HTMLCanvasElement;
+  nico = prev_nico ?? document.createElement("canvas");
   if (!prev_nico) {
     nico.id = nico_id;
     nico.width = 1920;
@@ -87,18 +95,48 @@ async function canvasInit() {
       height: "100%",
       position: "absolute",
       background: "transparent",
-      color: textColor(),
-      opacity: ((await opacity()) / 100).toString(),
+      opacity: `${
+        ((await getConfig("comment_area_opacity_percentage")) as number) / 100
+      }`,
       zIndex: "2",
-      visibility: (await mode()).includes("nico") ? "visible" : "hidden",
     });
-    video?.parentElement?.appendChild(nico);
+
+    const parent = video?.parentElement;
+    const parent_parent = parent?.parentElement;
+    if (parent_parent && document.body.contains(parent_parent)) {
+      parent.appendChild(nico);
+    } else {
+      setTimeout(canvasInit, 100);
+      return;
+    }
   }
 
-  requestAnimationFrame(function loop(callBack: number) {
-    if (video && (Math.round(callBack / 10) * 10) % 10 === 0)
-      nc?.drawCanvas(Math.floor(video.currentTime * 100));
-    window.requestAnimationFrame(loop);
+  on_mode_change(async (_prev, next) => {
+    const threads = getThreads()?.threads;
+    if (next.includes("nico") && threads && threads.length > 0) {
+      console.log("nico_mode_chamged", next, "threads", threads);
+      start(threads);
+    } else end();
+  });
+  on_threads_change(async (_prev, next) => {
+    const modes = mode();
+    const threads = next?.threads;
+    if (modes.includes("nico") && threads && threads.length > 0) {
+      console.log("nico_threads_changed", next, "mode", modes);
+      start(threads);
+    } else end();
+  });
+  on_partId_change(() => end());
+
+  browser.storage.onChanged.addListener(async (changes) => {
+    for (const key in changes) {
+      switch (key as config_keys) {
+        case "comment_area_opacity_percentage":
+          if (nico)
+            nico.style.opacity = (changes[key].newValue / 100).toString();
+          break;
+      }
+    }
   });
 }
 

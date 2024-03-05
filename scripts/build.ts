@@ -11,7 +11,7 @@ process.env.NODE_ENV = "production";
 
 function make_proc(cmd: string[]) {
   return new Promise<void>((resolve) => {
-    const proc = Bun.spawn(["bunx", "--bun", ...cmd], {
+    const proc = Bun.spawn(cmd, {
       stdout: "inherit",
       onExit: async () => {
         console.log(await new Response(proc.stdout).text());
@@ -21,38 +21,43 @@ function make_proc(cmd: string[]) {
   });
 }
 
-const tsc = make_proc(["tsc"]);
+const tsc = make_proc(["bunx", "--bun", "tsc"]);
 const fmt = make_proc(["bun", "run", "format"]);
 const lint = make_proc(["bun", "run", "lint"]);
 
 Promise.all([fs.rmdirSync("dist", { recursive: true }), tsc, fmt, lint]).then(
   () => {
-    const builds = browsers.map((browser) =>
-      build({
-        mode: browser,
-        build: {
-          outDir: `../dist/${browser}`,
-        },
+    build({
+      mode: "chrome",
+      build: {
+        outDir: `../dist/${"chrome"}`,
+      },
+    })
+      // .then(async () => {
+      //   await minifyJs("chrome");
+      // })
+      .then(async () => {
+        await make_proc(["cp", "-r", "dist/chrome", "dist/firefox"]);
       })
-    );
-
-    Promise.all(builds).then(() => {
-      browsers.map((browser) => {
-        Promise.all([
-          manifest(browser).then((manifest) => {
+      .then(() => {
+        browsers.map((browser) => {
+          Promise.all([
+            manifest(browser).then((manifest) => {
+              Bun.write(
+                Bun.file(`dist/${browser}/manifest.json`),
+                JSON.stringify(manifest)
+              );
+            }),
             Bun.write(
-              Bun.file(`dist/${browser}/manifest.json`),
-              JSON.stringify(manifest)
-            );
-          }),
-          Bun.write(
-            Bun.file(`dist/${browser}/meta.json`),
-            JSON.stringify({
-              updated: new Date().toISOString(),
-            })
-          ),
-        ]).then(() => webExtBuild(browser));
+              Bun.file(`dist/${browser}/meta.json`),
+              JSON.stringify({
+                updated: new Date().toISOString(),
+              })
+            ),
+          ]).then(() => {
+            webExtBuild(browser);
+          });
+        });
       });
-    });
   }
 );

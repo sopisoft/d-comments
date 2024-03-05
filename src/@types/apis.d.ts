@@ -21,12 +21,12 @@ type videoDataApi = {
     videoId: string;
   };
   active_tab: false;
-  response: SearchResult;
+  response: SearchResponse;
 };
 type threadDataApi = {
   type: "thread_data";
   data: {
-    videoData: SearchResult;
+    videoData: SearchResult["data"]["comment"]["nvComment"];
   };
   active_tab: false;
   response: ThreadsData;

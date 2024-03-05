@@ -15,12 +15,10 @@
     along with d-comments.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { type config, getConfig } from "@/config";
+import React from "react";
 import { createRoot } from "react-dom/client";
-import browser from "webextension-polyfill";
 import { find_element } from "../danime/dom";
-import { mode, on_mode_change } from "../state";
-import Root from "./root";
+import Scroll from "./scroll";
 
 /**
  * @description
@@ -38,29 +36,23 @@ async function wrap(): Promise<void> {
     Object.assign(wrapper.style, {
       display: "flex",
       flexDirection: "row",
+      maxWidth: "100%",
       width: "100%",
+      maxHeight: "100%",
       height: "100%",
       overflow: "hidden",
     });
-    video.parentElement?.before(wrapper);
-    wrapper.append(video.parentElement as HTMLElement);
-  }
 
-  // const resize_handle_id = "d-comments-resize-handle";
-  // const prev_resize_handle = document.getElementById(resize_handle_id);
-  // const resize_handle = prev_resize_handle ?? document.createElement("div");
-  // if (!prev_resize_handle) {
-  //   resize_handle.id = resize_handle_id;
-  //   resize_handle.draggable = false;
-  //   Object.assign(resize_handle.style, {
-  //     width: "5px",
-  //     height: "100%",
-  //     cursor: "col-resize",
-  //     borderLeft: "2px solid rgb(0, 0, 0)",
-  //     borderRight: "2px solid rgb(204, 204, 204)",
-  //   });
-  //   wrapper.appendChild(resize_handle);
-  // }
+    const parent = video.parentElement;
+    const parent_parent = parent?.parentElement;
+    if (parent_parent && document.body.contains(parent_parent)) {
+      parent.before(wrapper);
+      wrapper.append(parent);
+    } else {
+      setTimeout(wrap, 100);
+      return;
+    }
+  }
 
   const side_menu_id = "d-comments-side";
   const prev_side_menu = document.getElementById(side_menu_id);
@@ -68,44 +60,18 @@ async function wrap(): Promise<void> {
   if (!prev_side_menu) {
     side_menu.id = side_menu_id;
     Object.assign(side_menu.style, {
-      height: "100%",
-      width: `${await getConfig("comment_area_width_px")}px`,
       backgroundColor: "rgb(0, 0, 0)",
-      display: (await mode()).includes("list") ? "block" : "none",
+      zIndex: "10",
     });
     wrapper.appendChild(side_menu);
   }
 
-  // resize_handle.onpointerdown = (event) => {
-  //   resize_handle.onpointermove = (event) => {
-  //     const new_width = side_menu.offsetWidth - event.movementX;
-  //     side_menu.style.width = `${new_width}px`;
-  //     resize_handle.setPointerCapture(event.pointerId);
-  //   };
-  //   resize_handle.setPointerCapture(event.pointerId);
-  // };
-  // resize_handle.onpointerup = (event) => {
-  //   setConfig("comment_area_width_px", side_menu.offsetWidth);
-  //   resize_handle.onpointermove = null;
-  //   resize_handle.releasePointerCapture(event.pointerId);
-  // };
-
-  on_mode_change((_prec, next) => {
-    side_menu.style.display = next.includes("list") ? "block" : "none";
-  });
-
-  browser.storage.onChanged.addListener((changes) => {
-    for (const key in changes) {
-      switch (key as config["key"]) {
-        case "comment_area_width_px":
-          side_menu.style.width = `${changes[key].newValue}px`;
-          break;
-      }
-    }
-  });
-
   const root = createRoot(side_menu);
-  root.render(<Root />);
+  root.render(
+    <React.StrictMode>
+      <Scroll />
+    </React.StrictMode>
+  );
 }
 
 export default wrap;

@@ -92,13 +92,9 @@ function Options() {
         description="作品視聴ページの設定です。"
         content={
           <>
-            <Editor _key="enable_scroll_mode" />
-            <Separator />
-            <Editor _key="scroll_interval_ms" />
+            <Editor _key="enable_auto_scroll" />
             <Separator />
             <Editor _key="comment_area_width_px" />
-            <Separator />
-            <Editor _key="show_comment_scrollbar" />
           </>
         }
       />

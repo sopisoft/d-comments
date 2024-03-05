@@ -22,7 +22,7 @@ export default defineConfig({
   root: "./src",
   base: "/",
   publicDir: "./raw",
-  plugins: [react() as PluginOption, markdown()],
+  plugins: [react(), markdown()],
   resolve: {
     alias: {
       "@": resolve(__dirname, "src"),
@@ -30,7 +30,6 @@ export default defineConfig({
   },
   build: {
     target: "esnext",
-    minify: false,
     modulePreload: false,
     rollupOptions: {
       input: {
@@ -41,14 +40,10 @@ export default defineConfig({
         how_to_use: resolve(__dirname, "src", "how_to_use", "how_to_use.html"),
       },
       output: {
-        format: "module",
         entryFileNames: "js/[name].js",
         chunkFileNames: "js/[hash].js",
         assetFileNames: "assets/[ext]/[name].[ext]",
       },
     },
-  },
-  optimizeDeps: {
-    force: true,
   },
 });

@@ -33,7 +33,7 @@ type work_info = {
   };
 };
 
-export async function get_work_info(): Promise<work_info> {
+export async function get_work_info() {
   const partId = new URLSearchParams(location.search).get("partId")?.toString();
   const params = {
     viewType: "5",
@@ -44,7 +44,11 @@ export async function get_work_info(): Promise<work_info> {
   return await fetch(`${base_url}?${params_str}`, {
     method: "GET",
     cache: "no-cache",
-  }).then(async (res) => {
-    return await res.json();
-  });
+  })
+    .then(async (res) => {
+      return (await res.json()) as work_info;
+    })
+    .catch((e) => {
+      return e as Error;
+    });
 }

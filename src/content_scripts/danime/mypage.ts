@@ -23,11 +23,6 @@ import { find_elements } from "./dom";
  */
 export const addMenu = async () => {
   const a_array = await find_elements(".itemModule.list a");
-  const config = await getConfig("make_play_button_open_new_tab");
-
-  const inner_text = config
-    ? "新しいタブでコメントを表示しながら再生"
-    : "現在のタブでコメントを表示しながら再生";
 
   for (const item of a_array) {
     const partID = item?.getAttribute("href")?.replace(/[^0-9]/g, "");
@@ -35,7 +30,6 @@ export const addMenu = async () => {
     const bgColor = window.getComputedStyle(item).backgroundColor;
     const a = document.createElement("a");
     a.href = `sc_d_pc?partId=${partID}`;
-    a.innerText = inner_text;
     Object.assign(
       a.style,
       { type: "text/css" },
@@ -44,27 +38,35 @@ export const addMenu = async () => {
         justifyContent: "center",
         alignItems: "center",
         width: "100%",
+        height: "5rem",
         padding: "1.4rem 1.8rem",
         borderTop: "1px solid rgb(224 224 224)",
         backgroundColor: bgColor,
       }
     );
 
-    const target = item.parentElement?.parentElement;
-    if (!target?.querySelector(`a[href="sc_d_pc?partId=${partID}"]`))
+    const section = item.parentElement;
+    const target = section?.parentElement;
+    const a_exist = target?.querySelector(`a[href="sc_d_pc?partId=${partID}"]`);
+    if (section && target && !a_exist) {
       target?.appendChild(a);
+    } else if (!section || !target) {
+      setTimeout(addMenu, 100);
+      break;
+    }
 
-    if (config === true) {
-      a.target = "_blank";
+    getConfig("make_play_button_open_new_tab").then((config) => {
+      a.textContent =
+        config === true
+          ? "新しいタブでコメントを表示しながら再生"
+          : "現在のタブでコメントを表示しながら再生";
+      a.target = config === true ? "_blank" : "_self";
       a.addEventListener("click", (e) => {
         e.preventDefault();
         e.stopPropagation();
-        window.open(a.href);
+        if (config === true) window.open(a.href);
+        else window.location.href = a.href;
       });
-    } else {
-      a.addEventListener("click", () => {
-        window.location.href = a.href;
-      });
-    }
+    });
   }
 };

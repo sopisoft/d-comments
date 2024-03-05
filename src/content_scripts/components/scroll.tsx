@@ -15,69 +15,206 @@
     along with d-comments.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { type config, getConfig } from "@/config";
-import { useVirtualizer } from "@tanstack/react-virtual";
+import { ThemeProvider } from "@/components/theme-provider";
+import { type config_keys, getConfig } from "@/config";
 import { useEffect, useRef, useState } from "react";
+import { Virtuoso, type VirtuosoHandle } from "react-virtuoso";
 import browser from "webextension-polyfill";
 import { getComments } from "../comments";
-import { on_threads_change, threads } from "../state";
+import { find_element } from "../danime/dom";
+import {
+  mode,
+  on_mode_change,
+  on_partId_change,
+  on_threads_change,
+  threads as getThreads,
+} from "../state";
+import useAnimationFrame from "./useAnimationFrame";
 
 export function Scroll() {
-  const parentRef = useRef<HTMLUListElement>(null);
-  const [comments, _setComments] = useState<nv_comment[]>([]);
+  const loop = useAnimationFrame(scroll, 120);
 
-  async function set_comments(_threads?: Threads) {
-    const list: thread["forkLabel"][] = [];
-    if (await getConfig("show_owner_comments")) list.push("owner");
-    if (await getConfig("show_main_comments")) list.push("main");
-    if (await getConfig("show_easy_comments")) list.push("easy");
+  const virtuoso = useRef<VirtuosoHandle>(null);
+  const videoEl = useRef<HTMLVideoElement | null>(null);
+  const isAutoScrollEnabled = useRef(true);
 
-    const t = _threads || (await threads());
-    if (t) _setComments(await getComments(t, list));
+  const [width, setWidth] = useState<number>();
+  const [bgColor, setBgColor] = useState<string>();
+  const [textColor, setTextColor] = useState<string>();
+  const [opacity, setOpacity] = useState<number>();
+  const [comments, setComments] = useState<nv_comment[] | undefined>(undefined);
+
+  async function set_comments(threads?: Threads) {
+    const t = threads || getThreads();
+    if (t && t.threads.length > 0)
+      return await getComments(t).then((nc) => {
+        if (!Object.is(comments, nc)) {
+          setComments(nc);
+          return nc;
+        }
+      });
   }
 
-  browser.storage.onChanged.addListener((changes) => {
-    for (const key in changes) {
-      switch (key as config["key"]) {
-        case "show_owner_comments":
-          set_comments();
-          break;
-        case "show_main_comments":
-          set_comments();
-          break;
-        case "show_easy_comments":
-          set_comments();
-          break;
+  async function start() {
+    set_comments().then((comments) => {
+      if (comments) {
+        console.log("list_started", "comments", comments);
+      }
+    });
+    getConfig("comment_area_width_px").then((width) => {
+      setWidth(width as number);
+    });
+    find_element<HTMLVideoElement>("video").then((video) => {
+      videoEl.current = video;
+      videoEl.current?.addEventListener("play", loop.start);
+      videoEl.current?.addEventListener("pause", loop.stop);
+    });
+    loop.start();
+  }
+
+  function end() {
+    if (!comments) return; // already ended
+    console.log("list_ended");
+    setComments(undefined);
+    loop.stop();
+  }
+
+  function get_item_id(vposMs: number) {
+    if (!comments) return;
+    let left = 0;
+    let right = comments.length - 1;
+    while (left <= right) {
+      const mid = Math.floor((left + right) / 2);
+      if (comments[mid].vposMs === vposMs) return mid;
+      if (comments[mid].vposMs < vposMs) left = mid + 1;
+      else right = mid - 1;
+    }
+    return right;
+  }
+
+  function scroll() {
+    if (!isAutoScrollEnabled.current) return;
+    if (comments && videoEl.current && !videoEl.current.paused) {
+      const currentTimeMs = videoEl.current.currentTime * 1000;
+      const id = get_item_id(currentTimeMs);
+      if (virtuoso.current && typeof id === "number") {
+        virtuoso.current.scrollToIndex({
+          index: id,
+          behavior: "smooth",
+        });
       }
     }
-  });
+  }
 
-  on_threads_change((_prev, next) => {
-    if (next) set_comments(next);
-  });
   useEffect(() => {
-    set_comments();
+    getConfig("comment_area_background_color").then((color) => {
+      setBgColor(color);
+    });
+    getConfig("comment_text_color").then((color) => {
+      setTextColor(color);
+    });
+    getConfig("comment_area_opacity_percentage").then((opacity) => {
+      setOpacity(opacity);
+    });
+    getConfig("enable_auto_scroll").then((config) => {
+      isAutoScrollEnabled.current = config;
+    });
+    on_mode_change(async (_prev, next) => {
+      const threads = getThreads();
+      if (next.includes("list") && threads && threads.threads.length > 0) {
+        console.log("list_mode_changed", next, "threads", threads);
+        start();
+      } else end();
+    });
+    on_threads_change(async (_prev, next) => {
+      const modes = mode();
+      if (modes.includes("list") && next && next?.threads.length > 0) {
+        console.log("list_threads_changed", next, "mode", modes);
+        start();
+      } else end();
+    });
+    on_partId_change(() => {
+      end();
+    });
+    browser.storage.onChanged.addListener(async (changes) => {
+      for (const key in changes) {
+        switch (key as config_keys) {
+          case "show_owner_comments":
+            await set_comments();
+            break;
+          case "show_main_comments":
+            await set_comments();
+            break;
+          case "show_easy_comments":
+            await set_comments();
+            break;
+          case "comment_area_width_px":
+            setWidth(changes[key].newValue);
+            break;
+          case "comment_area_background_color":
+            setBgColor(changes[key].newValue);
+            break;
+          case "comment_text_color":
+            setTextColor(changes[key].newValue);
+            break;
+          case "comment_area_opacity_percentage":
+            setOpacity(changes[key].newValue);
+            break;
+          case "enable_auto_scroll":
+            isAutoScrollEnabled.current = changes[key].newValue;
+            break;
+        }
+      }
+    });
   }, []);
 
-  const virtualizer = useVirtualizer({
-    count: comments.length ?? 0,
-    getScrollElement: () => parentRef.current,
-    estimateSize: () => 20,
-  });
-
-  // function loop() {
-  //   window.requestAnimationFrame(loop);
-  // }
-  // window.requestAnimationFrame(loop);
-
   return (
-    comments && (
-      <ul ref={parentRef}>
-        {virtualizer.getVirtualItems().map((virtualItem) => (
-          <li>{comments[virtualItem.index]?.body}</li>
-        ))}
-      </ul>
-    )
+    <ThemeProvider>
+      <div
+        className="flex flex-col h-full max-h-svh"
+        style={{
+          backgroundColor: bgColor,
+          color: textColor,
+          opacity: (opacity ?? 100) / 100,
+          maxWidth: `${width}px`,
+          minWidth: `${width}px`,
+        }}
+      >
+        <Virtuoso
+          ref={virtuoso}
+          data={comments}
+          className="w-full h-full"
+          components={{
+            Footer: () => {
+              return (
+                <div
+                  style={{
+                    padding: "1rem",
+                    textAlign: "center",
+                  }}
+                >
+                  最後のコメントです
+                </div>
+              );
+            },
+          }}
+          itemContent={(index, comment) => (
+            <span
+              key={index}
+              data-vpos={comment.vposMs}
+              style={{
+                display: "block",
+                width: "100%",
+                padding: "0.3rem",
+                borderBottom: "1px solid #ccc",
+              }}
+            >
+              {comment.body}
+            </span>
+          )}
+        />
+      </div>
+    </ThemeProvider>
   );
 }
 

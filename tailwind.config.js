@@ -11,6 +11,9 @@ module.exports = {
         "2xl": "1400px",
       },
     },
+    fontFamily: {
+      body: ["Noto Sans JP", "Noto Color Emoji"],
+    },
     extend: {
       colors: {
         border: "hsl(var(--border))",

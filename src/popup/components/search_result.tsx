@@ -37,7 +37,7 @@ const video_length = (lengthSeconds: number | undefined) => {
   return toStr(hour, "時間") + toStr(minute, "分") + toStr(second, "秒");
 };
 
-const storage = window.localStorage;
+const storage = window.sessionStorage;
 
 function Owner(props: {
   userId: string | undefined;
@@ -83,15 +83,16 @@ function Owner(props: {
 
 function SearchResult(props: { snapshot: Snapshot }) {
   const { snapshot } = props;
+  const data = snapshot.data;
 
   const { videoId, setVideoId } = useContext(VideoIdContext);
 
-  return (
+  return data.length > 0 ? (
     <ul
       className="w-full max-h-80 list-none p-0 m-0 text-base overflow-y-scroll overflow-x-hidden"
       aria-label="検索結果一覧 "
     >
-      {snapshot.data.map((item) => (
+      {data.map((item) => (
         <li
           onClick={() => setVideoId(item.contentId)}
           onKeyDown={(e) => {
@@ -131,6 +132,8 @@ function SearchResult(props: { snapshot: Snapshot }) {
         </li>
       ))}
     </ul>
+  ) : (
+    <div>キーワードに一致する結果が見つかりませんでした</div>
   );
 }
 
