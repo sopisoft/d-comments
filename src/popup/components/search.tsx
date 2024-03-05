@@ -46,22 +46,7 @@ function Search() {
     return tabs_title;
   }
 
-  useEffect(() => {
-    get_tabs_title().then((w) => setWord(w));
-  }, []);
-
-  getConfig("auto_search", async (value) => {
-    if (value === true) {
-      const tabs_title = await get_tabs_title();
-      search(tabs_title).then((res) => {
-        typeof res === typeof Error
-          ? ErrorMessage(toast, { error: res as Error })
-          : setSnapshot(res as Snapshot);
-      });
-    }
-  });
-
-  async function on_search_button_click() {
+  async function _search(word: string) {
     const snapshot = await search(word);
     if (snapshot instanceof Error) {
       ErrorMessage(toast, { error: snapshot });
@@ -69,6 +54,20 @@ function Search() {
       return;
     }
     setSnapshot(snapshot);
+  }
+
+  useEffect(() => {
+    get_tabs_title().then((w) => setWord(w));
+    getConfig("auto_search", async (enabled) => {
+      if (enabled) {
+        const tabs_title = await get_tabs_title();
+        _search(tabs_title);
+      }
+    });
+  }, []);
+
+  async function on_search_button_click() {
+    _search(word);
   }
 
   return (

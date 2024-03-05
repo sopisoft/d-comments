@@ -69,12 +69,9 @@ async function start(threads: Threads["threads"]) {
 }
 
 function end() {
-  if (nico && nico.style.visibility !== "hidden") {
-    console.log("nico_ended");
-    nico.style.visibility = "hidden";
-  }
-  if (loop) cancelAnimationFrame(loop);
+  if (nico) nico.style.visibility = "hidden";
   if (nc) nc.clear();
+  if (loop) cancelAnimationFrame(loop);
 }
 
 /**

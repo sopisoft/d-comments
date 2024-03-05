@@ -42,7 +42,7 @@ export function Scroll() {
   const [bgColor, setBgColor] = useState<string>();
   const [textColor, setTextColor] = useState<string>();
   const [opacity, setOpacity] = useState<number>();
-  const [comments, setComments] = useState<nv_comment[] | undefined>(undefined);
+  const [comments, setComments] = useState<nv_comment[]>();
 
   async function set_comments(threads?: Threads) {
     const t = threads || getThreads();
@@ -56,23 +56,23 @@ export function Scroll() {
   }
 
   async function start() {
-    set_comments().then((comments) => {
-      if (comments) console.log("list_started", "comments", comments);
-    });
+    const _comments = await set_comments();
+    if (_comments) console.log("list_started", "comments", _comments);
     getConfig("comment_area_width_px").then((width) => {
       setWidth(width);
     });
     find_element<HTMLVideoElement>("video").then((video) => {
       videoEl.current = video;
       videoEl.current?.addEventListener("play", loop.start);
-      videoEl.current?.addEventListener("pause", loop.stop);
+      videoEl.current?.addEventListener("pause", loop.pause);
+      videoEl.current?.addEventListener("ended", end);
     });
     loop.start();
   }
 
   function end() {
     console.log("list_ended");
-    setComments(undefined);
+    setComments([]);
     loop.stop();
   }
 
@@ -170,11 +170,12 @@ export function Scroll() {
       <div
         className="flex flex-col h-full max-h-svh"
         style={{
+          display: (comments?.length ?? 0) > 0 ? "block" : "none",
           backgroundColor: bgColor,
           color: textColor,
           opacity: (opacity ?? 100) / 100,
-          maxWidth: comments ? `${width}px` : "0",
-          minWidth: comments ? `${width}px` : "0",
+          maxWidth: `${width}px`,
+          minWidth: `${width}px`,
         }}
       >
         <Virtuoso
@@ -198,7 +199,7 @@ export function Scroll() {
           itemContent={(index, comment) => (
             <span
               key={index}
-              data-vpos={comment.vposMs}
+              data-vpos={comment?.vposMs}
               style={{
                 display: "block",
                 width: "100%",
@@ -206,7 +207,7 @@ export function Scroll() {
                 borderBottom: "1px solid #ccc",
               }}
             >
-              {comment.body}
+              {comment?.body}
             </span>
           )}
         />
