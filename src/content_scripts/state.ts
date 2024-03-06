@@ -29,7 +29,6 @@ function use_state<T>(initial: T) {
   function set_state(next: T) {
     const prev = state;
     if (Object.is(prev, next)) return;
-    console.log("state changed", prev, next);
     state = next;
     for (const listener of listeners) listener(prev, next);
   }

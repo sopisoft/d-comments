@@ -17,29 +17,55 @@
 
 import get_threads from "./api/thread_data";
 import get_video_data from "./api/video_data";
+import { messages, set_messages } from "./state";
 
+function push_message(message: Error | { title: string; description: string }) {
+  set_messages(messages().concat(message));
+}
 const exportJson = async (videoId: VideoId) => {
+  set_messages([]);
+  push_message({
+    title: "コメントを取得しています",
+    description: "動画情報を取得しています",
+  });
+
   const video_data = await get_video_data(videoId);
   if (video_data instanceof Error) {
-    const e = video_data as Error;
-    return e;
+    push_message(video_data);
+    return;
+  }
+  console.log("video_data", video_data);
+
+  if (!(video_data as SearchResult).data?.comment) {
+    const res = video_data as SearchErrorResponse;
+    const error_code = res.meta.errorCode;
+    const error_reason = res.data.reasonCode;
+    const message = {
+      title: "動画情報の取得に失敗しました",
+      description: error_reason ?? error_code,
+    };
+    push_message(message);
+    return;
   }
 
-  if (!(video_data as SearchResult).data?.comment) return;
   const { data } = video_data as SearchResult;
-
-  const thread_data = await get_threads(data.comment.nvComment);
-  if (thread_data instanceof Error) {
-    const e = thread_data as Error;
-    return e;
+  const threads = await get_threads(data.comment.nvComment);
+  if (threads instanceof Error) {
+    push_message(threads);
+    return;
   }
-  if (!video_data.data) return new Error("Cannot get video data");
+  console.log("threads", threads);
+
+  push_message({
+    title: "コメントの取得に成功しました",
+    description: "ファイルに保存しています",
+  });
 
   const fileName = `${data.video.title}.json`;
   const _data: comments_json = {
     version: 1,
     movieData: video_data as SearchResult,
-    threadData: thread_data,
+    threadData: threads,
   };
 
   return await saveFile(fileName, JSON.stringify(_data));

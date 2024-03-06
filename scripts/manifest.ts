@@ -11,11 +11,12 @@ const base = {
   version: pkg.version,
   author: pkg.author,
   icons: {
-    16: "icons/16.png",
-    32: "icons/32.png",
-    48: "icons/48.png",
-    128: "icons/128.png",
-    256: "icons/256.png",
+    16: "icons/Icon_small16.png",
+    32: "icons/Icon_small32.png",
+    48: "icons/Icon_small48.png",
+    64: "icons/Icon_small64.png",
+    128: "icons/Icon128.png",
+    256: "icons/Icon256.png",
   },
   options_ui: {
     page: "options/options.html",

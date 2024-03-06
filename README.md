@@ -2,18 +2,20 @@
 
 ![d-comments logo](./.store/d-comments.png)
 
-[![GitHub release (latest by date)](https://img.shields.io/github/v/release/gobosan/d-comments)](https://github.com/gobosan/d-comments/releases/latest)
-![GitHub Code Size in Bytes](https://img.shields.io/github/languages/code-size/gobosan/d-comments)
-![GitHub Stars](https://img.shields.io/github/stars/gobosan/d-comments)
-[![GitHub](https://img.shields.io/github/license/gobosan/d-comments)](./LICENSE.txt)
+[![GitHub release (latest by date)](https://img.shields.io/github/v/release/sopisoft/d-comments)](https://github.com/sopisoft/d-comments/releases/latest)
+![GitHub Code Size in Bytes](https://img.shields.io/github/languages/code-size/sopisoft/d-comments)
+![GitHub Stars](https://img.shields.io/github/stars/sopisoft/d-comments)
+[![GitHub](https://img.shields.io/github/license/sopisoft/d-comments)](./LICENSE.txt)
 
-d アニメストアの動画再生画面でニコニコ動画のコメントを表示する Chromium 拡張機能です。
+d アニメストアの動画再生画面でニコニコ動画のコメントを表示するブラウザ拡張機能です。
 
 ## Installation
 
-[Chrome Web Store](https://chrome.google.com/webstore/detail/d-comments/jocjhkklfiaojhhnjiejmimlohaemiep)
+<!-- https://developer.chrome.com/docs/webstore/branding?hl=ja -->
+<!-- https://extensionworkshop.com/documentation/publish/promoting-your-extension/ -->
 
-[Firefox Browser Add-ons](https://addons.mozilla.org/ja/firefox/addon/d-comments/)
+[![Chrome WebStore](https://storage.googleapis.com/web-dev-uploads/image/WlD8wC6g8khYWPJUsQceQkhXSlv1/UV4C4ybeBTsZt43U4xis.png)](https://chrome.google.com/webstore/detail/d-comments/jocjhkklfiaojhhnjiejmimlohaemiep)
+[![Firefox Browser ADD-ONS](https://extensionworkshop.com/assets/img/documentation/publish/get-the-addon-178x60px.dad84b42.png)](https://addons.mozilla.org/ja/firefox/addon/d-comments/)
 
 ## Development
 
@@ -30,7 +32,7 @@ d アニメストアの動画再生画面でニコニコ動画のコメントを
   - etc...
 - [Visual Studio Code](https://code.visualstudio.com/)
 
-### How to setup
+### Install dependencies
 
 Install local dependencies by running:
 
@@ -38,7 +40,7 @@ Install local dependencies by running:
 bun install
 ```
 
-### How to build
+### Build
 
 Run the following command:
 
@@ -52,7 +54,7 @@ This will create a zip file in the `dist` directory.
 
 `dist/firefox.zip` is for Firefox based browsers.
 
-### Linter
+### Lint
 
 Run the following command:
 
@@ -60,20 +62,12 @@ Run the following command:
 bun run lint
 ```
 
-### Formatter
+### Format
 
 Run the following command:
 
 ```sh
 bun run format
-```
-
-## Troubleshooting
-
-If the build fails, try removing `node_modules` and reinstalling the dependencies.
-
-```sh
-rm -r node_modules && bun install
 ```
 
 ## License

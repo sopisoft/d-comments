@@ -16,7 +16,6 @@
 */
 
 import { ModeToggle } from "@/components/ui/mode-toggle";
-import { Separator } from "@/components/ui/separator";
 import {
   Tooltip,
   TooltipContent,
@@ -56,7 +55,7 @@ function Header(props: { tabsList: React.ReactNode }) {
           <li className="mx-3">{props.tabsList}</li>
           {contents.map((component) => (
             <li>
-              <TooltipProvider>
+              <TooltipProvider delayDuration={200}>
                 <Tooltip>
                   <TooltipTrigger>
                     <a
