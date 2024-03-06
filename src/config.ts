@@ -22,7 +22,7 @@ import browser from "webextension-polyfill";
  */
 export const defaultConfigs = {
   auto_search: {
-    value: true as boolean,
+    value: false as boolean,
     type: "switch",
     text: "ポップアップを開いたとき自動で動画検索を開始する",
   },

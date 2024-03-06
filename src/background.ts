@@ -234,13 +234,20 @@ browser.runtime.onMessage.addListener(
   }
 );
 
-/**
- * インストール直後につかいかたページを開く
- */
-browser.runtime.onInstalled.addListener((details) => {
-  if (details.reason === "install") {
-    browser.tabs.create({
-      url: browser.runtime.getURL("how_to_use/how_to_use.html"),
-    });
-  }
+browser.runtime.onInstalled.addListener((_details) => {
+  const read_flag_key = "read_how_to_use";
+  const latest_how_to_use_version = 1;
+  browser.storage.local.get(read_flag_key).then((res) => {
+    if (res[read_flag_key] !== latest_how_to_use_version) {
+      browser.tabs
+        .create({
+          url: browser.runtime.getURL("how_to_use/how_to_use.html"),
+        })
+        .then(() => {
+          browser.storage.local.set({
+            [read_flag_key]: latest_how_to_use_version,
+          });
+        });
+    }
+  });
 });
