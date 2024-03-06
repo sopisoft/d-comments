@@ -9,7 +9,7 @@
   "type": "module",
   "repository": {
     "type": "git",
-    "url": "https://github.com/gobosan/d-comments.git"
+    "url": "https://github.com/sopisoft/d-comments.git"
   },
   "scripts": {
     "build": "bun run ./scripts/build.ts",

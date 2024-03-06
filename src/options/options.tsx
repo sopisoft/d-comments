@@ -21,6 +21,7 @@ import "@/index.css";
 import { createRoot } from "react-dom/client";
 import Developer from "./components/developer";
 import Footer from "./components/footer";
+import Form from "./components/form";
 import Header from "./components/header";
 import Options from "./components/options";
 
@@ -32,12 +33,16 @@ const OptionsPage = () => {
           tabsList={
             <TabsList className="flex space-x-4 max-md:hidden">
               <TabsTrigger value="options">設定</TabsTrigger>
+              <TabsTrigger value="form">フォーム</TabsTrigger>
               <TabsTrigger value="developer">開発者</TabsTrigger>
             </TabsList>
           }
         />
         <TabsContent value="options">
           <Options />
+        </TabsContent>
+        <TabsContent value="form">
+          <Form />
         </TabsContent>
         <TabsContent value="developer">
           <Developer />

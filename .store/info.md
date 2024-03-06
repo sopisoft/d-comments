@@ -14,11 +14,11 @@ d-comments は dアニメストア ( <https://animestore.docomo.ne.jp> ) の作�
 
 【注意】
 d-comments は dアニメストア、 ニコニコ動画の運営会社およびその他の関連会社様とは一切関係のない第三者が開発した非公式な非営利目的の拡張機能です。
-この拡張機能に関する御意見は、この拡張機能の GitHub リポジトリ ( <https://github.com/gobosan/d-comments> ) にお寄せください。
+この拡張機能に関する御意見は、この拡張機能の GitHub リポジトリ ( <https://github.com/sopisoft/d-comments> ) にお寄せください。
 
 【開発】
 以下のリンクから新機能のリクエストやバグ報告、コントリビュートをお待ちしています。
-GitHub リポジトリ ( <https://github.com/gobosan/d-comments> )
+GitHub リポジトリ ( <https://github.com/sopisoft/d-comments> )
 
 【評価】
 ストア評価やアンケートにお答えただけると開発者の励みになります。

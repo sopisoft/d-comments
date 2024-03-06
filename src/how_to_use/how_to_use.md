@@ -110,8 +110,8 @@
 
 ### この拡張機能について
 
-この拡張機能のソースコードは [GitHub のリポジトリ](https://github.com/gobosan/d-comments) で公開されています。
-ライセンスは [GPL-3.0 license](https://github.com/gobosan/d-comments/blob/master/LICENSE.txt) です。
+この拡張機能のソースコードは [GitHub のリポジトリ](https://github.com/sopisoft/d-comments) で公開されています。
+ライセンスは [GPL-3.0 license](https://github.com/sopisoft/d-comments/blob/master/LICENSE.txt) です。
 
 ### つかいかたページについて
 
@@ -122,6 +122,6 @@
 [Microsoft Forms](https://forms.office.com/r/JR9KksWHJD) で受け付けています。
 機能リクエストやバグ報告ができます。
 
-GitHub のアカウントをお持ちの方は [GitHub のリポジトリ](https://github.com/gobosan/d-comments) で Issue を立ててください。
+GitHub のアカウントをお持ちの方は [GitHub のリポジトリ](https://github.com/sopisoft/d-comments) で Issue を立ててください。
 
 ぜひ拡張機能のストアページでもレビューをお願いします。開発のモチベーションが上がります。

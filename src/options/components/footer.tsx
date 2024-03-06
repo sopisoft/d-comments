@@ -15,16 +15,21 @@
     along with d-comments.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import browser from "webextension-polyfill";
 
 function Footer() {
   const manifest = browser.runtime.getManifest();
 
-  const [year, setYear] = useState(2022);
-  fetch(browser.runtime.getURL("meta.json"))
-    .then((response) => response.json())
-    .then((data) => setYear(new Date(data.updated).getFullYear()));
+  const year = useRef(2022);
+
+  useEffect(() => {
+    fetch(browser.runtime.getURL("meta.json"))
+      .then((response) => response.json())
+      .then((data) => {
+        year.current = data.year;
+      });
+  }, []);
 
   return (
     <footer className="flex flex-row w-full h-16 p-2 text-sm text-center border-spacing-1 border-t border-gray-200">
@@ -35,7 +40,7 @@ function Footer() {
         className="flex flex-row items-center justify-center w-full h-full"
       >
         <span className="mx-3">{manifest.name}</span>
-        <span className="mx-1">2022 - {year}</span>
+        <span className="mx-1">2022 - {year.current}</span>
         <span className="mx-1">{browser.runtime.getManifest().author}</span>
         <span className="mx-3">Version {manifest.version}</span>
       </a>

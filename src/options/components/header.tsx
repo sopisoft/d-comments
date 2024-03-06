@@ -36,8 +36,13 @@ const contents: {
     description: "この拡張機能の使い方を説明したページを開きます。",
   },
   {
-    title: "バグ報告",
-    href: "https://github.com/gobosan/d-comments/issues/new/choose",
+    title: "Form",
+    href: "https://forms.office.com/r/JR9KksWHJD",
+    description: "バグ報告・機能リクエストのできるフォームを開きます。",
+  },
+  {
+    title: "Issue",
+    href: "https://github.com/sopisoft/d-comments/issues/new/choose",
     description:
       "バグ報告ページを開きます。報告には GitHub アカウントが必要です。",
   },
