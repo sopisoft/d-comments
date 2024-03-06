@@ -16,6 +16,7 @@
 */
 
 import browser from "webextension-polyfill";
+import { openHowToUseIfNotRead } from "./how_to_use/how_to_use";
 
 /**
  * 設定のデフォルト値
@@ -113,6 +114,7 @@ export async function getConfig<T extends keyof config>(
   key: T,
   callback?: (value: (typeof defaultConfigs)[T]["value"]) => void
 ): Promise<(typeof defaultConfigs)[T]["value"]> {
+  openHowToUseIfNotRead();
   const defaultValue = defaultConfigs[key].value;
   const storedValue = (await browser.storage.local.get([key]))[key];
   const value = (storedValue ?? defaultValue) as config_value<T>;

@@ -16,6 +16,7 @@
 */
 
 import { getConfig } from "@/config";
+import { openHowToUseIfNotRead } from "@/how_to_use/how_to_use";
 import browser from "webextension-polyfill";
 import get_threads from "./api/thread_data";
 import get_video_data from "./api/video_data";
@@ -35,6 +36,8 @@ import {
 } from "./state";
 
 const url = new URL(location.href);
+
+openHowToUseIfNotRead();
 
 switch (url.pathname) {
   case "/animestore/ci_pc":
