@@ -1,4 +1,4 @@
-# d-comments
+# d-anime comments viewer
 
 ![d-comments logo](./.store/d-comments.png)
 
@@ -44,7 +44,8 @@ bun install
 
 Run the following command:
 
-```sh
+```bash
+# Requires Bash environment
 bun run build
 ```
 

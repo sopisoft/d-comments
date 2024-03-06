@@ -102,7 +102,7 @@ export const setWorkInfo = async () => {
 
 /**
  * Firefoxで再生開始後やシーク移動後に、映像が止まり音声だけが流れるのを防ぐ
- * Inspired by dアニメストア スムーズプレイヤー
+ * Thanks to dアニメストア スムーズプレイヤー (licensed under [MIT](https://opensource.org/license/mit)
  * @see https://github.com/hamachi25/dAnimeSmoothPlayer
  */
 export async function smooth_player() {
