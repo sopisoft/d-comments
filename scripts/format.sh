@@ -1,1 +1,0 @@
-bunx @biomejs/biome format . --write

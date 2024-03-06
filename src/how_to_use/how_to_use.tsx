@@ -15,63 +15,39 @@
     along with d-comments.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-import rehypeSanitize from "rehype-sanitize";
+import "@/index.css";
+import { createRoot } from "react-dom/client";
+import Markdown from "react-markdown";
+import rehypeRaw from "rehype-raw";
 import rehypeSlug from "rehype-slug";
-import rehypeStringify from "rehype-stringify";
 import remarkGfm from "remark-gfm";
-import remarkParse from "remark-parse";
-import remarkRehype from "remark-rehype";
 import remarkToc from "remark-toc";
-import { Suspense, createSignal } from "solid-js";
-import { render } from "solid-js/web";
-import { unified } from "unified";
-import browser from "webextension-polyfill";
 import "zenn-content-css";
-import "../global.css";
 import "./how_to_use.css";
+import md from "./how_to_use.md";
 
-const parseMarkdown = async (text: string): Promise<string> => {
-  return String(
-    await unified()
-      .use(remarkParse)
-      .use(remarkToc, {
-        heading: "目次",
-        tight: true,
-        prefix: "user-content-",
-      })
-      .use(remarkGfm)
-      .use(remarkRehype)
-      .use(rehypeSlug)
-      .use(rehypeSanitize)
-      .use(rehypeStringify)
-      .process(text)
-  );
-};
-
-const how_to_use = () => {
-  const [content, setContent] = createSignal("");
-
-  const md = fetch(browser.runtime.getURL("how_to_use.md")).then((response) =>
-    response.text()
-  );
-
-  md.then((text) => {
-    parseMarkdown(text).then((html) => {
-      setContent(html);
-    });
-  });
-
+const HowToUse = () => {
   return (
-    <>
-      <Suspense fallback={<div>Loading...</div>}>
-        <div class="znc" innerHTML={content()} />
-      </Suspense>
-    </>
+    <Markdown
+      className="znc"
+      remarkPlugins={[
+        remarkGfm,
+        [
+          remarkToc,
+          {
+            heading: "目次",
+          },
+        ],
+      ]}
+      rehypePlugins={[rehypeRaw, rehypeSlug]}
+    >
+      {md}
+    </Markdown>
   );
 };
 
 const root = document.createElement("div");
-root.id = "use";
+root.id = "root";
 document.body.appendChild(root);
 
-render(how_to_use, root);
+createRoot(root).render(<HowToUse />);

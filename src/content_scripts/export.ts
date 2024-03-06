@@ -15,36 +15,60 @@
     along with d-comments.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-import browser from "webextension-polyfill";
+import get_threads from "./api/thread_data";
+import get_video_data from "./api/video_data";
+import { messages, set_messages } from "./state";
 
-const exportJson = (movieId: string) => {
-  browser.runtime
-    .sendMessage({
-      type: "movieData",
-      movieId: movieId,
-    })
-    .then((movieData) => {
-      if (!movieData || movieData.meta.status !== 200) {
-        window.alert("動画情報の取得に失敗しました");
-      } else {
-        browser.runtime
-          .sendMessage({
-            type: "threadData",
-            movieData: movieData,
-          })
-          .then((threadData) => {
-            const fileName = movieData.data.video.title;
-            const jsonBody = {
-              version: 1,
-              movieId: movieId,
-              movieData: movieData,
-              threadData: threadData,
-            };
-            const data = JSON.stringify(jsonBody);
-            saveFile(fileName, data);
-          });
-      }
-    });
+function push_message(message: Error | { title: string; description: string }) {
+  set_messages(messages().concat(message));
+}
+const exportJson = async (videoId: VideoId) => {
+  set_messages([]);
+  push_message({
+    title: "コメントを取得しています",
+    description: "動画情報を取得しています",
+  });
+
+  const video_data = await get_video_data(videoId);
+  if (video_data instanceof Error) {
+    push_message(video_data);
+    return;
+  }
+  console.log("video_data", video_data);
+
+  if (!(video_data as SearchResult).data?.comment) {
+    const res = video_data as SearchErrorResponse;
+    const error_code = res.meta.errorCode;
+    const error_reason = res.data.reasonCode;
+    const message = {
+      title: "動画情報の取得に失敗しました",
+      description: error_reason ?? error_code,
+    };
+    push_message(message);
+    return;
+  }
+
+  const { data } = video_data as SearchResult;
+  const threads = await get_threads(data.comment.nvComment);
+  if (threads instanceof Error) {
+    push_message(threads);
+    return;
+  }
+  console.log("threads", threads);
+
+  push_message({
+    title: "コメントの取得に成功しました",
+    description: "ファイルに保存しています",
+  });
+
+  const fileName = `${data.video.title}.json`;
+  const _data: comments_json = {
+    version: 1,
+    movieData: video_data as SearchResult,
+    threadData: threads,
+  };
+
+  return await saveFile(fileName, JSON.stringify(_data));
 };
 
 /**
@@ -53,29 +77,18 @@ const exportJson = (movieId: string) => {
  * @param data 内容
  */
 const saveFile = async (fileName: string, data: string) => {
-  /*File System Access API が不安定なので現状では採用しない
-  const handle = await window.showSaveFilePicker({
-    suggestedName: fileName,
-    types: [
-      {
-        description: "JSON File",
-        accept: {
-          "application/json": [".json"],
-        },
-      },
-    ],
-  });
-  const writable = await handle.createWritable();
-  await writable.write(data);
-  await writable.close();
-  */
-  const blob = new Blob([data], { type: "application/json" });
-  const link = document.createElement("a");
-  document.body.appendChild(link);
-  link.href = window.URL.createObjectURL(blob);
-  link.download = fileName;
-  link.click();
-  document.body.removeChild(link);
+  try {
+    const blob = new Blob([data], { type: "application/json" });
+    const link = document.createElement("a");
+    document.body.appendChild(link);
+    link.href = window.URL.createObjectURL(blob);
+    link.download = fileName;
+    link.click();
+    document.body.removeChild(link);
+  } catch (e) {
+    return e as Error;
+  }
+  return true as const;
 };
 
 export default exportJson;

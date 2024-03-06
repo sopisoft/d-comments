@@ -15,8 +15,8 @@
     along with d-comments.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+import { getConfig } from "@/config";
 import browser from "webextension-polyfill";
-import * as Config from "./content_scripts/config";
 
 /**
  * 任意の範囲のランダムな整数を返す
@@ -30,94 +30,96 @@ const getRandomInt = (min: number, max: number) => {
   return Math.floor(Math.random() * (maxNum - minNum) + minNum);
 };
 
+function getActionTrackId() {
+  const f = Math.random().toString(36).slice(-10);
+  const b = getRandomInt(10 ** 12, 10 ** 13);
+  return `${f}_${b}`;
+}
+
 /**
  * 動画情報を取得する
- * @param movieId ニコニコ動画の動画ID
+ * @param videoId ニコニコ動画の動画ID
  * @param sendResponse (response) => void
  */
 
-const getMovieData = (movieId: string, sendResponse: (v: any) => void) => {
-  Config.getConfig("allow_login_to_nicovideo", (config) => {
-    const actionTrackId = `${Math.random()
-      .toString(36)
-      .slice(-10)}_${getRandomInt(10 ** 12, 10 ** 13)}`;
-    const url = `https://www.nicovideo.jp/api/watch/${
-      config ? "v3" : "v3_guest"
-    }/${movieId}`;
-    const params = {
-      _frontendId: "6",
-      _frontendVersion: "0",
-      actionTrackId: actionTrackId,
-    };
+const getVideoData = async (videoId: string) => {
+  const config = await getConfig("allow_login_to_nicovideo");
+  const url = `https://www.nicovideo.jp/api/watch/${
+    config ? "v3" : "v3_guest"
+  }/${videoId}`;
+  const params = {
+    _frontendId: "6",
+    _frontendVersion: "0",
+    actionTrackId: getActionTrackId(),
+  };
+  const fetch_options: RequestInit = {
+    credentials: config ? "include" : "omit",
+    headers: {
+      "x-frontend-id": "6",
+      "x-frontend-version": "0",
+    },
+  };
+  if (config)
+    browser.cookies
+      .get({ url: "https://www.nicovideo.jp/", name: "user_session" })
+      .then((cookie) => {
+        if (!cookie) return;
+        Object.assign(fetch_options.headers as HeadersInit, {
+          Cookie: `user_session=${cookie.value}`,
+        });
+      });
 
-    if (config) {
-      browser.cookies
-        .get({ url: "https://www.nicovideo.jp/", name: "user_session" })
-        .then((cookie) => {
-          fetch(`${url}?${new URLSearchParams(params)}`, {
-            credentials: "include",
-            headers: {
-              "x-frontend-id": "6",
-              "x-frontend-version": "0",
-              Cookie: `user_session=${cookie?.value}`,
-            },
-          })
-            .then((res) => {
-              return res.json();
-            })
-            .then((v) => {
-              sendResponse(v);
-            });
-        });
-    } else {
-      fetch(`${url}?${new URLSearchParams(params)}`, {
-        credentials: "omit",
-        headers: {
-          "x-frontend-id": "6",
-          "x-frontend-version": "0",
-        },
-      })
-        .then((res) => {
-          return res.json();
-        })
-        .then((v) => {
-          sendResponse(v);
-        });
-    }
-  });
+  return await fetch(`${url}?${new URLSearchParams(params)}`, fetch_options)
+    .then(async (res) => {
+      const json = (await res.json()) as SearchResponse;
+      return json;
+    })
+    .catch((e) => {
+      return e as Error;
+    });
 };
 
 /**
  * コメントスレッドの情報とコメントを取得
- * @param movieData getMovieData で取得した動画情報
- * @returns Promise<Response>
  */
-
-const getThreadComments = (movieData: any) => {
-  const nvComment = movieData.data.comment.nvComment;
-  const serverUrl = `${nvComment.server}/v1/threads`;
-  const jsonBody = {
-    threadKey: nvComment.threadKey,
-    params: nvComment.params,
-    additionals: {},
-  };
-
-  const d = fetch(`${serverUrl}?_frontendId=6`, {
+const getThreadComments = async (
+  nvComment: SearchResult["data"]["comment"]["nvComment"]
+) => {
+  const { server, threadKey, params } = nvComment;
+  const serverUrl = `${server}/v1/threads`;
+  const headers: RequestInit = {
     headers: {
       "Content-Type": "application/json",
       "x-frontend-id": "6",
       "x-frontend-version": "0",
-    },
+    } as HeadersInit,
     method: "POST",
-    body: JSON.stringify(jsonBody),
-  }).then((res) => {
-    return res;
-  });
-
-  return d;
+    body: JSON.stringify({
+      threadKey: threadKey,
+      params: params,
+      additionals: {},
+    }),
+  };
+  const res = await fetch(`${serverUrl}?_frontendId=6`, headers)
+    .then(async (res) => {
+      if (res.status !== 200) return new Error("Failed to fetch threads");
+      const json = (await res.json()) as ThreadsData;
+      return json;
+    })
+    .catch((e) => {
+      return e as Error;
+    });
+  return res;
 };
 
-const search = (word: string, UserAgent: string) => {
+/**
+ * スナップショットAPIを使って動画を検索する
+ * @see https://site.nicovideo.jp/search-api-docs/snapshot
+ */
+const search = async (
+  word: string,
+  UserAgent: string
+): Promise<searchApi["response"] | Error> => {
   const endpoint =
     "https://api.search.nicovideo.jp/api/v2/snapshot/video/contents/search";
   const params = {
@@ -129,78 +131,106 @@ const search = (word: string, UserAgent: string) => {
     _limit: "40",
     _context: "d-comments",
   };
-  /**
-   * スナップショットAPIを使って動画を検索する
-   * @see https://site.nicovideo.jp/search-api-docs/snapshot
-   */
-  const d = fetch(`${endpoint}?${new URLSearchParams(params)}`, {
+
+  const res = await fetch(`${endpoint}?${new URLSearchParams(params)}`, {
     headers: {
       "User-Agent": UserAgent,
     },
-  }).then((res) => {
-    return res;
-  });
+  })
+    .then(async (res) => {
+      const json = await res.json();
+      return json as searchApi["response"];
+    })
+    .catch((e) => {
+      return e as Error;
+    });
 
-  return d;
+  return res;
+};
+
+/**
+ *
+ * @param type "user" | "channel"
+ * @param videoId 動画ID
+ * @param ownerId ユーザーID または チャンネルID
+ * @returns Owner
+ */
+const get_user_info = async (
+  type: "user" | "channel",
+  ownerId: string
+): Promise<ownerInfoApi["response"] | Error> => {
+  switch (type) {
+    case "user": {
+      const url = `https://nvapi.nicovideo.jp/v1/users/${ownerId}`;
+      const headers: RequestInit = {
+        headers: {
+          "User-Agent": navigator.userAgent ?? "",
+          "x-frontend-id": "6",
+          "x-frontend-version": "0",
+        },
+      };
+      return await fetch(url, headers)
+        .then(async (res) => {
+          const json = await res.json();
+          const { nickname, icons } = json.data.user;
+          const owner: Owner = {
+            ownerId: ownerId,
+            ownerName: nickname,
+            ownerIconUrl: icons.small,
+          };
+          return owner;
+        })
+        .catch((e) => {
+          return e;
+        });
+    }
+    case "channel": {
+      const url = `https://api.cas.nicovideo.jp/v2/tanzakus/channel/ch${ownerId}`;
+      return await fetch(url)
+        .then(async (res) => {
+          const json = await res.json();
+          const { name, icon } = json.data;
+          const owner: Owner = {
+            ownerId: ownerId,
+            ownerName: name,
+            ownerIconUrl: icon,
+          };
+          return owner;
+        })
+        .catch((e) => {
+          return e;
+        });
+    }
+    default: {
+      throw new Error("invalid type of owner");
+    }
+  }
 };
 
 browser.runtime.onMessage.addListener(
-  (message, sender, sendResponse: (v: any) => void) => {
+  (message: messages): Promise<messages["response"] | Error> => {
     switch (message.type) {
-      case "movieData": {
-        getMovieData(message.movieId, sendResponse);
-        return true;
+      case "video_data": {
+        const data = message.data;
+        return getVideoData(data.videoId);
       }
-      case "threadData": {
-        getThreadComments(message.movieData)
-          .then((res) => {
-            return res.json();
-          })
-          .then((json) => {
-            sendResponse(json.data);
-          });
-        return true;
+      case "thread_data": {
+        const data = message.data;
+        return getThreadComments(data.videoData);
       }
       case "search": {
-        search(message.word, message.UserAgent)
-          .then((res) => {
-            return res.json();
-          })
-          .then((json) => {
-            sendResponse(json);
-          });
-        return true;
+        const data = message.data;
+        return search(data.word, data.UserAgent);
       }
-      case "user": {
-        const url = `https://nvapi.nicovideo.jp/v1/users/${message.id}`;
-        fetch(url, {
-          headers: {
-            "User-Agent": message.UserAgent,
-            "x-frontend-id": "6",
-            "x-frontend-version": "0",
-          },
-        })
-          .then((res) => {
-            return res.json();
-          })
-          .then((json) => {
-            sendResponse(json);
-          });
-        return true;
+      case "owner_info": {
+        const data = message.data;
+        const { type, ownerId } = data;
+        return get_user_info(type, ownerId);
       }
-      case "channel": {
-        const url = `https://api.cas.nicovideo.jp/v2/tanzakus/channel/ch${message.id}/`;
-        fetch(url)
-          .then((res) => {
-            return res.json();
-          })
-          .then((json) => {
-            sendResponse(json);
-          });
-        return true;
+      default: {
+        return new Promise((r) => r(false));
       }
     }
-    return undefined;
   }
 );
 
@@ -210,9 +240,7 @@ browser.runtime.onMessage.addListener(
 browser.runtime.onInstalled.addListener((details) => {
   if (details.reason === "install") {
     browser.tabs.create({
-      url: browser.runtime.getURL("how_to_use.html"),
+      url: browser.runtime.getURL("how_to_use/how_to_use.html"),
     });
   }
 });
-
-export default {};

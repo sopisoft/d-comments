@@ -21,9 +21,10 @@ body {
   flex-direction: column;
   align-items: center;
   background-color: rgb(241, 241, 241);
+  max-width: 100vw;
 }
 
-#use {
+#root {
   width: 800px;
   padding: 1rem;
   border-radius: 15px;

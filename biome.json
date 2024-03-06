@@ -3,20 +3,24 @@
   "organizeImports": {
     "enabled": true
   },
-  "linter": {
+  "vcs": {
     "enabled": true,
-    "rules": {
-      "recommended": true
-    },
-    "ignore": ["dist/*", "node_modules/*"]
+    "clientKind": "git"
+  },
+  "files": {
+    "include": ["src/**/*.ts", "src/**/*.tsx"],
+    "ignore": ["dist/*", "node_modules/*"],
+    "ignoreUnknown": true
   },
   "formatter": {
-    "enabled": true,
     "formatWithErrors": true,
     "indentStyle": "space",
-    "indentWidth": 2,
-    "lineEnding": "lf",
-    "ignore": ["dist/*", "node_modules/*"]
+    "indentWidth": 2
+  },
+  "linter": {
+    "rules": {
+      "recommended": true
+    }
   },
   "javascript": {
     "formatter": {
