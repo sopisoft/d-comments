@@ -235,6 +235,6 @@ browser.runtime.onMessage.addListener(
   }
 );
 
-browser.runtime.onInstalled.addListener((_details) => {
-  openHowToUseIfNotRead();
+browser.runtime.onInstalled.addListener(async (_details) => {
+  await openHowToUseIfNotRead();
 });

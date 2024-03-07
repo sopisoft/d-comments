@@ -37,7 +37,7 @@ import {
 
 const url = new URL(location.href);
 
-openHowToUseIfNotRead();
+await openHowToUseIfNotRead();
 
 switch (url.pathname) {
   case "/animestore/ci_pc":

@@ -1,8 +1,8 @@
 import fs from "fs";
 import Bun from "bun";
-import { minify } from "terser";
+import { type MinifyOptions, minify } from "terser";
 
-const option = {
+const option: MinifyOptions = {
   module: true,
   compress: {
     module: true,
@@ -22,7 +22,7 @@ const option = {
 export async function minifyJs(browser: browsers[number]) {
   console.log(`Minifying js for ${browser}`);
   const files = fs.readdirSync(`dist/${browser}/js`);
-  Promise.all(
+  return await Promise.all(
     files.map(async (file) => {
       const f = Bun.file(`dist/${browser}/js/${file}`);
       const code = await f.text();

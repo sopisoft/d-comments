@@ -17,23 +17,26 @@
 
 import browser from "webextension-polyfill";
 
-const read_flag_key = "read_how_to_use";
-const latest_how_to_use_version = 1;
+let opend: boolean | undefined = false;
 
-function openHowToUseIfNotRead() {
-  browser.storage.local.get(read_flag_key).then((res) => {
-    if (res[read_flag_key] !== latest_how_to_use_version) {
-      browser.tabs
-        .create({
-          url: browser.runtime.getURL("how_to_use/how_to_use.html"),
+export async function openHowToUseIfNotRead() {
+  const read_flag_key = "read_how_to_use";
+  const latest_how_to_use_version = "1.0.0";
+
+  const isHowToUseRead: boolean =
+    (await browser.storage.local.get(read_flag_key))[read_flag_key] ===
+    latest_how_to_use_version;
+
+  if (!isHowToUseRead && !opend) {
+    opend = true;
+    browser.tabs
+      .create({
+        url: browser.runtime.getURL("how_to_use/how_to_use.html"),
+      })
+      .then(() =>
+        browser.storage.local.set({
+          [read_flag_key]: latest_how_to_use_version,
         })
-        .then(() => {
-          browser.storage.local.set({
-            [read_flag_key]: latest_how_to_use_version,
-          });
-        });
-    }
-  });
+      );
+  }
 }
-
-export { openHowToUseIfNotRead };

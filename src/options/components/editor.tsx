@@ -23,8 +23,10 @@ import { Switch } from "@/components/ui/switch";
 import {
   type config_keys,
   type config_value,
-  defaultConfigs,
   getConfig,
+  getConfigText,
+  getDefaultValue,
+  getValueType,
   setConfig,
 } from "@/config";
 import { type ChangeEvent, useEffect, useMemo, useState } from "react";
@@ -37,13 +39,9 @@ function Editor<T extends config_keys>(props: {
 }) {
   const key = useMemo(() => props._key, [props._key]);
   const text = useMemo(() => props.text, [props.text]);
-  const type = useMemo(() => {
-    return defaultConfigs[key].type;
-  }, [key]);
+  const type = useMemo(() => getValueType(key), [key]);
 
-  const [value, setValue] = useState<config_value<T>>(
-    defaultConfigs[key].value
-  );
+  const [value, setValue] = useState<config_value<T>>(getDefaultValue(key));
 
   const setOption = (key: T, value: config_value<T>) => {
     setValue(value);
@@ -139,9 +137,8 @@ function Editor<T extends config_keys>(props: {
 
 const EditorWrapper = (props: { _key: config_keys }) => {
   const key = useMemo(() => props._key, [props._key]);
-  const { text, type } = useMemo(() => {
-    return defaultConfigs[key];
-  }, [key]);
+  const text = getConfigText(key);
+  const type = getValueType(key);
 
   return (
     <div className="grid grid-cols-4 gap-1 justify-items-stretch items-center">

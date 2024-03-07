@@ -26,20 +26,17 @@ const fmt = make_proc(["bun", "run", "format"]);
 const lint = make_proc(["bun", "run", "lint"]);
 
 Promise.all([fs.rmdirSync("dist", { recursive: true }), tsc, fmt, lint]).then(
-  () => {
+  () =>
     build({
       mode: "chrome",
       build: {
         outDir: `../dist/${"chrome"}`,
       },
     })
-      // .then(async () => {
-      //   await minifyJs("chrome");
-      // })
       .then(async () => {
-        await make_proc(["cp", "-r", "dist/chrome", "dist/firefox"]);
-      })
-      .then(() => {
+        await minifyJs("chrome").then(async () => {
+          await make_proc(["cp", "-r", "dist/chrome", "dist/firefox"]);
+        });
         browsers.map((browser) => {
           Promise.all([
             manifest(browser).then((manifest) => {
@@ -54,10 +51,10 @@ Promise.all([fs.rmdirSync("dist", { recursive: true }), tsc, fmt, lint]).then(
                 updated: new Date().toISOString(),
               })
             ),
-          ]).then(() => {
-            webExtBuild(browser);
-          });
+          ]);
         });
-      });
-  }
+      })
+      .then(() => {
+        browsers.map((browser) => webExtBuild(browser));
+      })
 );
