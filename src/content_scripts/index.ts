@@ -28,8 +28,8 @@ import { addMenu } from "./danime/mypage";
 import { setWorkInfo, smooth_player } from "./danime/watch";
 import exportJson from "./export";
 import {
-  messages as getMessages,
   on_partId_change,
+  push_message,
   set_messages,
   set_partId,
   set_threads,
@@ -71,10 +71,6 @@ switch (url.pathname) {
 
     break;
   }
-}
-
-function push_message(message: Error | { title: string; description: string }) {
-  set_messages(getMessages().concat(message));
 }
 
 async function render_comments(videoId: VideoId) {

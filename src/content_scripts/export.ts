@@ -17,11 +17,8 @@
 
 import get_threads from "./api/thread_data";
 import get_video_data from "./api/video_data";
-import { messages, set_messages } from "./state";
+import { push_message, set_messages } from "./state";
 
-function push_message(message: Error | { title: string; description: string }) {
-  set_messages(messages().concat(message));
-}
 const exportJson = async (videoId: VideoId) => {
   set_messages([]);
   push_message({
