@@ -61,6 +61,9 @@ type messages = (Error | message)[];
 export const [messages, set_messages, on_messages_change] = use_state<messages>(
   []
 );
+export function push_message(message: Error | message) {
+  set_messages(messages().concat(message));
+}
 
 async function get_mode_arr(): Promise<mode> {
   const arr: mode = [];

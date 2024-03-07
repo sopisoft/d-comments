@@ -15,13 +15,9 @@
     along with d-comments.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { messages as getMessages, set_messages } from "../state";
+import { push_message } from "../state";
 import { get_work_info } from "./api";
 import { find_element, find_elements } from "./dom";
-
-function push_message(message: Error | { title: string; description: string }) {
-  set_messages(getMessages().concat(message));
-}
 
 /**
  * 視聴ページで title と description をパートタイトルと説明に書き換える
@@ -39,65 +35,13 @@ export const setWorkInfo = async () => {
     return;
   }
 
-  const { title, partExp, workTitle, mainScenePath } = res.data;
+  const { title, partExp, workTitle } = res.data;
+  const description = partExp ? partExp : workTitle;
 
-  document.title = title;
-  document
-    .querySelector("meta[name=Description]")
-    ?.setAttribute("content", partExp);
-
-  const mediaSession = navigator.mediaSession;
-
-  const dom_play_button = await find_element(".playButton");
-  const dom_seekforward_button = await find_element(".backButton");
-  const dom_seekbackward_button = await find_element(".skipButton");
-  const dom_prev_track_button = await find_element(".prevButton");
-  const dom_next_track_button = await find_element(".nextButton");
-
-  mediaSession.metadata = new MediaMetadata({
-    title: title,
-    artist: "dアニメストア",
-    album: workTitle,
-    artwork: [
-      {
-        src: mainScenePath.replace("_1_3.png", "_1_1.png"),
-        sizes: "640x360",
-        type: "image/jpeg",
-      },
-    ],
-  });
-
-  mediaSession.setActionHandler("play", () => {
-    dom_play_button?.dispatchEvent(new MouseEvent("click"));
-  });
-  mediaSession.setActionHandler("pause", () => {
-    dom_play_button?.dispatchEvent(new MouseEvent("click"));
-  });
-  mediaSession.setActionHandler("seekbackward", () => {
-    dom_seekbackward_button?.dispatchEvent(new MouseEvent("click"));
-  });
-  mediaSession.setActionHandler("seekforward", () => {
-    dom_seekforward_button?.dispatchEvent(new MouseEvent("click"));
-  });
-  mediaSession.setActionHandler("previoustrack", () => {
-    dom_prev_track_button?.dispatchEvent(new MouseEvent("click"));
-  });
-  mediaSession.setActionHandler("nexttrack", () => {
-    dom_next_track_button?.dispatchEvent(new MouseEvent("click"));
-  });
-
-  const video = await find_element("video");
-  if (video) {
-    video.addEventListener("play", () => {
-      mediaSession.playbackState = "playing";
-    });
-    video.addEventListener("pause", () => {
-      mediaSession.playbackState = "paused";
-    });
-    video.addEventListener("ended", () => {
-      mediaSession.playbackState = "none";
-    });
-  }
+  const titleEl = await find_element("title");
+  if (titleEl) titleEl.textContent = title;
+  const descriptionEl = await find_element("meta[name=Description]");
+  if (descriptionEl) descriptionEl.setAttribute("content", description);
 };
 
 /**

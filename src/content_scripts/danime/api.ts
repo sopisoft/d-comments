@@ -15,9 +15,6 @@
     along with d-comments.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-export const base_url =
-  "https://animestore.docomo.ne.jp/animestore/rest/WS010105";
-
 type work_info = {
   version: number;
   data: {
@@ -35,13 +32,15 @@ type work_info = {
 
 export async function get_work_info() {
   const partId = new URLSearchParams(location.search).get("partId")?.toString();
+  const base_url = "https://animestore.docomo.ne.jp/animestore/rest/WS010105";
   const params = {
     viewType: "5",
     partId: partId ?? "",
     defaultPlay: "5",
   };
-  const params_str = new URLSearchParams(params).toString();
-  return await fetch(`${base_url}?${params_str}`, {
+  const params_str = new URLSearchParams(params);
+  const url = `${base_url}?${params_str}`;
+  const res = await fetch(url, {
     method: "GET",
     cache: "no-cache",
   })
@@ -51,4 +50,5 @@ export async function get_work_info() {
     .catch((e) => {
       return e as Error;
     });
+  return res;
 }
