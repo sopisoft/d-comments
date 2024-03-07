@@ -34,8 +34,10 @@ import useAnimationFrame from "./useAnimationFrame";
 export function Scroll() {
   const loop = useAnimationFrame(scroll, 120);
 
-  const virtuoso = useRef<VirtuosoHandle>(null);
   const videoEl = useRef<HTMLVideoElement | null>(null);
+  const parent = useRef<HTMLDivElement | null>(null);
+  const isParentHovered = useRef(false);
+  const virtuoso = useRef<VirtuosoHandle>(null);
   const isAutoScrollEnabled = useRef(true);
 
   const [width, setWidth] = useState<number>();
@@ -90,13 +92,15 @@ export function Scroll() {
   }
 
   function scroll() {
-    if (!comments || !isAutoScrollEnabled.current) return;
+    if (!comments || !isAutoScrollEnabled.current || isParentHovered.current)
+      return;
     if (videoEl.current && !videoEl.current.paused) {
       const currentTimeMs = videoEl.current.currentTime * 1000;
       const id = get_item_id(currentTimeMs);
       if (virtuoso.current && typeof id === "number") {
         virtuoso.current.scrollToIndex({
           index: id,
+          align: "center",
           behavior: "smooth",
         });
       }
@@ -133,6 +137,15 @@ export function Scroll() {
     on_partId_change(() => {
       end();
     });
+
+    parent.current?.addEventListener("mouseenter", () => {
+      isAutoScrollEnabled.current = false;
+    });
+    parent.current?.addEventListener("mouseleave", () => {
+      isAutoScrollEnabled.current = true;
+    });
+    isParentHovered.current = parent.current?.matches(":hover") ?? false;
+
     browser.storage.onChanged.addListener(async (changes) => {
       for (const key in changes) {
         switch (key as config_keys) {
@@ -169,6 +182,7 @@ export function Scroll() {
     <ThemeProvider>
       <div
         className="flex flex-col h-full max-h-svh"
+        ref={parent}
         style={{
           display: (comments?.length ?? 0) > 0 ? "block" : "none",
           backgroundColor: bgColor,
