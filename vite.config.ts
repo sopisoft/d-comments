@@ -30,6 +30,7 @@ export default defineConfig({
   },
   build: {
     target: "esnext",
+    minify: false,
     modulePreload: false,
     rollupOptions: {
       input: {

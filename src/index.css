@@ -15,7 +15,7 @@
     along with d-comments.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@100..900?display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@100..900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Noto+Color+Emoji&family=Noto+Sans+JP:wght@100..900&display=swap');
 
 @tailwind base;
@@ -87,10 +87,14 @@
 
   html {
     font-family: "Noto Sans JP", "Noto Color Emoji", sans-serif;
+    font-optical-sizing: auto;
+    font-style: normal;
   }
 
   body {
     font-family: "Noto Sans JP", "Noto Color Emoji", sans-serif !important;
+    font-optical-sizing: auto;
+    font-style: normal;
   }
 }
 
