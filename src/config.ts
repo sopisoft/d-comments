@@ -125,7 +125,7 @@ export async function getConfig<T extends config_keys>(
   key: T,
   callback?: (value: config_value<T>) => void
 ): Promise<config_value<T>> {
-  await openHowToUseIfNotRead();
+  openHowToUseIfNotRead();
   const storedValue = (await browser.storage.local.get([key]))[key];
   const defaultValue = getDefaultValue(key);
   const value = (storedValue ?? defaultValue) as config_value<T>;
