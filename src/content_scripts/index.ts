@@ -33,6 +33,7 @@ import {
   set_messages,
   set_partId,
   set_threads,
+  threads as getThreads,
 } from "./state";
 
 const url = new URL(location.href);
@@ -60,12 +61,15 @@ switch (url.pathname) {
 
     on_partId_change(async (prev, next) => {
       if (prev && next) {
-        const message = {
-          title: "再生中のパートが切り替わりました",
-          description: "コメントを再取得してください",
-        };
-        push_message(message);
         setWorkInfo();
+        if (getThreads() !== undefined) {
+          const message = {
+            title: "再生中のパートが切り替わりました",
+            description: "コメントを再取得してください",
+          };
+          push_message(message);
+          set_threads(undefined);
+        }
       }
     });
 
