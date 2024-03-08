@@ -28,6 +28,7 @@ import { addMenu } from "./danime/mypage";
 import { setWorkInfo, smooth_player } from "./danime/watch";
 import exportJson from "./export";
 import {
+  threads as getThreads,
   on_partId_change,
   push_message,
   set_messages,
@@ -60,12 +61,15 @@ switch (url.pathname) {
 
     on_partId_change(async (prev, next) => {
       if (prev && next) {
-        const message = {
-          title: "再生中のパートが切り替わりました",
-          description: "コメントを再取得してください",
-        };
-        push_message(message);
         setWorkInfo();
+             if (getThreads() !== undefined) {
+          const message = {
+            title: "再生中のパートが切り替わりました",
+            description: "コメントを再取得してください",
+          };
+          push_message(message);
+          set_threads(undefined);
+        }
       }
     });
 
