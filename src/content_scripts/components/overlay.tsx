@@ -17,13 +17,16 @@
 
 import { Toaster } from "@/components/ui/toaster";
 import { useToast } from "@/components/ui/use-toast";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { createRoot } from "react-dom/client";
 import browser from "webextension-polyfill";
 import { on_messages_change } from "../state";
 
 function Overlay() {
-  const { toast } = useToast();
+  const { toast, dismiss } = useToast();
+
+  const toast_duration = 3 * 10 ** 3;
+  const timer = useRef<number | null>(null);
 
   function ErrorMessage(props?: {
     error?: Error;
@@ -40,10 +43,38 @@ function Overlay() {
   }
 
   useEffect(() => {
+    const handleBlur = () => {
+      if (timer.current) clearTimeout(timer.current);
+
+      timer.current = window.setTimeout(() => {
+        dismiss();
+      });
+    };
+    const handleFocus = () => {
+      if (timer.current) clearTimeout(timer.current);
+    };
+
+    if (!document.hasFocus()) {
+      timer.current = window.setTimeout(() => {
+        dismiss();
+      }, toast_duration);
+      addEventListener("focus", handleFocus);
+    }
+    addEventListener("blur", handleBlur);
+    addEventListener("focus", handleFocus);
+
+    return () => {
+      removeEventListener("blur", handleBlur);
+      removeEventListener("focus", handleFocus);
+      if (timer.current) clearTimeout(timer.current);
+    };
+  }, [dismiss]);
+
+  useEffect(() => {
     on_messages_change((_prev, next) => {
-      if (next && next[next.length - 1] instanceof Error) {
+      if (next && next[next.length - 1] instanceof Error)
         ErrorMessage({ error: next[next.length - 1] as Error });
-      } else if (next?.[next.length - 1]) {
+      else if (next?.[next.length - 1]) {
         ErrorMessage({
           message: next[next.length - 1] as {
             title: string;
