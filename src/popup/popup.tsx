@@ -16,13 +16,7 @@
 */
 
 import { ThemeProvider } from "@/components/theme-provider";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { Toaster } from "@/components/ui/toaster";
 import "@/index.css";
 import { Settings } from "lucide-react";

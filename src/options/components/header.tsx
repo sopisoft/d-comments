@@ -25,30 +25,30 @@ import {
 import { Settings } from "lucide-react";
 import browser from "webextension-polyfill";
 
-const contents: {
-  title: string;
-  href: string;
-  description: string;
-}[] = [
-  {
-    title: "つかいかた",
-    href: browser.runtime.getURL("how_to_use/how_to_use.html"),
-    description: "この拡張機能の使い方を説明したページを開きます。",
-  },
-  {
-    title: "Form",
-    href: "https://forms.office.com/r/JR9KksWHJD",
-    description: "バグ報告・機能リクエストのできるフォームを開きます。",
-  },
-  {
-    title: "Issue",
-    href: "https://github.com/sopisoft/d-comments/issues/new/choose",
-    description:
-      "バグ報告ページを開きます。報告には GitHub アカウントが必要です。",
-  },
-];
-
 function Header(props: { tabsList: React.ReactNode }) {
+  const contents: {
+    title: string;
+    href: string;
+    description: string;
+  }[] = [
+    {
+      title: "つかいかた",
+      href: browser.runtime.getURL("how_to_use/how_to_use.html"),
+      description: "この拡張機能の使い方を説明したページを開きます。",
+    },
+    {
+      title: "Form",
+      href: "https://forms.office.com/r/JR9KksWHJD",
+      description: "バグ報告・機能リクエストのできるフォームを開きます。",
+    },
+    {
+      title: "Issue",
+      href: "https://github.com/sopisoft/d-comments/issues/new/choose",
+      description:
+        "バグ報告ページを開きます。報告には GitHub アカウントが必要です。",
+    },
+  ];
+
   return (
     <header className="flex items-center justify-between w-full px-4 py-2 border-b border-gray-200">
       <div className="flex items-center space-x-4 basis-[calc(100%-10rem)]">

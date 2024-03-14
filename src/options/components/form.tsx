@@ -17,28 +17,33 @@
 
 import browser from "webextension-polyfill";
 
-const iframe = document.createElement("iframe");
-iframe.width = "1280px";
-iframe.height = "800px";
-iframe.src =
-  "https://forms.office.com/Pages/ResponsePage.aspx?id=DQSIkWdsW0yxEjajBLZtrQAAAAAAAAAAAAMAABWTsPtUNkUyNzMwSFkyNEVENTExTVdINUNBUDBFNC4u&embed=true";
-iframe.allowFullscreen = true;
-const iframe_string = iframe.outerHTML;
-
-const version = browser.runtime.getManifest().version;
+function make_iframe() {
+  const iframe = document.createElement("iframe");
+  iframe.width = "100%";
+  iframe.height = "720px";
+  const url = new URL("https://forms.office.com/Pages/ResponsePage.aspx");
+  url.searchParams.append(
+    "id",
+    "DQSIkWdsW0yxEjajBLZtrQAAAAAAAAAAAAMAABWTsPtUNkUyNzMwSFkyNEVENTExTVdINUNBUDBFNC4u"
+  );
+  url.searchParams.append("embed", "true");
+  iframe.src = url.toString();
+  iframe.allowFullscreen = true;
+  iframe.style.border = "none";
+  return iframe.outerHTML;
+}
 
 function Form() {
+  const version = browser.runtime.getManifest().version;
+
   return (
-    <div className="w-4/5 m-auto min-h-[80vh]">
-      <div className="flex flex-row items-baseline text-xl">
-        <p className="font-bold m-2">Form</p>
-        <p className="m-2">お使いのバージョン: {version}</p>
+    <div className="w-4/5 m-auto">
+      <div className="flex flex-row m-8 items-baseline text-xl">
+        <span className="font-bold">Form</span>
+        <span className="px-4 py-0">お使いのバージョン: {version}</span>
       </div>
-      <div
-        className="w-full max-w-screen-xl h-full max-h-svh m-8"
-        // biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
-        dangerouslySetInnerHTML={{ __html: iframe_string }}
-      />
+      {/* biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation> */}
+      <div dangerouslySetInnerHTML={{ __html: make_iframe() }} />
     </div>
   );
 }
