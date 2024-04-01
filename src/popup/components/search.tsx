@@ -57,13 +57,14 @@ function Search() {
   }
 
   useEffect(() => {
-    get_tabs_title().then((w) => setWord(w));
-    getConfig("auto_search", async (enabled) => {
-      if (enabled) {
-        const tabs_title = await get_tabs_title();
-        _search(tabs_title);
-      }
-    });
+    (async () => {
+      const tabs_title = await get_tabs_title();
+      const title = tabs_title.replaceAll("-", " ");
+      setWord(title);
+      getConfig("auto_search", async (enabled) => {
+        if (enabled) _search(title);
+      });
+    })();
   }, []);
 
   async function on_search_button_click() {
