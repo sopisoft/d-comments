@@ -122,7 +122,7 @@ const search = async (
   UserAgent: string
 ): Promise<searchApi["response"] | Error> => {
   const endpoint =
-    "https://api.search.nicovideo.jp/api/v2/snapshot/video/contents/search";
+    "https://snapshot.search.nicovideo.jp/api/v2/snapshot/video/contents/search";
   const params = {
     q: word,
     targets: "title,description,tags",
@@ -134,13 +134,19 @@ const search = async (
   };
 
   const res = await fetch(`${endpoint}?${new URLSearchParams(params)}`, {
+    credentials: "omit",
     headers: {
       "User-Agent": UserAgent,
     },
   })
     .then(async (res) => {
       const json = await res.json();
-      return json as searchApi["response"];
+      if (res.ok && res.status === 200) return json as searchApi["response"];
+
+      const error =
+        json?.meta?.errorMessage || json?.meta?.errorCode || json?.message;
+      if (error) return new Error(error);
+      return new Error("Failed to fetch search results");
     })
     .catch((e) => {
       return e as Error;
