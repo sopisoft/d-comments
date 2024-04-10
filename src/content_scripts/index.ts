@@ -17,6 +17,7 @@
 
 import { getConfig } from "@/config";
 import { openHowToUseIfNotRead } from "@/how_to_use/how_to_use";
+import api from "@/lib/api";
 import browser from "webextension-polyfill";
 import get_threads from "./api/thread_data";
 import get_video_data from "./api/video_data";
@@ -89,6 +90,37 @@ switch (url.pathname) {
       }
     });
 
+    if (await getConfig("enable_auto_play")) {
+      async function search(word: string) {
+        const query: query<searchApi> = {
+          type: "search",
+          data: {
+            word: word,
+            UserAgent: "d-comments",
+          },
+          active_tab: false,
+        };
+        return await api(query);
+      }
+      const word = document.title;
+      if (word !== "動画再生") {
+        word.replaceAll("-", " ");
+        const res = await search(word);
+        if (res instanceof Error) {
+          console.error(res);
+        } else {
+          const { data } = res;
+          const videoId = data[0].contentId;
+          if (videoId) {
+            set_partId({
+              videoId: videoId,
+              workId: getPartId()?.workId,
+            });
+            await render_comments(videoId);
+          }
+        }
+      }
+    }
     break;
   }
 }

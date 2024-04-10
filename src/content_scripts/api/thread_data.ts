@@ -20,24 +20,14 @@ import api from "@/lib/api";
 const get_threads: (
   video_data: threadDataApi["data"]["videoData"]
 ) => Promise<threadDataApi["response"] | Error> = async (video_data) => {
-  const query: {
-    type: threadDataApi["type"];
-    data: threadDataApi["data"];
-    active_tab: threadDataApi["active_tab"];
-  } = {
+  const query: query<threadDataApi> = {
     type: "thread_data",
     data: {
       videoData: video_data,
     },
     active_tab: false,
   };
-  const res = await api(query)
-    .then((v) => {
-      return v as threadDataApi["response"];
-    })
-    .catch((e) => {
-      return e as Error;
-    });
+  const res = await api(query);
   return res;
 };
 

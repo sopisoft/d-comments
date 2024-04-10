@@ -17,11 +17,9 @@
 
 import send_message from "./send_message";
 
-async function messaging_api(query: {
-  type: messaging_api["type"];
-  data: messaging_api["data"];
-  active_tab: messaging_api["active_tab"];
-}): Promise<messaging_api["response"] | Error> {
+async function messaging_api<T extends messages>(
+  query: query<T>
+): Promise<T["response"] | Error> {
   return await send_message(query);
 }
 

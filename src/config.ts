@@ -20,6 +20,11 @@ import { openHowToUseIfNotRead } from "./how_to_use/how_to_use";
 
 function get_default_configs() {
   return {
+    enable_auto_play: {
+      value: false as boolean,
+      type: "switch",
+      text: "自動で動画検索/再生を開始する",
+    },
     auto_search: {
       value: false as boolean,
       type: "switch",
