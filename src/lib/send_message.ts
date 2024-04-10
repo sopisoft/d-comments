@@ -21,18 +21,17 @@ async function send_message<T extends messages>(
   props: query<T>
 ): Promise<T["response"] | Error> {
   if (props.active_tab) {
-    return browser.tabs
-      .query({ active: true, currentWindow: true })
-      .then((tabs) => {
-        browser.tabs
-          .sendMessage(tabs[0].id as number, {
-            type: props.type,
-            data: props.data,
-          })
-          .then((response) => {
-            return response;
-          });
-      }) as Promise<T["response"]>;
+    const tabs = await browser.tabs.query({
+      active: true,
+      currentWindow: true,
+    });
+    const tabId = tabs[0].id;
+    if (!tabId) return new Error("No active tab");
+    const res = await browser.tabs.sendMessage(tabId, {
+      type: props.type,
+      data: props.data,
+    });
+    return res;
   }
   const res = await browser.runtime.sendMessage({
     type: props.type,
