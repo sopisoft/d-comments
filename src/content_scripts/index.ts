@@ -29,6 +29,7 @@ import { setWorkInfo, smooth_player } from "./danime/watch";
 import exportJson from "./export";
 import {
   on_partId_change,
+  partId as getPartId,
   push_message,
   set_messages,
   set_partId,
@@ -55,7 +56,10 @@ switch (url.pathname) {
 
     requestAnimationFrame(function loop() {
       const partId = new URLSearchParams(location.search).get("partId");
-      set_partId(partId?.toString());
+      set_partId({
+        workId: partId?.toString(),
+        videoId: getPartId()?.videoId,
+      });
       requestAnimationFrame(loop);
     });
 
@@ -68,7 +72,19 @@ switch (url.pathname) {
             description: "コメントを再取得してください",
           };
           push_message(message);
-          set_threads(undefined);
+          const prev_videoId = prev.videoId;
+          if (!prev_videoId) {
+            set_threads(undefined);
+            return;
+          }
+          const prefix = prev_videoId.slice(0, 2);
+          const prev_videoId_num = Number(prev_videoId.slice(2));
+          const videoId = `${prefix}${prev_videoId_num + 1}`;
+          if ((await getConfig("load_comments_on_next_video")) && videoId) {
+            await render_comments(videoId as VideoId);
+          } else {
+            set_threads(undefined);
+          }
         }
       }
     });
@@ -123,9 +139,14 @@ browser.runtime.onMessage.addListener(async (message: messages) => {
   if (url.pathname !== "/animestore/sc_d_pc") return;
   switch (message.type) {
     case "render_comments": {
-      console.log("render_comments", message.data.videoId);
+      const videoId = message.data.videoId;
+      console.log("render_comments", videoId);
 
-      await render_comments(message.data.videoId);
+      set_partId({
+        videoId: videoId,
+        workId: getPartId()?.workId,
+      });
+      await render_comments(videoId);
       break;
     }
     case "export_comments_json": {

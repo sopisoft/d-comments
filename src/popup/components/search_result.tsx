@@ -15,9 +15,11 @@
     along with d-comments.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+import { useToast } from "@/components/ui/use-toast";
 import { Suspense, useContext, useEffect, useState } from "react";
 import { get_owner_info } from "../api/owner_info";
 import { VideoIdContext } from "../popup";
+import { ErrorMessage } from "../utils";
 
 /**
  * lengthSeconds -> "〇時間〇分〇秒" | "〇分〇秒" | "〇秒" | "は取得できませんでした"
@@ -86,6 +88,19 @@ function SearchResult(props: { snapshot: Snapshot }) {
   const data = snapshot.data;
 
   const { videoId, setVideoId } = useContext(VideoIdContext);
+  const { toast } = useToast();
+
+  function handler(contentId: string) {
+    if (contentId === videoId) {
+      ErrorMessage(toast, {
+        message: {
+          title: "Error",
+          description: "既に入力されている動画IDです。",
+        },
+      });
+    }
+    setVideoId(contentId);
+  }
 
   return data.length > 0 ? (
     <ul
@@ -94,9 +109,9 @@ function SearchResult(props: { snapshot: Snapshot }) {
     >
       {data.map((item) => (
         <li
-          onClick={() => setVideoId(item.contentId)}
+          onClick={() => handler(item.contentId)}
           onKeyDown={(e) => {
-            if (e.key === "Enter") setVideoId(item.contentId);
+            if (e.key === "Enter") handler(item.contentId);
           }}
           className="cursor-pointer rounded hover:bg-gray-200 border-t-2  border-gray-300"
         >

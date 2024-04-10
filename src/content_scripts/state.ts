@@ -28,7 +28,9 @@ function use_state<T>(initial: T) {
 
   function set_state(next: T) {
     const prev = state;
-    if (Object.is(prev, next)) return;
+    if (typeof next === "object") {
+      if (JSON.stringify(prev) === JSON.stringify(next)) return;
+    } else if (prev === next) return;
     state = next;
     for (const listener of listeners) listener(prev, next);
   }
@@ -49,8 +51,9 @@ type mode = ("list" | "nico")[];
 export const [mode, set_mode, on_mode_change] = use_state<mode>(
   await get_mode_arr()
 );
+
 export const [partId, set_partId, on_partId_change] = use_state<
-  string | undefined
+  { workId?: string; videoId?: VideoId } | undefined
 >(undefined);
 export const [threads, set_threads, on_threads_change] = use_state<
   Threads | undefined
