@@ -24,11 +24,7 @@ import api from "@/lib/api";
  * @see https://site.nicovideo.jp/search-api-docs/snapshot
  */
 async function search(word: string): Promise<searchApi["response"] | Error> {
-  const query: {
-    type: searchApi["type"];
-    data: searchApi["data"];
-    active_tab: searchApi["active_tab"];
-  } = {
+  const query: query<searchApi> = {
     type: "search",
     data: {
       word: word,
@@ -37,13 +33,7 @@ async function search(word: string): Promise<searchApi["response"] | Error> {
     active_tab: false,
   };
 
-  const res = await api(query)
-    .then((res) => {
-      return res as searchApi["response"];
-    })
-    .catch((e) => {
-      return e as Error;
-    });
+  const res = await api(query);
   return res;
 }
 

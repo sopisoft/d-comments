@@ -20,24 +20,14 @@ import api from "@/lib/api";
 const get_video_data: (
   videoId: VideoId
 ) => Promise<videoDataApi["response"] | Error> = async (videoId) => {
-  const query: {
-    type: videoDataApi["type"];
-    data: videoDataApi["data"];
-    active_tab: videoDataApi["active_tab"];
-  } = {
+  const query: query<videoDataApi> = {
     type: "video_data",
     data: {
       videoId: videoId,
     },
     active_tab: false,
   };
-  const res = await api(query)
-    .then((v) => {
-      return v as videoDataApi["response"];
-    })
-    .catch((e) => {
-      return e as Error;
-    });
+  const res = await api(query);
   return res;
 };
 

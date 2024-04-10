@@ -24,11 +24,7 @@ export const get_owner_info: (arg: {
   if (!arg.ownerId) return new Error("ownerId is undefined");
   const { type, ownerId } = arg;
 
-  const query: {
-    type: ownerInfoApi["type"];
-    data: ownerInfoApi["data"];
-    active_tab: ownerInfoApi["active_tab"];
-  } = {
+  const query: query<ownerInfoApi> = {
     type: "owner_info",
     data: {
       type: type,
@@ -37,12 +33,6 @@ export const get_owner_info: (arg: {
     active_tab: false,
   };
 
-  const res = await api(query)
-    .then((res) => {
-      return res as ownerInfoApi["response"];
-    })
-    .catch((e) => {
-      return e as Error;
-    });
+  const res = await api(query);
   return res;
 };

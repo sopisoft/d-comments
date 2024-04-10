@@ -17,6 +17,7 @@
 
 import { getConfig } from "@/config";
 import { openHowToUseIfNotRead } from "@/how_to_use/how_to_use";
+import api from "@/lib/api";
 import browser from "webextension-polyfill";
 import get_threads from "./api/thread_data";
 import get_video_data from "./api/video_data";
@@ -67,28 +68,60 @@ switch (url.pathname) {
       if (prev && next) {
         setWorkInfo();
         if (getThreads() !== undefined) {
-          const message = {
-            title: "再生中のパートが切り替わりました",
-            description: "コメントを再取得してください",
-          };
-          push_message(message);
           const prev_videoId = prev.videoId;
           if (!prev_videoId) {
             set_threads(undefined);
             return;
           }
-          const prefix = prev_videoId.slice(0, 2);
-          const prev_videoId_num = Number(prev_videoId.slice(2));
-          const videoId = `${prefix}${prev_videoId_num + 1}`;
-          if ((await getConfig("load_comments_on_next_video")) && videoId) {
+
+          if (await getConfig("load_comments_on_next_video")) {
+            const prefix = prev_videoId.slice(0, 2);
+            const prev_videoId_num = Number(prev_videoId.slice(2));
+            const videoId = `${prefix}${prev_videoId_num + 1}`;
             await render_comments(videoId as VideoId);
           } else {
+            const message = {
+              title: "再生中のパートが切り替わりました",
+              description: "コメントを再取得してください",
+            };
+            push_message(message);
             set_threads(undefined);
           }
         }
       }
     });
 
+    if (await getConfig("enable_auto_play")) {
+      async function search(word: string) {
+        const query: query<searchApi> = {
+          type: "search",
+          data: {
+            word: word,
+            UserAgent: "d-comments",
+          },
+          active_tab: false,
+        };
+        return await api(query);
+      }
+      const word = document.title;
+      if (word !== "動画再生") {
+        word.replaceAll("-", " ");
+        const res = await search(word);
+        if (res instanceof Error) {
+          console.error(res);
+        } else {
+          const { data } = res;
+          const videoId = data[0].contentId;
+          if (videoId) {
+            set_partId({
+              videoId: videoId,
+              workId: getPartId()?.workId,
+            });
+            await render_comments(videoId);
+          }
+        }
+      }
+    }
     break;
   }
 }

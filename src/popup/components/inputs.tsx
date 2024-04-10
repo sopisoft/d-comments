@@ -61,11 +61,7 @@ function Inputs() {
   async function render_comments() {
     const video_id = await check_video_id(videoId);
     if (!video_id) return;
-    const query: {
-      type: renderCommentsApi["type"];
-      data: renderCommentsApi["data"];
-      active_tab: renderCommentsApi["active_tab"];
-    } = {
+    const query: query<renderCommentsApi> = {
       type: "render_comments",
       data: {
         videoId: video_id,

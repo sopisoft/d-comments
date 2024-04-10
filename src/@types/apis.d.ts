@@ -75,9 +75,8 @@ declare type messages =
   | renderCommentsApi
   | exportCommentsJsonApi;
 
-type messaging_api = {
-  type: messages["type"];
-  data: messages["data"];
-  active_tab?: messages["active_tab"];
-  response?: messages["response"];
+type query<T extends messages> = {
+  type: T["type"];
+  data: T["data"];
+  active_tab: T["active_tab"];
 };

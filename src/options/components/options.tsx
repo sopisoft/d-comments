@@ -46,6 +46,16 @@ function Options() {
   return (
     <div className="flex flex-wrap justify-center after:content-[''] after:block after:w-[32rem] after:m-4">
       <CardWrapper
+        title="基本設定"
+        description=""
+        content={
+          <>
+            <Editor _key="enable_auto_play" />
+          </>
+        }
+      />
+
+      <CardWrapper
         title="ポップアップ"
         description="拡張機能のアイコンをクリックすると表示される、ポップアップページの設定です。"
         content={
