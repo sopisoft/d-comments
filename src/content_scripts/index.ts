@@ -68,22 +68,23 @@ switch (url.pathname) {
       if (prev && next) {
         setWorkInfo();
         if (getThreads() !== undefined) {
-          const message = {
-            title: "再生中のパートが切り替わりました",
-            description: "コメントを再取得してください",
-          };
-          push_message(message);
           const prev_videoId = prev.videoId;
           if (!prev_videoId) {
             set_threads(undefined);
             return;
           }
-          const prefix = prev_videoId.slice(0, 2);
-          const prev_videoId_num = Number(prev_videoId.slice(2));
-          const videoId = `${prefix}${prev_videoId_num + 1}`;
-          if ((await getConfig("load_comments_on_next_video")) && videoId) {
+
+          if (await getConfig("load_comments_on_next_video")) {
+            const prefix = prev_videoId.slice(0, 2);
+            const prev_videoId_num = Number(prev_videoId.slice(2));
+            const videoId = `${prefix}${prev_videoId_num + 1}`;
             await render_comments(videoId as VideoId);
           } else {
+            const message = {
+              title: "再生中のパートが切り替わりました",
+              description: "コメントを再取得してください",
+            };
+            push_message(message);
             set_threads(undefined);
           }
         }
