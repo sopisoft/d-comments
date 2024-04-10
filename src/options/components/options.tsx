@@ -95,6 +95,8 @@ function Options() {
             <Editor _key="enable_auto_scroll" />
             <Separator />
             <Editor _key="comment_area_width_px" />
+            <Separator />
+            <Editor _key="load_comments_on_next_video" />
           </>
         }
       />

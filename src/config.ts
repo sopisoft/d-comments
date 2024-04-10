@@ -35,6 +35,11 @@ function get_default_configs() {
       type: "number",
       text: "コメント欄の幅 (px)",
     },
+    load_comments_on_next_video: {
+      value: true as boolean,
+      type: "switch",
+      text: "連続再生時に自動で次の動画のコメントを読み込む",
+    },
     comment_area_background_color: {
       value: "#000000" as string,
       type: "color",
