@@ -23,11 +23,11 @@ import NiconiComments, {
 import browser from "webextension-polyfill";
 import { find_element } from "../danime/dom";
 import {
+  threads as getThreads,
   mode,
   on_mode_change,
   on_partId_change,
   on_threads_change,
-  threads as getThreads,
 } from "../state";
 
 const nico_id = "d-comments-nico";

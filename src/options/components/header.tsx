@@ -59,7 +59,7 @@ function Header(props: { tabsList: React.ReactNode }) {
         <ul className="flex items-center list-none space-x-2 mx-2">
           <li className="mx-3">{props.tabsList}</li>
           {contents.map((component) => (
-            <li>
+            <li key={component.href}>
               <TooltipProvider delayDuration={200}>
                 <Tooltip>
                   <TooltipTrigger>

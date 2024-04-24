@@ -29,13 +29,13 @@ import { addMenu } from "./danime/mypage";
 import { setWorkInfo, smooth_player } from "./danime/watch";
 import exportJson from "./export";
 import {
-  on_partId_change,
   partId as getPartId,
+  threads as getThreads,
+  on_partId_change,
   push_message,
   set_messages,
   set_partId,
   set_threads,
-  threads as getThreads,
 } from "./state";
 
 const url = new URL(location.href);

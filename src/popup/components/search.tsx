@@ -65,7 +65,7 @@ function Search() {
         if (enabled) _search(title);
       });
     })();
-  }, []);
+  }, [get_tabs_title, _search]);
 
   async function on_search_button_click() {
     _search(word);

@@ -113,6 +113,7 @@ function SearchResult(props: { snapshot: Snapshot }) {
           onKeyDown={(e) => {
             if (e.key === "Enter") handler(item.contentId);
           }}
+          key={item.contentId}
           className="cursor-pointer rounded hover:bg-gray-200 border-t-2  border-gray-300"
         >
           <div className="flex flex-col my-1">

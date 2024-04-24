@@ -23,11 +23,11 @@ import browser from "webextension-polyfill";
 import { getComments } from "../comments";
 import { find_element } from "../danime/dom";
 import {
+  threads as getThreads,
   mode,
   on_mode_change,
   on_partId_change,
   on_threads_change,
-  threads as getThreads,
 } from "../state";
 import useAnimationFrame from "./useAnimationFrame";
 
@@ -176,7 +176,7 @@ export function Scroll() {
         }
       }
     });
-  }, []);
+  }, [start, end, set_comments]);
 
   return (
     <ThemeProvider>
