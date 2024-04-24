@@ -42,6 +42,41 @@ const url = new URL(location.href);
 
 await openHowToUseIfNotRead();
 
+async function auto_play() {
+  async function search(word: string) {
+    const query: query<searchApi> = {
+      type: "search",
+      data: {
+        word: word,
+        UserAgent: "d-comments",
+      },
+      active_tab: false,
+    };
+    return await api(query);
+  }
+
+  const word = document.title;
+
+  // タイトルが「動画再生」の場合、作品情報の取得に失敗している
+  if (word === "動画再生") return;
+
+  word.replaceAll("-", " ");
+  const res = await search(word);
+  if (res instanceof Error) {
+    console.error(res);
+  } else {
+    const { data } = res;
+    const videoId = data[0].contentId;
+    if (videoId) {
+      set_partId({
+        videoId: videoId,
+        workId: getPartId()?.workId,
+      });
+      await render_comments(videoId);
+    }
+  }
+}
+
 switch (url.pathname) {
   case "/animestore/ci_pc":
     getConfig("add_button_to_show_comments_while_playing", (value) => {
@@ -49,10 +84,13 @@ switch (url.pathname) {
     });
     break;
   case "/animestore/sc_d_pc": {
-    set_threads(undefined);
-
+    // ページの読み込みが完了するまで待機
     await find_element("body");
+
+    set_threads(undefined);
+    // 作品情報の取得
     await Promise.all([setWorkInfo(), smooth_player()]);
+    // DOM に要素を追加
     Promise.all([wrap(), overlay(), canvasInit()]);
 
     requestAnimationFrame(function loop() {
@@ -66,62 +104,27 @@ switch (url.pathname) {
 
     on_partId_change(async (prev, next) => {
       if (prev && next) {
-        setWorkInfo();
-        if (getThreads() !== undefined) {
-          const prev_videoId = prev.videoId;
-          if (!prev_videoId) {
-            set_threads(undefined);
-            return;
-          }
+        await setWorkInfo();
 
-          if (await getConfig("load_comments_on_next_video")) {
-            const prefix = prev_videoId.slice(0, 2);
-            const prev_videoId_num = Number(prev_videoId.slice(2));
-            const videoId = `${prefix}${prev_videoId_num + 1}`;
-            await render_comments(videoId as VideoId);
-          } else {
-            const message = {
-              title: "再生中のパートが切り替わりました",
-              description: "コメントを再取得してください",
-            };
-            push_message(message);
-            set_threads(undefined);
-          }
+        if (getThreads() === undefined) return;
+
+        const prev_videoId = prev.videoId;
+        if (!prev_videoId) {
+          set_threads(undefined);
+          return;
         }
+
+        if (await getConfig("load_comments_on_next_video")) await auto_play();
+        else
+          push_message({
+            title: "再生中のパートが切り替わりました",
+            description: "コメントを再取得してください",
+          });
       }
     });
 
-    if (await getConfig("enable_auto_play")) {
-      async function search(word: string) {
-        const query: query<searchApi> = {
-          type: "search",
-          data: {
-            word: word,
-            UserAgent: "d-comments",
-          },
-          active_tab: false,
-        };
-        return await api(query);
-      }
-      const word = document.title;
-      if (word !== "動画再生") {
-        word.replaceAll("-", " ");
-        const res = await search(word);
-        if (res instanceof Error) {
-          console.error(res);
-        } else {
-          const { data } = res;
-          const videoId = data[0].contentId;
-          if (videoId) {
-            set_partId({
-              videoId: videoId,
-              workId: getPartId()?.workId,
-            });
-            await render_comments(videoId);
-          }
-        }
-      }
-    }
+    if (await getConfig("enable_auto_play")) auto_play();
+
     break;
   }
 }

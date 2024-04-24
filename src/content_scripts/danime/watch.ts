@@ -21,7 +21,6 @@ import { find_element, find_elements } from "./dom";
 
 /**
  * 視聴ページで title と description をパートタイトルと説明に書き換える
- * mediaSession を設定する
  */
 export const setWorkInfo = async () => {
   const res = await get_work_info();
