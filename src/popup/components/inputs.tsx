@@ -79,11 +79,6 @@ function Inputs() {
     });
   }
 
-  useEffect(() => {
-    const last_id = window.localStorage.getItem("videoId");
-    setVideoId(last_id ?? "");
-  }, [setVideoId]);
-
   return (
     <>
       <TooltipProvider delayDuration={200}>
