@@ -90,7 +90,7 @@ function Search() {
           placeholder="検索ワード"
           className="col-span-5"
           type="text"
-          value={word}
+          defaultValue={word}
           onChange={(e) => {
             setWord(e.target.value);
           }}

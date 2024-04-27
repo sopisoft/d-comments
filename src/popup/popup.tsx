@@ -25,7 +25,7 @@ import { createRoot } from "react-dom/client";
 import browser from "webextension-polyfill";
 import Inputs from "./components/inputs";
 import Menu from "./components/menu";
-import Search from "./components/search";
+import Search from "./components/search_input";
 import { isWatchPage as isWatchPageFn } from "./utils";
 
 export const VideoIdContext = createContext<{
@@ -42,7 +42,6 @@ export const Popup = () => {
 
   function setVideoId(video_id: string) {
     _setVideoId(video_id);
-    window.localStorage.setItem("videoId", video_id);
   }
 
   isWatchPageFn().then(setIsWatchPage);
