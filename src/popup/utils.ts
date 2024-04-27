@@ -55,7 +55,10 @@ export const isVideoId = (id: string) => {
 };
 
 export function ErrorMessage(
-  toast: (props: { title: string; description: string }) => void,
+  toast: (props: {
+    title: string;
+    description: string;
+  }) => ReturnType<typeof import("@/components/ui/use-toast").toast>,
   props?: {
     error?: Error;
     message?: { title: string; description: string };
@@ -63,11 +66,13 @@ export function ErrorMessage(
 ) {
   const { error, message } = props ?? {};
 
-  toast({
+  const t = toast({
     title: message?.title || error?.name || "エラー",
     description:
       message?.description ||
       error?.message ||
       "予期しないエラーが発生しました。",
   });
+
+  return t;
 }

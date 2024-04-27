@@ -26,13 +26,14 @@ import {
 import { useToast } from "@/components/ui/use-toast";
 import { getConfig } from "@/config";
 import { SearchIcon } from "lucide-react";
-import { useEffect, useState } from "react";
+import { createRef, useEffect, useState } from "react";
 import browser from "webextension-polyfill";
 import search from "../api/search";
 import { ErrorMessage } from "../utils";
 import SearchResult from "./search_result";
 
 function Search() {
+  const ref = createRef<HTMLInputElement>();
   const [word, setWord] = useState<searchApi["data"]["word"]>("");
   const [snapshot, setSnapshot] = useState<Snapshot>();
   const { toast } = useToast();
@@ -46,8 +47,9 @@ function Search() {
     return tabs_title;
   }
 
-  async function _search(word: string) {
-    const snapshot = await search(word);
+  async function _search() {
+    const _word = ref.current?.dataset.word ?? word;
+    const snapshot = await search(_word.replaceAll("-", " "));
     if (snapshot instanceof Error) {
       ErrorMessage(toast, { error: snapshot });
       setSnapshot(undefined);
@@ -62,13 +64,13 @@ function Search() {
       const title = tabs_title.replaceAll("-", " ");
       setWord(title);
       getConfig("auto_search", async (enabled) => {
-        if (enabled) _search(title);
+        if (enabled) await _search();
       });
     })();
   }, [get_tabs_title, _search]);
 
   async function on_search_button_click() {
-    _search(word);
+    await _search();
   }
 
   return (
@@ -87,12 +89,14 @@ function Search() {
       <div className="grid grid-cols-7 gap-2 my-2">
         <Input
           id="search_video_input"
+          ref={ref}
           placeholder="検索ワード"
           className="col-span-5"
           type="text"
           defaultValue={word}
           onChange={(e) => {
-            setWord(e.target.value);
+            const value = e.target.value;
+            e.target.dataset.word = value;
           }}
         />
 

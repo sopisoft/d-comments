@@ -92,12 +92,13 @@ function SearchResult(props: { snapshot: Snapshot }) {
 
   function handler(contentId: string) {
     if (contentId === videoId) {
-      ErrorMessage(toast, {
+      const t = ErrorMessage(toast, {
         message: {
-          title: "Error",
+          title: "エラー",
           description: "既に入力されている動画IDです。",
         },
       });
+      setTimeout(() => t.dismiss(), 1000);
     }
     setVideoId(contentId);
   }
