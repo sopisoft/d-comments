@@ -29,8 +29,8 @@ export default defineConfig({
     },
   },
   build: {
-    target: "esnext",
-    minify: false,
+    target: "esnext", 
+    emptyOutDir: true,
     modulePreload: false,
     rollupOptions: {
       input: {

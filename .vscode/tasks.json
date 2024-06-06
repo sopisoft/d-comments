@@ -2,19 +2,19 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "type": "bun",
+      "type": "npm",
       "script": "bun run lint",
       "problemMatcher": [],
       "label": "bun: lint"
     },
     {
-      "type": "bun",
+      "type": "npm",
       "script": "bun run format",
       "problemMatcher": [],
       "label": "bun: format"
     },
     {
-      "type": "bun",
+      "type": "npm",
       "script": "bun run build",
       "problemMatcher": [],
       "group": "build",
