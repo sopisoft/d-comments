@@ -65,14 +65,18 @@ async function auto_play() {
   if (res instanceof Error) {
     console.error(res);
   } else {
-    const { data } = res;
-    const videoId = data[0].contentId;
-    if (videoId) {
+    const channels_only = await getConfig("channels_only");
+    for (const datum of res.data) {
+      console.log(JSON.stringify(datum, null, 2));
+      const videoId = datum.contentId;
+      const isUser = datum.userId !== null;
+      if (channels_only && isUser) continue;
       set_partId({
         videoId: videoId,
         workId: getPartId()?.workId,
       });
       await render_comments(videoId);
+      break;
     }
   }
 }
@@ -89,7 +93,7 @@ switch (url.pathname) {
 
     set_threads(undefined);
     // 作品情報の取得
-    await Promise.all([setWorkInfo(), smooth_player()]);
+    await Promise.all([setWorkInfo()]);
     // DOM に要素を追加
     Promise.all([wrap(), overlay(), canvasInit()]);
 

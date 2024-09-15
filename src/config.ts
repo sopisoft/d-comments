@@ -101,6 +101,11 @@ function get_default_configs() {
       type: "checkbox",
       text: "かんたんコメント",
     },
+    channels_only: {
+      value: true as boolean,
+      type: "checkbox",
+      text: "コメントをチャンネルからのみ取得",
+    },
     allow_login_to_nicovideo: {
       value: false as boolean,
       type: "switch",
