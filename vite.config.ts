@@ -1,14 +1,11 @@
-import path, { resolve } from "path";
-import url from "url";
+import path, { resolve } from "node:path";
+import url from "node:url";
 import react from "@vitejs/plugin-react-swc";
-import {  defineConfig } from "vite";
-import { 
-  plugin as markdownPlugin,
-  Mode } from 'vite-plugin-markdown'
+import { defineConfig } from "vite";
+import { plugin as markdownPlugin, Mode } from "vite-plugin-markdown";
 
 const __filename = url.fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
- 
 
 // https://ja.vitejs.dev/config/
 export default defineConfig({
@@ -22,7 +19,7 @@ export default defineConfig({
     },
   },
   build: {
-    target: "esnext", 
+    target: "esnext",
     emptyOutDir: true,
     modulePreload: false,
     rollupOptions: {
