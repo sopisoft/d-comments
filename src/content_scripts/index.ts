@@ -171,11 +171,12 @@ async function render_comments(videoId: VideoId) {
   });
 }
 
-browser.runtime.onMessage.addListener(async (message: messages) => {
+browser.runtime.onMessage.addListener(async (message) => {
+  const msg = message as messages;
   if (url.pathname !== "/animestore/sc_d_pc") return;
-  switch (message.type) {
+  switch (msg.type) {
     case "render_comments": {
-      const videoId = message.data.videoId;
+      const videoId = msg.data.videoId;
       console.log("render_comments", videoId);
 
       set_partId({
@@ -186,8 +187,8 @@ browser.runtime.onMessage.addListener(async (message: messages) => {
       break;
     }
     case "export_comments_json": {
-      console.log("export_comments_json", message.data.videoId);
-      await exportJson(message.data.videoId);
+      console.log("export_comments_json", msg.data.videoId);
+      await exportJson(msg.data.videoId);
       break;
     }
   }

@@ -215,23 +215,21 @@ const get_user_info = async (
 };
 
 browser.runtime.onMessage.addListener(
-  (message: messages): Promise<messages["response"] | Error> => {
-    switch (message.type) {
+  (message): Promise<messages["response"] | Error> => {
+    const msg = message as messages;
+    switch (msg.type) {
       case "video_data": {
-        const data = message.data;
-        return getVideoData(data.videoId);
+        return getVideoData(msg.data.videoId);
       }
       case "thread_data": {
-        const data = message.data;
-        return getThreadComments(data.videoData);
+        return getThreadComments(msg.data.videoData);
       }
       case "search": {
-        const data = message.data;
+        const { data } = msg;
         return search(data.word, data.UserAgent);
       }
       case "owner_info": {
-        const data = message.data;
-        const { type, ownerId } = data;
+        const { type, ownerId } = msg.data;
         return get_user_info(type, ownerId);
       }
       default: {

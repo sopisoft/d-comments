@@ -129,8 +129,11 @@ async function canvasInit() {
     for (const key in changes) {
       switch (key as config_keys) {
         case "comment_area_opacity_percentage":
-          if (nico)
-            nico.style.opacity = (changes[key].newValue / 100).toString();
+          if (nico && changes[key].newValue) {
+            nico.style.opacity = (
+              (changes[key].newValue as number) / 100
+            ).toString();
+          }
           break;
       }
     }

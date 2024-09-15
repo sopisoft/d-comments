@@ -83,7 +83,7 @@ function Overlay() {
         });
       }
     });
-  }, [ErrorMessage]);
+  });
 
   return (
     <>

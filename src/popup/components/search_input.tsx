@@ -67,7 +67,7 @@ function Search() {
         if (enabled) await _search();
       });
     })();
-  }, [get_tabs_title, _search]);
+  });
 
   async function on_search_button_click() {
     await _search();

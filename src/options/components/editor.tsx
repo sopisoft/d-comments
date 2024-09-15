@@ -64,7 +64,9 @@ function Editor<T extends config_keys>(props: {
 
   useEffect(() => {
     browser.storage.onChanged.addListener((changes) => {
-      if (changes[key]) setValue(changes[key].newValue);
+      if (typeof changes[key].newValue === "string") {
+        setValue(changes[key].newValue);
+      }
     });
     getConfig(key).then((v) => setValue(v));
   }, [key]);

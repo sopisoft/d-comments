@@ -159,24 +159,34 @@ export function Scroll() {
             await set_comments();
             break;
           case "comment_area_width_px":
-            setWidth(changes[key].newValue);
+            if (typeof changes[key].newValue === "number") {
+              setWidth(changes[key].newValue);
+            }
             break;
           case "comment_area_background_color":
-            setBgColor(changes[key].newValue);
+            if (typeof changes[key].newValue === "string") {
+              setBgColor(changes[key].newValue);
+            }
             break;
           case "comment_text_color":
-            setTextColor(changes[key].newValue);
+            if (typeof changes[key].newValue === "string") {
+              setTextColor(changes[key].newValue);
+            }
             break;
           case "comment_area_opacity_percentage":
-            setOpacity(changes[key].newValue);
+            if (typeof changes[key].newValue === "number") {
+              setOpacity(changes[key].newValue);
+            }
             break;
           case "enable_auto_scroll":
-            isAutoScrollEnabled.current = changes[key].newValue;
+            if (typeof changes[key].newValue === "boolean") {
+              isAutoScrollEnabled.current = changes[key].newValue;
+            }
             break;
         }
       }
     });
-  }, [start, end, set_comments]);
+  });
 
   return (
     <ThemeProvider>

@@ -27,13 +27,13 @@ async function send_message<T extends messages>(
     });
     const tabId = tabs[0].id;
     if (!tabId) return new Error("No active tab");
-    const res = await browser.tabs.sendMessage(tabId, {
+    const res: T["response"] = await browser.tabs.sendMessage(tabId, {
       type: props.type,
       data: props.data,
     });
     return res;
   }
-  const res = await browser.runtime.sendMessage({
+  const res: T["response"] = await browser.runtime.sendMessage({
     type: props.type,
     data: props.data,
   });

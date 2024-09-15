@@ -48,21 +48,13 @@ function Options() {
       <CardWrapper
         title="基本設定"
         description=""
-        content={
-          <>
-            <Editor _key="enable_auto_play" />
-          </>
-        }
+        content={<Editor _key="enable_auto_play" />}
       />
 
       <CardWrapper
         title="ポップアップ"
         description="拡張機能のアイコンをクリックすると表示される、ポップアップページの設定です。"
-        content={
-          <>
-            <Editor _key="auto_search" />
-          </>
-        }
+        content={<Editor _key="auto_search" />}
       />
 
       <CardWrapper
