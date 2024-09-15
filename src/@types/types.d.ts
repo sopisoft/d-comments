@@ -189,23 +189,23 @@ type Snapshot = {
   data: [
     {
       contentId: VideoId; // コンテンツID。https://nico.ms/ の後に連結することでコンテンツへのURLになります。
-      title?: string; // タイトル
-      description?: string; // 説明文
-      userId?: string; // ユーザー投稿動画の場合、投稿者のユーザーID
-      channelId?: string; // チャンネル動画の場合、チャンネルID
-      viewCounter?: number; // 再生数
-      mylistCounter?: number; // マイリスト数またはお気に入り数。
-      likeCounter?: number; // いいね！数
-      lengthSeconds?: number; // 再生時間(秒)
-      thumbnailUrl?: string; // サムネイルのURL
-      startTime?: string; // コンテンツの投稿時間。
-      lastResBody?: string; // 最新のコメント
-      commentCounter?: number; // コメント数
-      lastCommentTime?: string; // 最終コメント時間
-      categoryTags?: string; // カテゴリタグ
-      tags?: string; // タグ(空白区切り)
-      tagsExact?: string; // タグ完全一致(空白区切り)
-      genre?: string; // ジャンル
+      title: string | null; // タイトル
+      description: string | null; // 説明文
+      userId: string | null; // ユーザー投稿動画の場合、投稿者のユーザーID
+      channelId: string | null; // チャンネル動画の場合、チャンネルID
+      viewCounter: number | null; // 再生数
+      mylistCounter: number | null; // マイリスト数またはお気に入り数。
+      likeCounter: number | null; // いいね！数
+      lengthSeconds: number | null; // 再生時間(秒)
+      thumbnailUrl: string | null; // サムネイルのURL
+      startTime: string | null; // コンテンツの投稿時間。
+      lastResBody: string | null; // 最新のコメント
+      commentCounter: number | null; // コメント数
+      lastCommentTime: string | null; // 最終コメント時間
+      categoryTags: string | null; // カテゴリタグ
+      tags: string | null; // タグ(空白区切り)
+      tagsExact: string | null; // タグ完全一臇(空白区切り)
+      genre: string | null; // ジャンル
     },
   ];
 };

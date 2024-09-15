@@ -25,7 +25,7 @@ const tsc = make_proc(["bunx", "--bun", "tsc"]);
 const fmt = make_proc(["bun", "run", "format"]);
 const lint = make_proc(["bun", "run", "lint"]);
 
-Promise.all([fs.rmdirSync("dist", { recursive: true }), tsc, fmt, lint]).then(
+await Promise.all([fs.rmdirSync("dist", { recursive: true }), tsc, fmt, lint]).then(
   () =>
     build({
       mode: "chrome",

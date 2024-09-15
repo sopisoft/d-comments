@@ -44,7 +44,7 @@ function getActionTrackId() {
  */
 
 const getVideoData = async (videoId: string) => {
-  const config = await getConfig("allow_login_to_nicovideo");
+  const config: boolean = await getConfig("allow_login_to_nicovideo");
   const url = `https://www.nicovideo.jp/api/watch/${
     config ? "v3" : "v3_guest"
   }/${videoId}`;

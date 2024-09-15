@@ -26,8 +26,8 @@ import { ErrorMessage } from "../utils";
  * @param lengthSeconds 動画の尺
  * @returns "は取得できませんでした" | "〇時間〇分〇秒" | "〇分〇秒" | "〇秒
  */
-const video_length = (lengthSeconds: number | undefined) => {
-  if (lengthSeconds === undefined) {
+const video_length = (lengthSeconds: number | null) => {
+  if (lengthSeconds === null) {
     return "は取得できませんでした";
   }
   const hour = Math.floor(lengthSeconds / 3600);
@@ -42,8 +42,8 @@ const video_length = (lengthSeconds: number | undefined) => {
 const storage = window.sessionStorage;
 
 function Owner(props: {
-  userId: string | undefined;
-  channelId: string | undefined;
+  userId: string | null;
+  channelId: string | null;
 }) {
   const { userId, channelId } = props;
   if (!userId && !channelId) return null;
@@ -58,7 +58,7 @@ function Owner(props: {
     if (!storage.getItem(`${key}`)) {
       get_owner_info({
         type: userId ? "user" : "channel",
-        ownerId: userId ?? channelId,
+        ownerId: (userId ?? channelId) as string,
       }).then((res) => {
         if (res instanceof Error) {
         } else {
@@ -119,11 +119,13 @@ function SearchResult(props: { snapshot: Snapshot }) {
         >
           <div className="flex flex-col my-1">
             <div className="flex flex-row">
-              <img
-                src={item.thumbnailUrl}
-                alt={item.title}
-                className="object-cover aspect-video h-24"
-              />
+              {item.thumbnailUrl && item.title && (
+                <img
+                  src={item.thumbnailUrl}
+                  alt={item.title}
+                  className="object-cover aspect-video h-24"
+                />
+              )}
               <div className="mx-2 flex flex-col">
                 <span className="font-semibold overflow-y-auto">
                   {item.title}

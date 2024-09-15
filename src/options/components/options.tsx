@@ -48,7 +48,13 @@ function Options() {
       <CardWrapper
         title="基本設定"
         description=""
-        content={<Editor _key="enable_auto_play" />}
+        content={
+          <>
+            <Editor _key="enable_auto_play" />
+            <Separator />
+            <Editor _key="channels_only" />
+          </>
+        }
       />
 
       <CardWrapper
