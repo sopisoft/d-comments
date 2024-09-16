@@ -64,9 +64,8 @@ function Editor<T extends config_keys>(props: {
 
   useEffect(() => {
     browser.storage.onChanged.addListener((changes) => {
-      if (typeof changes[key].newValue === "string") {
-        setValue(changes[key].newValue);
-      }
+      if (changes[key] === undefined) return;
+      setValue(changes[key].newValue as config_value<T>);
     });
     getConfig(key).then((v) => setValue(v));
   }, [key]);
@@ -113,7 +112,7 @@ function Editor<T extends config_keys>(props: {
           value={[value as number]}
           defaultValue={[value as number]}
           max={100}
-          step={1}
+          step={10}
           className={`${props.className} w-32`}
           onValueChange={(v) => {
             const target = v[0];

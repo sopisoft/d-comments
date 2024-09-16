@@ -2,7 +2,7 @@ import path, { resolve } from "node:path";
 import url from "node:url";
 import react from "@vitejs/plugin-react-swc";
 import { defineConfig } from "vite";
-import { plugin as markdownPlugin, Mode } from "vite-plugin-markdown";
+import { Mode, plugin as markdownPlugin } from "vite-plugin-markdown";
 
 const __filename = url.fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -36,5 +36,8 @@ export default defineConfig({
         assetFileNames: "assets/[ext]/[name].[ext]",
       },
     },
+  },
+  worker: {
+    format: "es",
   },
 });

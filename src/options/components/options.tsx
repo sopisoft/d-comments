@@ -104,6 +104,10 @@ function Options() {
             <Separator />
             <Editor _key="comment_area_width_px" />
             <Separator />
+            <Editor _key="comment_area_font_size_px" />
+            <Separator />
+            <Editor _key="nicoarea_scale" />
+            <Separator />
             <Editor _key="load_comments_on_next_video" />
           </>
         }
