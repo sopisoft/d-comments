@@ -40,6 +40,16 @@ function get_default_configs() {
       type: "number",
       text: "コメント欄の幅 (px)",
     },
+    comment_area_font_size_px: {
+      value: 16 as number,
+      type: "number",
+      text: "コメント欄の文字サイズ (px)",
+    },
+    nicoarea_scale: {
+      value: 100 as number,
+      type: "slider",
+      text: "ニコニコ動画風コメントの拡大率",
+    },
     load_comments_on_next_video: {
       value: true as boolean,
       type: "switch",

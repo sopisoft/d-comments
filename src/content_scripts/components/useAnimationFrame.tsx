@@ -53,14 +53,12 @@ function useAnimationFrame(
 
   function start() {
     if (!animationFrameRef.current) {
-      console.log("loop_started");
       animationFrameRef.current = requestAnimationFrame(step);
     }
   }
 
   function pause() {
     if (animationFrameRef.current) {
-      console.log("loop_paused");
       cancelAnimationFrame(animationFrameRef.current);
       animationFrameRef.current = undefined;
     }
@@ -68,13 +66,11 @@ function useAnimationFrame(
 
   function resume() {
     if (!animationFrameRef.current) {
-      console.log("loop_resumed");
       animationFrameRef.current = requestAnimationFrame(step);
     }
   }
 
   function stop() {
-    console.log("loop_stopped");
     pause();
     previousTimeRef.current = undefined;
   }

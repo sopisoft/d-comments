@@ -25,7 +25,7 @@ import { on_messages_change } from "../state";
 function Overlay() {
   const { toast, dismiss } = useToast();
 
-  const toast_duration = 3 * 10 ** 3;
+  const toast_duration = 1 * 10 ** 3;
   const timer = useRef<number | null>(null);
 
   function ErrorMessage(props?: {
@@ -43,13 +43,6 @@ function Overlay() {
   }
 
   useEffect(() => {
-    const handleBlur = () => {
-      if (timer.current) clearTimeout(timer.current);
-
-      timer.current = window.setTimeout(() => {
-        dismiss();
-      });
-    };
     const handleFocus = () => {
       if (timer.current) clearTimeout(timer.current);
     };
@@ -58,13 +51,10 @@ function Overlay() {
       timer.current = window.setTimeout(() => {
         dismiss();
       }, toast_duration);
-      addEventListener("focus", handleFocus);
     }
-    addEventListener("blur", handleBlur);
     addEventListener("focus", handleFocus);
 
     return () => {
-      removeEventListener("blur", handleBlur);
       removeEventListener("focus", handleFocus);
       if (timer.current) clearTimeout(timer.current);
     };

@@ -24,6 +24,10 @@
         "./src/*"
       ]
     },
+    "typeRoots": [
+      "./node_modules/@types",
+      "./src/@types"
+    ],
     "resolveJsonModule": true,
     "skipLibCheck": true,
     "strict": true,

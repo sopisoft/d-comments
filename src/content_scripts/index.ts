@@ -21,7 +21,7 @@ import api from "@/lib/api";
 import browser from "webextension-polyfill";
 import get_threads from "./api/thread_data";
 import get_video_data from "./api/video_data";
-import canvasInit from "./components/canvas";
+import initRenderer from "./components/canvas";
 import overlay from "./components/overlay";
 import wrap from "./components/wrapper";
 import { find_element } from "./danime/dom";
@@ -95,7 +95,16 @@ switch (url.pathname) {
     // 作品情報の取得
     await Promise.all([setWorkInfo()]);
     // DOM に要素を追加
-    Promise.all([wrap(), overlay(), canvasInit()]);
+    Promise.all([wrap(), overlay()]);
+
+    initRenderer().then((res) => {
+      if (res instanceof Error) {
+        push_message({
+          title: "コメントレンダラーの初期化に失敗しました",
+          description: res.message,
+        });
+      }
+    });
 
     requestAnimationFrame(function loop() {
       const partId = new URLSearchParams(location.search).get("partId");
@@ -107,16 +116,8 @@ switch (url.pathname) {
     });
 
     on_partId_change(async (prev, next) => {
-      if (prev && next) {
+      if (prev?.videoId && getThreads() && next) {
         await setWorkInfo();
-
-        if (getThreads() === undefined) return;
-
-        const prev_videoId = prev.videoId;
-        if (!prev_videoId) {
-          set_threads(undefined);
-          return;
-        }
 
         if (await getConfig("load_comments_on_next_video")) await auto_play();
         else

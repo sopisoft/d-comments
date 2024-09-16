@@ -22,13 +22,7 @@ import { Virtuoso, type VirtuosoHandle } from "react-virtuoso";
 import browser from "webextension-polyfill";
 import { getComments } from "../comments";
 import { find_element } from "../danime/dom";
-import {
-  threads as getThreads,
-  mode,
-  on_mode_change,
-  on_partId_change,
-  on_threads_change,
-} from "../state";
+import { on_partId_change, on_threads_change } from "../state";
 import useAnimationFrame from "./useAnimationFrame";
 
 export function Scroll() {
@@ -40,42 +34,44 @@ export function Scroll() {
   const virtuoso = useRef<VirtuosoHandle>(null);
   const isAutoScrollEnabled = useRef(true);
 
+  const [initialized, setInitialized] = useState(false);
+
+  const [visibility, setVisibility] = useState(false);
   const [width, setWidth] = useState<number>();
+  const [fontSize, setFontSize] = useState<number>();
   const [bgColor, setBgColor] = useState<string>();
   const [textColor, setTextColor] = useState<string>();
   const [opacity, setOpacity] = useState<number>();
   const [comments, setComments] = useState<nv_comment[]>();
 
-  async function set_comments(threads?: Threads) {
-    const t = threads || getThreads();
-    if (t && t.threads.length > 0)
-      return await getComments(t).then((nc) => {
-        if (!Object.is(comments, nc)) {
-          setComments(nc);
-          return nc;
-        }
-      });
+  async function set_comments() {
+    const new_comments = await getComments();
+    if (!new_comments || new_comments.length === 0) return;
+    if (new_comments !== comments) {
+      setComments(new_comments);
+      return new_comments;
+    }
   }
 
-  async function start() {
-    const _comments = await set_comments();
-    if (_comments) console.log("list_started", "comments", _comments);
-    getConfig("comment_area_width_px").then((width) => {
-      setWidth(width);
+  async function init() {
+    if (initialized) return;
+    return Promise.all([
+      set_comments(),
+      getConfig("comment_area_width_px").then((width) => {
+        setWidth(width);
+      }),
+      getConfig("comment_area_font_size_px").then((size) => {
+        setFontSize(size);
+      }),
+      find_element<HTMLVideoElement>("video").then((video) => {
+        videoEl.current = video;
+        videoEl.current?.addEventListener("play", loop.start);
+        videoEl.current?.addEventListener("pause", loop.pause);
+      }),
+      loop.start(),
+    ]).then(() => {
+      setInitialized(true);
     });
-    find_element<HTMLVideoElement>("video").then((video) => {
-      videoEl.current = video;
-      videoEl.current?.addEventListener("play", loop.start);
-      videoEl.current?.addEventListener("pause", loop.pause);
-      videoEl.current?.addEventListener("ended", end);
-    });
-    loop.start();
-  }
-
-  function end() {
-    console.log("list_ended");
-    setComments([]);
-    loop.stop();
   }
 
   function get_item_id(vposMs: number) {
@@ -97,7 +93,7 @@ export function Scroll() {
     if (videoEl.current && !videoEl.current.paused) {
       const currentTimeMs = videoEl.current.currentTime * 1000;
       const id = get_item_id(currentTimeMs);
-      if (virtuoso.current && typeof id === "number") {
+      if (virtuoso.current && id) {
         virtuoso.current.scrollToIndex({
           index: id,
           align: "center",
@@ -120,23 +116,10 @@ export function Scroll() {
     getConfig("enable_auto_scroll").then((config) => {
       isAutoScrollEnabled.current = config;
     });
-    on_mode_change(async (_prev, next) => {
-      const threads = getThreads();
-      if (next.includes("list") && threads && threads.threads.length > 0) {
-        console.log("list_mode_changed", next, "threads", threads);
-        start();
-      } else end();
+    on_threads_change(() => {
+      set_comments();
     });
-    on_threads_change(async (_prev, next) => {
-      const modes = mode();
-      if (modes.includes("list") && next && next?.threads.length > 0) {
-        console.log("list_threads_changed", next, "mode", modes);
-        start();
-      } else end();
-    });
-    on_partId_change(() => {
-      end();
-    });
+    on_partId_change(() => {});
 
     parent.current?.addEventListener("mouseenter", () => {
       isAutoScrollEnabled.current = false;
@@ -150,42 +133,43 @@ export function Scroll() {
       for (const key in changes) {
         switch (key as config_keys) {
           case "show_owner_comments":
-            await set_comments();
+            set_comments();
             break;
           case "show_main_comments":
-            await set_comments();
+            set_comments();
             break;
           case "show_easy_comments":
-            await set_comments();
+            set_comments();
             break;
           case "comment_area_width_px":
-            if (typeof changes[key].newValue === "number") {
-              setWidth(changes[key].newValue);
-            }
+            setWidth(Number(changes[key].newValue));
+            break;
+          case "comment_area_font_size_px":
+            setFontSize(Number(changes[key].newValue));
             break;
           case "comment_area_background_color":
-            if (typeof changes[key].newValue === "string") {
-              setBgColor(changes[key].newValue);
-            }
+            setBgColor(changes[key].newValue as string);
             break;
           case "comment_text_color":
-            if (typeof changes[key].newValue === "string") {
-              setTextColor(changes[key].newValue);
-            }
+            setTextColor(changes[key].newValue as string);
             break;
           case "comment_area_opacity_percentage":
-            if (typeof changes[key].newValue === "number") {
-              setOpacity(changes[key].newValue);
-            }
+            setOpacity(Number(changes[key].newValue));
             break;
           case "enable_auto_scroll":
             if (typeof changes[key].newValue === "boolean") {
               isAutoScrollEnabled.current = changes[key].newValue;
             }
             break;
+          case "show_comments_in_list": {
+            changes[key].newValue ? setVisibility(true) : setVisibility(false);
+            break;
+          }
         }
       }
     });
+
+    init();
   });
 
   return (
@@ -194,12 +178,17 @@ export function Scroll() {
         className="flex flex-col h-full max-h-svh"
         ref={parent}
         style={{
-          display: (comments?.length ?? 0) > 0 ? "block" : "none",
+          display: visibility
+            ? "block"
+            : (comments?.length ?? 0) > 0
+              ? "block"
+              : "none",
           backgroundColor: bgColor,
           color: textColor,
           opacity: (opacity ?? 100) / 100,
           maxWidth: `${width}px`,
           minWidth: `${width}px`,
+          fontSize: `${fontSize}px`,
         }}
       >
         <Virtuoso

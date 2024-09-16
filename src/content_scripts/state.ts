@@ -15,9 +15,6 @@
     along with d-comments.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { type config_keys, getConfig } from "@/config";
-import browser from "webextension-polyfill";
-
 function use_state<T>(initial: T) {
   let state = initial;
   const listeners = new Set<(prev: T, next: T) => void>();
@@ -47,11 +44,6 @@ function use_state<T>(initial: T) {
   return [get_state, set_state, on_change] as const;
 }
 
-type mode = ("list" | "nico")[];
-export const [mode, set_mode, on_mode_change] = use_state<mode>(
-  await get_mode_arr()
-);
-
 export const [partId, set_partId, on_partId_change] = use_state<
   { workId?: string; videoId?: VideoId } | undefined
 >(undefined);
@@ -67,24 +59,3 @@ export const [messages, set_messages, on_messages_change] = use_state<messages>(
 export function push_message(message: Error | message) {
   set_messages(messages().concat(message));
 }
-
-async function get_mode_arr(): Promise<mode> {
-  const arr: mode = [];
-  if (await getConfig("show_comments_in_list")) arr.push("list");
-  if (await getConfig("show_comments_in_niconico_style")) arr.push("nico");
-
-  return arr;
-}
-
-browser.storage.onChanged.addListener(async (changes) => {
-  for (const key in changes) {
-    switch (key as config_keys) {
-      case "show_comments_in_list":
-        set_mode(await get_mode_arr());
-        break;
-      case "show_comments_in_niconico_style":
-        set_mode(await get_mode_arr());
-        break;
-    }
-  }
-});

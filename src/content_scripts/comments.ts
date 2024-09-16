@@ -15,49 +15,44 @@
     along with d-comments.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { getConfig } from "@/config";
+import { type config_keys, getConfig } from "@/config";
+import { threads as getThreads } from "./state";
 
-async function getConfigedForks() {
-  const list: thread["forkLabel"][] = [];
-  if (await getConfig("show_owner_comments")) list.push("owner");
-  if (await getConfig("show_main_comments")) list.push("main");
-  if (await getConfig("show_easy_comments")) list.push("easy");
-  return list;
-}
-
-export const getComments = async (
-  Threads: Threads,
-  forks?: thread["forkLabel"][]
-) => {
-  const threads = Threads.threads;
-  const comments: nv_comment[] = [];
-  const _forks = forks ?? (await getConfigedForks());
-
-  function f(fork: thread["forkLabel"]) {
-    threads
-      ?.filter((thread) => thread.fork === fork)
-      ?.map((thread) => {
-        thread.comments.map((comment) => {
-          comments.push(comment);
-        });
-      });
-  }
-
-  for (const fork of _forks) f(fork);
-
-  filterComments(comments, 0);
-  sortComments(comments);
-
-  return comments;
+type message = {
+  comments: nv_comment[];
 };
 
-function filterComments(comments: nv_comment[], score: number) {
-  const filtered = comments.filter((comment) => comment.score > score);
-  return filtered;
-}
-function sortComments(comments: nv_comment[]) {
-  const sorted = comments.sort((a, b) => {
-    return a.vposMs - b.vposMs;
+const worker = new Worker(new URL("./comments_worker.ts", import.meta.url), {
+  type: "module",
+});
+
+export const getComments = async () => {
+  const threads = getThreads()?.threads;
+  if (!threads) return;
+
+  const nv_comments: nv_comment[] = [];
+  const l: [config_keys, string][] = [
+    ["show_owner_comments", "owner"],
+    ["show_main_comments", "main"],
+    ["show_easy_comments", "easy"],
+  ];
+
+  Promise.all(
+    l.map(async ([k, v]) => {
+      const res = await getConfig(k);
+      if (!res) return;
+      for (const thread of threads) {
+        if (thread.fork === v) nv_comments.push(...thread.comments);
+      }
+    })
+  ).then(async () => {
+    worker.postMessage({ comments: nv_comments });
+  });
+
+  const sorted = await new Promise<nv_comment[]>((resolve) => {
+    worker.addEventListener("message", (e: MessageEvent<message>) => {
+      resolve(e.data.comments);
+    });
   });
   return sorted;
-}
+};
