@@ -16,7 +16,7 @@
 */
 
 import { getConfig } from "@/config";
-import { find_elements } from "./dom";
+import { find_elements } from "@/lib/dom";
 
 /**
  * 作品ページの各パートに新しいタブで開くボタンを追加する

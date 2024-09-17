@@ -21,6 +21,7 @@ import "./how_to_use.css";
 import "github-markdown-css";
 import { ArrowUp, CircleX } from "lucide-react";
 import { createRoot } from "react-dom/client";
+import { find_elements } from "../lib/dom";
 // @ts-ignore
 import { html, toc } from "./how_to_use.md";
 
@@ -133,13 +134,13 @@ document.body.appendChild(root);
 
 createRoot(root).render(<HowToUse />);
 
-window.addEventListener("load", () => {
-  const headers = document.querySelectorAll("h1, h2, h3, h4, h5, h6");
+window.addEventListener("load", async () => {
+  const headers = await find_elements("h1, h2, h3, h4, h5, h6");
   for (const header of headers) {
     header.id = header.textContent || "";
   }
 
-  const anchors = document.querySelectorAll("a");
+  const anchors = await find_elements("a");
   for (const anchor of anchors) {
     const href = anchor.getAttribute("href");
     if (href === "#top") {
