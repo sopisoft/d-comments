@@ -97,21 +97,13 @@ export class Renderer {
     if (this.options.format !== "v1") {
       console.error("format should be v1");
     }
-    if (this.threads.length === 0) {
-      console.error("no threads");
-    }
   }
   setThread(threads: V1Thread[]) {
     this.threads = threads;
-    this.canvas.dataset.commentsCount = threads
-      .map((thread) => thread.commentCount)
-      .reduce((a, b) => a + b)
-      .toString();
     this.start();
   }
   setOptions(options: Options) {
     this.options = options;
-    console.log("setOptions", JSON.stringify(options, null, 2));
     this.start();
   }
   getOptions() {
@@ -202,8 +194,8 @@ async function initRenderer() {
   });
 
   if (!(await getConfig("show_comments_in_niconico_style"))) return;
-  const threads = getThreads()?.threads || [];
-  renderer.setThread(threads);
+  const threads = getThreads()?.threads;
+  if (threads) renderer.setThread(threads);
 }
 
 export default initRenderer;
