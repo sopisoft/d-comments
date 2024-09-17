@@ -21,9 +21,14 @@
     "quickfix.biome": "always"
   },
   "files.eol": "\n",
+  "files.associations": {
+    "*.css": "tailwindcss"
+  },
   "json.schemas": [
     {
-      "fileMatch": ["manifest.json"],
+      "fileMatch": [
+        "manifest.json"
+      ],
       "url": "http://json.schemastore.org/chrome-manifest"
     }
   ],

@@ -121,6 +121,16 @@ function get_default_configs() {
       type: "switch",
       text: "ニコニコ動画へのログインを許可する",
     },
+    comment_ng_words: {
+      value: [] as { key: string; value: string; enabled: boolean }[],
+      type: "text_list",
+      text: "コメントNGワード",
+    },
+    comment_ng_users: {
+      value: [] as { key: string; value: string; enabled: boolean }[],
+      type: "text_list",
+      text: "コメントNGユーザー",
+    },
   } as const;
 }
 

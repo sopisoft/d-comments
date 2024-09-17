@@ -69,18 +69,22 @@ export class Renderer {
   private options: Options;
   private threads: V1Thread[];
   private interval: Interval;
-  constructor(canvas: HTMLCanvasElement, video: HTMLVideoElement) {
+  constructor(
+    canvas: HTMLCanvasElement,
+    video: HTMLVideoElement,
+    options: Options
+  ) {
     this.canvas = canvas;
     this.video = video;
-    this.NiconiComments = new NiconiComments(canvas, [], {});
-    this.options = {};
-    this.threads = [];
+    const threads: V1Thread[] = [];
+    this.NiconiComments = new NiconiComments(canvas, threads, options);
+    this.threads = threads;
+    this.options = options;
     this.interval = new Interval(60, () => {
       this.render();
     });
   }
   start() {
-    console.log("Renderer.start");
     this.NiconiComments = new NiconiComments(
       new NiconiComments.internal.renderer.CanvasRenderer(this.canvas),
       this.threads,
@@ -88,25 +92,30 @@ export class Renderer {
     );
     this.interval.start();
   }
+  private render() {
+    this.NiconiComments.drawCanvas(Math.floor(this.video.currentTime * 100));
+    if (this.options.format !== "v1") {
+      console.error("format should be v1");
+    }
+    if (this.threads.length === 0) {
+      console.error("no threads");
+    }
+  }
   setThread(threads: V1Thread[]) {
     this.threads = threads;
+    this.canvas.dataset.commentsCount = threads
+      .map((thread) => thread.commentCount)
+      .reduce((a, b) => a + b)
+      .toString();
+    this.start();
   }
   setOptions(options: Options) {
     this.options = options;
+    console.log("setOptions", JSON.stringify(options, null, 2));
+    this.start();
   }
   getOptions() {
     return this.options;
-  }
-  render() {
-    this.NiconiComments.drawCanvas(Math.floor(this.video.currentTime * 100));
-  }
-  reload() {
-    this.NiconiComments = new NiconiComments(
-      new NiconiComments.internal.renderer.CanvasRenderer(this.canvas),
-      this.threads,
-      this.options
-    );
-    this.start();
   }
   destroy() {
     this.NiconiComments.clear();
@@ -145,14 +154,21 @@ async function initRenderer() {
   const video = await find_element<HTMLVideoElement>("video");
   if (!video) return new Error("video element not found");
   const canvas = await getCanvas(video);
-  const renderer = new Renderer(canvas, video);
 
-  on_threads_change(async () => {
-    const threads = getThreads()?.threads ?? [];
-    renderer.setThread(threads);
-    renderer.reload();
+  const scale = (await getConfig("nicoarea_scale")) / 100;
+  const options: Options = {
+    format: "v1",
+    scale: scale,
+  };
+  const renderer = new Renderer(canvas, video, options);
+
+  on_threads_change(async (_prev, next) => {
+    console.log("on_threads_change_canvas", next);
+    if (!next) return;
+    renderer.setThread(next.threads);
   });
   on_partId_change(() => {
+    console.log("on_partId_change_canvas");
     renderer.destroy();
   });
 
@@ -170,7 +186,6 @@ async function initRenderer() {
           if (changes[key].newValue) {
             const scale = Number(changes[key].newValue) / 100;
             renderer.setOptions({ ...renderer.getOptions(), scale });
-            renderer.reload();
           }
           break;
         }
@@ -186,20 +201,9 @@ async function initRenderer() {
     }
   });
 
-  {
-    const threads = getThreads()?.threads ?? [];
-    renderer.setThread(threads);
-
-    const scale = (await getConfig("nicoarea_scale")) / 100;
-    const options: Options = {
-      format: "v1",
-      scale: scale,
-    };
-    console.log(JSON.stringify(options, null, 2));
-    renderer.setOptions(options);
-
-    renderer.start();
-  }
+  if (!(await getConfig("show_comments_in_niconico_style"))) return;
+  const threads = getThreads()?.threads || [];
+  renderer.setThread(threads);
 }
 
 export default initRenderer;

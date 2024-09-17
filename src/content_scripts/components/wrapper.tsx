@@ -15,7 +15,6 @@
     along with d-comments.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-import React from "react";
 import { createRoot } from "react-dom/client";
 import { find_element } from "../danime/dom";
 import Scroll from "./scroll";
@@ -67,11 +66,7 @@ async function wrap(): Promise<void> {
   }
 
   const root = createRoot(side_menu);
-  root.render(
-    <React.StrictMode>
-      <Scroll />
-    </React.StrictMode>
-  );
+  root.render(<Scroll />);
 }
 
 export default wrap;

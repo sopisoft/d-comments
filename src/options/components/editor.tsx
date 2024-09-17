@@ -29,6 +29,7 @@ import {
   getValueType,
   setConfig,
 } from "@/config";
+import { CircleX, Plus } from "lucide-react";
 import { type ChangeEvent, useEffect, useMemo, useState } from "react";
 import browser from "webextension-polyfill";
 
@@ -59,6 +60,33 @@ function Editor<T extends config_keys>(props: {
     setOption(key, v);
   };
   const onSliderChange = (v: number) => {
+    setOption(key, v);
+  };
+
+  type TTextList = { key: string; value: string; enabled: boolean };
+  const onTextListChange = (target: string, new_value: string) => {
+    const v = value as TTextList[];
+    const i = v.findIndex((v) => v.key === target);
+    v[i].value = new_value;
+    setOption(key, v);
+  };
+  const onTextListToggle = (text_key: string) => {
+    const v = value as TTextList[];
+    const i = v.findIndex((v) => v.key === text_key);
+    v[i].enabled = !v[i].enabled;
+    setOption(key, v);
+  };
+  const onTextListAdd = () => {
+    const v = value as TTextList[];
+    const new_key = crypto.getRandomValues(new Uint32Array(1))[0].toString();
+    const new_value = "[(ネタ|ねた)][(バレ|ばれ)]";
+    v.push({ key: new_key, value: new_value, enabled: true });
+    setOption(key, v);
+  };
+  const onTextListRemove = (text_key: string) => {
+    const v = value as TTextList[];
+    const i = v.findIndex((v) => v.key === text_key);
+    v.splice(i, 1);
     setOption(key, v);
   };
 
@@ -131,6 +159,43 @@ function Editor<T extends config_keys>(props: {
           className={props.className}
         />
       );
+    case "text_list": {
+      if (!Array.isArray(value)) return <div>An error has occurred.</div>;
+      return (
+        <>
+          <Plus className="cursor-pointer" onClick={onTextListAdd} />
+          <div className="w-full col-span-4 flex flex-col gap-3 items-center justify-center text-center">
+            <div className="w-full grid grid-cols-4 gap-3">
+              <div className="col-span-2">テキスト</div>
+              <div className="col-span-1">有効</div>
+              <div className="col-span-1">削除</div>
+            </div>
+            {value.map((v) => (
+              <div
+                key={v.key}
+                className="w-full grid grid-cols-4 gap-3 items-center justify-center place-items-center"
+              >
+                <Input
+                  type="text"
+                  value={v.value}
+                  onChange={(e) => onTextListChange(v.key, e.target.value)}
+                  className="col-span-2"
+                />
+                <Switch
+                  checked={v.enabled}
+                  onCheckedChange={() => onTextListToggle(v.key)}
+                  className="col-span-1"
+                />
+                <CircleX
+                  className="cursor-pointer col-span-1"
+                  onClick={() => onTextListRemove(v.key)}
+                />
+              </div>
+            ))}
+          </div>
+        </>
+      );
+    }
     default:
       return <div>An error has occurred.</div>;
   }

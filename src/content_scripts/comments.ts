@@ -22,37 +22,58 @@ type message = {
   comments: nv_comment[];
 };
 
-const worker = new Worker(new URL("./comments_worker.ts", import.meta.url), {
-  type: "module",
-});
+const sort_worker = new Worker(
+  new URL("./comments_worker.ts", import.meta.url),
+  {
+    type: "module",
+  }
+);
 
-export const getComments = async () => {
-  const threads = getThreads()?.threads;
-  if (!threads) return;
+const ngfilter_worker = new Worker(
+  new URL("./comments_ngfilter.ts", import.meta.url),
+  { type: "module" }
+);
 
-  const nv_comments: nv_comment[] = [];
-  const l: [config_keys, string][] = [
-    ["show_owner_comments", "owner"],
-    ["show_main_comments", "main"],
-    ["show_easy_comments", "easy"],
-  ];
+async function build_ng_filter_message(comments: nv_comment[]) {
+  const id = Math.random().toString(36).slice(-8);
 
-  Promise.all(
-    l.map(async ([k, v]) => {
-      const res = await getConfig(k);
-      if (!res) return;
-      for (const thread of threads) {
-        if (thread.fork === v) nv_comments.push(...thread.comments);
+  const ng_words = await getConfig("comment_ng_words");
+  const enabled_ng_users = ng_words.filter((w) => w.enabled);
+  const regex = enabled_ng_users.map((w) => w.value).join("|");
+
+  const ng_users = await getConfig("comment_ng_users");
+  const enabled_ng_words = ng_users
+    .filter((u) => u.enabled)
+    .map((u) => u.value);
+
+  const ng_filter_message = {
+    id: id,
+    ng_words_regex: new RegExp(regex, "i"),
+    ng_users: enabled_ng_words,
+    comments: comments,
+  };
+  return ng_filter_message;
+}
+export async function ngFilter(comments: nv_comment[]): Promise<nv_comment[]> {
+  const message = await build_ng_filter_message(comments);
+  ngfilter_worker.postMessage(message);
+
+  return await new Promise<nv_comment[]>((resolve) => {
+    ngfilter_worker.addEventListener("message", (e) => {
+      if (e.data.id === message.id) {
+        resolve(e.data.comments);
       }
-    })
-  ).then(async () => {
-    worker.postMessage({ comments: nv_comments });
-  });
-
-  const sorted = await new Promise<nv_comment[]>((resolve) => {
-    worker.addEventListener("message", (e: MessageEvent<message>) => {
-      resolve(e.data.comments);
     });
   });
-  return sorted;
-};
+}
+
+export async function sortComments(
+  comments: nv_comment[]
+): Promise<nv_comment[]> {
+  sort_worker.postMessage({ comments });
+  return await new Promise<nv_comment[]>((resolve) => {
+    sort_worker.onmessage = (e: MessageEvent<message>) => {
+      resolve(e.data.comments);
+    };
+  });
+}
