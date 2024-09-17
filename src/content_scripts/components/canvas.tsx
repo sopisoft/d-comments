@@ -16,10 +16,10 @@
 */
 
 import { type config_keys, getConfig } from "@/config";
+import { find_element } from "@/lib/dom";
 import NiconiComments from "@xpadev-net/niconicomments";
 import type { Options, V1Thread } from "@xpadev-net/niconicomments";
 import browser from "webextension-polyfill";
-import { find_element } from "../danime/dom";
 import {
   threads as getThreads,
   on_partId_change,

@@ -17,11 +17,11 @@
 
 import { ThemeProvider } from "@/components/theme-provider";
 import { type config_keys, getConfig } from "@/config";
+import { find_element } from "@/lib/dom";
 import { useEffect, useRef, useState } from "react";
 import { Virtuoso, type VirtuosoHandle } from "react-virtuoso";
 import browser from "webextension-polyfill";
 import { sortComments } from "../comments";
-import { find_element } from "../danime/dom";
 import {
   threads as getThreads,
   on_partId_change,

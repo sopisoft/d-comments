@@ -15,8 +15,8 @@
     along with d-comments.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+import { find_element } from "@/lib/dom";
 import { createRoot } from "react-dom/client";
-import { find_element } from "../danime/dom";
 import Scroll from "./scroll";
 
 /**

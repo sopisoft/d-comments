@@ -18,6 +18,7 @@
 import { getConfig } from "@/config";
 import { openHowToUseIfNotRead } from "@/how_to_use/how_to_use";
 import api from "@/lib/api";
+import { find_element } from "@/lib/dom";
 import browser from "webextension-polyfill";
 import get_threads from "./api/thread_data";
 import get_video_data from "./api/video_data";
@@ -25,7 +26,6 @@ import { ngFilter } from "./comments";
 import initRenderer from "./components/canvas";
 import overlay from "./components/overlay";
 import wrap from "./components/wrapper";
-import { find_element } from "./danime/dom";
 import { addMenu } from "./danime/mypage";
 import { setWorkInfo, smooth_player } from "./danime/watch";
 import exportJson from "./export";

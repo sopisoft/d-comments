@@ -15,9 +15,9 @@
     along with d-comments.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+import { find_element, find_elements } from "@/lib/dom";
 import { push_message } from "../state";
 import { get_work_info } from "./api";
-import { find_element, find_elements } from "./dom";
 
 /**
  * 視聴ページで title と description をパートタイトルと説明に書き換える
