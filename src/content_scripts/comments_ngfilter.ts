@@ -19,7 +19,7 @@
 
 type message = {
   id: string;
-  ng_words_regex: RegExp;
+  ng_words_regex: RegExp | "skip-ng-words-filter";
   ng_users: string[];
   comments: nv_comment[];
 };
@@ -27,12 +27,19 @@ type message = {
 self.addEventListener("message", async (e: MessageEvent<message>) => {
   const { id, comments } = e.data;
   const { ng_words_regex, ng_users } = e.data;
-  const filtered = comments.filter((comment) => {
-    if (ng_users.includes(comment.userId)) return false;
-    if (ng_words_regex.test(comment.body)) return false;
-    return true;
-  });
-  self.postMessage({ id, comments: filtered });
+  if (ng_words_regex === "skip-ng-words-filter") {
+    const filtered = comments.filter((comment) => {
+      return !ng_users.includes(comment.userId);
+    });
+    self.postMessage({ id, comments: filtered });
+  } else {
+    const filtered = comments.filter((comment) => {
+      return (
+        !ng_users.includes(comment.userId) && !ng_words_regex.test(comment.body)
+      );
+    });
+    self.postMessage({ id, comments: filtered });
+  }
 });
 
 export default {};

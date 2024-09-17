@@ -15,41 +15,57 @@
     along with d-comments.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { type config_keys, getConfig } from "@/config";
-import { threads as getThreads } from "./state";
+import { getConfig } from "@/config";
+import browser from "webextension-polyfill";
+
+import comments_ngfilter from "./comments_ngfilter?worker&url";
+import comments_worker from "./comments_worker?worker&url";
 
 type message = {
   comments: nv_comment[];
 };
 
-const sort_worker = new Worker(
-  new URL("./comments_worker.ts", import.meta.url),
-  {
-    type: "module",
-  }
-);
+async function newWorker(url: string): Promise<Worker> {
+  const script = await fetch(url).then((r) => r.text());
+  const blob = new Blob([script], { type: "application/javascript" });
+  const objURL = URL.createObjectURL(blob);
+  const worker = new Worker(objURL, { type: "module" });
+  worker.addEventListener("error", (_e) => {
+    URL.revokeObjectURL(objURL);
+  });
+  return worker;
+}
 
-const ngfilter_worker = new Worker(
-  new URL("./comments_ngfilter.ts", import.meta.url),
-  { type: "module" }
+const ngfilter_worker = await newWorker(
+  browser.runtime.getURL(comments_ngfilter)
 );
+const sort_worker = await newWorker(browser.runtime.getURL(comments_worker));
 
 async function build_ng_filter_message(comments: nv_comment[]) {
   const id = Math.random().toString(36).slice(-8);
 
   const ng_words = await getConfig("comment_ng_words");
-  const enabled_ng_users = ng_words.filter((w) => w.enabled);
-  const regex = enabled_ng_users.map((w) => w.value).join("|");
+  const enabled_ng_words = ng_words.filter((w) => w.enabled);
+  const regex = enabled_ng_words.map((w) => w.value).join("|");
 
   const ng_users = await getConfig("comment_ng_users");
-  const enabled_ng_words = ng_users
+  const enabled_ng_users = ng_users
     .filter((u) => u.enabled)
     .map((u) => u.value);
+
+  if (enabled_ng_words.length === 0) {
+    return {
+      id: id,
+      ng_words_regex: "skip-ng-words-filter",
+      ng_users: enabled_ng_users,
+      comments: comments,
+    };
+  }
 
   const ng_filter_message = {
     id: id,
     ng_words_regex: new RegExp(regex, "i"),
-    ng_users: enabled_ng_words,
+    ng_users: enabled_ng_users,
     comments: comments,
   };
   return ng_filter_message;

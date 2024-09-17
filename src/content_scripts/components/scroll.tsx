@@ -98,6 +98,10 @@ export function Scroll() {
     if (new_comments.length !== comments.length) {
       setComments(new_comments);
     }
+
+    if (await getConfig("show_comments_in_list")) {
+      setVisibility(true);
+    }
   }
 
   on_threads_change(async (_, next) => {
@@ -208,17 +212,32 @@ export function Scroll() {
           data={comments}
           className="w-full h-full"
           components={{
+            Header: () => {
+              return (
+                <div
+                  className={`flex flex-row justify-center items-center gap-4 ${comments.length === 0 ? "p-4 text-center" : "hidden"}`}
+                >
+                  {comments.length === 0 && (
+                    <>
+                      コメントがありません
+                      <button
+                        type="button"
+                        className="bg-black text-white rounded border border-white px-2 py-1"
+                        onClick={() => setVisibility(false)}
+                      >
+                        閉じる
+                      </button>
+                    </>
+                  )}
+                </div>
+              );
+            },
             Footer: () => {
               return (
                 <div
-                  style={{
-                    padding: "1rem",
-                    textAlign: "center",
-                  }}
+                  className={comments.length > 0 ? "p-4 text-center" : "hidden"}
                 >
-                  {comments.length > 0
-                    ? "最後のコメントです"
-                    : "コメントはありません"}
+                  {comments.length > 0 && "最後のコメントです"}
                 </div>
               );
             },

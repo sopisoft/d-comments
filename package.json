@@ -3,7 +3,7 @@
   "displayName": "d-anime comments viewer",
   "description": "Player addon for d-anime",
   "author": "sopi",
-  "version": "2024.9.17",
+  "version": "2024.9.18",
   "private": true,
   "license": "GPL-3.0",
   "type": "module",
