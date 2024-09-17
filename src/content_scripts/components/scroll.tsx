@@ -20,9 +20,13 @@ import { type config_keys, getConfig } from "@/config";
 import { useEffect, useRef, useState } from "react";
 import { Virtuoso, type VirtuosoHandle } from "react-virtuoso";
 import browser from "webextension-polyfill";
-import { getComments } from "../comments";
+import { sortComments } from "../comments";
 import { find_element } from "../danime/dom";
-import { on_partId_change, on_threads_change } from "../state";
+import {
+  threads as getThreads,
+  on_partId_change,
+  on_threads_change,
+} from "../state";
 import useAnimationFrame from "./useAnimationFrame";
 
 export function Scroll() {
@@ -34,7 +38,7 @@ export function Scroll() {
   const virtuoso = useRef<VirtuosoHandle>(null);
   const isAutoScrollEnabled = useRef(true);
 
-  const [initialized, setInitialized] = useState(false);
+  const [isInitialized, setIsInitialized] = useState(false);
 
   const [visibility, setVisibility] = useState(false);
   const [width, setWidth] = useState<number>();
@@ -42,40 +46,9 @@ export function Scroll() {
   const [bgColor, setBgColor] = useState<string>();
   const [textColor, setTextColor] = useState<string>();
   const [opacity, setOpacity] = useState<number>();
-  const [comments, setComments] = useState<nv_comment[]>();
-
-  async function set_comments() {
-    const new_comments = await getComments();
-    if (!new_comments || new_comments.length === 0) return;
-    if (new_comments !== comments) {
-      setComments(new_comments);
-      return new_comments;
-    }
-  }
-
-  async function init() {
-    if (initialized) return;
-    return Promise.all([
-      set_comments(),
-      getConfig("comment_area_width_px").then((width) => {
-        setWidth(width);
-      }),
-      getConfig("comment_area_font_size_px").then((size) => {
-        setFontSize(size);
-      }),
-      find_element<HTMLVideoElement>("video").then((video) => {
-        videoEl.current = video;
-        videoEl.current?.addEventListener("play", loop.start);
-        videoEl.current?.addEventListener("pause", loop.pause);
-      }),
-      loop.start(),
-    ]).then(() => {
-      setInitialized(true);
-    });
-  }
+  const [comments, setComments] = useState<nv_comment[]>([]);
 
   function get_item_id(vposMs: number) {
-    if (!comments) return;
     let left = 0;
     let right = comments.length - 1;
     while (left <= right) {
@@ -88,8 +61,7 @@ export function Scroll() {
   }
 
   function scroll() {
-    if (!comments || !isAutoScrollEnabled.current || isParentHovered.current)
-      return;
+    if (!isAutoScrollEnabled.current || isParentHovered.current) return;
     if (videoEl.current && !videoEl.current.paused) {
       const currentTimeMs = videoEl.current.currentTime * 1000;
       const id = get_item_id(currentTimeMs);
@@ -103,24 +75,87 @@ export function Scroll() {
     }
   }
 
-  useEffect(() => {
-    getConfig("comment_area_background_color").then((color) => {
-      setBgColor(color);
-    });
-    getConfig("comment_text_color").then((color) => {
-      setTextColor(color);
-    });
-    getConfig("comment_area_opacity_percentage").then((opacity) => {
-      setOpacity(opacity);
-    });
-    getConfig("enable_auto_scroll").then((config) => {
-      isAutoScrollEnabled.current = config;
-    });
-    on_threads_change(() => {
-      set_comments();
-    });
-    on_partId_change(() => {});
+  async function flatten_comments(threads: Threads): Promise<nv_comment[]> {
+    const owner = await getConfig("show_owner_comments");
+    const main = await getConfig("show_main_comments");
+    const easy = await getConfig("show_easy_comments");
 
+    return threads.threads
+      .filter((thread) => {
+        if (thread.fork === "owner") return owner;
+        if (thread.fork === "main") return main;
+        if (thread.fork === "easy") return easy;
+        return false;
+      })
+      .flatMap((thread) => thread.comments);
+  }
+
+  async function set_comments() {
+    const threads = getThreads();
+    if (!threads) return;
+
+    const new_comments = await sortComments(await flatten_comments(threads));
+    if (new_comments.length !== comments.length) {
+      setComments(new_comments);
+    }
+  }
+
+  on_threads_change(async (_, next) => {
+    if (!next) return;
+    const old_comments = comments;
+    const new_comments = await sortComments(await flatten_comments(next));
+
+    if (!Object.is(old_comments, new_comments)) {
+      console.log("on_threads_change_scroll", new_comments.length);
+      setComments(new_comments);
+    }
+  });
+
+  on_partId_change(async () => {
+    setComments([]);
+    console.log("on_partId_change_scroll", comments);
+  });
+
+  browser.storage.onChanged.addListener(async (changes) => {
+    for (const key in changes) {
+      switch (key as config_keys) {
+        case "show_owner_comments":
+          await set_comments();
+          break;
+        case "show_main_comments":
+          break;
+        case "show_easy_comments":
+          await set_comments();
+          break;
+        case "comment_area_width_px":
+          setWidth(Number(changes[key].newValue));
+          break;
+        case "comment_area_font_size_px":
+          setFontSize(Number(changes[key].newValue));
+          break;
+        case "comment_area_background_color":
+          setBgColor(changes[key].newValue as string);
+          break;
+        case "comment_text_color":
+          setTextColor(changes[key].newValue as string);
+          break;
+        case "comment_area_opacity_percentage":
+          setOpacity(Number(changes[key].newValue));
+          break;
+        case "enable_auto_scroll":
+          if (typeof changes[key].newValue === "boolean") {
+            isAutoScrollEnabled.current = changes[key].newValue;
+          }
+          break;
+        case "show_comments_in_list": {
+          changes[key].newValue ? setVisibility(true) : setVisibility(false);
+          break;
+        }
+      }
+    }
+  });
+
+  useEffect(() => {
     parent.current?.addEventListener("mouseenter", () => {
       isAutoScrollEnabled.current = false;
     });
@@ -128,49 +163,30 @@ export function Scroll() {
       isAutoScrollEnabled.current = true;
     });
     isParentHovered.current = parent.current?.matches(":hover") ?? false;
+  }, []);
 
-    browser.storage.onChanged.addListener(async (changes) => {
-      for (const key in changes) {
-        switch (key as config_keys) {
-          case "show_owner_comments":
-            set_comments();
-            break;
-          case "show_main_comments":
-            set_comments();
-            break;
-          case "show_easy_comments":
-            set_comments();
-            break;
-          case "comment_area_width_px":
-            setWidth(Number(changes[key].newValue));
-            break;
-          case "comment_area_font_size_px":
-            setFontSize(Number(changes[key].newValue));
-            break;
-          case "comment_area_background_color":
-            setBgColor(changes[key].newValue as string);
-            break;
-          case "comment_text_color":
-            setTextColor(changes[key].newValue as string);
-            break;
-          case "comment_area_opacity_percentage":
-            setOpacity(Number(changes[key].newValue));
-            break;
-          case "enable_auto_scroll":
-            if (typeof changes[key].newValue === "boolean") {
-              isAutoScrollEnabled.current = changes[key].newValue;
-            }
-            break;
-          case "show_comments_in_list": {
-            changes[key].newValue ? setVisibility(true) : setVisibility(false);
-            break;
-          }
-        }
-      }
-    });
+  useEffect(() => {
+    if (isInitialized) return;
 
-    init();
-  });
+    (async () => {
+      setWidth(await getConfig("comment_area_width_px"));
+      setFontSize(await getConfig("comment_area_font_size_px"));
+      setBgColor(await getConfig("comment_area_background_color"));
+      setTextColor(await getConfig("comment_text_color"));
+      setOpacity(await getConfig("comment_area_opacity_percentage"));
+      isAutoScrollEnabled.current = await getConfig("enable_auto_scroll");
+      setVisibility(await getConfig("show_comments_in_list"));
+
+      videoEl.current = await find_element<HTMLVideoElement>("video");
+      videoEl.current?.addEventListener("play", loop.start);
+      videoEl.current?.addEventListener("pause", loop.pause);
+      if (!videoEl.current?.paused) loop.start();
+    })();
+
+    setIsInitialized(true);
+  }, [isInitialized, loop]);
+
+  set_comments();
 
   return (
     <ThemeProvider>
@@ -178,11 +194,7 @@ export function Scroll() {
         className="flex flex-col h-full max-h-svh"
         ref={parent}
         style={{
-          display: visibility
-            ? "block"
-            : (comments?.length ?? 0) > 0
-              ? "block"
-              : "none",
+          display: visibility ? "block" : "none",
           backgroundColor: bgColor,
           color: textColor,
           opacity: (opacity ?? 100) / 100,
@@ -204,7 +216,9 @@ export function Scroll() {
                     textAlign: "center",
                   }}
                 >
-                  最後のコメントです
+                  {comments.length > 0
+                    ? "最後のコメントです"
+                    : "コメントはありません"}
                 </div>
               );
             },

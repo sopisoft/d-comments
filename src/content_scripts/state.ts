@@ -17,7 +17,7 @@
 
 function use_state<T>(initial: T) {
   let state = initial;
-  const listeners = new Set<(prev: T, next: T) => void>();
+  const listeners = [] as ((prev: T, next: T) => void)[];
 
   function get_state() {
     return state;
@@ -33,11 +33,9 @@ function use_state<T>(initial: T) {
   }
 
   function on_change(listener: (prev: T, next: T) => void) {
-    listeners.add(listener);
-    return {
-      unsubscribe: () => {
-        listeners.delete(listener);
-      },
+    listeners.push(listener);
+    return () => {
+      listeners.splice(listeners.indexOf(listener), 1);
     };
   }
 
@@ -51,11 +49,11 @@ export const [threads, set_threads, on_threads_change] = use_state<
   Threads | undefined
 >(undefined);
 
+export const [messages, set_messages, on_messages_change] = use_state<
+  (Error | message)[]
+>([]);
+
 type message = { title: string; description: string };
-type messages = (Error | message)[];
-export const [messages, set_messages, on_messages_change] = use_state<messages>(
-  []
-);
 export function push_message(message: Error | message) {
   set_messages(messages().concat(message));
 }

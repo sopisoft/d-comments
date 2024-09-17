@@ -137,6 +137,17 @@ function Options() {
           </>
         }
       />
+
+      <CardWrapper
+        title="コメントのNGユーザー/NGワード"
+        description="コメント欄に表示されないユーザー名やワードを設定します。正規表現も使用できます。"
+        content={
+          <>
+            <Editor _key="comment_ng_words" />
+            <Editor _key="comment_ng_users" />
+          </>
+        }
+      />
     </div>
   );
 }

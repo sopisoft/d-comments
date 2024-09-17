@@ -154,14 +154,12 @@ type Threads = {
       count: number;
     },
   ];
-  threads: [
-    {
-      id: string; // thread["id"] to stringify
-      fork: thread["forkLabel"];
-      commentCount: number;
-      comments: nv_comment[];
-    },
-  ];
+  threads: {
+    id: string; // thread["id"] to stringify
+    fork: thread["forkLabel"];
+    commentCount: number;
+    comments: nv_comment[];
+  }[];
 };
 
 type nv_comment = {

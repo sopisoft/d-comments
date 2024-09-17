@@ -21,6 +21,7 @@ import api from "@/lib/api";
 import browser from "webextension-polyfill";
 import get_threads from "./api/thread_data";
 import get_video_data from "./api/video_data";
+import { ngFilter } from "./comments";
 import initRenderer from "./components/canvas";
 import overlay from "./components/overlay";
 import wrap from "./components/wrapper";
@@ -43,25 +44,22 @@ const url = new URL(location.href);
 await openHowToUseIfNotRead();
 
 async function auto_play() {
-  async function search(word: string) {
-    const query: query<searchApi> = {
-      type: "search",
-      data: {
-        word: word,
-        UserAgent: "d-comments",
-      },
-      active_tab: false,
-    };
-    return await api(query);
-  }
-
   const word = document.title;
 
   // タイトルが「動画再生」の場合、作品情報の取得に失敗している
   if (word === "動画再生") return;
 
   word.replaceAll("-", " ");
-  const res = await search(word);
+  const query: query<searchApi> = {
+    type: "search",
+    data: {
+      word: word,
+      UserAgent: "d-comments",
+    },
+    active_tab: false,
+  };
+  const res = await api(query);
+
   if (res instanceof Error) {
     console.error(res);
   } else {
@@ -91,9 +89,8 @@ switch (url.pathname) {
     // ページの読み込みが完了するまで待機
     await find_element("body");
 
-    set_threads(undefined);
     // 作品情報の取得
-    await Promise.all([setWorkInfo()]);
+    await setWorkInfo();
     // DOM に要素を追加
     Promise.all([wrap(), overlay()]);
 
@@ -108,10 +105,11 @@ switch (url.pathname) {
 
     requestAnimationFrame(function loop() {
       const partId = new URLSearchParams(location.search).get("partId");
-      set_partId({
-        workId: partId?.toString(),
-        videoId: getPartId()?.videoId,
-      });
+      if (partId)
+        set_partId({
+          videoId: getPartId()?.videoId,
+          workId: partId,
+        });
       requestAnimationFrame(loop);
     });
 
@@ -128,14 +126,13 @@ switch (url.pathname) {
       }
     });
 
-    if (await getConfig("enable_auto_play")) auto_play();
+    if (await getConfig("enable_auto_play")) await auto_play();
 
     break;
   }
 }
 
 async function render_comments(videoId: VideoId) {
-  set_threads(undefined);
   set_messages([]);
   push_message({
     title: "コメントを取得しています",
@@ -167,8 +164,30 @@ async function render_comments(videoId: VideoId) {
     push_message(threads);
     return;
   }
-  console.log("threads", threads);
-  set_threads(threads.data);
+
+  {
+    const { data } = threads;
+    if (!data) {
+      console.error("threads data is undefined");
+      set_threads(undefined);
+      return;
+    }
+
+    console.log("filtering comments...");
+    const tasks = data.threads.map(async (thread) => {
+      const res = await ngFilter(thread.comments);
+      thread.comments = res;
+      console.log("filtered", thread.fork);
+      return thread;
+    });
+    const filtered = await Promise.all(tasks);
+    const res: Threads = {
+      globalComments: data.globalComments,
+      threads: filtered,
+    };
+    console.log("threads", threads);
+    set_threads(res);
+  }
 
   push_message({
     title: "コメントの取得に成功しました",
@@ -184,10 +203,6 @@ browser.runtime.onMessage.addListener(async (message) => {
       const videoId = msg.data.videoId;
       console.log("render_comments", videoId);
 
-      set_partId({
-        videoId: videoId,
-        workId: getPartId()?.workId,
-      });
       await render_comments(videoId);
       break;
     }
