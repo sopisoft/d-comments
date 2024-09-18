@@ -38,15 +38,17 @@ const OptionsPage = () => {
             </TabsList>
           }
         />
-        <TabsContent value="options">
-          <Options />
-        </TabsContent>
-        <TabsContent value="form">
-          <Form />
-        </TabsContent>
-        <TabsContent value="developer">
-          <Developer />
-        </TabsContent>
+        <div className="min-h-screen">
+          <TabsContent value="options">
+            <Options />
+          </TabsContent>
+          <TabsContent value="form">
+            <Form />
+          </TabsContent>
+          <TabsContent value="developer">
+            <Developer />
+          </TabsContent>
+        </div>
       </Tabs>
 
       <Footer />

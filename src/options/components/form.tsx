@@ -18,6 +18,8 @@
 import browser from "webextension-polyfill";
 
 function make_iframe() {
+  const version = browser.runtime.getManifest().version;
+
   const iframe = document.createElement("iframe");
   iframe.width = "100%";
   iframe.height = "720px";
@@ -26,6 +28,7 @@ function make_iframe() {
     "id",
     "DQSIkWdsW0yxEjajBLZtrQAAAAAAAAAAAAMAABWTsPtUNkUyNzMwSFkyNEVENTExTVdINUNBUDBFNC4u"
   );
+  url.searchParams.append("r4fc5e3af4be04561a824b6564847f811", version);
   url.searchParams.append("embed", "true");
   iframe.src = url.toString();
   iframe.allowFullscreen = true;

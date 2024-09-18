@@ -47,7 +47,7 @@ export const Popup = () => {
   isWatchPageFn().then(setIsWatchPage);
 
   return (
-    <Card className="w-[32rem] h-full overflow-hidden">
+    <Card className="max-w-2xl h-full overflow-hidden">
       <CardHeader className="p-3">
         <CardTitle className="text-lg flex justify-around items-start">
           {name} (Version: {version})
