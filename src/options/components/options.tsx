@@ -112,6 +112,7 @@ function Options() {
         <EditorSlider
           _key="nicoarea_scale"
           text="ニコニコ動画風コメントの拡大率"
+          max={200}
         />
         <EditorSwitch
           _key="load_comments_on_next_video"
@@ -129,7 +130,7 @@ function Options() {
         />
         <EditorSlider
           _key="comment_area_opacity_percentage"
-          text="コメント欄の不透明度 (%)"
+          text="コメント欄の不透明度"
         />
         <EditorColor _key="comment_text_color" text="コメントの文字色" />
       </CardWrapper>

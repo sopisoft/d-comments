@@ -27,12 +27,17 @@ import {
 import { useEffect, useState } from "react";
 import browser from "webextension-polyfill";
 
-function EditorSlider(props: {
+type EditorSliderProps = {
   _key: config_keys;
   text: string;
-}) {
-  const key = props._key;
-  const text = props.text;
+  max?: number;
+  step?: number;
+  unit?: string;
+};
+
+function EditorSlider(props: EditorSliderProps) {
+  const { _key, text, max = 100, step = 10, unit = "%" } = props;
+  const key = _key;
 
   const type = getValueType(key);
   if (type !== "slider")
@@ -61,15 +66,16 @@ function EditorSlider(props: {
         htmlFor={key}
         className="m-2 text-sm font-medium leading-tight col-span-3"
       >
-        {text}
+        {text} - {value}
+        {unit}
       </Label>
       <Slider
         id={key}
         name={key}
         value={[value]}
         defaultValue={[value]}
-        max={100}
-        step={10}
+        max={max}
+        step={step}
         className="col-span-1 justify-self-center w-32"
         onValueChange={(v) => {
           const value = v[0];
