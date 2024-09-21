@@ -25,7 +25,7 @@ import {
 import { Settings } from "lucide-react";
 import browser from "webextension-polyfill";
 
-function Header(props: { tabsList: React.ReactNode }) {
+function Header({ children }: { children: React.ReactNode }) {
   const contents: {
     title: string;
     href: string;
@@ -57,7 +57,7 @@ function Header(props: { tabsList: React.ReactNode }) {
           設定
         </h1>
         <ul className="flex items-center list-none space-x-2 mx-2">
-          <li className="mx-3">{props.tabsList}</li>
+          <li className="mx-3">{children}</li>
           {contents.map((component) => (
             <li key={component.href}>
               <TooltipProvider delayDuration={200}>

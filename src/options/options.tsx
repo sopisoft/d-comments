@@ -27,32 +27,28 @@ import Options from "./components/options";
 
 const OptionsPage = () => {
   return (
-    <>
+    <div className="grid grid-cols-1 grid-rows-[1fr,auto] min-h-screen">
       <Tabs defaultValue="options">
-        <Header
-          tabsList={
-            <TabsList className="flex space-x-4 max-md:hidden">
-              <TabsTrigger value="options">設定</TabsTrigger>
-              <TabsTrigger value="form">フォーム</TabsTrigger>
-              <TabsTrigger value="developer">開発者</TabsTrigger>
-            </TabsList>
-          }
-        />
-        <div className="min-h-screen">
-          <TabsContent value="options">
-            <Options />
-          </TabsContent>
-          <TabsContent value="form">
-            <Form />
-          </TabsContent>
-          <TabsContent value="developer">
-            <Developer />
-          </TabsContent>
-        </div>
+        <Header>
+          <TabsList className="flex space-x-4 max-md:hidden">
+            <TabsTrigger value="options">設定</TabsTrigger>
+            <TabsTrigger value="form">フォーム</TabsTrigger>
+            <TabsTrigger value="developer">開発者</TabsTrigger>
+          </TabsList>
+        </Header>
+        <TabsContent value="options">
+          <Options />
+        </TabsContent>
+        <TabsContent value="form">
+          <Form />
+        </TabsContent>
+        <TabsContent value="developer">
+          <Developer />
+        </TabsContent>
       </Tabs>
 
       <Footer />
-    </>
+    </div>
   );
 };
 
