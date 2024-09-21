@@ -15,6 +15,7 @@
     along with d-comments.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -45,6 +46,15 @@ function EditorNumber(props: {
   type value = number;
   const [value, setValue] = useState<value>(getDefaultValue(key) as value);
 
+  function save(v: number) {
+    setValue(v);
+    setConfig(key, v);
+  }
+
+  function digits(n: number) {
+    return String(n).split(".")[0].length;
+  }
+
   useEffect(() => {
     getConfig(key).then((v) => {
       setValue(v as value);
@@ -57,26 +67,55 @@ function EditorNumber(props: {
   }, [key]);
 
   return (
-    <div className="grid grid-cols-4 gap-1 justify-items-stretch items-center">
-      <Label
-        htmlFor={key}
-        className="m-2 text-sm font-medium leading-tight col-span-3"
-      >
+    <div className="gap-1 flex flex-row items-center justify-between">
+      <Label htmlFor={key} className="m-2 text-sm font-medium leading-tight">
         {text}
       </Label>
-      <Input
-        id={key}
-        type="number"
-        name={key}
-        value={value}
-        onInput={(e) => {
-          const target = e.target as HTMLInputElement;
-          const v = Number(target.value);
-          setValue(v);
-          setConfig(key, v);
-        }}
-        className="col-span-1 justify-self-center w-32"
-      />
+      <div className="flex flex-row items justify-center gap-2">
+        <Button
+          variant="outline"
+          onClick={() => {
+            save(value - 10 ** (digits(value) - 1));
+          }}
+        >
+          - {10 ** (digits(value) - 1)}
+        </Button>
+        <Button
+          variant="outline"
+          onClick={() => {
+            save(value - 10 ** (digits(value) - 2));
+          }}
+        >
+          - {10 ** (digits(value) - 2)}
+        </Button>
+        <Input
+          id={key}
+          type="number"
+          name={key}
+          value={value}
+          onInput={(e) => {
+            const target = e.target as HTMLInputElement;
+            save(Number(target.value));
+          }}
+          className="w-20"
+        />
+        <Button
+          variant="outline"
+          onClick={() => {
+            save(value + 10 ** (digits(value) - 2));
+          }}
+        >
+          + {10 ** (digits(value) - 2)}
+        </Button>
+        <Button
+          variant="outline"
+          onClick={() => {
+            save(value + 10 ** (digits(value) - 1));
+          }}
+        >
+          + {10 ** (digits(value) - 1)}
+        </Button>
+      </div>
     </div>
   );
 }
