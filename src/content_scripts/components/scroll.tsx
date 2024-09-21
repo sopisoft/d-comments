@@ -16,6 +16,7 @@
 */
 
 import { ThemeProvider } from "@/components/theme-provider";
+import { Button } from "@/components/ui/button";
 import { type config_keys, getConfig } from "@/config";
 import { find_element } from "@/lib/dom";
 import { useEffect, useRef, useState } from "react";
@@ -27,6 +28,7 @@ import {
   on_partId_change,
   on_threads_change,
 } from "../state";
+import Dialog from "./optionsDialog";
 import useAnimationFrame from "./useAnimationFrame";
 
 export function Scroll() {
@@ -47,6 +49,8 @@ export function Scroll() {
   const [textColor, setTextColor] = useState<string>();
   const [opacity, setOpacity] = useState<number>();
   const [comments, setComments] = useState<nv_comment[]>([]);
+
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   function get_item_id(vposMs: number) {
     let left = 0;
@@ -207,6 +211,10 @@ export function Scroll() {
           fontSize: `${fontSize}px`,
         }}
       >
+        <div className="flex flex-row justify-center items-center gap-4 p-4">
+          <Button onClick={() => setIsDialogOpen(true)}>設定</Button>
+          <Dialog open={isDialogOpen} onClose={() => setIsDialogOpen(false)} />
+        </div>
         <Virtuoso
           ref={virtuoso}
           data={comments}
