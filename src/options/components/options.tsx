@@ -86,6 +86,10 @@ function Options() {
               _key="channels_only"
               text="コメントをチャンネルからのみ取得"
             />
+            <EditorSwitch
+              _key="load_comments_on_next_video"
+              text="連続再生時に自動で次の動画のコメントを読み込む"
+            />
           </Card>
 
           <Card
@@ -153,10 +157,6 @@ function Options() {
               _key="nicoarea_scale"
               text="ニコニコ動画風コメントの拡大率"
               max={200}
-            />
-            <EditorSwitch
-              _key="load_comments_on_next_video"
-              text="連続再生時に自動で次の動画のコメントを読み込む"
             />
           </Card>
         </AccordionContent>

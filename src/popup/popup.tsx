@@ -16,9 +16,10 @@
 */
 
 import { ThemeProvider } from "@/components/theme-provider";
-import { Card, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Toaster } from "@/components/ui/toaster";
 import "@/index.css";
+import EditorCheckbox from "@/options/components/editor_checkbox";
 import { Settings } from "lucide-react";
 import { createContext, useState } from "react";
 import { createRoot } from "react-dom/client";
@@ -26,6 +27,7 @@ import browser from "webextension-polyfill";
 import Inputs from "./components/inputs";
 import Menu from "./components/menu";
 import Search from "./components/search_input";
+import SearchResult from "./components/search_result";
 import { isWatchPage as isWatchPageFn } from "./utils";
 
 export const VideoIdContext = createContext<{
@@ -33,47 +35,75 @@ export const VideoIdContext = createContext<{
   setVideoId: (videoId: string) => void;
 }>({ videoId: "", setVideoId: () => {} });
 
+export const SnapshotContext = createContext<{
+  snapshot: Snapshot | undefined;
+  setSnapshot: (snapshot: Snapshot | undefined) => void;
+}>({ snapshot: undefined, setSnapshot: () => {} });
+
 export const Popup = () => {
   const manifest = browser.runtime.getManifest();
   const { name, version } = manifest;
 
   const [isWatchPage, setIsWatchPage] = useState(false);
   const [videoId, _setVideoId] = useState("");
+  const [snapshot, _setSnapshot] = useState<Snapshot>();
 
   function setVideoId(video_id: string) {
     _setVideoId(video_id);
   }
 
+  function setSnapshot(snapshot: Snapshot | undefined) {
+    _setSnapshot(snapshot);
+  }
+
   isWatchPageFn().then(setIsWatchPage);
 
   return (
-    <Card className="max-w-2xl h-full overflow-hidden">
-      <CardHeader className="p-3">
-        <CardTitle className="text-lg flex justify-around items-start">
-          {name} (Version: {version})
-          {isWatchPage && (
-            <Settings
-              className="w-8 h-8 p-1 cursor-pointer rounded-md border border-solid border-transparent hover:border-gray-300 "
-              onClick={() => {
-                browser.tabs.create({
-                  url: browser.runtime.getURL("options/options.html"),
-                });
-              }}
+    <div className="w-[800px] h-[600px] grid grid-cols-2 grid-rows-2 gap-4 justify-items-stretch overflow-hidden p-3">
+      <VideoIdContext.Provider value={{ videoId, setVideoId }}>
+        <SnapshotContext.Provider value={{ snapshot, setSnapshot }}>
+          {snapshot ? (
+            <SearchResult
+              className="row-span-2 col-span-1"
+              snapshot={snapshot}
             />
+          ) : (
+            <Card className="row-span-2 col-span-1" />
           )}
-        </CardTitle>
-      </CardHeader>
-      <div className="px-3">
-        {isWatchPage ? (
-          <VideoIdContext.Provider value={{ videoId, setVideoId }}>
-            <Inputs />
-            <Search />
-          </VideoIdContext.Provider>
-        ) : (
-          <Menu />
-        )}
-      </div>
-    </Card>
+
+          <Card className="row-span-1 col-span-1">
+            <CardHeader className="flex-col items-center justify-around">
+              <CardTitle className="text-lg">{name}</CardTitle>
+              <span className="text-xs">version {version}</span>
+            </CardHeader>
+            <CardContent>
+              {isWatchPage ? (
+                <>
+                  <Inputs />
+                  <Search />
+                </>
+              ) : (
+                <p className="p-6">
+                  dアニメストアの視聴ページでご利用ください。
+                </p>
+              )}
+            </CardContent>
+          </Card>
+
+          <Card className="row-span-1 col-span-1">
+            <Menu />
+            {isWatchPage && (
+              <div className="p-4">
+                <EditorCheckbox
+                  _key="show_comments_in_list"
+                  text="コメントリストコンテナを表示"
+                />
+              </div>
+            )}
+          </Card>
+        </SnapshotContext.Provider>
+      </VideoIdContext.Provider>
+    </div>
   );
 };
 

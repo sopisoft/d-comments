@@ -228,13 +228,9 @@ export function Scroll() {
                   {comments.length === 0 && (
                     <>
                       コメントがありません
-                      <button
-                        type="button"
-                        className="bg-black text-white rounded border border-white px-2 py-1"
-                        onClick={() => setVisibility(false)}
-                      >
+                      <Button onClick={() => setVisibility(false)}>
                         閉じる
-                      </button>
+                      </Button>
                     </>
                   )}
                 </div>

@@ -16,7 +16,9 @@
 */
 
 import { useToast } from "@/components/ui/use-toast";
-import { Suspense, useContext, useEffect, useState } from "react";
+import { cn } from "@/lib/utils";
+import { MessageSquare, Play, Timer } from "lucide-react";
+import { useContext, useState } from "react";
 import { get_owner_info } from "../api/owner_info";
 import { VideoIdContext } from "../popup";
 import { ErrorMessage } from "../utils";
@@ -54,36 +56,36 @@ function Owner(props: {
     ownerInfo ? JSON.parse(ownerInfo) : null
   );
 
-  useEffect(() => {
-    if (!storage.getItem(`${key}`)) {
-      get_owner_info({
-        type: userId ? "user" : "channel",
-        ownerId: (userId ?? channelId) as string,
-      }).then((res) => {
-        if (res instanceof Error) {
-        } else {
-          setOwner(res);
-          storage.setItem(`${key}`, JSON.stringify(res));
-        }
-      });
-    }
-  });
+  if (!storage.getItem(`${key}`)) {
+    get_owner_info({
+      type: userId ? "user" : "channel",
+      ownerId: (userId ?? channelId) as string,
+    }).then((res) => {
+      if (res instanceof Error) {
+      } else {
+        setOwner(res);
+        storage.setItem(`${key}`, JSON.stringify(res));
+      }
+    });
+  }
 
   const { ownerName, ownerIconUrl } = owner ?? {};
 
   return (
-    <div className="grid grid-cols-5 gap-2 justify-center items-center m-2 h-6">
+    <div className="grid grid-cols-5 gap-2 justify-center items-center m-auto w-4/5">
       <img
         src={ownerIconUrl}
         alt={ownerName}
-        className="aspect-square size-8"
+        className="aspect-square size-6"
       />
-      <span className="col-span-4 p-0 m-0">{ownerName}</span>
+      <span className="col-span-4 p-0 m-0 mb-2 h-7 content-center overflow-scroll">
+        {ownerName}
+      </span>
     </div>
   );
 }
 
-function SearchResult(props: { snapshot: Snapshot }) {
+function SearchResult(props: { snapshot: Snapshot; className?: string }) {
   const { snapshot } = props;
   const data = snapshot.data;
 
@@ -94,7 +96,7 @@ function SearchResult(props: { snapshot: Snapshot }) {
     if (contentId === videoId) {
       const t = ErrorMessage(toast, {
         message: {
-          title: "エラー",
+          title: "入力済み",
           description: "既に入力されている動画IDです。",
         },
       });
@@ -105,51 +107,66 @@ function SearchResult(props: { snapshot: Snapshot }) {
 
   return data.length > 0 ? (
     <ul
-      className="w-full max-h-80 list-none p-0 m-0 text-base overflow-y-scroll overflow-x-hidden"
+      className={cn(
+        "w-full flex flex-col gap-1 list-none p-1 m-0 text-base overflow-y-scroll overflow-x-hidden",
+        props.className
+      )}
       aria-label="検索結果一覧 "
+      style={{
+        height: "calc(600px - 0.75 * 2rem)",
+      }}
     >
-      {data.map((item) => (
-        <li
-          onClick={() => handler(item.contentId)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") handler(item.contentId);
-          }}
-          key={item.contentId}
-          className="cursor-pointer rounded hover:bg-gray-200 border-t-2  border-gray-300"
-        >
-          <div className="flex flex-col my-1">
+      {data.map((item) => {
+        const {
+          contentId,
+          title,
+          description,
+          userId,
+          channelId,
+          thumbnailUrl,
+          viewCounter,
+          commentCounter,
+          lengthSeconds,
+        } = item;
+        return (
+          <li
+            onClick={() => handler(contentId)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") handler(contentId);
+            }}
+            key={contentId}
+            className="m-0 py-2 h-48 flex flex-col cursor-pointer rounded hover:bg-gray-200 border border-gray-300"
+          >
             <div className="flex flex-row">
-              {item.thumbnailUrl && item.title && (
+              {thumbnailUrl && title && (
                 <img
-                  src={item.thumbnailUrl}
-                  alt={item.title}
-                  className="object-cover aspect-video h-24"
+                  src={thumbnailUrl}
+                  alt={title}
+                  className="object-cover aspect-video h-20 m-1"
                 />
               )}
-              <div className="mx-2 flex flex-col">
-                <span className="font-semibold overflow-y-auto">
-                  {item.title}
-                </span>
+              <div className="mx-2 h-20 flex flex-col items-center">
+                <span className="font-semibold overflow-y-auto">{title}</span>
               </div>
             </div>
-            <Owner userId={item.userId} channelId={item.channelId} />
-            <table className="table-auto">
-              <tr>
-                <td>再生数</td>
-                <td>{item.viewCounter}</td>
-              </tr>
-              <tr>
-                <td>コメント数</td>
-                <td>{item.commentCounter}</td>
-              </tr>
-              <tr>
-                <td>動画の尺</td>
-                <td>{video_length(item.lengthSeconds)}</td>
-              </tr>
-            </table>
-          </div>
-        </li>
-      ))}
+            <Owner userId={userId} channelId={channelId} />
+            <div className="m-auto text-sm grid grid-cols-3 gap-2 w-4/5">
+              <span className="col-span-1 flex flex-row items-center justify-center gap-2">
+                <Play className="w-4 h-4" />
+                {viewCounter}
+              </span>
+              <span className="col-span-1 flex flex-row items-center justify-center gap-2">
+                <MessageSquare className="w-4 h-4" />
+                {commentCounter}
+              </span>
+              <span className="col-span-1 flex flex-row items-center justify-center gap-2">
+                <Timer className="w-4 h-4" />
+                {video_length(lengthSeconds)}
+              </span>
+            </div>
+          </li>
+        );
+      })}
     </ul>
   ) : (
     <div>キーワードに一致する結果が見つかりませんでした</div>

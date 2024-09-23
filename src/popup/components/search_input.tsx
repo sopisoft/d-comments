@@ -26,16 +26,16 @@ import {
 import { useToast } from "@/components/ui/use-toast";
 import { getConfig } from "@/config";
 import { SearchIcon } from "lucide-react";
-import { createRef, useEffect, useState } from "react";
+import { createRef, useContext, useEffect, useState } from "react";
 import browser from "webextension-polyfill";
 import search from "../api/search";
+import { SnapshotContext } from "../popup";
 import { ErrorMessage } from "../utils";
-import SearchResult from "./search_result";
 
 function Search() {
   const ref = createRef<HTMLInputElement>();
   const [word, setWord] = useState<searchApi["data"]["word"]>("");
-  const [snapshot, setSnapshot] = useState<Snapshot>();
+  const { setSnapshot } = useContext(SnapshotContext);
   const { toast } = useToast();
 
   async function get_tabs_title() {
@@ -102,17 +102,15 @@ function Search() {
 
         <Button
           variant="outline"
-          className="grid items-center gap-1.5 grid-cols-3 w-32"
+          className="col-span-2 flex justify-center items-center"
           aria-label="検索ボタン"
           role="button"
           onClick={on_search_button_click}
         >
           <SearchIcon className="w-5 h-5 mr-2" />
-          <span className="col-span-2">検索</span>
+          検索
         </Button>
       </div>
-
-      {snapshot && <SearchResult snapshot={snapshot} />}
     </>
   );
 }
