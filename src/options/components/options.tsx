@@ -219,18 +219,26 @@ function Options() {
       <AccordionItem value="addons">
         <AccordionTrigger>
           <span className="flex items-center gap-4">
-            <Blocks /> アドオン
+            <Blocks /> アドオン / べんり機能
           </span>
         </AccordionTrigger>
         <AccordionContent>
           <Card title="作品ページ" description="作品ページの設定です。">
             <EditorSwitch
-              _key="add_button_to_show_comments_while_playing"
-              text="作品ページに「コメントを表示しながら再生」ボタンを追加する"
+              _key="enable_addon_add_button_to_play"
+              text="作品ページに「新しいタブで再生」「現在のタブで再生」ボタンを追加する"
             />
             <EditorSwitch
-              _key="make_play_button_open_new_tab"
-              text="「コメントを表示しながら再生」ボタンでは新しいタブで開く"
+              _key="enable_addon_smooth_player"
+              text="Firefoxで再生開始後やシーク移動後に、映像が止まり音声だけが流れるのを防ぐ"
+            />
+            <EditorSwitch
+              _key="enable_addon_disable_new_window"
+              text="作品の視聴を開始するときに新しいウィンドウが作成されるのを防ぐ"
+            />
+            <EditorSwitch
+              _key="addon_option_play_in_same_tab"
+              text="新しいウィンドウを作らない設定が有効のとき、同じタブで再生する"
             />
           </Card>
         </AccordionContent>

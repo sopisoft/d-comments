@@ -20,14 +20,16 @@ import { openHowToUseIfNotRead } from "@/how_to_use/how_to_use";
 import api from "@/lib/api";
 import { find_element } from "@/lib/dom";
 import browser from "webextension-polyfill";
+import { addon_disable_new_window } from "./addons/disable_new_window";
+import { addMenu } from "./addons/mypage";
+import { smooth_player } from "./addons/smooth_player";
 import get_threads from "./api/thread_data";
 import get_video_data from "./api/video_data";
 import { ngFilter } from "./comments";
 import initRenderer from "./components/canvas";
 import overlay from "./components/overlay";
 import wrap from "./components/wrapper";
-import { addMenu } from "./danime/mypage";
-import { setWorkInfo, smooth_player } from "./danime/watch";
+import { setWorkInfo } from "./danime/watch";
 import exportJson from "./export";
 import {
   partId as getPartId,
@@ -80,11 +82,17 @@ async function auto_play() {
 }
 
 switch (url.pathname) {
-  case "/animestore/ci_pc":
-    getConfig("add_button_to_show_comments_while_playing", (value) => {
+  case "/animestore/ci_pc": {
+    getConfig("enable_addon_add_button_to_play", (value) => {
       if (value) addMenu();
+    }).then(() => {
+      // "disable_new_window" が Anchor の href を削除するため、一番最後に実行する
+      getConfig("enable_addon_disable_new_window", (value) => {
+        if (value) addon_disable_new_window();
+      });
     });
     break;
+  }
   case "/animestore/sc_d_pc": {
     // ページの読み込みが完了するまで待機
     await find_element("body");
@@ -127,6 +135,10 @@ switch (url.pathname) {
     });
 
     if (await getConfig("enable_auto_play")) await auto_play();
+
+    getConfig("enable_addon_smooth_player", (value) => {
+      if (value) smooth_player();
+    });
 
     break;
   }

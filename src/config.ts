@@ -68,20 +68,6 @@ function get_default_configs() {
       value: true as boolean,
       type: "checkbox",
     },
-    add_button_to_show_comments_while_playing: {
-      value: true as boolean,
-      type: "switch",
-    },
-    make_play_button_open_new_tab: {
-      value: true as boolean,
-      type: "switch",
-      bindings: [
-        {
-          key: "add_button_to_show_comments_while_playing",
-          value: true,
-        },
-      ],
-    },
     show_owner_comments: {
       value: false as boolean,
       type: "checkbox",
@@ -109,6 +95,22 @@ function get_default_configs() {
     comment_ng_users: {
       value: [] as { key: string; value: string; enabled: boolean }[],
       type: "text_list",
+    },
+    enable_addon_smooth_player: {
+      value: true as boolean,
+      type: "switch",
+    },
+    enable_addon_disable_new_window: {
+      value: false as boolean,
+      type: "switch",
+    },
+    enable_addon_add_button_to_play: {
+      value: true as boolean,
+      type: "switch",
+    },
+    addon_option_play_in_same_tab: {
+      value: true as boolean,
+      type: "switch",
     },
   } as const;
 }
