@@ -26,7 +26,7 @@ import {
 import { useToast } from "@/components/ui/use-toast";
 import api from "@/lib/api";
 import { ExternalLink, Play } from "lucide-react";
-import { useContext, useEffect } from "react";
+import { useContext } from "react";
 import export_comments_json from "../../content_scripts/export";
 import { VideoIdContext } from "../popup";
 import { ErrorMessage, isVideoId } from "../utils";

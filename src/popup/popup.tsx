@@ -20,7 +20,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Toaster } from "@/components/ui/toaster";
 import "@/index.css";
 import EditorCheckbox from "@/options/components/editor_checkbox";
-import { Settings } from "lucide-react";
 import { createContext, useState } from "react";
 import { createRoot } from "react-dom/client";
 import browser from "webextension-polyfill";

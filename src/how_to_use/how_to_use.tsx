@@ -15,14 +15,14 @@
     along with d-comments.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-import React from "react";
 import "@/index.css";
 import "./how_to_use.css";
 import "github-markdown-css";
 import { ArrowUp, CircleX } from "lucide-react";
+import React from "react";
 import { createRoot } from "react-dom/client";
 import { find_elements } from "../lib/dom";
-// @ts-ignore
+/// @ts-expect-error
 import { html, toc } from "./how_to_use.md";
 
 type Toc = {
