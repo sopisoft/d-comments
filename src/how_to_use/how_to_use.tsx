@@ -50,7 +50,7 @@ function decode(str: string) {
 const HowToUse = () => {
   return (
     <div className="container flex flex-row gap-4">
-      <Card className="p-0 max-w-[30rem] h-[80vh] overflow-auto sticky top-[calc(50vh-40vh)] select-none">
+      <Card className="p-0 max-w-[30rem] h-[80vh] overflow-auto sticky top-[calc(50vh-40vh)] select-none hidden lg:block">
         <CardHeader>
           <CardTitle>目次</CardTitle>
         </CardHeader>

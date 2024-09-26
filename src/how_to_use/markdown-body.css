@@ -20,4 +20,8 @@
     border-radius: 0.5rem;
     border: 1px solid #e1e4e8;
   }
+
+  ol {
+    list-style: decimal;
+  }
 }
