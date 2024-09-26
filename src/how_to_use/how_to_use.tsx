@@ -17,7 +17,8 @@
 
 import "@/index.css";
 import "github-markdown-css";
-import { ArrowUp, CircleX } from "lucide-react";
+import "./markdown-body.css";
+import { ArrowUp } from "lucide-react";
 import React from "react";
 import { createRoot } from "react-dom/client";
 import {
