@@ -27,48 +27,16 @@ import {
 } from "../state";
 
 const canvas_id = "d-comments-canvas";
-
-export class Interval {
-  private id: number | null;
-  private last = 0;
-  private fps: number;
-  private callback: () => void;
-  constructor(fps: number, callback: () => void) {
-    this.id = null;
-    this.fps = fps;
-    this.callback = callback;
-  }
-  start() {
-    if (this.id) return;
-    const loop = (timestamp: number) => {
-      const delta = timestamp - this.last;
-      if (delta > 1000 / this.fps) {
-        this.callback();
-        this.last = timestamp;
-      }
-      this.id = requestAnimationFrame(loop);
-    };
-    this.id = requestAnimationFrame(loop);
-  }
-  stop() {
-    if (!this.id) return;
-    cancelAnimationFrame(this.id);
-    this.id = null;
-  }
-  changeFPS(fps: number) {
-    this.fps = fps;
-    this.stop();
-    this.start();
-  }
-}
-
 export class Renderer {
-  private canvas: HTMLCanvasElement;
-  private video: HTMLVideoElement;
+  readonly canvas: HTMLCanvasElement;
+  readonly video: HTMLVideoElement;
   private NiconiComments: NiconiComments;
   private options: Options;
   private threads: V1Thread[];
-  private interval: Interval;
+  private req: number | null = null;
+  private last = 0;
+  private fps = 60;
+
   constructor(
     canvas: HTMLCanvasElement,
     video: HTMLVideoElement,
@@ -80,9 +48,6 @@ export class Renderer {
     this.NiconiComments = new NiconiComments(canvas, threads, options);
     this.threads = threads;
     this.options = options;
-    this.interval = new Interval(60, () => {
-      this.render();
-    });
   }
   start() {
     this.NiconiComments = new NiconiComments(
@@ -90,13 +55,17 @@ export class Renderer {
       this.threads,
       this.options
     );
-    this.interval.start();
+    this.req = requestAnimationFrame(this.render.bind(this));
   }
-  private render() {
-    this.NiconiComments.drawCanvas(Math.floor(this.video.currentTime * 100));
-    if (this.options.format !== "v1") {
-      console.error("format should be v1");
+  private render(timestamp: number) {
+    if (timestamp - this.last < 1000 / this.fps) {
+      this.req = requestAnimationFrame(this.render.bind(this));
+      return;
     }
+
+    this.NiconiComments.drawCanvas(Math.floor(this.video.currentTime * 100));
+    this.last = timestamp;
+    this.req = requestAnimationFrame(this.render.bind(this));
   }
   setThread(threads: V1Thread[]) {
     this.threads = threads;
@@ -111,7 +80,9 @@ export class Renderer {
   }
   destroy() {
     this.NiconiComments.clear();
-    this.interval.stop();
+    this.req && cancelAnimationFrame(this.req);
+    this.req = null;
+    this.last = 0;
   }
 }
 
