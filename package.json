@@ -16,8 +16,9 @@
     "format": "bunx @biomejs/biome format --write .",
     "lint": "bunx @biomejs/biome check --write ."
   },
-  "packageManager": "bun@1.1.27",
+  "packageManager": "bun@1.1.29",
   "dependencies": {
+    "@radix-ui/react-accordion": "^1.2.0",
     "@radix-ui/react-checkbox": "^1.1.1",
     "@radix-ui/react-dropdown-menu": "^2.1.1",
     "@radix-ui/react-label": "^2.1.0",
@@ -32,7 +33,7 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "github-markdown-css": "^5.6.1",
-    "lucide-react": "^0.441.0",
+    "lucide-react": "^0.446.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-virtuoso": "^4.10.4",
@@ -43,18 +44,18 @@
   "devDependencies": {
     "@biomejs/biome": "latest",
     "@types/bun": "latest",
-    "@types/node": "^22.5.5",
-    "@types/react": "^18.3.6",
+    "@types/node": "^22.7.0",
+    "@types/react": "^18.3.9",
     "@types/react-dom": "^18.3.0",
     "@types/webextension-polyfill": "^0.12.1",
     "@vitejs/plugin-react-swc": "^3.7.0",
     "autoprefixer": "^10.4.20",
     "postcss": "^8.4.47",
-    "tailwindcss": "^3.4.11",
+    "tailwindcss": "^3.4.13",
     "terser": "latest",
     "typescript": "^5.6.2",
-    "vite": "^5.4.6",
+    "vite": "^5.4.8",
     "vite-plugin-markdown": "^2.2.0",
-    "web-ext": "^8.2.0"
+    "web-ext": "^8.3.0"
   }
 }

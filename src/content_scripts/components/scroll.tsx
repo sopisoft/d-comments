@@ -16,8 +16,10 @@
 */
 
 import { ThemeProvider } from "@/components/theme-provider";
+import { Button } from "@/components/ui/button";
 import { type config_keys, getConfig } from "@/config";
 import { find_element } from "@/lib/dom";
+import { MessageSquare, Settings } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Virtuoso, type VirtuosoHandle } from "react-virtuoso";
 import browser from "webextension-polyfill";
@@ -27,6 +29,7 @@ import {
   on_partId_change,
   on_threads_change,
 } from "../state";
+import Dialog from "./optionsDialog";
 import useAnimationFrame from "./useAnimationFrame";
 
 export function Scroll() {
@@ -47,6 +50,8 @@ export function Scroll() {
   const [textColor, setTextColor] = useState<string>();
   const [opacity, setOpacity] = useState<number>();
   const [comments, setComments] = useState<nv_comment[]>([]);
+
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   function get_item_id(vposMs: number) {
     let left = 0;
@@ -196,7 +201,6 @@ export function Scroll() {
     <ThemeProvider>
       <div
         className="flex flex-col h-full max-h-svh"
-        ref={parent}
         style={{
           display: visibility ? "block" : "none",
           backgroundColor: bgColor,
@@ -207,56 +211,65 @@ export function Scroll() {
           fontSize: `${fontSize}px`,
         }}
       >
-        <Virtuoso
-          ref={virtuoso}
-          data={comments}
-          className="w-full h-full"
-          components={{
-            Header: () => {
-              return (
-                <div
-                  className={`flex flex-row justify-center items-center gap-4 ${comments.length === 0 ? "p-4 text-center" : "hidden"}`}
-                >
-                  {comments.length === 0 && (
-                    <>
-                      コメントがありません
-                      <button
-                        type="button"
-                        className="bg-black text-white rounded border border-white px-2 py-1"
-                        onClick={() => setVisibility(false)}
-                      >
-                        閉じる
-                      </button>
-                    </>
-                  )}
-                </div>
-              );
-            },
-            Footer: () => {
-              return (
-                <div
-                  className={comments.length > 0 ? "p-4 text-center" : "hidden"}
-                >
-                  {comments.length > 0 && "最後のコメントです"}
-                </div>
-              );
-            },
-          }}
-          itemContent={(index, comment) => (
-            <span
-              key={index}
-              data-vpos={comment?.vposMs}
-              style={{
-                display: "block",
-                width: "100%",
-                padding: "0.3rem",
-                borderBottom: "1px solid #ccc",
-              }}
-            >
-              {comment?.body}
-            </span>
+        <div className="flex flex-row justify-around items-center gap-4 p-1 border-b border-gray-300">
+          {comments.length > 0 && (
+            <div className="flex flex-row items-center gap-2">
+              <MessageSquare className="size-4" />
+              {comments.length}
+            </div>
           )}
-        />
+          <Button
+            className="p-2 aspect-square"
+            onClick={() => setIsDialogOpen(true)}
+          >
+            <Settings className="size-4" />
+          </Button>
+          <Dialog open={isDialogOpen} onClose={() => setIsDialogOpen(false)} />
+        </div>
+        <div ref={parent} className="w-full h-full">
+          <Virtuoso
+            ref={virtuoso}
+            data={comments}
+            components={{
+              Header: () => {
+                return (
+                  <div
+                    className={`flex flex-row justify-center items-center gap-4 ${comments.length === 0 ? "p-4 text-center" : "hidden"}`}
+                  >
+                    {comments.length === 0 && (
+                      <>
+                        コメントがありません
+                        <Button onClick={() => setVisibility(false)}>
+                          閉じる
+                        </Button>
+                      </>
+                    )}
+                  </div>
+                );
+              },
+              Footer: () => {
+                return (
+                  <div
+                    className={
+                      comments.length > 0 ? "p-4 text-center" : "hidden"
+                    }
+                  >
+                    {comments.length > 0 && "最後のコメントです"}
+                  </div>
+                );
+              },
+            }}
+            itemContent={(index, comment) => (
+              <span
+                key={index}
+                data-vpos={comment?.vposMs}
+                className="block w-full p-1 border-b border-gray-300"
+              >
+                {comment?.body}
+              </span>
+            )}
+          />
+        </div>
       </div>
     </ThemeProvider>
   );

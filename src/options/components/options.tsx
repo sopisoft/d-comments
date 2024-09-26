@@ -16,139 +16,234 @@
 */
 
 import {
-  Card,
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import {
+  Card as CardComponent,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
-import Editor from "./editor";
+import {
+  Blocks,
+  Eye,
+  MessageSquareOff,
+  MessageSquareText,
+  PanelTop,
+  SlidersHorizontal,
+} from "lucide-react";
+import EditorCheckbox from "./editor_checkbox";
+import EditorColor from "./editor_color";
+import EditorNumber from "./editor_number";
+import EditorSlider from "./editor_slider";
+import EditorSwitch from "./editor_switch";
+import EditorTextList from "./editor_text_list";
+
+const Card = ({
+  title,
+  description,
+  children,
+}: {
+  title: string;
+  description: string;
+  children: React.ReactNode;
+}) => {
+  return (
+    <CardComponent className="m-4 border-2 border-gray-200">
+      <CardHeader>
+        <CardTitle>{title}</CardTitle>
+        <CardDescription>{description}</CardDescription>
+      </CardHeader>
+      <CardContent className="grid gap-4 m-auto">{children}</CardContent>
+    </CardComponent>
+  );
+};
 
 function Options() {
-  const CardWrapper = (props: {
-    title: string;
-    description: string;
-    content: React.ReactNode;
-  }) => {
-    const { title, description, content } = props;
-    return (
-      <Card className="m-4 w-[32rem] border-2 border-gray-200">
-        <CardHeader>
-          <CardTitle>{title}</CardTitle>
-          <CardDescription>{description}</CardDescription>
-        </CardHeader>
-        <CardContent className="grid gap-4 m-auto">{content}</CardContent>
-      </Card>
-    );
-  };
-
   return (
-    <div className="flex flex-wrap justify-center after:content-[''] after:block after:w-[32rem] after:m-4">
-      <CardWrapper
-        title="基本設定"
-        description=""
-        content={
-          <>
-            <Editor _key="enable_auto_play" />
-            <Separator />
-            <Editor _key="channels_only" />
-          </>
-        }
-      />
+    <Accordion
+      type="single"
+      collapsible
+      className="flex flex-col m-auto p-4 max-w-4xl w-full"
+    >
+      <AccordionItem value="auto_search">
+        <AccordionTrigger>
+          <span className="flex items-center gap-4">
+            <SlidersHorizontal /> 基本設定
+          </span>
+        </AccordionTrigger>
+        <AccordionContent>
+          <Card title="基本設定" description="">
+            <EditorSwitch
+              _key="enable_auto_play"
+              text="自動で動画検索/再生を開始する"
+            />
+            <EditorCheckbox
+              _key="channels_only"
+              text="コメントをチャンネルからのみ取得"
+            />
+            <EditorSwitch
+              _key="load_comments_on_next_video"
+              text="連続再生時に自動で次の動画のコメントを読み込む"
+            />
+          </Card>
 
-      <CardWrapper
-        title="ポップアップ"
-        description="拡張機能のアイコンをクリックすると表示される、ポップアップページの設定です。"
-        content={<Editor _key="auto_search" />}
-      />
+          <Card
+            title="ニコニコ動画へのログイン"
+            description="詳細は「つかいかた」をご覧ください。"
+          >
+            <EditorSwitch
+              _key="allow_login_to_nicovideo"
+              text="ニコニコ動画へのログインを許可する"
+            />
+          </Card>
+        </AccordionContent>
+      </AccordionItem>
 
-      <CardWrapper
-        title="作品ページ"
-        description="作品ページの設定です。"
-        content={
-          <>
-            <Editor _key="add_button_to_show_comments_while_playing" />
-            <Separator />
-            <Editor _key="make_play_button_open_new_tab" />
-          </>
-        }
-      />
+      <AccordionItem value="style">
+        <AccordionTrigger>
+          <span className="flex items-center gap-4">
+            <Eye /> みため / スタイル
+          </span>
+        </AccordionTrigger>
+        <AccordionContent>
+          <Card
+            title="コメント欄の色"
+            description="コメント欄の色を設定します。"
+          >
+            <EditorColor
+              _key="comment_area_background_color"
+              text="コメント欄の背景色"
+            />
+            <EditorSlider
+              _key="comment_area_opacity_percentage"
+              text="コメント欄の不透明度"
+            />
+            <EditorColor _key="comment_text_color" text="コメントの文字色" />
+          </Card>
 
-      <CardWrapper
-        title="コメントの種類"
-        description="表示するコメントの種類を選択します。"
-        content={
-          <>
-            <Editor _key="show_owner_comments" />
-            <Separator />
-            <Editor _key="show_main_comments" />
-            <Separator />
-            <Editor _key="show_easy_comments" />
-          </>
-        }
-      />
+          <Card
+            title="コメントの表示方法"
+            description="コメントの表示方法を設定します。"
+          >
+            <EditorCheckbox
+              _key="show_comments_in_list"
+              text="コメントをリスト形式で表示"
+            />
+            <EditorCheckbox
+              _key="show_comments_in_niconico_style"
+              text="コメントをニコニコ動画風に表示"
+            />
+          </Card>
 
-      <CardWrapper
-        title="ニコニコ動画へのログイン"
-        description="詳細は「つかいかた」をご覧ください。"
-        content={<Editor _key="allow_login_to_nicovideo" />}
-      />
+          <Card title="視聴ページ" description="作品視聴ページの設定です。">
+            <EditorSwitch
+              _key="enable_auto_scroll"
+              text="コメント欄を自動スクロールする"
+            />
+            <EditorNumber
+              _key="comment_area_width_px"
+              text="コメント欄の幅 (px)"
+            />
+            <EditorNumber
+              _key="comment_area_font_size_px"
+              text="コメント欄の文字サイズ (px)"
+            />
+            <EditorSlider
+              _key="nicoarea_scale"
+              text="ニコニコ動画風コメントの拡大率"
+              max={200}
+            />
+          </Card>
+        </AccordionContent>
+      </AccordionItem>
 
-      <CardWrapper
-        title="視聴ページ"
-        description="作品視聴ページの設定です。"
-        content={
-          <>
-            <Editor _key="enable_auto_scroll" />
-            <Separator />
-            <Editor _key="comment_area_width_px" />
-            <Separator />
-            <Editor _key="comment_area_font_size_px" />
-            <Separator />
-            <Editor _key="nicoarea_scale" />
-            <Separator />
-            <Editor _key="load_comments_on_next_video" />
-          </>
-        }
-      />
+      <AccordionItem value="comments">
+        <AccordionTrigger>
+          <span className="flex items-center gap-4">
+            <MessageSquareText /> コメントの種類
+          </span>
+        </AccordionTrigger>
+        <AccordionContent>
+          <Card
+            title="コメントの種類"
+            description="表示するコメントの種類を選択します。"
+          >
+            <EditorCheckbox _key="show_owner_comments" text="投稿者コメント" />
+            <EditorCheckbox _key="show_main_comments" text="通常コメント" />
+            <EditorCheckbox _key="show_easy_comments" text="かんたんコメント" />
+          </Card>
+        </AccordionContent>
+      </AccordionItem>
 
-      <CardWrapper
-        title="コメント欄の色"
-        description="コメント欄の色を設定します。"
-        content={
-          <>
-            <Editor _key="comment_area_background_color" />
-            <Separator />
-            <Editor _key="comment_area_opacity_percentage" />
-            <Separator />
-            <Editor _key="comment_text_color" />
-          </>
-        }
-      />
+      <AccordionItem value="ng">
+        <AccordionTrigger>
+          <span className="flex items-center gap-4">
+            <MessageSquareOff /> NG設定
+          </span>
+        </AccordionTrigger>
+        <AccordionContent>
+          <Card
+            title="コメントのNG"
+            description="コメント欄に表示しないユーザー名やワードを設定します。正規表現も使用できます。"
+          >
+            <EditorTextList _key="comment_ng_words" text="NGワード" />
+            <EditorTextList _key="comment_ng_users" text="NGユーザー" />
+          </Card>
+        </AccordionContent>
+      </AccordionItem>
 
-      <CardWrapper
-        title="コメントの表示方法"
-        description="コメントの表示方法を設定します。"
-        content={
-          <>
-            <Editor _key="show_comments_in_list" />
-            <Editor _key="show_comments_in_niconico_style" />
-          </>
-        }
-      />
+      <AccordionItem value="popup">
+        <AccordionTrigger>
+          <span className="flex items-center gap-4">
+            <PanelTop /> ポップアップ
+          </span>
+        </AccordionTrigger>
+        <AccordionContent>
+          <Card
+            title="ポップアップ"
+            description="拡張機能のアイコンをクリックすると表示される、ポップアップページの設定です。"
+          >
+            <EditorSwitch
+              _key="auto_search"
+              text="ポップアップを開いたとき自動で動画検索を開始する"
+            />
+          </Card>
+        </AccordionContent>
+      </AccordionItem>
 
-      <CardWrapper
-        title="コメントのNGユーザー/NGワード"
-        description="コメント欄に表示されないユーザー名やワードを設定します。正規表現も使用できます。"
-        content={
-          <>
-            <Editor _key="comment_ng_words" />
-            <Editor _key="comment_ng_users" />
-          </>
-        }
-      />
-    </div>
+      <AccordionItem value="addons">
+        <AccordionTrigger>
+          <span className="flex items-center gap-4">
+            <Blocks /> アドオン / べんり機能
+          </span>
+        </AccordionTrigger>
+        <AccordionContent>
+          <Card title="作品ページ" description="作品ページの設定です。">
+            <EditorSwitch
+              _key="enable_addon_add_button_to_play"
+              text="作品ページに「新しいタブで再生」「現在のタブで再生」ボタンを追加する"
+            />
+            <EditorSwitch
+              _key="enable_addon_smooth_player"
+              text="Firefoxで再生開始後やシーク移動後に、映像が止まり音声だけが流れるのを防ぐ"
+            />
+            <EditorSwitch
+              _key="enable_addon_disable_new_window"
+              text="作品の視聴を開始するときに新しいウィンドウが作成されるのを防ぐ"
+            />
+            <EditorSwitch
+              _key="addon_option_play_in_same_tab"
+              text="新しいウィンドウを作らない設定が有効のとき、同じタブで再生する"
+            />
+          </Card>
+        </AccordionContent>
+      </AccordionItem>
+    </Accordion>
   );
 }
 

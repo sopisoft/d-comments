@@ -22,7 +22,9 @@ import { find_elements } from "@/lib/dom";
  * 作品ページの各パートに新しいタブで開くボタンを追加する
  */
 export const addMenu = async () => {
-  const a_array = await find_elements(".itemModule.list a");
+  console.log("addon_addMenu");
+
+  const a_array = await find_elements("section.clearfix > a");
 
   for (const item of a_array) {
     const partID = item?.getAttribute("href")?.replace(/[^0-9]/g, "");
@@ -55,12 +57,9 @@ export const addMenu = async () => {
       break;
     }
 
-    getConfig("make_play_button_open_new_tab").then((config) => {
-      a.textContent =
-        config === true
-          ? "新しいタブでコメントを表示しながら再生"
-          : "現在のタブでコメントを表示しながら再生";
-      a.target = config === true ? "_blank" : "_self";
+    getConfig("addon_option_play_in_same_tab").then((config) => {
+      a.textContent = config === true ? "現在のタブで開く" : "新しいタブで開く";
+      a.target = config === true ? "_self" : "_blank";
       a.addEventListener("click", (e) => {
         e.preventDefault();
         e.stopPropagation();

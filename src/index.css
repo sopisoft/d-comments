@@ -15,8 +15,8 @@
     along with d-comments.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@100..900&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Noto+Color+Emoji&family=Noto+Sans+JP:wght@100..900&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@100..900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Noto+Color+Emoji&family=Noto+Sans+JP:wght@100..900&display=swap");
 
 @tailwind base;
 @tailwind components;
@@ -91,6 +91,15 @@
     font-style: normal;
   }
 
+  html:has(dialog[open]) {
+    /* 背景のスクロール禁止 */
+    overflow: hidden;
+  }
+
+  dialog[open]::backdrop {
+    backdrop-filter: blur(5px);
+  }
+
   body {
     font-family: "Noto Sans JP", "Noto Color Emoji", sans-serif !important;
     font-optical-sizing: auto;
@@ -110,30 +119,30 @@
 
 @layer base {
   h1 {
-    @apply scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl
+    @apply scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl;
   }
 
   h2 {
-    @apply scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight first:mt-0
+    @apply scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight first:mt-0;
   }
 
   h3 {
-    @apply scroll-m-20 text-2xl font-semibold tracking-tight
+    @apply scroll-m-20 text-2xl font-semibold tracking-tight;
   }
 
   h4 {
-    @apply scroll-m-20 text-xl font-semibold tracking-tight
+    @apply scroll-m-20 text-xl font-semibold tracking-tight;
   }
 
   p {
-    @apply leading-7 [&:not(:first-child)]:mt-6
+    @apply leading-7 [&:not(:first-child)]:mt-6;
   }
 
   blockquote {
-    @apply mt-6 border-l-2 pl-6 italic
+    @apply mt-6 border-l-2 pl-6 italic;
   }
 
   ul {
-    @apply my-6 ml-6 list-disc [&>li]:mt-2
+    @apply my-6 ml-6 list-disc [&>li]:mt-2;
   }
 }

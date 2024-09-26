@@ -27,7 +27,10 @@ export const isWatchPage = async (location?: Tabs.Tab["url"] | URL) => {
     currentWindow: true,
   });
   const url = new URL(location ?? tabs[0]?.url ?? "");
-  return url.pathname === "/animestore/sc_d_pc";
+  return (
+    url.hostname === "animestore.docomo.ne.jp" &&
+    url.pathname === "/animestore/sc_d_pc"
+  );
 };
 
 export const isVideoId = (id: string) => {

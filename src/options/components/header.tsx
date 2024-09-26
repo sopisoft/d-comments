@@ -25,7 +25,7 @@ import {
 import { Settings } from "lucide-react";
 import browser from "webextension-polyfill";
 
-function Header(props: { tabsList: React.ReactNode }) {
+function Header({ children }: { children: React.ReactNode }) {
   const contents: {
     title: string;
     href: string;
@@ -50,37 +50,35 @@ function Header(props: { tabsList: React.ReactNode }) {
   ];
 
   return (
-    <header className="flex items-center justify-between w-full px-4 py-2 border-b border-gray-200">
-      <div className="flex items-center space-x-4 basis-[calc(100%-10rem)]">
-        <Settings className="w-10 h-10 max-md:w-4 maxmd:h-4" />
-        <h1 className="scroll-m-20 text-3xl font-semibold tracking-tight max-md:text-base">
-          設定
-        </h1>
-        <ul className="flex items-center list-none space-x-2 mx-2">
-          <li className="mx-3">{props.tabsList}</li>
-          {contents.map((component) => (
-            <li key={component.href}>
-              <TooltipProvider delayDuration={200}>
-                <Tooltip>
-                  <TooltipTrigger>
-                    <a
-                      href={component.href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center p-2 border rounded-md border-gray-300"
-                    >
-                      <p>{component.title}</p>
-                    </a>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>{component.description}</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            </li>
-          ))}
-        </ul>
-      </div>
+    <header className="flex items-center justify-center  space-x-4 max-w-4xl px-4 py-2 m-auto border-b border-gray-200">
+      <Settings className="w-10 h-10 max-md:w-4 maxmd:h-4" />
+      <h1 className="scroll-m-20 text-3xl font-semibold tracking-tight max-md:text-base">
+        設定
+      </h1>
+      {children}
+      <ul className="flex items-center list-none space-x-2 mx-2">
+        {contents.map((component) => (
+          <li key={component.href} className="m-0">
+            <TooltipProvider delayDuration={200}>
+              <Tooltip>
+                <TooltipTrigger>
+                  <a
+                    href={component.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center p-2 border rounded-md border-gray-300"
+                  >
+                    <p>{component.title}</p>
+                  </a>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>{component.description}</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </li>
+        ))}
+      </ul>
       <ModeToggle />
     </header>
   );

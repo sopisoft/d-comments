@@ -21,7 +21,7 @@ let opend: boolean | undefined = false;
 
 export async function openHowToUseIfNotRead() {
   const read_flag_key = "read_how_to_use";
-  const latest_how_to_use_version = "1.0.0";
+  const latest_how_to_use_version = "1.0.1";
 
   const isHowToUseRead: boolean =
     (await browser.storage.local.get(read_flag_key))[read_flag_key] ===

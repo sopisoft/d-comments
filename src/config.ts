@@ -23,118 +23,99 @@ function get_default_configs() {
     enable_auto_play: {
       value: false as boolean,
       type: "switch",
-      text: "自動で動画検索/再生を開始する",
     },
     auto_search: {
       value: false as boolean,
       type: "switch",
-      text: "ポップアップを開いたとき自動で動画検索を開始する",
     },
     enable_auto_scroll: {
       value: true as boolean,
       type: "switch",
-      text: "コメント欄の自動スクロール",
     },
     comment_area_width_px: {
       value: 600 as number,
       type: "number",
-      text: "コメント欄の幅 (px)",
     },
     comment_area_font_size_px: {
       value: 16 as number,
       type: "number",
-      text: "コメント欄の文字サイズ (px)",
     },
     nicoarea_scale: {
       value: 100 as number,
       type: "slider",
-      text: "ニコニコ動画風コメントの拡大率",
     },
     load_comments_on_next_video: {
       value: true as boolean,
       type: "switch",
-      text: "連続再生時に自動で次の動画のコメントを読み込む",
     },
     comment_area_background_color: {
       value: "#000000" as string,
       type: "color",
-      text: "コメント欄の背景色",
     },
     comment_area_opacity_percentage: {
       value: 95 as number,
       type: "slider",
-      text: "コメント欄の不透明度 (%)",
     },
     comment_text_color: {
       value: "#FFFFFF" as string,
       type: "color",
-      text: "コメントの文字色",
     },
     show_comments_in_list: {
       value: true as boolean,
       type: "checkbox",
-      text: "リスト表示",
     },
     show_comments_in_niconico_style: {
       value: true as boolean,
       type: "checkbox",
-      text: "ニコニコ動画風",
-    },
-    add_button_to_show_comments_while_playing: {
-      value: true as boolean,
-      type: "switch",
-      text: "作品ページに「コメントを表示しながら再生」ボタンを追加する",
-    },
-    make_play_button_open_new_tab: {
-      value: true as boolean,
-      type: "switch",
-      text: "「コメントを表示しながら再生」ボタンでは新しいタブで開く",
-      bindings: [
-        {
-          key: "add_button_to_show_comments_while_playing",
-          value: true,
-        },
-      ],
     },
     show_owner_comments: {
       value: false as boolean,
       type: "checkbox",
-      text: "投稿者コメント",
     },
     show_main_comments: {
       value: true as boolean,
       type: "checkbox",
-      text: "通常コメント",
     },
     show_easy_comments: {
       value: false as boolean,
       type: "checkbox",
-      text: "かんたんコメント",
     },
     channels_only: {
       value: true as boolean,
       type: "checkbox",
-      text: "コメントをチャンネルからのみ取得",
     },
     allow_login_to_nicovideo: {
       value: false as boolean,
       type: "switch",
-      text: "ニコニコ動画へのログインを許可する",
     },
     comment_ng_words: {
       value: [] as { key: string; value: string; enabled: boolean }[],
       type: "text_list",
-      text: "コメントNGワード",
     },
     comment_ng_users: {
       value: [] as { key: string; value: string; enabled: boolean }[],
       type: "text_list",
-      text: "コメントNGユーザー",
+    },
+    enable_addon_smooth_player: {
+      value: true as boolean,
+      type: "switch",
+    },
+    enable_addon_disable_new_window: {
+      value: false as boolean,
+      type: "switch",
+    },
+    enable_addon_add_button_to_play: {
+      value: true as boolean,
+      type: "switch",
+    },
+    addon_option_play_in_same_tab: {
+      value: true as boolean,
+      type: "switch",
     },
   } as const;
 }
 
-type config = ReturnType<typeof get_default_configs>;
+export type config = ReturnType<typeof get_default_configs>;
 export type config_keys = keyof config;
 export type config_value<T extends config_keys> = config[T]["value"];
 
@@ -145,9 +126,6 @@ export function getDefaultValue<T extends config_keys>(
 }
 export function getValueType<T extends config_keys>(key: T): config[T]["type"] {
   return get_default_configs()[key].type;
-}
-export function getConfigText<T extends config_keys>(key: T): string {
-  return get_default_configs()[key].text;
 }
 
 /**

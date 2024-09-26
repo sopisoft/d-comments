@@ -25,8 +25,8 @@ import {
 } from "@/components/ui/tooltip";
 import { useToast } from "@/components/ui/use-toast";
 import api from "@/lib/api";
-import { ExternalLink } from "lucide-react";
-import { useContext, useEffect } from "react";
+import { ExternalLink, Play } from "lucide-react";
+import { useContext } from "react";
 import export_comments_json from "../../content_scripts/export";
 import { VideoIdContext } from "../popup";
 import { ErrorMessage, isVideoId } from "../utils";
@@ -106,7 +106,7 @@ function Inputs() {
         <Input
           id="video_id_input"
           placeholder="動画ID"
-          className="col-span-3"
+          className="col-span-5"
           value={videoId}
           onChange={(e) => {
             const video_id = e.target.value;
@@ -114,34 +114,20 @@ function Inputs() {
           }}
         />
 
-        <div className="col-span-4 flex justify-end items-center space-x-2">
-          <Button
-            variant="outline"
-            onClick={on_save_json_button_clicked}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                on_save_json_button_clicked;
-              }
-            }}
-            disabled={!videoId}
-          >
-            JSON に保存
-          </Button>
-
-          <Button
-            variant="outline"
-            className="w-32"
-            onClick={render_comments}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                render_comments;
-              }
-            }}
-            disabled={!videoId}
-          >
-            コメントを表示
-          </Button>
-        </div>
+        <Button
+          variant="outline"
+          className="col-span-2 flex justify-center items-center"
+          onClick={render_comments}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              render_comments;
+            }
+          }}
+          disabled={!videoId}
+        >
+          <Play className="w-5 h-5 mr-2" />
+          表示
+        </Button>
       </div>
     </>
   );

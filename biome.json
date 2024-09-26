@@ -8,7 +8,12 @@
     "clientKind": "git"
   },
   "files": {
-    "include": ["src/**/*.ts", "src/**/*.tsx", "vite.config.ts"],
+    "include": [
+      "src/**/*.ts",
+      "src/**/*.tsx",
+      "vite.config.ts",
+      "tailwind.config.ts"
+    ],
     "ignore": ["dist/*", "node_modules/*"],
     "ignoreUnknown": true
   },
