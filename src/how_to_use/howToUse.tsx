@@ -19,16 +19,14 @@ import "@/index.css";
 import "github-markdown-css";
 import "./markdown-body.css";
 import { ArrowUp } from "lucide-react";
-import React from "react";
 import { createRoot } from "react-dom/client";
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
-} from "..//components/ui/card";
+} from "../components/ui/card";
 import { find_elements } from "../lib/dom";
-/// @ts-expect-error
 import { html, toc } from "./how_to_use.md";
 
 function decode(str: string) {
@@ -56,7 +54,7 @@ const HowToUse = () => {
         </CardHeader>
         <CardContent>
           <ul className="list-none p-0 m-0 flex flex-col gap-2">
-            {toc.map((item: { level: string; content: string }) => (
+            {toc.map((item) => (
               <li
                 data-level={item.level}
                 key={item.content}
