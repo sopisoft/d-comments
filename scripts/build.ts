@@ -1,60 +1,39 @@
-import fs from "fs";
-import Bun from "bun";
+import { cp, rmdir, writeFile } from "node:fs/promises";
 import { build } from "vite";
+// @ts-expect-error
+import webExt from "web-ext";
 import { manifest } from "./manifest";
-import { minifyJs } from "./minify";
-import { webExtBuild } from "./web-ext";
 
-const browsers: browsers = ["chrome", "firefox"];
-
+const browsers = ["chrome", "firefox"] as const;
 process.env.NODE_ENV = "production";
 
-function make_proc(cmd: string[]) {
-  return new Promise<void>((resolve) => {
-    const proc = Bun.spawn(cmd, {
-      stdout: "inherit",
-      onExit: async () => {
-        console.log(await new Response(proc.stdout).text());
-        resolve();
-      },
-    });
+try {
+  await rmdir("dist", { recursive: true });
+
+  await build({
+    build: {
+      outDir: `../dist/${"chrome"}`,
+    },
   });
+
+  await cp("dist/chrome", "dist/firefox", { recursive: true });
+
+  for (const browser of browsers) {
+    const m = await manifest(browser);
+    const dist = `dist/${browser}`;
+
+    await writeFile(`${dist}/manifest.json`, JSON.stringify(m));
+    await cp("LICENSE.txt", `${dist}/LICENSE.txt`, { force: true });
+    webExt.cmd.build({
+      sourceDir: dist,
+      artifactsDir: "dist",
+      asNeeded: false,
+      overwriteDest: true,
+      ignoreFiles: [],
+      filename: `${browser}.zip`,
+    });
+  }
+} catch (error) {
+  console.error(error);
+  process.exit(1);
 }
-
-const tsc = make_proc(["bunx", "--bun", "tsc"]);
-const fmt = make_proc(["bun", "run", "format"]);
-const lint = make_proc(["bun", "run", "lint"]);
-
-await Promise.all([fs.rmdirSync("dist", { recursive: true }), tsc, fmt, lint]).then(
-  () =>
-    build({
-      mode: "chrome",
-      build: {
-        outDir: `../dist/${"chrome"}`,
-      },
-    })
-      .then(async () => {
-        await minifyJs("chrome").then(async () => {
-          await make_proc(["cp", "-r", "dist/chrome", "dist/firefox"]);
-        });
-        browsers.map((browser) => {
-          Promise.all([
-            manifest(browser).then((manifest) => {
-              Bun.write(
-                Bun.file(`dist/${browser}/manifest.json`),
-                JSON.stringify(manifest)
-              );
-            }),
-            Bun.write(
-              Bun.file(`dist/${browser}/meta.json`),
-              JSON.stringify({
-                updated: new Date().toISOString(),
-              })
-            ),
-          ]);
-        });
-      })
-      .then(() => {
-        browsers.map((browser) => webExtBuild(browser));
-      })
-);

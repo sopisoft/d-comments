@@ -22,6 +22,23 @@ export default defineConfig({
     target: "esnext",
     emptyOutDir: true,
     modulePreload: false,
+    minify: "terser",
+    terserOptions: {
+      module: true,
+      compress: {
+        module: true,
+        unused: true,
+        passes: 3,
+      },
+      mangle: {
+        toplevel: true,
+        module: true,
+      },
+      format: {
+        comments: false,
+      },
+      toplevel: true,
+    },
     rollupOptions: {
       input: {
         index: resolve(__dirname, "src", "content_scripts", "index.ts"),

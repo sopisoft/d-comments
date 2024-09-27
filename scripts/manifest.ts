@@ -1,8 +1,6 @@
-import Bun from "bun";
+import fs from "node:fs";
 
-const pkg = await Bun.file("package.json")
-  .text()
-  .then((text) => JSON.parse(text));
+const pkg = JSON.parse(fs.readFileSync("package.json", "utf-8"));
 
 const base = {
   name: pkg.displayName,
@@ -21,7 +19,6 @@ const base = {
   options_ui: {
     page: "options/options.html",
   },
-  background: {},
   content_scripts: [
     {
       js: ["d_comments.js"],
@@ -29,19 +26,13 @@ const base = {
       run_at: "document_start",
     },
   ],
-  web_accessible_resources: [],
-  permissions: ["cookies", "storage", "tabs"],
+  permissions: ["storage", "tabs"],
 };
 
-/**
- * manifest.json を chrome, firefox 用にそれぞれ生成する
- */
-export async function manifest(browser: browsers[number]) {
-  let manifest = {};
-
+export async function manifest(browser: "chrome" | "firefox") {
   switch (browser) {
     case "chrome": {
-      manifest = {
+      return {
         ...base,
         manifest_version: 3,
         background: {
@@ -56,22 +47,17 @@ export async function manifest(browser: browsers[number]) {
         web_accessible_resources: [
           {
             matches: ["*://animestore.docomo.ne.jp/*"],
-            resources: ["js/*.js", "assets/css/*.css", "assets/*.js"],
+            resources: ["*.js", "*.css"],
           },
         ],
         host_permissions: [
           "*://*.nicovideo.jp/*",
           "*://animestore.docomo.ne.jp/*",
-          "*://nvcomment.nicovideo.jp/*",
-          "*://nvapi.nicovideo.jp/v1/users/*",
-          "*://public.api.nicovideo.jp/v1/channel/channelapp/channels/*",
-          "*://api.search.nicovideo.jp/*",
         ],
       };
-      break;
     }
     case "firefox": {
-      manifest = {
+      return {
         ...base,
         manifest_version: 2,
         background: {
@@ -92,19 +78,12 @@ export async function manifest(browser: browsers[number]) {
           ...base.permissions,
           "https://*.nicovideo.jp/*",
           "https://animestore.docomo.ne.jp/*",
-          "https://nvcomment.nicovideo.jp/*",
-          "https://nvapi.nicovideo.jp/v1/users/*",
-          "https://public.api.nicovideo.jp/v1/channel/channelapp/channels/*",
-          "https://api.search.nicovideo.jp/*",
         ],
         developer: {
           name: pkg.author,
           url: pkg.repository.url,
         },
       };
-      break;
     }
   }
-
-  return manifest;
 }
