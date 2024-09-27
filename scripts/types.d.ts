@@ -1,1 +1,0 @@
-type browsers = ["chrome", "firefox"];
