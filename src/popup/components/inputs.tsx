@@ -27,7 +27,6 @@ import { useToast } from "@/components/ui/use-toast";
 import api from "@/lib/api";
 import { ExternalLink, Play } from "lucide-react";
 import { useContext } from "react";
-import export_comments_json from "../../content_scripts/export";
 import { VideoIdContext } from "../popup";
 import { ErrorMessage, isVideoId } from "../utils";
 
@@ -70,12 +69,6 @@ function Inputs() {
     };
     return await api(query).catch((error) => {
       ErrorMessage(toast, { error: error });
-    });
-  }
-
-  async function on_save_json_button_clicked() {
-    check_video_id(videoId).then((id) => {
-      if (id) export_comments_json(id);
     });
   }
 

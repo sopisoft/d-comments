@@ -30,7 +30,6 @@ import initRenderer from "./components/canvas";
 import overlay from "./components/overlay";
 import wrap from "./components/wrapper";
 import { setWorkInfo } from "./danime/watch";
-import exportJson from "./export";
 import {
   partId as getPartId,
   threads as getThreads,
@@ -158,7 +157,7 @@ async function render_comments(videoId: VideoId) {
   }
   console.log("video_data", video_data);
 
-  if (!(video_data as SearchResult).data?.comment) {
+  if (!(video_data as SearchResult).data?.response.comment) {
     const res = video_data as SearchErrorResponse;
     const error_code = res.meta.errorCode;
     const error_reason = res.data.reasonCode;
@@ -171,7 +170,7 @@ async function render_comments(videoId: VideoId) {
   }
 
   const { data } = video_data as SearchResult;
-  const threads = await get_threads(data.comment.nvComment);
+  const threads = await get_threads(data.response.comment.nvComment);
   if (threads instanceof Error) {
     push_message(threads);
     return;
@@ -216,11 +215,6 @@ browser.runtime.onMessage.addListener(async (message) => {
       console.log("render_comments", videoId);
 
       await render_comments(videoId);
-      break;
-    }
-    case "export_comments_json": {
-      console.log("export_comments_json", msg.data.videoId);
-      await exportJson(msg.data.videoId);
       break;
     }
   }

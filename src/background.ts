@@ -15,76 +15,31 @@
     along with d-comments.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { getConfig } from "@/config";
 import browser from "webextension-polyfill";
 import { openHowToUseIfNotRead } from "./how_to_use/how_to_use";
 
 /**
- * 任意の範囲のランダムな整数を返す
- * @param min 最小値
- * @param max 最大値
- * @returns min 以上 max 以下のランダムな整数
- */
-const getRandomInt = (min: number, max: number) => {
-  const minNum = Math.ceil(min);
-  const maxNum = Math.floor(max);
-  return Math.floor(Math.random() * (maxNum - minNum) + minNum);
-};
-
-function getActionTrackId() {
-  const f = Math.random().toString(36).slice(-10);
-  const b = getRandomInt(10 ** 12, 10 ** 13);
-  return `${f}_${b}`;
-}
-
-/**
  * 動画情報を取得する
  * @param videoId ニコニコ動画の動画ID
- * @param sendResponse (response) => void
  */
-
-const getVideoData = async (videoId: string) => {
-  const config: boolean = await getConfig("allow_login_to_nicovideo");
-  const url = `https://www.nicovideo.jp/api/watch/${
-    config ? "v3" : "v3_guest"
-  }/${videoId}`;
-  const params = {
-    _frontendId: "6",
-    _frontendVersion: "0",
-    actionTrackId: getActionTrackId(),
-  };
-  const fetch_options: RequestInit = {
-    credentials: config ? "include" : "omit",
-    headers: {
-      "x-frontend-id": "6",
-      "x-frontend-version": "0",
-    },
-  };
-  if (config)
-    browser.cookies
-      .get({ url: "https://www.nicovideo.jp/", name: "user_session" })
-      .then((cookie) => {
-        if (!cookie) return;
-        Object.assign(fetch_options.headers as HeadersInit, {
-          Cookie: `user_session=${cookie.value}`,
-        });
-      });
-
-  return await fetch(`${url}?${new URLSearchParams(params)}`, fetch_options)
+async function getVideoData(videoId: string): Promise<SearchResponse | Error> {
+  const url = `https://www.nicovideo.jp/watch/${videoId}?responseType=json`;
+  const res = await fetch(url)
     .then(async (res) => {
-      const json = (await res.json()) as SearchResponse;
-      return json;
+      const json = await res.json();
+      return json as SearchResponse;
     })
     .catch((e) => {
       return e as Error;
     });
-};
+  return res;
+}
 
 /**
  * コメントスレッドの情報とコメントを取得
  */
 const getThreadComments = async (
-  nvComment: SearchResult["data"]["comment"]["nvComment"]
+  nvComment: SearchResult["data"]["response"]["comment"]["nvComment"]
 ) => {
   const { server, threadKey, params } = nvComment;
   const serverUrl = `${server}/v1/threads`;
@@ -158,9 +113,7 @@ const search = async (
 /**
  *
  * @param type "user" | "channel"
- * @param videoId 動画ID
  * @param ownerId ユーザーID または チャンネルID
- * @returns Owner
  */
 const get_user_info = async (
   type: "user" | "channel",
