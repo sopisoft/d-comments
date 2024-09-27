@@ -38,56 +38,59 @@ type SearchErrorResponse = {
 type SearchResult = {
   meta: {
     status: number;
-    totalCount: number;
-    id: string;
+    code: string; // "HTTP_200"
   };
   data: {
-    ads: null;
-    category: null;
-    channel: {
-      id: string;
-      name: string;
-      isOfficialAnime: boolean;
-      isDisplayAdBanner: boolean;
-      thumbnail: {
-        url: string;
-        smallUrl: string;
-      };
-      viewer: {
-        follow: {
-          isFollowed: boolean;
-          isBookmarked: boolean;
-          token: string;
-          tokenTimestamp: number;
+    response: {
+      channel: {
+        id: string;
+        name: string;
+        isOfficialAnime: boolean;
+        isDisplayAdBanner: boolean;
+        thumbnail: {
+          url: string;
+          smallUrl: string;
         };
+        viewer: {
+          follow: {
+            isFollowed: boolean;
+            isBookmarked: boolean;
+            token: string;
+            tokenTimestamp: number;
+          };
+        };
+      } | null;
+      client: {
+        nicosid: string;
+        watchId: string;
+        watchTrackId: string;
       };
-    } | null;
-    client: {
-      nicosid: string;
-      watchId: string;
-      watchTrackId: string;
-    };
-    comment: {
-      server: {
-        url: string;
-      };
-      keys: {
-        userKey: string;
-      };
-      layers: [
-        {
+      comment: {
+        server: {
+          url: string;
+        };
+        keys: {
+          userKey: string;
+        };
+        layers: {
           index: number;
           isTranslucent: boolean;
           threadIds: thread[];
-        }[],
-      ];
-      threads: [
-        {
+        }[];
+        threads: {
           id: thread["id"];
           fork: thread["fork"];
           forkLabel: thread["forkLabel"];
           videoId: string; // contentId
           isOwnerThread: boolean;
+          isActive: boolean;
+          isDefaultPostTarget: boolean;
+          isEasyCommentPostTarget: boolean;
+          isLeafRequired: boolean;
+          isThreadkeyRequired: boolean;
+          threadkey: string;
+          is184Forced: boolean;
+          hasNicoscript: boolean;
           label:
             | "owner"
             | "default"
@@ -95,40 +98,39 @@ type SearchResult = {
             | "easy"
             | "extra-community"
             | "extra-easy";
+          postKeyStatus: number;
           server: string;
-        }[],
-      ];
-      nvComment: {
-        threadKey: string;
-        server: "https://nv-comment.nicovideo.jp";
-        params: {
-          targets: [
-            {
+        }[];
+        nvComment: {
+          threadKey: string;
+          server: string;
+          params: {
+            targets: {
               id: string; // thread["id"] to stringify
               fork: thread["forkLabel"];
-            }[],
-          ];
-          language: "ja-jp";
+            }[];
+            language: "ja-jp";
+          };
         };
       };
-    };
-    video: {
-      id: string; // contentId
-      title: string;
-      description: string;
-      count: {
-        view: number;
-        comment: number;
-        mylist: number;
-        like: number;
-      };
-      duration: number;
-      thumbnail: {
-        url: string;
-        middleUrl: string;
-        largeUrl: string;
-        player: string;
-        ogp: string;
+      video: {
+        id: string; // contentId
+        title: string;
+        description: string; // HTML
+        count: {
+          view: number;
+          comment: number;
+          mylist: number;
+          like: number;
+        };
+        duration: number;
+        thumbnail: {
+          url: string;
+          middleUrl: string;
+          largeUrl: string;
+          player: string;
+          ogp: string;
+        };
       };
     };
   };

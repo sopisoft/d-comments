@@ -91,16 +91,6 @@ function Options() {
               text="連続再生時に自動で次の動画のコメントを読み込む"
             />
           </Card>
-
-          <Card
-            title="ニコニコ動画へのログイン"
-            description="詳細は「つかいかた」をご覧ください。"
-          >
-            <EditorSwitch
-              _key="allow_login_to_nicovideo"
-              text="ニコニコ動画へのログインを許可する"
-            />
-          </Card>
         </AccordionContent>
       </AccordionItem>
 

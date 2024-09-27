@@ -84,10 +84,6 @@ function get_default_configs() {
       value: true as boolean,
       type: "checkbox",
     },
-    allow_login_to_nicovideo: {
-      value: false as boolean,
-      type: "switch",
-    },
     comment_ng_words: {
       value: [] as { key: string; value: string; enabled: boolean }[],
       type: "text_list",
