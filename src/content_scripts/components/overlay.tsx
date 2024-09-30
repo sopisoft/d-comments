@@ -17,7 +17,6 @@
 
 import { Toaster } from "@/components/ui/toaster";
 import { useToast } from "@/components/ui/use-toast";
-import { useEffect, useRef } from "react";
 import { createRoot } from "react-dom/client";
 import browser from "webextension-polyfill";
 import { on_messages_change } from "../state";
@@ -25,54 +24,28 @@ import { on_messages_change } from "../state";
 function Overlay() {
   const { toast, dismiss } = useToast();
 
-  const toast_duration = 1 * 10 ** 3;
-  const timer = useRef<number | null>(null);
+  const toast_duration = 2 * 10 ** 3;
 
-  function ErrorMessage(props?: {
-    error?: Error;
-    message?: { title: string; description: string };
-  }) {
-    const { error, message } = props ?? {};
-    toast({
-      title: message?.title || error?.name || "エラー",
-      description:
-        message?.description ||
-        error?.message ||
-        "何らかのエラーが発生しました。",
-    });
-  }
-
-  useEffect(() => {
-    const handleFocus = () => {
-      if (timer.current) clearTimeout(timer.current);
-    };
-
-    if (!document.hasFocus()) {
-      timer.current = window.setTimeout(() => {
-        dismiss();
-      }, toast_duration);
+  on_messages_change((_, next) => {
+    const next_message = next?.[next.length - 1];
+    if (next && next_message instanceof Error) {
+      toast({
+        title: next_message.name,
+        description: next_message.message,
+        duration: toast_duration,
+      });
+      setTimeout(dismiss, toast_duration);
+    } else if (next_message) {
+      const message = next_message as { title?: string; description?: string };
+      message.title = message.title ?? "Message";
+      message.description = message.description ?? "No description";
+      toast({
+        title: message.title,
+        description: message.description,
+        duration: toast_duration,
+      });
+      setTimeout(dismiss, toast_duration);
     }
-    addEventListener("focus", handleFocus);
-
-    return () => {
-      removeEventListener("focus", handleFocus);
-      if (timer.current) clearTimeout(timer.current);
-    };
-  }, [dismiss]);
-
-  useEffect(() => {
-    on_messages_change((_prev, next) => {
-      if (next && next[next.length - 1] instanceof Error)
-        ErrorMessage({ error: next[next.length - 1] as Error });
-      else if (next?.[next.length - 1]) {
-        ErrorMessage({
-          message: next[next.length - 1] as {
-            title: string;
-            description: string;
-          },
-        });
-      }
-    });
   });
 
   return (
