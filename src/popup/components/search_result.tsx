@@ -72,13 +72,13 @@ function Owner(props: {
   const { ownerName, ownerIconUrl } = owner ?? {};
 
   return (
-    <div className="grid grid-cols-5 gap-2 justify-center items-center m-auto w-4/5">
+    <div className="grid grid-cols-5 gap-2 justify-center items-center m-auto mb-2 w-4/5">
       <img
         src={ownerIconUrl}
         alt={ownerName}
         className="aspect-square size-6"
       />
-      <span className="col-span-4 p-0 m-0 mb-2 h-7 content-center overflow-scroll">
+      <span className="col-span-4 p-0 m-0 h-7 content-center overflow-auto">
         {ownerName}
       </span>
     </div>
@@ -146,7 +146,7 @@ function SearchResult(props: { snapshot: Snapshot; className?: string }) {
                 />
               )}
               <div className="mx-2 h-20 flex flex-col items-center">
-                <span className="font-semibold overflow-y-auto">{title}</span>
+                <span className="font-semibold overflow-y-auto overflow-x-hidden">{title}</span>
               </div>
             </div>
             <Owner userId={userId} channelId={channelId} />
