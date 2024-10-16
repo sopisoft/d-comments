@@ -18,10 +18,10 @@
 import { useToast } from "@/components/ui/use-toast";
 import { cn } from "@/lib/utils";
 import { MessageSquare, Play, Timer } from "lucide-react";
-import { useContext, useState } from "react";
-import { get_owner_info } from "../api/owner_info";
+import { useContext } from "react";
 import { VideoIdContext } from "../popup";
 import { ErrorMessage } from "../utils";
+import Owner from "./owner";
 
 /**
  * lengthSeconds -> "〇時間〇分〇秒" | "〇分〇秒" | "〇秒" | "は取得できませんでした"
@@ -41,53 +41,8 @@ const video_length = (lengthSeconds: number | null) => {
   return toStr(hour, "時間") + toStr(minute, "分") + toStr(second, "秒");
 };
 
-const storage = window.sessionStorage;
-
-function Owner(props: {
-  userId: string | null;
-  channelId: string | null;
-}) {
-  const { userId, channelId } = props;
-  if (!userId && !channelId) return null;
-
-  const key = userId ?? channelId;
-  const ownerInfo = storage.getItem(`${key}`);
-  const [owner, setOwner] = useState<ownerInfoApi["response"] | null>(
-    ownerInfo ? JSON.parse(ownerInfo) : null
-  );
-
-  if (!storage.getItem(`${key}`)) {
-    get_owner_info({
-      type: userId ? "user" : "channel",
-      ownerId: (userId ?? channelId) as string,
-    }).then((res) => {
-      if (res instanceof Error) {
-      } else {
-        setOwner(res);
-        storage.setItem(`${key}`, JSON.stringify(res));
-      }
-    });
-  }
-
-  const { ownerName, ownerIconUrl } = owner ?? {};
-
-  return (
-    <div className="grid grid-cols-5 gap-2 justify-center items-center m-auto mb-2 w-4/5">
-      <img
-        src={ownerIconUrl}
-        alt={ownerName}
-        className="aspect-square size-6"
-      />
-      <span className="col-span-4 p-0 m-0 h-7 content-center overflow-auto">
-        {ownerName}
-      </span>
-    </div>
-  );
-}
-
 function SearchResult(props: { snapshot: Snapshot; className?: string }) {
-  const { snapshot } = props;
-  const data = snapshot.data;
+  const { data } = props.snapshot;
 
   const { videoId, setVideoId } = useContext(VideoIdContext);
   const { toast } = useToast();
@@ -108,7 +63,7 @@ function SearchResult(props: { snapshot: Snapshot; className?: string }) {
   return data.length > 0 ? (
     <ul
       className={cn(
-        "w-full flex flex-col gap-1 list-none p-1 m-0 text-base overflow-y-scroll overflow-x-hidden",
+        "w-full flex flex-col gap-1 list-none p-1 m-0 text-base overflow-y-scroll overflow-x-hidden scrollbar-thin",
         props.className
       )}
       aria-label="検索結果一覧 "
@@ -146,9 +101,12 @@ function SearchResult(props: { snapshot: Snapshot; className?: string }) {
                 />
               )}
               <div className="mx-2 h-20 flex flex-col items-center">
-                <span className="font-semibold overflow-y-auto overflow-x-hidden">{title}</span>
+                <span className="font-semibold overflow-y-auto overflow-x-hidden scrollbar-thin">
+                  {title}
+                </span>
               </div>
             </div>
+
             <Owner userId={userId} channelId={channelId} />
             <div className="m-auto text-sm grid grid-cols-3 gap-2 w-4/5">
               <span className="col-span-1 flex flex-row items-center justify-center gap-2">
@@ -169,7 +127,9 @@ function SearchResult(props: { snapshot: Snapshot; className?: string }) {
       })}
     </ul>
   ) : (
-    <div>キーワードに一致する結果が見つかりませんでした</div>
+    <div className="col-span-1 row-span-2">
+      キーワードに一致する結果が見つかりませんでした
+    </div>
   );
 }
 

@@ -104,7 +104,7 @@ function Search() {
           variant="outline"
           className="col-span-2 flex justify-center items-center"
           aria-label="検索ボタン"
-          role="button"
+          type="button"
           onClick={on_search_button_click}
         >
           <SearchIcon className="w-5 h-5 mr-2" />
