@@ -121,8 +121,9 @@ switch (url.pathname) {
     });
 
     on_partId_change(async (prev, next) => {
-      if (prev?.videoId && getThreads() && next) {
+      if (prev && prev.workId !== next?.workId) {
         await setWorkInfo();
+        if (!getThreads()) return;
 
         if (await getConfig("load_comments_on_next_video")) await auto_play();
         else
