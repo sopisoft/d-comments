@@ -30,15 +30,7 @@ import initRenderer from "./components/canvas";
 import overlay from "./components/overlay";
 import wrap from "./components/wrapper";
 import { setWorkInfo } from "./danime/watch";
-import {
-  partId as getPartId,
-  threads as getThreads,
-  on_partId_change,
-  push_message,
-  set_messages,
-  set_partId,
-  set_threads,
-} from "./state";
+import { push_message, set_messages, set_threads } from "./state";
 
 const url = new URL(location.href);
 
@@ -70,10 +62,6 @@ async function auto_play() {
       const videoId = datum.contentId;
       const isUser = datum.userId !== null;
       if (channels_only && isUser) continue;
-      set_partId({
-        videoId: videoId,
-        workId: getPartId()?.workId,
-      });
       await render_comments(videoId);
       break;
     }
@@ -110,28 +98,26 @@ switch (url.pathname) {
       }
     });
 
-    requestAnimationFrame(function loop() {
-      const partId = new URLSearchParams(location.search).get("partId");
-      if (partId)
-        set_partId({
-          videoId: getPartId()?.videoId,
-          workId: partId,
-        });
-      requestAnimationFrame(loop);
-    });
-
-    on_partId_change(async (prev, next) => {
-      if (prev && prev.workId !== next?.workId) {
+    let work_id: string | undefined = undefined;
+    requestAnimationFrame(async function loop() {
+      const workId = new URLSearchParams(location.search).get("partId");
+      if (workId && workId !== work_id) {
         await setWorkInfo();
-        if (!getThreads()) return;
 
-        if (await getConfig("load_comments_on_next_video")) await auto_play();
-        else
-          push_message({
-            title: "再生中のパートが切り替わりました",
-            description: "コメントを再取得してください",
-          });
+        if (work_id !== undefined) {
+          if (await getConfig("load_comments_on_next_video")) await auto_play();
+          else
+            push_message({
+              title: "再生中の作品が切り替わりました",
+              description: "コメントを再取得してください",
+            });
+          console.log("work_id", work_id);
+        }
+
+        set_threads(undefined);
+        work_id = workId;
       }
+      requestAnimationFrame(loop);
     });
 
     if (await getConfig("enable_auto_play")) await auto_play();
