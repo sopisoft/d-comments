@@ -38,6 +38,8 @@ export function Scroll() {
   const isAutoScrollEnabled = useRef(true);
 
   const [visibility, setVisibility] = useState(false);
+  const [show_nicoru, setShowNicoru] = useState(false);
+  const [show_vpos, setShowVpos] = useState(false);
   const [width, setWidth] = useState<number>();
   const [fontSize, setFontSize] = useState<number>();
   const [bgColor, setBgColor] = useState<string>();
@@ -48,36 +50,16 @@ export function Scroll() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
 
-  function get_item_id(vposMs: number, lastIndex: number) {
-    let left = 0;
-    let right = comments.length - 1;
-    if (lastIndex) {
-      if (comments[lastIndex].vposMs < vposMs) left = lastIndex;
-      else right = lastIndex;
-    }
-    while (left <= right) {
-      const mid = Math.floor((left + right) / 2);
-      if (comments[mid].vposMs === vposMs) return mid;
-      if (comments[mid].vposMs < vposMs) left = mid + 1;
-      else right = mid - 1;
-    }
-    return right;
-  }
-
-  let lastIndex = 0;
   function scroll() {
     if (!isAutoScrollEnabled.current || isParentHovered.current) return;
     if (videoEl.current && !videoEl.current.paused) {
       const currentTimeMs = videoEl.current.currentTime * 1000;
-      const newIndex = get_item_id(currentTimeMs, lastIndex);
-      if (virtuoso.current && newIndex) {
+      if (virtuoso.current) {
         virtuoso.current.scrollToIndex({
-          index: newIndex,
-          align: "center",
-          behavior: "smooth",
+          index: comments.findIndex((c) => c.vposMs > currentTimeMs),
+          align: "end",
         });
       }
-      lastIndex = newIndex;
     }
   }
 
@@ -142,12 +124,18 @@ export function Scroll() {
             setOpacity(Number(changes[key].newValue));
             break;
           case "enable_auto_scroll":
-            if (typeof changes[key].newValue === "boolean") {
-              isAutoScrollEnabled.current = changes[key].newValue;
-            }
+            isAutoScrollEnabled.current = await getConfig("enable_auto_scroll");
             break;
           case "show_comments_in_list": {
-            changes[key].newValue ? setVisibility(true) : setVisibility(false);
+            setVisibility(await getConfig("show_comments_in_list"));
+            break;
+          }
+          case "show_nicoru_count": {
+            setShowNicoru(await getConfig("show_nicoru_count"));
+            break;
+          }
+          case "show_comment_vpos": {
+            setShowVpos(await getConfig("show_comment_vpos"));
             break;
           }
         }
@@ -172,6 +160,8 @@ export function Scroll() {
       setOpacity(await getConfig("comment_area_opacity_percentage"));
       isAutoScrollEnabled.current = await getConfig("enable_auto_scroll");
       setVisibility(await getConfig("show_comments_in_list"));
+      setShowNicoru(await getConfig("show_nicoru_count"));
+      setShowVpos(await getConfig("show_comment_vpos"));
 
       videoEl.current = await find_element<HTMLVideoElement>("video");
       videoEl.current?.addEventListener("play", loop.start);
@@ -181,6 +171,62 @@ export function Scroll() {
 
     setIsInitialized(true);
   }, [isInitialized, loop]);
+
+  function nicoru_color(nicoru: number) {
+    const nicoruLv0 = "rgba(255, 216, 66, 0)";
+    const nicoruLv1 = "rgba(252, 216, 66, 0.102)";
+    const nicoruLv2 = "rgba(252, 216, 66, 0.2)";
+    const nicoruLv3 = "rgba(252, 216, 66, 0.4)";
+    const nicoruLv4 = "rgba(252, 216, 66, 0.6)";
+    if (nicoru === 0) return nicoruLv0;
+    if (nicoru < 6) return nicoruLv1;
+    if (nicoru < 11) return nicoruLv2;
+    if (nicoru < 21) return nicoruLv3;
+    return nicoruLv4;
+  }
+
+  function vpos_to_time(vpos: number) {
+    const minutes = Math.floor(vpos / 60000);
+    const seconds = Math.floor((vpos % 60000) / 1000);
+    return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+  }
+
+  function CommentWithVpos({ comment }: { comment: nv_comment }) {
+    return (
+      <div className="flex flex-col gap-1">
+        <span>{comment.body}</span>
+        <span className="text-xs">{vpos_to_time(comment.vposMs)}</span>
+      </div>
+    );
+  }
+  function CommentItemWithNicoru({ comment }: { comment: nv_comment }) {
+    return (
+      <div className="grid grid-cols-[1fr,auto] gap-2 items-center">
+        {show_vpos ? <CommentWithVpos comment={comment} /> : comment.body}
+        <span className="flex flex-col p-1 items-center">
+          <svg
+            className="size-4"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 20 20"
+            style={{
+              filter: "grayscale(100%)",
+            }}
+          >
+            <title>Nicoru Icon</title>
+            <text
+              x="50%"
+              y="50%"
+              dominant-baseline="middle"
+              text-anchor="middle"
+            >
+              😃
+            </text>
+          </svg>
+          <span className="text-xs">{comment.nicoruCount}</span>
+        </span>
+      </div>
+    );
+  }
 
   return (
     <ThemeProvider>
@@ -215,6 +261,13 @@ export function Scroll() {
           <Virtuoso
             ref={virtuoso}
             data={comments}
+            style={{
+              backgroundColor:
+                show_nicoru && comments.length > 0
+                  ? "rgb(255, 255, 255)"
+                  : "transparent",
+              color: show_nicoru && comments.length > 0 ? "black" : "inherit",
+            }}
             components={{
               Header: () => {
                 return (
@@ -223,7 +276,7 @@ export function Scroll() {
                   >
                     {comments.length === 0 && (
                       <>
-                        コメントがありません
+                        表示できるコメントがありません
                         <Button onClick={() => setVisibility(false)}>
                           閉じる
                         </Button>
@@ -249,8 +302,19 @@ export function Scroll() {
                 key={index}
                 data-vpos={comment?.vposMs}
                 className="block w-full p-1 border-b border-gray-300"
+                style={{
+                  backgroundColor: show_nicoru
+                    ? nicoru_color(comment.nicoruCount)
+                    : "transparent",
+                }}
               >
-                {comment?.body}
+                {show_nicoru ? (
+                  <CommentItemWithNicoru comment={comment} />
+                ) : show_vpos ? (
+                  <CommentWithVpos comment={comment} />
+                ) : (
+                  comment.body
+                )}
               </span>
             )}
           />
