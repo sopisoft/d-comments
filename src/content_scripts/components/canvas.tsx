@@ -20,11 +20,7 @@ import { find_element } from "@/lib/dom";
 import NiconiComments from "@xpadev-net/niconicomments";
 import type { Options, V1Thread } from "@xpadev-net/niconicomments";
 import browser from "webextension-polyfill";
-import {
-  threads as getThreads,
-  on_partId_change,
-  on_threads_change,
-} from "../state";
+import { threads as getThreads, on_threads_change } from "../state";
 
 const canvas_id = "d-comments-canvas";
 export class Renderer {
@@ -126,13 +122,9 @@ async function initRenderer() {
   const renderer = new Renderer(canvas, video, options);
 
   on_threads_change(async (_prev, next) => {
-    console.log("on_threads_change_canvas", next);
+    console.log("on_threads_change_canvas");
     if (!next) return;
     renderer.setThread(next.threads);
-  });
-  on_partId_change(() => {
-    console.log("on_partId_change_canvas");
-    renderer.destroy();
   });
 
   browser.storage.onChanged.addListener(async (changes) => {

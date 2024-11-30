@@ -24,11 +24,7 @@ import { useEffect, useRef, useState } from "react";
 import { Virtuoso, type VirtuosoHandle } from "react-virtuoso";
 import browser from "webextension-polyfill";
 import { sortComments } from "../comments";
-import {
-  threads as getThreads,
-  on_partId_change,
-  on_threads_change,
-} from "../state";
+import { threads as getThreads, on_threads_change } from "../state";
 import Dialog from "./optionsDialog";
 import useAnimationFrame from "./useAnimationFrame";
 
@@ -41,8 +37,6 @@ export function Scroll() {
   const virtuoso = useRef<VirtuosoHandle>(null);
   const isAutoScrollEnabled = useRef(true);
 
-  const [isInitialized, setIsInitialized] = useState(false);
-
   const [visibility, setVisibility] = useState(false);
   const [width, setWidth] = useState<number>();
   const [fontSize, setFontSize] = useState<number>();
@@ -52,10 +46,15 @@ export function Scroll() {
   const [comments, setComments] = useState<nv_comment[]>([]);
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isInitialized, setIsInitialized] = useState(false);
 
-  function get_item_id(vposMs: number) {
+  function get_item_id(vposMs: number, lastIndex: number) {
     let left = 0;
     let right = comments.length - 1;
+    if (lastIndex) {
+      if (comments[lastIndex].vposMs < vposMs) left = lastIndex;
+      else right = lastIndex;
+    }
     while (left <= right) {
       const mid = Math.floor((left + right) / 2);
       if (comments[mid].vposMs === vposMs) return mid;
@@ -65,104 +64,22 @@ export function Scroll() {
     return right;
   }
 
+  let lastIndex = 0;
   function scroll() {
     if (!isAutoScrollEnabled.current || isParentHovered.current) return;
     if (videoEl.current && !videoEl.current.paused) {
       const currentTimeMs = videoEl.current.currentTime * 1000;
-      const id = get_item_id(currentTimeMs);
-      if (virtuoso.current && id) {
+      const newIndex = get_item_id(currentTimeMs, lastIndex);
+      if (virtuoso.current && newIndex) {
         virtuoso.current.scrollToIndex({
-          index: id,
+          index: newIndex,
           align: "center",
           behavior: "smooth",
         });
       }
+      lastIndex = newIndex;
     }
   }
-
-  async function flatten_comments(threads: Threads): Promise<nv_comment[]> {
-    const owner = await getConfig("show_owner_comments");
-    const main = await getConfig("show_main_comments");
-    const easy = await getConfig("show_easy_comments");
-
-    return threads.threads
-      .filter((thread) => {
-        if (thread.fork === "owner") return owner;
-        if (thread.fork === "main") return main;
-        if (thread.fork === "easy") return easy;
-        return false;
-      })
-      .flatMap((thread) => thread.comments);
-  }
-
-  async function set_comments() {
-    const threads = getThreads();
-    if (!threads) return;
-
-    const new_comments = await sortComments(await flatten_comments(threads));
-    if (new_comments.length !== comments.length) {
-      setComments(new_comments);
-    }
-
-    if (await getConfig("show_comments_in_list")) {
-      setVisibility(true);
-    }
-  }
-
-  on_threads_change(async (_, next) => {
-    if (!next) return;
-    const old_comments = comments;
-    const new_comments = await sortComments(await flatten_comments(next));
-
-    if (!Object.is(old_comments, new_comments)) {
-      console.log("on_threads_change_scroll", new_comments.length);
-      setComments(new_comments);
-    }
-  });
-
-  on_partId_change(async () => {
-    setComments([]);
-    console.log("on_partId_change_scroll", comments);
-  });
-
-  browser.storage.onChanged.addListener(async (changes) => {
-    for (const key in changes) {
-      switch (key as config_keys) {
-        case "show_owner_comments":
-          await set_comments();
-          break;
-        case "show_main_comments":
-          break;
-        case "show_easy_comments":
-          await set_comments();
-          break;
-        case "comment_area_width_px":
-          setWidth(Number(changes[key].newValue));
-          break;
-        case "comment_area_font_size_px":
-          setFontSize(Number(changes[key].newValue));
-          break;
-        case "comment_area_background_color":
-          setBgColor(changes[key].newValue as string);
-          break;
-        case "comment_text_color":
-          setTextColor(changes[key].newValue as string);
-          break;
-        case "comment_area_opacity_percentage":
-          setOpacity(Number(changes[key].newValue));
-          break;
-        case "enable_auto_scroll":
-          if (typeof changes[key].newValue === "boolean") {
-            isAutoScrollEnabled.current = changes[key].newValue;
-          }
-          break;
-        case "show_comments_in_list": {
-          changes[key].newValue ? setVisibility(true) : setVisibility(false);
-          break;
-        }
-      }
-    }
-  });
 
   useEffect(() => {
     parent.current?.addEventListener("mouseenter", () => {
@@ -172,6 +89,76 @@ export function Scroll() {
       isAutoScrollEnabled.current = true;
     });
     isParentHovered.current = parent.current?.matches(":hover") ?? false;
+
+    async function flatten_comments(threads: Threads): Promise<nv_comment[]> {
+      const owner = await getConfig("show_owner_comments");
+      const main = await getConfig("show_main_comments");
+      const easy = await getConfig("show_easy_comments");
+
+      return threads.threads
+        .filter((thread) => {
+          if (thread.fork === "owner") return owner;
+          if (thread.fork === "main") return main;
+          if (thread.fork === "easy") return easy;
+          return false;
+        })
+        .flatMap((thread) => thread.comments);
+    }
+    async function set_comments() {
+      const threads = getThreads();
+
+      if (!threads) setComments([]);
+      else setComments(await sortComments(await flatten_comments(threads)));
+
+      if (await getConfig("show_comments_in_list")) {
+        setVisibility(true);
+      }
+    }
+
+    browser.storage.onChanged.addListener(async (changes) => {
+      for (const key in changes) {
+        switch (key as config_keys) {
+          case "show_owner_comments":
+            await set_comments();
+            break;
+          case "show_main_comments":
+            break;
+          case "show_easy_comments":
+            await set_comments();
+            break;
+          case "comment_area_width_px":
+            setWidth(Number(changes[key].newValue));
+            break;
+          case "comment_area_font_size_px":
+            setFontSize(Number(changes[key].newValue));
+            break;
+          case "comment_area_background_color":
+            setBgColor(changes[key].newValue as string);
+            break;
+          case "comment_text_color":
+            setTextColor(changes[key].newValue as string);
+            break;
+          case "comment_area_opacity_percentage":
+            setOpacity(Number(changes[key].newValue));
+            break;
+          case "enable_auto_scroll":
+            if (typeof changes[key].newValue === "boolean") {
+              isAutoScrollEnabled.current = changes[key].newValue;
+            }
+            break;
+          case "show_comments_in_list": {
+            changes[key].newValue ? setVisibility(true) : setVisibility(false);
+            break;
+          }
+        }
+      }
+    });
+    on_threads_change(async () => {
+      console.log("on_threads_change_scroll");
+      await set_comments();
+    });
+
+    set_comments();
   }, []);
 
   useEffect(() => {
@@ -194,8 +181,6 @@ export function Scroll() {
 
     setIsInitialized(true);
   }, [isInitialized, loop]);
-
-  set_comments();
 
   return (
     <ThemeProvider>

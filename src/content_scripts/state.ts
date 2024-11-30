@@ -42,9 +42,6 @@ function use_state<T>(initial: T) {
   return [get_state, set_state, on_change] as const;
 }
 
-export const [partId, set_partId, on_partId_change] = use_state<
-  { workId?: string; videoId?: VideoId } | undefined
->(undefined);
 export const [threads, set_threads, on_threads_change] = use_state<
   Threads | undefined
 >(undefined);
