@@ -123,8 +123,8 @@ async function initRenderer() {
 
   on_threads_change(async (_prev, next) => {
     console.log("on_threads_change_canvas");
-    if (!next) return;
-    renderer.setThread(next.threads);
+    if (!next) renderer.destroy();
+    else renderer.setThread(next.threads);
   });
 
   browser.storage.onChanged.addListener(async (changes) => {
