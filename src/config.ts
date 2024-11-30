@@ -64,6 +64,14 @@ function get_default_configs() {
       value: true as boolean,
       type: "checkbox",
     },
+    show_nicoru_count: {
+      value: true as boolean,
+      type: "checkbox",
+    },
+    show_comment_vpos: {
+      value: true as boolean,
+      type: "checkbox",
+    },
     show_comments_in_niconico_style: {
       value: true as boolean,
       type: "checkbox",
