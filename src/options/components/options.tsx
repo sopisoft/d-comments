@@ -114,11 +114,6 @@ function Options() {
               text="コメント欄の不透明度"
             />
             <EditorColor _key="comment_text_color" text="コメントの文字色" />
-            <EditorCheckbox _key="show_nicoru_count" text="ニコるを表示する" />
-            <EditorCheckbox
-              _key="show_comment_vpos"
-              text="コメントの書き込み時間を表示する"
-            />
           </Card>
 
           <Card
@@ -132,6 +127,11 @@ function Options() {
             <EditorCheckbox
               _key="show_comments_in_niconico_style"
               text="コメントをニコニコ動画風に表示"
+            />
+            <EditorCheckbox _key="show_nicoru_count" text="ニコるを表示する" />
+            <EditorCheckbox
+              _key="show_comment_vpos"
+              text="コメントの書き込み時間を表示する"
             />
           </Card>
 
