@@ -32,6 +32,7 @@ export class Renderer {
   private req: number | null = null;
   private last = 0;
   private fps = 60;
+  private offset = 0;
 
   constructor(
     canvas: HTMLCanvasElement,
@@ -59,13 +60,18 @@ export class Renderer {
       return;
     }
 
-    this.NiconiComments.drawCanvas(Math.floor(this.video.currentTime * 100));
+    this.NiconiComments.drawCanvas(
+      Math.floor(this.video.currentTime * 100 + this.offset)
+    );
     this.last = timestamp;
     this.req = requestAnimationFrame(this.render.bind(this));
   }
   setThread(threads: V1Thread[]) {
     this.threads = threads;
     this.start();
+  }
+  setOffset(offset: number) {
+    this.offset = offset;
   }
   setOptions(options: Options) {
     this.options = options;
@@ -152,6 +158,12 @@ async function initRenderer() {
           }
           break;
         }
+        case "comment_timing_offset": {
+          if (changes[key].newValue) {
+            renderer.setOffset(Number(changes[key].newValue));
+          }
+          break;
+        }
       }
     }
   });
@@ -159,6 +171,8 @@ async function initRenderer() {
   if (!(await getConfig("show_comments_in_niconico_style"))) return;
   const threads = getThreads()?.threads;
   if (threads) renderer.setThread(threads);
+
+  renderer.setOffset(await getConfig("comment_timing_offset"));
 }
 
 export default initRenderer;

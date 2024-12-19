@@ -100,6 +100,10 @@ function get_default_configs() {
       value: [] as { key: string; value: string; enabled: boolean }[],
       type: "text_list",
     },
+    comment_timing_offset: {
+      value: 0 as number,
+      type: "number",
+    },
     enable_addon_smooth_player: {
       value: true as boolean,
       type: "switch",
