@@ -46,6 +46,7 @@ export function Scroll() {
   const [textColor, setTextColor] = useState<string>();
   const [opacity, setOpacity] = useState<number>();
   const [comments, setComments] = useState<nv_comment[]>([]);
+  const [timing_offset, setTimingOffset] = useState<number>(0);
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
@@ -56,7 +57,9 @@ export function Scroll() {
       const currentTimeMs = videoEl.current.currentTime * 1000;
       if (virtuoso.current) {
         virtuoso.current.scrollToIndex({
-          index: comments.findIndex((c) => c.vposMs > currentTimeMs),
+          index: comments.findIndex(
+            (c) => c.vposMs > currentTimeMs + timing_offset
+          ),
           align: "end",
         });
       }
@@ -138,6 +141,10 @@ export function Scroll() {
             setShowVpos(await getConfig("show_comment_vpos"));
             break;
           }
+          case "comment_timing_offset": {
+            setTimingOffset(Number(changes[key].newValue));
+            break;
+          }
         }
       }
     });
@@ -162,6 +169,7 @@ export function Scroll() {
       setVisibility(await getConfig("show_comments_in_list"));
       setShowNicoru(await getConfig("show_nicoru_count"));
       setShowVpos(await getConfig("show_comment_vpos"));
+      setTimingOffset(await getConfig("comment_timing_offset"));
 
       videoEl.current = await find_element<HTMLVideoElement>("video");
       videoEl.current?.addEventListener("play", loop.start);

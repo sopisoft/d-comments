@@ -90,6 +90,10 @@ function Options() {
               _key="load_comments_on_next_video"
               text="連続再生時に自動で次の動画のコメントを読み込む"
             />
+            <EditorNumber
+              _key="comment_timing_offset"
+              text="コメントの表示タイミングを調整する (ms)"
+            />
           </Card>
         </AccordionContent>
       </AccordionItem>
