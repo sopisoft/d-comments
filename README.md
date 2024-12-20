@@ -14,7 +14,7 @@ d アニメストアの動画再生画面でニコニコ動画のコメントを
 <!-- https://developer.chrome.com/docs/webstore/branding?hl=ja -->
 <!-- https://extensionworkshop.com/documentation/publish/promoting-your-extension/ -->
 
-[![Chrome WebStore](https://storage.googleapis.com/web-dev-uploads/image/WlD8wC6g8khYWPJUsQceQkhXSlv1/UV4C4ybeBTsZt43U4xis.png)](https://chrome.google.com/webstore/detail/d-comments/jocjhkklfiaojhhnjiejmimlohaemiep)
+[![Chrome WebStore](https://developer.chrome.com/static/docs/webstore/branding/image/UV4C4ybeBTsZt43U4xis.png)](https://chrome.google.com/webstore/detail/d-comments/jocjhkklfiaojhhnjiejmimlohaemiep)
 [![Firefox Browser ADD-ONS](https://extensionworkshop.com/assets/img/documentation/publish/get-the-addon-178x60px.dad84b42.png)](https://addons.mozilla.org/ja/firefox/addon/d-comments/)
 
 ## Development
@@ -22,7 +22,7 @@ d アニメストアの動画再生画面でニコニコ動画のコメントを
 ### Requirements
 
 - [Node.js](https://nodejs.org/ja/)
-- [bun](https://bun.sh)
+- [pnpm](https://pnpm.io/)
 - Latest Firefox Based Browser
   - [Firefox](https://www.mozilla.org/ja/firefox/new/)
   - etc...
@@ -37,16 +37,15 @@ d アニメストアの動画再生画面でニコニコ動画のコメントを
 Install local dependencies by running:
 
 ```sh
-bun install
+pnpm install
 ```
 
 ### Build
 
 Run the following command:
 
-```bash
-# Requires Bash environment
-bun run build
+```sh
+pnpm build
 ```
 
 This will create a zip file in the `dist` directory.
@@ -60,7 +59,7 @@ This will create a zip file in the `dist` directory.
 Run the following command:
 
 ```sh
-bun run lint
+pnpm lint
 ```
 
 ### Format
@@ -68,7 +67,7 @@ bun run lint
 Run the following command:
 
 ```sh
-bun run format
+pnpm format
 ```
 
 ## License

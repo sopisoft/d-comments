@@ -16,80 +16,49 @@
 */
 
 import { getConfig } from "@/config";
-import browser from "webextension-polyfill";
 
-import comments_ngfilter from "./comments_ngfilter?worker&url";
-import comments_worker from "./comments_worker?worker&url";
+export async function ngFilter(comments: nv_comment[]): Promise<nv_comment[]> {
+  const [ng_words, ng_users] = await Promise.all([
+    getConfig("comment_ng_words"),
+    getConfig("comment_ng_users"),
+  ]);
 
-type message = {
-  comments: nv_comment[];
-};
+  const escapeRegExp = (string: string) =>
+    string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
-async function newWorker(url: string): Promise<Worker> {
-  const script = await fetch(url).then((r) => r.text());
-  const blob = new Blob([script], { type: "application/javascript" });
-  const objURL = URL.createObjectURL(blob);
-  const worker = new Worker(objURL, { type: "module" });
-  worker.addEventListener("error", (_e) => {
-    URL.revokeObjectURL(objURL);
-  });
-  return worker;
-}
-
-const ngfilter_worker = await newWorker(
-  browser.runtime.getURL(comments_ngfilter)
-);
-const sort_worker = await newWorker(browser.runtime.getURL(comments_worker));
-
-async function build_ng_filter_message(comments: nv_comment[]) {
-  const id = Math.random().toString(36).slice(-8);
-
-  const ng_words = await getConfig("comment_ng_words");
   const enabled_ng_words = ng_words.filter((w) => w.enabled);
-  const regex = enabled_ng_words.map((w) => w.value).join("|");
+  const regex = enabled_ng_words.map((w) => escapeRegExp(w.value)).join("|");
 
-  const ng_users = await getConfig("comment_ng_users");
   const enabled_ng_users = ng_users
     .filter((u) => u.enabled)
     .map((u) => u.value);
 
-  if (enabled_ng_words.length === 0) {
-    return {
-      id: id,
-      ng_words_regex: "skip-ng-words-filter",
-      ng_users: enabled_ng_users,
-      comments: comments,
-    };
-  }
-
-  const ng_filter_message = {
-    id: id,
-    ng_words_regex: new RegExp(regex, "i"),
-    ng_users: enabled_ng_users,
-    comments: comments,
-  };
-  return ng_filter_message;
-}
-export async function ngFilter(comments: nv_comment[]): Promise<nv_comment[]> {
-  const message = await build_ng_filter_message(comments);
-  ngfilter_worker.postMessage(message);
-
-  return await new Promise<nv_comment[]>((resolve) => {
-    ngfilter_worker.addEventListener("message", (e) => {
-      if (e.data.id === message.id) {
-        resolve(e.data.comments);
-      }
-    });
+  return comments.filter((comment) => {
+    const userNotIncluded = !enabled_ng_users.includes(comment.userId);
+    const wordNotIncluded =
+      enabled_ng_words.length === 0 ||
+      !new RegExp(regex, "i").test(comment.body);
+    return userNotIncluded && wordNotIncluded;
   });
 }
 
 export async function sortComments(
   comments: nv_comment[]
 ): Promise<nv_comment[]> {
-  sort_worker.postMessage({ comments });
-  return await new Promise<nv_comment[]>((resolve) => {
-    sort_worker.onmessage = (e: MessageEvent<message>) => {
-      resolve(e.data.comments);
-    };
-  });
+  const n = comments.length;
+  let gap = Math.floor(n / 2);
+  while (gap > 0) {
+    for (let i = gap; i < n; i++) {
+      const temp = comments[i];
+      let j = i;
+      while (j >= gap && comments[j - gap].vposMs > temp.vposMs) {
+        comments[j] = comments[j - gap];
+        j -= gap;
+      }
+      comments[j] = temp;
+    }
+    gap = Math.floor(gap / 2);
+  }
+
+  return comments;
 }
