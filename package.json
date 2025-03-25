@@ -52,7 +52,7 @@
     "postcss": "^8.4.49",
     "tailwindcss": "^3.4.17",
     "typescript": "^5.7.2",
-    "vite": "^6.0.5",
+    "vite": "^6.0.12",
     "vite-plugin-markdown": "^2.2.0",
     "web-ext": "^8.3.0"
   }
