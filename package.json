@@ -3,7 +3,7 @@
   "displayName": "d-anime comments viewer",
   "description": "dアニメストアでニコニコ動画のコメントを表示するブラウザ拡張機能",
   "author": "sopi",
-  "version": "2025.03.15",
+  "version": "2025.07.6",
   "private": true,
   "license": "GPL-3.0",
   "type": "module",
