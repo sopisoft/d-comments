@@ -55,18 +55,6 @@ pnpm build:chrome
 pnpm build:firefox
 ```
 
-This will create a directory structure like this:
-
-```plaintext
-dist/
-├── chrome-mv3
-│   ├── manifest.json
-│   └── other files...
-└── firefox-mv2
-    ├── manifest.json
-    └── other files...
-```
-
 ### Zip
 
 Run the following command:
