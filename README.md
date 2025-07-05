@@ -21,8 +21,7 @@ d アニメストアの動画再生画面でニコニコ動画のコメントを
 
 ### Requirements
 
-- [Node.js](https://nodejs.org/ja/)
-- [pnpm](https://pnpm.io/)
+- [Nix](https://nixos.org/download/)
 - Latest Firefox Based Browser
   - [Firefox](https://www.mozilla.org/ja/firefox/new/)
   - etc...
@@ -30,7 +29,14 @@ d アニメストアの動画再生画面でニコニコ動画のコメントを
   - [Google Chrome](https://www.google.com/intl/ja_jp/chrome/)
   - [Microsoft Edge](https://www.microsoft.com/ja-jp/edge)
   - etc...
-- [Visual Studio Code](https://code.visualstudio.com/)
+
+### Setup development environment
+
+Run the following command:
+
+```sh
+nix develop
+```
 
 ### Install dependencies
 
@@ -45,14 +51,32 @@ pnpm install
 Run the following command:
 
 ```sh
-pnpm build
+pnpm build:chrome
+pnpm build:firefox
+```
+
+This will create a directory structure like this:
+
+```plaintext
+dist/
+├── chrome-mv3
+│   ├── manifest.json
+│   └── other files...
+└── firefox-mv2
+    ├── manifest.json
+    └── other files...
+```
+
+### Zip
+
+Run the following command:
+
+```sh
+pnpm zip:chrome
+pnpm zip:firefox
 ```
 
 This will create a zip file in the `dist` directory.
-
-`dist/chrome.zip` is for Chromium based browsers.
-
-`dist/firefox.zip` is for Firefox based browsers.
 
 ### Lint
 
