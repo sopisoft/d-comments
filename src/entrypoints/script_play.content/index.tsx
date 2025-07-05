@@ -57,7 +57,7 @@ export default defineContentScript({
           ],
           _sort: "-viewCounter",
           targets: ["title", "description"],
-          _limit: 1,
+          _limit: 50,
         };
       }
 

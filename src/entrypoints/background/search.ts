@@ -1,3 +1,5 @@
+import { getConfig } from "@/config";
+
 type integer = number;
 type Fields = {
   contentId: string;
@@ -166,11 +168,13 @@ export async function search(query: SnapShotQuery): Promise<SnapShotResponse> {
     url.searchParams.set("_context", query._context || "d-comments");
   }
 
-  const json = await fetch(url).then(async (res) => await res.json());
+  const res = await fetch(url).then(
+    async (res) => (await res.json()) as SnapShotResponse
+  );
 
-  console.log("bg_search", json);
+  if (res.data && (await getConfig("channels_only"))) {
+    res.data = res.data.filter((v) => v.channelId !== null);
+  }
 
-  return json;
-
-  // return await fetch(url).then(async (res) => await res.json());
+  return res;
 }

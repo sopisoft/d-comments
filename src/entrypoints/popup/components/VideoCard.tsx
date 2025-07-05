@@ -60,15 +60,17 @@ export function VideoCard({
               objectPosition: "center",
             }}
           />
-          <Badge
-            pos="absolute"
-            top={4}
-            left={4}
-            color={item.isDAnime ? "orange" : "cyan"}
-            variant="filled"
-          >
-            {item.isDAnime ? "dアニメ" : "公式"}
-          </Badge>
+          {item.channelId && (
+            <Badge
+              pos="absolute"
+              top={4}
+              left={4}
+              color={item.isDAnime ? "orange" : "cyan"}
+              variant="filled"
+            >
+              {item.isDAnime ? "dアニメ" : "公式"}
+            </Badge>
+          )}
           <Badge
             pos="absolute"
             bottom={3}
