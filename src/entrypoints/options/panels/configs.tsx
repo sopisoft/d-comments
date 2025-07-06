@@ -84,11 +84,6 @@ function ConfigrationsPanel() {
       <Grid.Col span={{ base: 6, md: 3 }}>
         <Fieldset legend={<Title order={2}>コメントの設定</Title>}>
           <Stack align="stretch" justify="center" gap="lg">
-            <SwitchField
-              configKey="load_comments_on_next_video"
-              label="次の動画でコメントを読み込む"
-              description="次の動画が始まったときに、自動的にコメントを読み込みます。"
-            />
             <CheckboxField
               configKey="show_comments_in_list"
               label="コメントをリストで表示"

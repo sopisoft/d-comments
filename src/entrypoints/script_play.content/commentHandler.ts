@@ -142,14 +142,4 @@ export class CommentHandler {
       .filter((thread) => forks.includes(thread.fork))
       .flatMap((thread) => thread.comments);
   }
-
-  onPlayingVideosChange(callback: (threads: Threads) => void): () => void {
-    this.threadListeners.push(callback);
-    const unsubscribe = () => {
-      this.threadListeners = this.threadListeners.filter(
-        (cb) => cb !== callback
-      );
-    };
-    return unsubscribe;
-  }
 }

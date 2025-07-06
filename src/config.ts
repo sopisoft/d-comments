@@ -79,10 +79,6 @@ const defaultConfigs = defineConfigs({
     ui_options: <UIOptions<"slider">>{ min: 0, max: 100, step: 10, unit: "%" },
   },
 
-  load_comments_on_next_video: {
-    value: true,
-    ui_type: "switch",
-  },
   show_comments_in_list: {
     value: true,
     ui_type: "checkbox",

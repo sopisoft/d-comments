@@ -61,37 +61,6 @@ export default defineContentScript({
         };
       }
 
-      if (await getConfig("enable_auto_play")) {
-        const searchResult = await sendMessage(
-          "search",
-          buildQuery(workinfo.data.title)
-        );
-        const videos = snapshotToMinimalVideoData(searchResult);
-        if (videos.length === 0) return;
-        const videoId = videos[0].contentId;
-
-        comments.get(videoId).then(async (v) => {
-          if (!isError(v)) {
-            if (await getConfig("load_comments_on_next_video")) {
-              threads = v.threads;
-              comments.add_playing_video(v);
-            }
-
-            renderer.setThreads(threads);
-            sideRoot.render(
-              <MantineProvider theme={theme}>
-                <CommentSidebar threads={threads} />
-              </MantineProvider>
-            );
-
-            comments.onPlayingVideosChange((v) => {
-              threads = v;
-              reRender(renderer, sideRoot);
-            });
-          }
-        });
-      }
-
       function reRender(renderer: CommentRenderer, sideRoot: Root) {
         renderer.setThreads(threads);
         sideRoot.render(
@@ -122,11 +91,14 @@ export default defineContentScript({
         const id = new URLSearchParams(location.search).get("partId");
         if (id && id !== partId) {
           partId = id;
+          threads = [];
+          reRender(renderer, sideRoot);
+
           const workInfo = await updateWorkInfo();
           if (isError(workInfo)) return;
           if (partId === undefined) return;
 
-          if (await getConfig("load_comments_on_next_video")) {
+          if (await getConfig("enable_auto_play")) {
             const searchResult = await sendMessage(
               "search",
               buildQuery(workInfo.data.title)
