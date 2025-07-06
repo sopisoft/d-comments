@@ -1,6 +1,6 @@
 # d-anime comments viewer
 
-![d-comments logo](./.store/d-comments.png)
+![d-comments logo](./.store/assets/logo.png)
 
 [![GitHub release (latest by date)](https://img.shields.io/github/v/release/sopisoft/d-comments)](https://github.com/sopisoft/d-comments/releases/latest)
 ![GitHub Code Size in Bytes](https://img.shields.io/github/languages/code-size/sopisoft/d-comments)
@@ -65,6 +65,14 @@ pnpm zip:firefox
 ```
 
 This will create a zip file in the `dist` directory.
+
+### Type check
+
+Run the following command:
+
+```sh
+pnpm compile
+```
 
 ### Lint
 
