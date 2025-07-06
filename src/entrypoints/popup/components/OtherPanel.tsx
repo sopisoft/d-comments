@@ -1,12 +1,12 @@
-import { Anchor, Stack, Text, Title } from "@mantine/core";
+import { Accordion, Anchor, Code, Stack, Text, Title } from "@mantine/core";
 
 function OtherPanel() {
-  // const [stored, setStored] = useState<Record<string, unknown>>({});
-  // useEffect(() => {
-  //   browser.storage.local.get(null).then((items) => {
-  //     setStored(items);
-  //   });
-  // }, []);
+  const [stored, setStored] = useState<Record<string, unknown>>({});
+  useEffect(() => {
+    browser.storage.local.get(null).then((items) => {
+      setStored(items);
+    });
+  }, []);
 
   const manifest = browser.runtime.getManifest();
 
@@ -36,23 +36,23 @@ function OtherPanel() {
         </Anchor>
       </Stack>
 
-      {/* <Accordion variant="separated">
-          <Accordion.Item value="storage">
-            <Accordion.Control>ストレージの内容</Accordion.Control>
-            <Accordion.Panel>
-              <Accordion variant="contained" radius="md">
-                {Object.entries(stored).map(([key, value]) => (
-                  <Accordion.Item value={key} key={key}>
-                    <Accordion.Control>{key}</Accordion.Control>
-                    <Accordion.Panel>
-                      <Code block>{JSON.stringify(value, null, 2)}</Code>
-                    </Accordion.Panel>
-                  </Accordion.Item>
-                ))}
-              </Accordion>
-            </Accordion.Panel>
-          </Accordion.Item>
-        </Accordion> */}
+      <Accordion variant="separated">
+        <Accordion.Item value="storage">
+          <Accordion.Control>ストレージの内容</Accordion.Control>
+          <Accordion.Panel>
+            <Accordion variant="contained" radius="md">
+              {Object.entries(stored).map(([key, value]) => (
+                <Accordion.Item value={key} key={key}>
+                  <Accordion.Control>{key}</Accordion.Control>
+                  <Accordion.Panel>
+                    <Code block>{JSON.stringify(value, null, 2)}</Code>
+                  </Accordion.Panel>
+                </Accordion.Item>
+              ))}
+            </Accordion>
+          </Accordion.Panel>
+        </Accordion.Item>
+      </Accordion>
     </Stack>
   );
 }
