@@ -38,8 +38,9 @@ export default defineContentScript({
       if (isError(renderer) || isError(workinfo)) return;
 
       function buildQuery(word: string): SnapShotQuery {
+        const q = word.replaceAll("-", " ");
         return {
-          q: word,
+          q,
           fields: [
             "contentId",
             "title",
