@@ -122,6 +122,7 @@ const defaultConfigs = defineConfigs({
   comment_timing_offset: {
     value: 0,
     ui_type: "number",
+    ui_options: <UIOptions<"number">>{ min: -100000, max: 100000, step: 100 },
   },
 
   /**
