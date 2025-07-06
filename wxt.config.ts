@@ -1,4 +1,7 @@
+import fs from "node:fs";
 import { defineConfig } from "wxt";
+
+const pkg = JSON.parse(fs.readFileSync("package.json", "utf-8"));
 
 // See https://wxt.dev/api/config.html
 export default defineConfig({
@@ -6,6 +9,9 @@ export default defineConfig({
   publicDir: "src/raw",
   outDir: "dist",
   manifest: () => ({
+    name: pkg.displayName,
+    short_name: pkg.name,
+    author: pkg.author,
     icons: {
       16: "/icon/16.png",
       32: "/icon/32.png",
@@ -14,7 +20,7 @@ export default defineConfig({
       128: "/icon/128.png",
       256: "/icon/256.png",
     },
-    permissions: ["cookies", "storage", "unlimitedStorage", "tabs"],
+    permissions: ["cookies", "storage", "tabs"],
     host_permissions: [
       "https://*.nicovideo.jp/*",
       "https://animestore.docomo.ne.jp/*",
