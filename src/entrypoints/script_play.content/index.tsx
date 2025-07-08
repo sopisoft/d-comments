@@ -19,7 +19,6 @@ export default defineContentScript({
   async main() {
     const href = window.location.href;
     if (href.includes("/animestore/sc_d_pc?partId=")) {
-      console.log("Play page");
       const sideRoot = await videoWrapper();
 
       const comments = new CommentHandler();
@@ -93,11 +92,11 @@ export default defineContentScript({
         if (id && id !== partId) {
           partId = id;
           threads = [];
+          comments.playing = [];
           reRender(renderer, sideRoot);
 
           const workInfo = await updateWorkInfo();
-          if (isError(workInfo)) return;
-          if (partId === undefined) return;
+          if (isError(workInfo) || partId === undefined) return;
 
           if (await getConfig("enable_auto_play")) {
             const searchResult = await sendMessage(
