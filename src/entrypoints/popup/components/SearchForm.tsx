@@ -85,6 +85,10 @@ export function SearchForm({ addVideos: addSearchResult }: SearchFormProps) {
         });
       if (!title) return;
 
+      form.setValues({
+        word: title,
+      });
+
       const query: SnapShotQuery = {
         q: title,
         fields: fields,
