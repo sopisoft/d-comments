@@ -1,5 +1,6 @@
 import { AppShell, Group, Tabs } from "@mantine/core";
 import ConfigrationsPanel from "./panels/configs";
+import Form from "./panels/form";
 import QuickOptionsPanel from "./panels/quick";
 
 function Options() {
@@ -11,6 +12,7 @@ function Options() {
             <Tabs.List grow>
               <Tabs.Tab value="quick">クイック設定</Tabs.Tab>
               <Tabs.Tab value="configurations">詳細設定</Tabs.Tab>
+              <Tabs.Tab value="form">フォーム</Tabs.Tab>
             </Tabs.List>
           </Group>
         </AppShell.Header>
@@ -20,6 +22,9 @@ function Options() {
           </Tabs.Panel>
           <Tabs.Panel value="configurations">
             <ConfigrationsPanel />
+          </Tabs.Panel>
+          <Tabs.Panel value="form">
+            <Form />
           </Tabs.Panel>
         </AppShell.Main>
       </AppShell>
