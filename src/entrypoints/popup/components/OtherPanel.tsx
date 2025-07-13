@@ -1,5 +1,16 @@
 import { Accordion, Anchor, Code, Stack, Text, Title } from "@mantine/core";
 
+function form_url(): URL {
+  const version = browser.runtime.getManifest().version;
+  const url = new URL("https://forms.office.com/Pages/ResponsePage.aspx");
+  url.searchParams.append(
+    "id",
+    "DQSIkWdsW0yxEjajBLZtrQAAAAAAAAAAAAMAABWTsPtUNkUyNzMwSFkyNEVENTExTVdINUNBUDBFNC4u"
+  );
+  url.searchParams.append("r4fc5e3af4be04561a824b6564847f811", version);
+  return url;
+}
+
 function OtherPanel() {
   const [stored, setStored] = useState<Record<string, unknown>>({});
   useEffect(() => {
@@ -20,6 +31,13 @@ function OtherPanel() {
       </Stack>
 
       <Stack m="md" gap="xs">
+        <Anchor
+          href={form_url().toString()}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          不具合報告
+        </Anchor>
         <Anchor
           href={browser.runtime.getURL("/usage.html").toString()}
           target="_blank"
