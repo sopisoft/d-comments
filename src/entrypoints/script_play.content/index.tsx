@@ -1,7 +1,3 @@
-import initCommentRenderer, { type CommentRenderer } from "./commentRenderer";
-import { videoWrapper } from "./playerWrapper";
-import { updateWorkInfo } from "./workInfo";
-import "@mantine/core/styles.css";
 import { MantineProvider } from "@mantine/core";
 import type { Root } from "react-dom/client";
 import { getConfig } from "@/config";
@@ -11,7 +7,10 @@ import { onMessage, sendMessage } from "@/messaging";
 import { theme } from "@/theme";
 import type { Threads } from "@/types/nico_api_type";
 import { CommentHandler } from "./commentHandler";
+import initCommentRenderer, { type CommentRenderer } from "./commentRenderer";
 import { CommentSidebar } from "./commentSidebar";
+import { videoWrapper } from "./playerWrapper";
+import { updateWorkInfo } from "./workInfo";
 
 export default defineContentScript({
   matches: ["*://animestore.docomo.ne.jp/animestore/*"],

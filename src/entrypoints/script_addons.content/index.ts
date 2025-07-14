@@ -7,14 +7,14 @@ export default defineContentScript({
   matches: ["https://animestore.docomo.ne.jp/animestore/*"],
   async main() {
     const path = window.location.pathname;
-    if (path.includes("ci_pc")) {
+    if (path.includes("/animestore/ci_pc")) {
       if (await getConfig("enable_addon_add_button_to_play")) {
         await add_button_to_play();
       }
       if (await getConfig("enable_addon_disable_new_window")) {
         await addon_disable_new_window();
       }
-    } else if (path.includes("sc_d_pc")) {
+    } else if (path.includes("/animestore/sc_d_pc")) {
       if (await getConfig("enable_addon_smooth_player")) {
         await addon_smooth_player();
       }

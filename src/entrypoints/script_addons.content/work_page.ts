@@ -17,20 +17,16 @@ export const add_button_to_play = async () => {
     const a = document.createElement("a");
     a.href = `sc_d_pc?partId=${partID}`;
 
-    Object.assign(
-      a.style,
-      { type: "text/css" },
-      {
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        width: "100%",
-        height: "5rem",
-        padding: "1.4rem 1.8rem",
-        borderTop: "1px solid rgb(224 224 224)",
-        backgroundColor: bgColor,
-      }
-    );
+    Object.assign(a.style, {
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      width: "100%",
+      height: "5rem",
+      padding: "1.4rem 1.8rem",
+      borderTop: "1px solid rgb(224 224 224)",
+      backgroundColor: bgColor,
+    });
 
     const section = item.parentElement;
     const target = section?.parentElement;

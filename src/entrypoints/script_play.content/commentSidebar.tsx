@@ -11,6 +11,7 @@ import {
   Stack,
   Text,
 } from "@mantine/core";
+import style from "@mantine/core/styles.css?raw";
 import { Virtuoso, type VirtuosoHandle } from "react-virtuoso";
 import { getConfig, watchConfig } from "@/config";
 import { find_element } from "@/lib/dom";
@@ -224,6 +225,7 @@ export function CommentSidebar({ threads }: { threads: Threads }) {
         fontSize: `${fontSize}px`,
       }}
     >
+      <style>{style}</style>
       <Box ref={parent} w="100%" h="100%">
         <Virtuoso
           ref={virtuoso}
