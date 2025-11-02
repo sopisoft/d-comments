@@ -8,31 +8,24 @@ import {
   Stack,
   Text,
 } from "@mantine/core";
-import { useEffect, useState } from "react";
 import {
   MdOutlineInsertComment,
   MdOutlinePlayArrow,
   MdOutlineVisibility,
   MdOutlineVisibilityOff,
 } from "react-icons/md";
-import type { MinimalVideoData } from "../types/fetch";
+import type { CommentVideoData } from "@/types";
 import { lengthSecondsToTime, toJapaneseNumber } from "../utils";
 
 export function VideoCard({
   item,
-  isPlaying,
+  playing,
   togglePlaying,
 }: {
-  item: MinimalVideoData;
-  isPlaying: (id: string) => Promise<boolean>;
+  item: CommentVideoData["videoData"];
+  playing: boolean;
   togglePlaying: (videoId: string) => Promise<void>;
 }) {
-  const [playing, setPlaying] = useState(false);
-
-  useEffect(() => {
-    isPlaying(item.contentId).then(setPlaying);
-  }, [item.contentId, isPlaying]);
-
   return (
     <Card withBorder padding="sm" radius="md">
       <Group gap="md" align="center">
@@ -100,8 +93,7 @@ export function VideoCard({
               variant="subtle"
               color="gray"
               onClick={() => {
-                togglePlaying(item.contentId);
-                setPlaying((p) => !p);
+                void togglePlaying(item.contentId);
               }}
               title={playing ? "表示をやめる" : "表示する"}
             >

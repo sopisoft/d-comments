@@ -1,9 +1,11 @@
 import { AppShell, Group, Tabs } from "@mantine/core";
-import ConfigrationsPanel from "./panels/configs";
-import Form from "./panels/form";
-import QuickOptionsPanel from "./panels/quick";
+import {
+  ConfigurationsPanel,
+  QuickOptionsPanel,
+  SurveyFormPanel,
+} from "@/config";
 
-function Options() {
+export function Options() {
   return (
     <Tabs defaultValue="configurations" variant="pills">
       <AppShell header={{ height: 60 }} padding="md">
@@ -21,15 +23,13 @@ function Options() {
             <QuickOptionsPanel />
           </Tabs.Panel>
           <Tabs.Panel value="configurations">
-            <ConfigrationsPanel />
+            <ConfigurationsPanel />
           </Tabs.Panel>
           <Tabs.Panel value="form">
-            <Form />
+            <SurveyFormPanel />
           </Tabs.Panel>
         </AppShell.Main>
       </AppShell>
     </Tabs>
   );
 }
-
-export default Options;

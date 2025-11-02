@@ -1,7 +1,7 @@
-import { find_element } from "@/lib/dom";
-import { isError } from "@/lib/utils";
+import { findElement } from "@/lib/dom";
+import { err, ok, type Result } from "@/lib/types";
 
-type WorkInfo = {
+export type WorkInfo = {
   version: number;
   data: {
     partId: string;
@@ -16,43 +16,51 @@ type WorkInfo = {
   };
 };
 
-async function getWorkInfo(): Promise<WorkInfo | Error> {
+async function getWorkInfo(): Promise<Result<WorkInfo, Error>> {
   const partId = new URLSearchParams(location.search).get("partId")?.toString();
-  const base_url = "https://animestore.docomo.ne.jp/animestore/rest/WS010105";
+  const baseUrl = "https://animestore.docomo.ne.jp/animestore/rest/WS010105";
   const params = {
     viewType: "5",
     partId: partId ?? "",
     defaultPlay: "5",
   };
-  const params_str = new URLSearchParams(params);
-  const url = `${base_url}?${params_str}`;
-  const res = await fetch(url, {
+  const paramsStr = new URLSearchParams(params);
+  const url = `${baseUrl}?${paramsStr}`;
+  return fetch(url, {
     method: "GET",
     cache: "no-cache",
   })
-    .then(async (res) => {
-      return (await res.json()) as WorkInfo;
-    })
-    .catch((e) => {
-      return e as Error;
-    });
-  return res;
+    .then((res) => res.json() as Promise<WorkInfo>)
+    .then((data) => ok(data))
+    .catch((error: unknown) =>
+      err(
+        error instanceof Error
+          ? error
+          : new Error(`Failed to fetch work info: ${String(error)}`)
+      )
+    );
 }
 
 /**
  * 視聴ページで title と description をパートタイトルと説明に書き換える
  */
-export async function updateWorkInfo(): Promise<WorkInfo | Error> {
+export async function updateWorkInfo(): Promise<Result<WorkInfo, Error>> {
   const res = await getWorkInfo();
-  if (isError(res)) return res;
+  if (!res.ok) return res;
 
-  const { title, partExp, workTitle } = res.data;
+  const info = res.value;
+
+  if (!info.data || typeof info.data !== "object") {
+    return err(new Error("Invalid workInfo response: missing data property"));
+  }
+
+  const { title, partExp, workTitle } = info.data;
   const description = partExp ? partExp : workTitle;
 
-  const titleEl = await find_element("title");
+  const titleEl = await findElement("title");
   if (titleEl) titleEl.textContent = title;
-  const descriptionEl = await find_element("meta[name=Description]");
+  const descriptionEl = await findElement("meta[name=Description]");
   if (descriptionEl) descriptionEl.setAttribute("content", description);
 
-  return res;
+  return ok(info);
 }

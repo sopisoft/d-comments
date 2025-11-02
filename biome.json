@@ -12,12 +12,7 @@
     "clientKind": "git"
   },
   "files": {
-    "includes": [
-      "**/src/**/*.ts",
-      "**/src/**/*.tsx",
-      "**/wxt.config.ts",
-      "!**/dist"
-    ],
+    "includes": ["src/**/*.ts", "src/**/*.tsx", "wxt.config.ts", "!dist"],
     "ignoreUnknown": true
   },
   "formatter": {
@@ -26,6 +21,10 @@
     "indentWidth": 2
   },
   "linter": {
+    "domains": {
+      "project": "recommended",
+      "react": "recommended"
+    },
     "rules": {
       "recommended": true,
       "style": {
@@ -39,6 +38,10 @@
         "useNumberNamespace": "error",
         "noInferrableTypes": "error",
         "noUselessElse": "error"
+      },
+      "nursery": {
+        "noDeprecatedImports": "warn",
+        "useConsistentArrowReturn": "error"
       }
     }
   },

@@ -1,4 +1,4 @@
-import { getConfig } from "@/config";
+import { getConfig } from "@/config/";
 import { addon_disable_new_window } from "./disable_new_window";
 import { addon_smooth_player } from "./smooth_player";
 import { add_button_to_play } from "./work_page";

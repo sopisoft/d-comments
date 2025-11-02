@@ -1,17 +1,18 @@
-"use client";
-
 import { AppShell, Group, Tabs, Text } from "@mantine/core";
-import FetchPanel from "./components/FetchPanel";
-import OtherPanel from "./components/OtherPanel";
-import SettingsPanel from "./components/SettingsPanel";
+import { useEffect, useState } from "react";
+import { FetchPanel } from "./components/FetchPanel";
+import { OtherPanel } from "./components/OtherPanel";
+import { SettingsPanel } from "./components/SettingsPanel";
 
-function App() {
+export function Popup() {
   const [url, setUrl] = useState("");
+  const [title, setTitle] = useState("");
 
   useEffect(() => {
-    browser.tabs
-      .query({ active: true, currentWindow: true })
-      .then((tabs) => setUrl(tabs[0].url ?? ""));
+    browser.tabs.query({ active: true, currentWindow: true }).then((tabs) => {
+      setUrl(tabs[0].url ?? "");
+      setTitle(tabs[0].title ?? "");
+    });
   }, []);
 
   function isPlayingTab(url: string) {
@@ -37,7 +38,7 @@ function App() {
         <AppShell.Main>
           <Tabs.Panel value="fetch">
             {isPlayingTab(url) ? (
-              <FetchPanel />
+              <FetchPanel title={title} />
             ) : (
               <Text>dアニメストアの視聴ページでご利用ください。</Text>
             )}
@@ -53,5 +54,3 @@ function App() {
     </Tabs>
   );
 }
-
-export default App;

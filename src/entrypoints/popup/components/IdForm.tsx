@@ -1,6 +1,6 @@
 import { Button, Stack, TextInput } from "@mantine/core";
 import { useForm } from "@mantine/form";
-import { isVideoId } from "../utils";
+import { isValidVideoId } from "../utils";
 
 interface IdFormProps {
   addPlaying: (id: string) => Promise<void>;
@@ -13,7 +13,7 @@ export function IdForm({ addPlaying }: IdFormProps) {
     },
     validate: {
       id: (value) =>
-        isVideoId(value) ? null : "動画IDの形式が正しくありません",
+        isValidVideoId(value) ? null : "動画IDの形式が正しくありません",
     },
   });
 

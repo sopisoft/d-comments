@@ -1,21 +1,22 @@
-import { getConfig } from "@/config";
-import { find_elements } from "@/lib/dom";
+import { getConfig } from "@/config/";
+import { findElements } from "@/lib/dom";
+import { logger } from "@/lib/logger";
 
 /**
  * 作品ページの各パートに新しいタブで開くボタンを追加する
  */
 export const add_button_to_play = async () => {
-  console.log("addon_addMenu");
+  logger.debug("addon_addMenu");
   const playInSameTab = await getConfig("addon_option_play_in_same_tab");
 
-  const a_array = await find_elements("section.clearfix > a");
-  for (const item of a_array) {
-    const partID = item?.getAttribute("href")?.replace(/[^0-9]/g, "");
-    if (!partID) continue;
+  const aArray = await findElements("section.clearfix > a");
+  for (const item of aArray) {
+    const partId = item?.getAttribute("href")?.replace(/[^0-9]/g, "");
+    if (!partId) continue;
 
     const bgColor = window.getComputedStyle(item).backgroundColor;
     const a = document.createElement("a");
-    a.href = `sc_d_pc?partId=${partID}`;
+    a.href = `sc_d_pc?partId=${partId}`;
 
     Object.assign(a.style, {
       display: "flex",
@@ -30,9 +31,9 @@ export const add_button_to_play = async () => {
 
     const section = item.parentElement;
     const target = section?.parentElement;
-    const a_exist = target?.querySelector(`a[href="sc_d_pc?partId=${partID}"]`);
+    const aExist = target?.querySelector(`a[href="sc_d_pc?partId=${partId}"]`);
 
-    if (section && target && !a_exist) {
+    if (section && target && !aExist) {
       target?.appendChild(a);
     }
 

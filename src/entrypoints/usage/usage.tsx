@@ -14,7 +14,7 @@ import rehypeSlug from "rehype-slug";
 import remarkGfm from "remark-gfm";
 import MD from "./usage.md?raw";
 import "./usage.css";
-import "github-markdown-css";
+import "github-markdown-css/github-markdown.css";
 
 interface TocItem {
   level: number;
@@ -22,7 +22,7 @@ interface TocItem {
   id: string;
 }
 
-function Usage() {
+export function Usage() {
   const [opened, { toggle }] = useDisclosure();
   const [toc, setToc] = useState<TocItem[]>([]);
   const contentRef = useRef<HTMLDivElement>(null);
@@ -112,5 +112,3 @@ function Usage() {
     </AppShell>
   );
 }
-
-export default Usage;
