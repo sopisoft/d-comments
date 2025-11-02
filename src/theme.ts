@@ -1,7 +1,7 @@
 import { createTheme } from "@mantine/core";
 
 export const theme = createTheme({
-  fontFamily: "IBM Plex Sans JP, sans-serif",
+  fontFamily: "sans-serif",
   colors: {
     orange: [
       "#fff4e1",

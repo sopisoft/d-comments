@@ -1,4 +1,4 @@
-export async function find_element<T extends HTMLElement>(
+export async function findElement<T extends HTMLElement>(
   selector: string
 ): Promise<T | null> {
   let element: T | null = null;
@@ -11,7 +11,7 @@ export async function find_element<T extends HTMLElement>(
   return element;
 }
 
-export async function find_elements<T extends HTMLElement>(
+export async function findElements<T extends HTMLElement>(
   selector: string
 ): Promise<NodeListOf<T>> {
   let elements: NodeListOf<T> | null = null;

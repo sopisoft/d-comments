@@ -1,6 +1,7 @@
 import { Accordion, Anchor, Code, Stack, Text, Title } from "@mantine/core";
+import { useEffect, useState } from "react";
 
-function form_url(): URL {
+function formUrl(): URL {
   const version = browser.runtime.getManifest().version;
   const url = new URL("https://forms.office.com/Pages/ResponsePage.aspx");
   url.searchParams.append(
@@ -11,12 +12,12 @@ function form_url(): URL {
   return url;
 }
 
-function OtherPanel() {
+export function OtherPanel() {
   const [stored, setStored] = useState<Record<string, unknown>>({});
   useEffect(() => {
-    browser.storage.local.get(null).then((items) => {
-      setStored(items);
-    });
+    browser.storage.local
+      .get()
+      .then((items) => setStored(items as Record<string, unknown>));
   }, []);
 
   const manifest = browser.runtime.getManifest();
@@ -32,7 +33,7 @@ function OtherPanel() {
 
       <Stack m="md" gap="xs">
         <Anchor
-          href={form_url().toString()}
+          href={formUrl().toString()}
           target="_blank"
           rel="noopener noreferrer"
         >
@@ -74,5 +75,3 @@ function OtherPanel() {
     </Stack>
   );
 }
-
-export default OtherPanel;

@@ -1,76 +1,62 @@
 import { Button, Group, Select, Stack, TextInput } from "@mantine/core";
 import { useForm } from "@mantine/form";
-import { getConfig } from "@/config";
+import { getConfig } from "@/config/";
 import type { _sort, SnapShotQuery } from "@/entrypoints/background/search";
-import { snapshotToMinimalVideoData } from "@/lib/utils";
-import { sendMessage } from "@/messaging";
-import type { CommentVideoData } from "@/types/videoComment";
+import { logger } from "@/lib/logger";
+import { toVideoData } from "@/lib/utils";
+import { sendMessage } from "@/messaging/";
+import { buildSearchQuery } from "@/modules/search";
+import type { CommentVideoData } from "@/types/comments";
 
-const sort_options: Map<_sort, string> = new Map([
+const sortOptions: Map<_sort, string> = new Map([
   ["viewCounter", "再生数"],
   ["lengthSeconds", "動画の尺"],
   ["commentCounter", "コメント数"],
 ]);
-const sort_order = new Map([
+const sortOrder = new Map([
   ["-", "降順（大 → 小）"],
   ["+", "昇順（小 → 大）"],
 ]);
 
 interface SearchFormProps {
+  initialWord?: string;
   addVideos: (videos: CommentVideoData[]) => Promise<void>;
 }
 
-export function SearchForm({ addVideos: addSearchResult }: SearchFormProps) {
+export function SearchForm({
+  initialWord,
+  addVideos: addSearchResult,
+}: SearchFormProps) {
   const form = useForm({
     initialValues: {
-      word: "",
+      word: initialWord ?? "",
       sort_option: "commentCounter",
       sort_order: "-",
     },
   });
 
-  const fields: SnapShotQuery["fields"] = [
-    "contentId",
-    "title",
-    "description",
-    "tags",
-    "genre",
-    "categoryTags",
-    "commentCounter",
-    "viewCounter",
-    "startTime",
-    "lengthSeconds",
-    "channelId",
-    "userId",
-    "thumbnailUrl",
-  ];
-
   async function handleSearch(values: typeof form.values) {
     const { word, sort_option, sort_order } = values;
-    const sort = `${sort_order}${sort_option}`;
-
-    const query: SnapShotQuery = {
-      q: word,
-      fields: fields,
-      _sort: sort as SnapShotQuery["_sort"],
-      targets: ["title", "description", "tags"],
-      _limit: 50,
-    };
+    const sort = `${sort_order}${sort_option}` as SnapShotQuery["_sort"];
+    const query = buildSearchQuery(word, sort);
 
     const res = await sendMessage("search", query);
-    if (res.meta.status !== 200) {
-      console.error(res.meta.errorCode, res.meta.errorMessage);
+    if (!res || "error" in res) {
+      logger.error("search error", res);
       return;
     }
 
-    const data = snapshotToMinimalVideoData(res);
-    const videos: CommentVideoData[] = data.map((v) => {
-      return {
-        date: -1,
-        videoData: v,
-        threads: [],
-      };
-    });
+    if (res.meta.status !== 200) {
+      logger.error(res.meta.errorCode, res.meta.errorMessage);
+      return;
+    }
+
+    const data = toVideoData(res);
+    const videos: CommentVideoData[] = data.map((v) => ({
+      date: -1,
+      videoData: v,
+      threads: [],
+    }));
     await addSearchResult(videos);
   }
 
@@ -78,39 +64,24 @@ export function SearchForm({ addVideos: addSearchResult }: SearchFormProps) {
     getConfig("auto_search").then(async (v) => {
       if (!v) return;
 
-      const title = await browser.tabs
-        .query({ active: true, currentWindow: true })
-        .then((tabs) => {
-          return tabs[0].title;
-        });
-      if (!title) return;
-
-      form.setValues({
-        word: title,
-      });
-
-      const query: SnapShotQuery = {
-        q: title,
-        fields: fields,
-        _sort: "-commentCounter",
-        targets: ["title", "description", "tags"],
-        _limit: 50,
-      };
-
+      const query = buildSearchQuery(form.getValues().word, "-commentCounter");
       const res = await sendMessage("search", query);
-      if (res.meta.status !== 200) {
-        console.error(res.meta.errorCode, res.meta.errorMessage);
+      if (!res || "error" in res) {
+        logger.error("search error", res);
         return;
       }
 
-      const data = snapshotToMinimalVideoData(res);
-      const videos: CommentVideoData[] = data.map((v) => {
-        return {
-          date: -1,
-          videoData: v,
-          threads: [],
-        };
-      });
+      if (res.meta.status !== 200) {
+        logger.error(res.meta.errorCode, res.meta.errorMessage);
+        return;
+      }
+
+      const data = toVideoData(res);
+      const videos: CommentVideoData[] = data.map((v) => ({
+        date: -1,
+        videoData: v,
+        threads: [],
+      }));
       await addSearchResult(videos);
     });
   }, []);
@@ -128,7 +99,7 @@ export function SearchForm({ addVideos: addSearchResult }: SearchFormProps) {
         <Group grow>
           <Select
             label="並び替え"
-            data={Array.from(sort_options).map(([value, label]) => ({
+            data={Array.from(sortOptions).map(([value, label]) => ({
               value,
               label,
             }))}
@@ -137,7 +108,7 @@ export function SearchForm({ addVideos: addSearchResult }: SearchFormProps) {
           />
           <Select
             label="並び順"
-            data={Array.from(sort_order).map(([value, label]) => ({
+            data={Array.from(sortOrder).map(([value, label]) => ({
               value,
               label,
             }))}

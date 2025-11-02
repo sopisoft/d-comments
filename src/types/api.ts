@@ -1,4 +1,4 @@
-type BseResponse<T = unknown> =
+type BaseResponse<T = unknown> =
   | {
       meta: {
         status: 200;
@@ -26,7 +26,7 @@ export type SuccessfulResponseData<T extends VideoData | ThreadsDataResponse> =
     ? D
     : never;
 
-type thread = {
+type Thread = {
   id: number;
   fork: number;
   forkLabel: "owner" | "main" | "easy";
@@ -39,7 +39,7 @@ export type NvComment = {
     language: string; // "ja-jp"
     targets: {
       id: string; // thread["id"] to stringify
-      fork: thread["forkLabel"];
+      fork: Thread["forkLabel"];
     }[];
   };
 };
@@ -61,13 +61,13 @@ export type NvCommentItem = {
 };
 
 export type Threads = {
-  id: thread["id"];
-  fork: thread["forkLabel"];
+  id: Thread["id"];
+  fork: Thread["forkLabel"];
   commentCount: number;
   comments: NvCommentItem[];
 }[];
 
-export type VideoData = BseResponse<{
+export type VideoData = BaseResponse<{
   response: {
     channel: {
       id: string;
@@ -102,12 +102,12 @@ export type VideoData = BseResponse<{
       layers: {
         index: number;
         isTranslucent: boolean;
-        threadIds: thread[];
+        threadIds: Thread[];
       }[];
       threads: {
-        id: thread["id"];
-        fork: thread["fork"];
-        forkLabel: thread["forkLabel"];
+        id: Thread["id"];
+        fork: Thread["fork"];
+        forkLabel: Thread["forkLabel"];
         videoId: string; // contentId
         isOwnerThread: boolean;
         isActive: boolean;
@@ -152,7 +152,7 @@ export type VideoData = BseResponse<{
   };
 }>;
 
-export type ThreadsDataResponse = BseResponse<{
+export type ThreadsDataResponse = BaseResponse<{
   globalComments: [
     {
       id: number;
@@ -162,7 +162,7 @@ export type ThreadsDataResponse = BseResponse<{
   threads: Threads;
 }>;
 
-export type ThreadKeyResponse = BseResponse<{
+export type ThreadKeyResponse = BaseResponse<{
   threadKey: string;
 }>;
 

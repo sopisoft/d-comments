@@ -1,5 +1,5 @@
-export const isVideoId = (id: string) => {
-  const videoId_prefix = [
+export const isValidVideoId = (id: string) => {
+  const videoIdPrefix = [
     "sm",
     "nm",
     "so",
@@ -15,9 +15,9 @@ export const isVideoId = (id: string) => {
     "sk",
     "yk",
   ];
-  const videoId_suffix = ["\\d{1,14}"];
+  const videoIdSuffix = ["\\d{1,14}"];
   const videoId = new RegExp(
-    `^(${videoId_prefix.join("|")})(${videoId_suffix.join("|")})$`
+    `^(${videoIdPrefix.join("|")})(${videoIdSuffix.join("|")})$`
   );
   return videoId.test(id);
 };

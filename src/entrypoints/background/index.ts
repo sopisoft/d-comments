@@ -1,4 +1,12 @@
-import { onMessage } from "@/messaging";
+import { logger } from "@/lib/logger";
+import { onMessage } from "@/messaging/";
+import {
+  addVideoToStore,
+  clearStore,
+  getStoreSnapshot,
+  releaseStore,
+  removeVideoFromStore,
+} from "./commentStore";
 import {
   channelData,
   threadKey,
@@ -12,18 +20,17 @@ let read = false;
 async function openUsageIfNotRead() {
   if (read) return;
   read = true;
-  const read_flag_key = "read_usage";
-  const latest_doc_version = "1.0.0";
-  const [k, v] = [read_flag_key, latest_doc_version];
-  const usageRead: boolean = (await browser.storage.local.get(k))[k] === v;
+  const readFlagKey = "read_usage";
+  const latestDocVersion = "1.0.0";
+  const [k, v] = [readFlagKey, latestDocVersion];
+  const items = await browser.storage.local.get(k);
+  const usageRead: boolean = items[k] === v;
   if (usageRead) return;
 
   await browser.tabs.create({
     url: browser.runtime.getURL("/usage.html"),
   });
-  await browser.storage.local.set({
-    [k]: v,
-  });
+  await browser.storage.local.set({ [k]: v });
 }
 
 export default defineBackground({
@@ -33,11 +40,76 @@ export default defineBackground({
       await openUsageIfNotRead();
     });
 
+    browser.tabs.onRemoved.addListener((tabId) => {
+      releaseStore(tabId);
+    });
+
     onMessage("search", async (payload) => await search(payload));
     onMessage("video_data", async (payload) => await videoData(payload));
     onMessage("threads_data", async (payload) => await threadsData(payload));
     onMessage("thread_key", async (payload) => await threadKey(payload));
     onMessage("user_data", async (payload) => await userData(payload));
     onMessage("channel_data", async (payload) => await channelData(payload));
+    onMessage("add_video", async (payload, sender) => {
+      if (!payload) {
+        throw new Error("Missing add_video payload");
+      }
+      const tabId = resolveTabId(payload.tabId, sender);
+      const state = await addVideoToStore(tabId, payload.video);
+      await broadcastState(tabId, state);
+      return state.videos;
+    });
+    onMessage("remove_video", async (payload, sender) => {
+      if (!payload) {
+        throw new Error("Missing remove_video payload");
+      }
+      const tabId = resolveTabId(payload.tabId, sender);
+      const state = removeVideoFromStore(tabId, payload.videoId);
+      await broadcastState(tabId, state);
+      return state.videos;
+    });
+    onMessage("clear_videos", async (payload, sender) => {
+      const tabId = resolveTabId(payload?.tabId, sender);
+      const state = clearStore(tabId);
+      await broadcastState(tabId, state);
+      return state.videos;
+    });
+    onMessage("playing_video", async (payload, sender) => {
+      const tabId = resolveTabId(payload?.tabId, sender);
+      const state = getStoreSnapshot(tabId);
+      return state.videos;
+    });
   },
 });
+
+const resolveTabId = (
+  explicitTabId: number | undefined,
+  sender: Browser.runtime.MessageSender
+): number => {
+  if (typeof explicitTabId === "number") {
+    return explicitTabId;
+  }
+  const senderTabId = sender.tab?.id;
+  if (typeof senderTabId === "number") {
+    return senderTabId;
+  }
+  throw new Error("Unable to resolve tabId for message");
+};
+
+const broadcastState = async (
+  tabId: number,
+  state: ReturnType<typeof getStoreSnapshot>
+) => {
+  try {
+    await browser.tabs.sendMessage(tabId, {
+      type: "comment_state_update",
+      payload: {
+        tabId,
+        videos: state.videos,
+        threads: state.threads,
+      },
+    });
+  } catch (error) {
+    logger.debug("Failed to broadcast comment state", { tabId, error });
+  }
+};

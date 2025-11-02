@@ -1,7 +1,7 @@
 import { Anchor, Stack } from "@mantine/core";
-import QuickOptionsPanel from "@/entrypoints/options/panels/quick";
+import { QuickOptionsPanel } from "@/config";
 
-function SettingsPanel() {
+export function SettingsPanel() {
   return (
     <Stack p="sm" gap="xl">
       <QuickOptionsPanel />
@@ -15,5 +15,3 @@ function SettingsPanel() {
     </Stack>
   );
 }
-
-export default SettingsPanel;

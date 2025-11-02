@@ -1,59 +1,61 @@
-import { find_element } from "@/lib/dom";
+import { findElement } from "@/lib/dom";
+import { logger } from "@/lib/logger";
 
 /**
  * Firefoxで再生開始後やシーク移動後に、映像が止まり音声だけが流れるのを防ぐ
  */
 export async function addon_smooth_player() {
-  console.log("addon_smooth_player");
+  logger.debug("addon_smooth_player");
 
-  if ("MozAppearance" in document.documentElement.style) {
-    const video = (await find_element("video")) as HTMLVideoElement | null;
+  const video = (await findElement("video")) as HTMLVideoElement | null;
+  if (!video) return;
+
+  video.preload = "auto";
+  video.playsInline = true;
+
+  let lastFreezeRemoved: number | null = null;
+
+  function removeFreeze() {
     if (!video) return;
+    const now = Date.now();
+    if (lastFreezeRemoved && now - lastFreezeRemoved < 500) return;
+    lastFreezeRemoved = now;
 
-    video.preload = "auto";
-    video.playsInline = true;
+    const currentTime = video.currentTime;
+    const wasPaused = video.paused;
+    video.currentTime = Math.max(0, currentTime - 5);
+    video.pause();
 
-    let last_remove_freeze: number | null = null;
-    // 一時的にシークして戻す（＝キャッシュを促す）
-    async function remove_freeze(video: HTMLVideoElement) {
-      const now = Date.now();
-      if (last_remove_freeze && now - last_remove_freeze > 500) {
-        const currentTime = video.currentTime;
-        const paused = video.paused;
-        video.currentTime = Math.max(0, currentTime - 5);
-        video.pause();
-
-        console.log("cp");
-        setTimeout(() => {
-          video.currentTime = currentTime;
-          if (!paused) video.play();
-        }, 300);
-      }
-      last_remove_freeze = Date.now();
-    }
-
-    // 一時停止し 6 秒以上経過したのち、再生を再開したとき
-    let last_pause: number | null = null;
-    video.addEventListener("pause", () => {
-      last_pause = Date.now();
-    });
-    video.addEventListener("play", () => {
-      const now = Date.now();
-      if (last_pause && now - last_pause > 6 * 1000) remove_freeze(video);
-    });
-
-    let last_time: number | null = null;
-    video.addEventListener("timeupdate", () => {
-      const currentTime = video.currentTime;
-      if (last_time) {
-        const d = last_time - currentTime;
-        if (last_time && d > 3) {
-          remove_freeze(video);
-        }
-      }
-      last_time = currentTime;
-    });
-
-    remove_freeze(video);
+    setTimeout(() => {
+      if (!video) return;
+      video.currentTime = currentTime;
+      if (!wasPaused) video.play();
+    }, 300);
   }
+
+  // 一時停止から6秒以上経過後の再生時にフリーズ解除
+  let lastPausedAt: number | null = null;
+  video.addEventListener("pause", () => {
+    lastPausedAt = Date.now();
+  });
+  video.addEventListener("play", () => {
+    if (lastPausedAt && Date.now() - lastPausedAt > 6000) {
+      removeFreeze();
+    }
+  });
+
+  // timeupdateで逆方向ジャンプ（3秒以上）を検知したらフリーズ解除
+  let lastTimeUpdate: number | null = null;
+  video.addEventListener("timeupdate", () => {
+    const currentTime = video.currentTime;
+    if (lastTimeUpdate !== null) {
+      const diff = lastTimeUpdate - currentTime;
+      if (diff > 3) {
+        removeFreeze();
+      }
+    }
+    lastTimeUpdate = currentTime;
+  });
+
+  removeFreeze();
 }

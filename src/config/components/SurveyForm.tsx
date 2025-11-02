@@ -1,6 +1,6 @@
 import { Container } from "@mantine/core";
 
-function make_iframe() {
+const makeIframe = () => {
   const version = browser.runtime.getManifest().version;
 
   const iframe = document.createElement("iframe");
@@ -18,11 +18,9 @@ function make_iframe() {
   iframe.allowFullscreen = true;
   iframe.style.border = "none";
   return iframe.outerHTML;
-}
+};
 
-function Form() {
-  // biome-ignore lint/security/noDangerouslySetInnerHtml: anyway
-  return <Container dangerouslySetInnerHTML={{ __html: make_iframe() }} />;
+export function SurveyFormPanel() {
+  // biome-ignore lint/security/noDangerouslySetInnerHtml: form embed requires HTML injection
+  return <Container dangerouslySetInnerHTML={{ __html: makeIframe() }} />;
 }
-
-export default Form;
