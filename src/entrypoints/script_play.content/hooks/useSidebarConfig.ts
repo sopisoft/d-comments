@@ -2,24 +2,17 @@ import { useEffect, useState } from "react";
 import { type ConfigKey, getConfig, watchConfig } from "@/config/";
 import { findElement } from "@/lib/dom";
 
-type SidebarState = {
+export type SidebarState = {
   fps: number;
-  width?: number;
-  fontSize?: number;
-  bgColor?: string;
-  textColor?: string;
-  opacity?: number;
-  scrollSmoothly?: boolean;
+  width: number;
+  fontSize: number;
+  bgColor: string;
+  textColor: string;
+  opacity: number;
+  scrollSmoothly: boolean;
   visibility: boolean;
   showNicoru: boolean;
   timingOffset: number;
-};
-
-const initialState: SidebarState = {
-  fps: 60,
-  visibility: false,
-  showNicoru: false,
-  timingOffset: 0,
 };
 
 export function useVideoElement() {
@@ -54,7 +47,7 @@ export function useVideoElement() {
 }
 
 export function useSidebarConfig() {
-  const [state, setState] = useState<SidebarState>(initialState);
+  const [state, setState] = useState<SidebarState>(Object);
 
   useEffect(() => {
     const w = (key: ConfigKey) => {

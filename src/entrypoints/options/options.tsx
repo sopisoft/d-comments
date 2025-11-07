@@ -4,6 +4,7 @@ import {
   QuickOptionsPanel,
   SurveyFormPanel,
 } from "@/config";
+import { NgListPanel } from "@/config/components/NgListPanel";
 
 export function Options() {
   return (
@@ -14,6 +15,7 @@ export function Options() {
             <Tabs.List grow>
               <Tabs.Tab value="quick">クイック設定</Tabs.Tab>
               <Tabs.Tab value="configurations">詳細設定</Tabs.Tab>
+              <Tabs.Tab value="ng">NG 管理</Tabs.Tab>
               <Tabs.Tab value="form">フォーム</Tabs.Tab>
             </Tabs.List>
           </Group>
@@ -24,6 +26,9 @@ export function Options() {
           </Tabs.Panel>
           <Tabs.Panel value="configurations">
             <ConfigurationsPanel />
+          </Tabs.Panel>
+          <Tabs.Panel value="ng">
+            <NgListPanel />
           </Tabs.Panel>
           <Tabs.Panel value="form">
             <SurveyFormPanel />

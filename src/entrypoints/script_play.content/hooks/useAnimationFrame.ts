@@ -1,59 +1,45 @@
 import { useCallback, useEffect, useRef } from "react";
 
-export function useAnimationFrame(
-  callback: () => unknown | Promise<unknown>,
-  intervalMs = 0
-) {
-  const frameRef = useRef<number | undefined>(undefined);
-  const lastTimeRef = useRef<number | null>(null);
+export function useAnimationFrame(callback: () => void, intervalMs = 0) {
+  const saved = useRef(callback);
+  const rafRef = useRef<number | null>(null);
   const runningRef = useRef(false);
-  const callbackRef = useRef(callback);
-  const intervalRef = useRef(intervalMs);
+  const nextTickRef = useRef(0);
 
   useEffect(() => {
-    callbackRef.current = callback;
-    intervalRef.current = intervalMs;
-  }, [callback, intervalMs]);
+    saved.current = callback;
+  }, [callback]);
 
-  const tick = useCallback((time: number) => {
-    if (!runningRef.current) return;
+  const loop = useCallback(
+    (time: number) => {
+      if (!runningRef.current) return;
 
-    if (lastTimeRef.current === null) {
-      lastTimeRef.current = time;
-    } else if (
-      intervalRef.current === 0 ||
-      time - lastTimeRef.current >= intervalRef.current
-    ) {
-      lastTimeRef.current = time;
-      callbackRef.current();
-    }
+      if (!intervalMs || time >= nextTickRef.current) {
+        nextTickRef.current = intervalMs ? time + intervalMs : time;
+        saved.current();
+      }
 
-    frameRef.current = requestAnimationFrame(tick);
-  }, []);
+      rafRef.current = requestAnimationFrame(loop);
+    },
+    [intervalMs]
+  );
 
   const start = useCallback(() => {
     if (runningRef.current) return;
     runningRef.current = true;
-    lastTimeRef.current = null;
-    frameRef.current = requestAnimationFrame(tick);
-  }, [tick]);
+    nextTickRef.current = performance.now();
+    rafRef.current = requestAnimationFrame(loop);
+  }, [loop]);
 
   const pause = useCallback(() => {
     runningRef.current = false;
-    if (frameRef.current !== undefined) {
-      cancelAnimationFrame(frameRef.current);
+    if (rafRef.current !== null) {
+      cancelAnimationFrame(rafRef.current);
+      rafRef.current = null;
     }
   }, []);
 
-  useEffect(
-    () => () => {
-      runningRef.current = false;
-      if (frameRef.current !== undefined) {
-        cancelAnimationFrame(frameRef.current);
-      }
-    },
-    []
-  );
+  useEffect(() => pause, [pause]);
 
   return { start, pause };
 }

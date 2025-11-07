@@ -166,6 +166,14 @@ const defaultConfigs = defineConfigs({
     value: true,
     ui_type: "switch",
   },
+  ng_user_ids: {
+    value: [] as Array<{ value: string; enabled: boolean }>,
+    ui_type: "checkbox",
+  },
+  ng_words: {
+    value: [] as Array<{ value: string; enabled: boolean; isRegex?: boolean }>,
+    ui_type: "checkbox",
+  },
 });
 
 export type ConfigSchema = typeof defaultConfigs;

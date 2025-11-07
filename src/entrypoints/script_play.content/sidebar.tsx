@@ -1,249 +1,179 @@
-import { Badge, Box, Button, Card, Grid, Stack, Text } from "@mantine/core";
-import { Activity, useEffect, useRef, useState } from "react";
+import { ActionIcon, Divider, Paper, Text } from "@mantine/core";
+import { useCallback, useRef } from "react";
 import { Virtuoso, type VirtuosoHandle } from "react-virtuoso";
-import { getConfig, watchConfig } from "@/config/";
 import type { NvCommentItem, Threads } from "@/types/api";
-import { useAnimationFrame } from "./hooks/useAnimationFrame";
+import { SidebarCommentCard } from "./components/SidebarCommentCard";
+import { SidebarPopoverDropdown } from "./components/SidebarPopoverDropdown";
+import { PopoverProvider, usePopover } from "./context/PopoverContext";
 import { useCommentList } from "./hooks/useCommentList";
+import { useSidebarAutoScroll } from "./hooks/useSidebarAutoScroll";
 import { useSidebarConfig, useVideoElement } from "./hooks/useSidebarConfig";
-import nicoru from "./nicoru.png";
-import { nicoruColor, toJPDateFormat, vposToTime } from "./utils/formatting";
 
-type CommentCardProps = {
-  comment: NvCommentItem;
-  showNicoru: boolean;
-  textColor?: string;
-  expanded: boolean;
-  onHover(commentId: string): void;
-  onLeave(commentId: string): void;
-  onToggle(commentId: string): void;
-  onSeek(comment: NvCommentItem): void;
-};
-
-const CommentCard = ({
-  comment,
-  showNicoru,
-  textColor,
-  expanded,
-  onHover,
-  onLeave,
-  onToggle,
-  onSeek,
-}: CommentCardProps) => (
-  <Card
-    padding="xs"
-    bg={showNicoru ? nicoruColor(comment.nicoruCount) : "transparent"}
-    role="button"
-    radius="none"
-    aria-pressed={expanded}
-    aria-expanded={expanded}
-    onMouseEnter={() => {
-      onHover(comment.id);
-    }}
-    onMouseLeave={() => {
-      onLeave(comment.id);
-    }}
-    onFocus={() => {
-      onHover(comment.id);
-    }}
-    onBlur={() => {
-      onLeave(comment.id);
-    }}
-    onClick={(event) => {
-      event.preventDefault();
-      onToggle(comment.id);
-    }}
-    style={{
-      cursor: "pointer",
-      outline: expanded ? `3px solid ${textColor}` : undefined,
-      outlineOffset: expanded ? 2 : undefined,
-      overflow: "visible",
-    }}
-  >
-    <Grid columns={10} align="stretch">
-      <Grid.Col span={showNicoru ? 9 : 10}>
-        <Stack>
-          <Text c={textColor} lineClamp={expanded ? undefined : 4}>
-            {comment.body}
-          </Text>
-          <Badge c={textColor} variant="light">
-            {vposToTime(comment.vposMs)}
-          </Badge>
-        </Stack>
-      </Grid.Col>
-      <Activity mode={showNicoru ? "visible" : "hidden"}>
-        <Grid.Col span="content">
-          <Stack gap="xs" align="center" justify="center">
-            <img style={{ width: "1.5rem" }} src={nicoru} aria-label="ニコる" />
-            <Text c={textColor} size="xs">
-              {comment.nicoruCount}
-            </Text>
-          </Stack>
-        </Grid.Col>
-      </Activity>
-    </Grid>
-    {expanded ? (
-      <Card.Section mt="sm" p="sm">
-        <Stack gap="sm">
-          <Text size="sm" c="dimmed">
-            書き込み日時：
-            {toJPDateFormat(new Date(comment.postedAt))}
-          </Text>
-          <Button
-            size="xs"
-            variant="default"
-            c={textColor}
-            onClick={(event) => {
-              event.preventDefault();
-              event.stopPropagation();
-              onSeek(comment);
-            }}
-          >
-            再生時間 ( {vposToTime(comment.vposMs)} ) へ移動
-          </Button>
-        </Stack>
-      </Card.Section>
-    ) : null}
-  </Card>
-);
-
-export function CommentSidebar({ threads }: { threads: Threads }) {
-  const virtuoso = useRef<VirtuosoHandle>(null);
-  const isAutoScrollEnabled = useRef(true);
-
+function SidebarContent({ threads }: { threads: Threads }) {
+  const virtuosoRef = useRef<VirtuosoHandle | null>(null);
   const { video } = useVideoElement();
   const config = useSidebarConfig();
-  const commentsList = useCommentList(threads);
-  const [hoveredId, setHoveredId] = useState<string | null>(null);
-  const [lockedId, setLockedId] = useState<string | null>(null);
+  const comments = useCommentList(threads);
 
-  const scroll = () => {
-    if (!isAutoScrollEnabled.current || !!lockedId || !video || video.paused)
-      return;
-    const index = commentsList.findIndex(
-      (comment) =>
-        comment.vposMs > video.currentTime * 1000 + (config.timingOffset ?? 0)
-    );
-    virtuoso.current?.scrollToIndex({
-      index: index >= 0 ? index : 0,
-      align: "end",
-      behavior: config.scrollSmoothly ? "smooth" : "auto",
-    });
-  };
+  const autoScroll = useSidebarAutoScroll({
+    video,
+    config,
+    comments,
+    virtuosoRef,
+  });
 
-  const { start, pause } = useAnimationFrame(scroll, config.fps);
+  const { notifyHover, openPopover: hookOpenPopover } = autoScroll;
+  const { comment, setComment, close } = usePopover();
 
-  useEffect(() => {
-    if (!video) return;
-    const onPlay = () => {
-      start();
-    };
-    const onPause = () => {
-      pause();
-    };
-    video.addEventListener("play", onPlay);
-    video.addEventListener("pause", onPause);
-    if (!video.paused) start();
+  const openPopover = useCallback(
+    (item: NvCommentItem, selection?: "user" | "word") => {
+      hookOpenPopover(item, selection);
+      setComment(item);
+    },
+    [hookOpenPopover, setComment]
+  );
 
-    return () => {
-      video.removeEventListener("play", onPlay);
-      video.removeEventListener("pause", onPause);
-    };
-  }, [video, start, pause]);
+  const renderCommentItem = useCallback(
+    (_: number, item: NvCommentItem) => (
+      <SidebarCommentCard
+        comment={item}
+        showNicoru={config.showNicoru ?? false}
+        isActive={comment?.id === item.id}
+        onContext={() => openPopover(item, "user")}
+        onOpen={() => openPopover(item)}
+        onRightDown={() => openPopover(item, "user")}
+      />
+    ),
+    [comment?.id, config.showNicoru, openPopover]
+  );
 
-  useEffect(() => {
-    getConfig("enable_auto_scroll")
-      .then((v) => {
-        isAutoScrollEnabled.current = v;
-      })
-      .then(() => {
-        watchConfig("enable_auto_scroll", (value) => {
-          isAutoScrollEnabled.current = value;
-        });
-      });
-  }, []);
-
-  const handleHover = (commentId: string) => {
-    if (!lockedId) setHoveredId(commentId);
-    isAutoScrollEnabled.current = false;
-  };
-
-  const handleLeave = (commentId: string) => {
-    if (lockedId) return;
-    setHoveredId((current) => (current === commentId ? null : current));
-    isAutoScrollEnabled.current = true;
-  };
-
-  const handleToggle = (commentId: string) => {
-    setLockedId((current) => (current === commentId ? null : commentId));
-    setHoveredId((current) => (current === commentId ? null : current));
-  };
-
-  const handleSeek = (comment: NvCommentItem) => {
-    if (video) video.currentTime = comment.vposMs / 1000;
-  };
+  const handleSeek = useCallback(
+    (item: NvCommentItem) => {
+      if (video) video.currentTime = item.vposMs / 1000;
+    },
+    [video]
+  );
 
   return (
     <div
       style={{
-        display: config.visibility ? "block" : "none",
+        position: "relative",
+        height: "100%",
+        display: config.visibility ? "flex" : "none",
+        flexDirection: "column",
         backgroundColor: config.bgColor,
         color: config.textColor,
         opacity: (config.opacity ?? 100) / 100,
-        minWidth: `${config.width ?? 0}px`,
         width: `${config.width ?? 0}px`,
-        height: "100%",
         fontSize: `${config.fontSize ?? 0}px`,
       }}
     >
-      <Box
-        onMouseEnter={() => {
-          isAutoScrollEnabled.current = false;
+      <div
+        style={{
+          padding: "12px",
+          borderBottom: `1px solid ${config.textColor}20`,
+          flexShrink: 0,
         }}
-        onFocus={() => {
-          isAutoScrollEnabled.current = false;
-        }}
-        onMouseLeave={() => {
-          isAutoScrollEnabled.current = true;
-        }}
-        onBlur={() => {
-          isAutoScrollEnabled.current = true;
-        }}
-        w="100%"
-        h="100%"
-        pos="relative"
       >
-        <Activity mode={commentsList.length > 0 ? "visible" : "hidden"}>
-          <Text p="sm" ta="center" style={{ borderBottom: "1px solid" }}>
-            コメント数: {commentsList.length}
-          </Text>
-        </Activity>
-        <Virtuoso
-          ref={virtuoso}
-          data={commentsList}
-          components={{
-            Header: undefined,
-            Footer: undefined,
+        <Text size="sm" fw={600} ta="center">
+          コメント数: {comments.length}
+        </Text>
+      </div>
+
+      <div
+        style={{
+          flex: 1,
+          display: "flex",
+          flexDirection: "column",
+          overflow: "hidden",
+        }}
+      >
+        <section
+          aria-label="コメントリスト"
+          onMouseEnter={() => notifyHover(true)}
+          onMouseLeave={() => notifyHover(false)}
+          style={{
+            flex: 1,
+            minHeight: 0,
+            position: "relative",
           }}
-          itemContent={(_index: number, comment: NvCommentItem) => {
-            const expanded =
-              lockedId === comment.id ||
-              (!lockedId && hoveredId === comment.id);
-            return (
-              <CommentCard
+        >
+          <Virtuoso
+            ref={virtuosoRef}
+            data={comments}
+            itemContent={renderCommentItem}
+            style={{ height: "100%" }}
+            increaseViewportBy={{ top: 100, bottom: 100 }}
+          />
+        </section>
+
+        {comment ? (
+          <Divider
+            my={0}
+            style={{
+              borderColor: `${config.textColor}40`,
+              flexShrink: 0,
+            }}
+          />
+        ) : null}
+
+        {comment ? (
+          <Paper
+            p="md"
+            style={{
+              flex: 0.6,
+              overflow: "auto",
+              display: "flex",
+              flexDirection: "column",
+              gap: "12px",
+              backgroundColor: `${config.bgColor}40`,
+              borderTop: `2px solid ${config.textColor}40`,
+              flexShrink: 0,
+            }}
+            withBorder={false}
+          >
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                paddingBottom: "8px",
+              }}
+            >
+              <Text size="md" fw={700}>
+                詳細
+              </Text>
+              <ActionIcon
+                onClick={close}
+                bg={config.bgColor}
+                c={config.textColor}
+                style={{
+                  border: `1px solid ${config.textColor}`,
+                  flexShrink: 0,
+                }}
+                size="sm"
+                aria-label="詳細パネルを閉じる"
+              >
+                ×
+              </ActionIcon>
+            </div>
+            <div style={{ flex: 1, overflow: "auto", minHeight: 0 }}>
+              <SidebarPopoverDropdown
                 comment={comment}
-                showNicoru={config.showNicoru ?? false}
-                textColor={config.textColor}
-                expanded={expanded}
-                onHover={handleHover}
-                onLeave={handleLeave}
-                onToggle={handleToggle}
-                onSeek={handleSeek}
+                onSeek={() => handleSeek(comment)}
               />
-            );
-          }}
-        />
-      </Box>
+            </div>
+          </Paper>
+        ) : null}
+      </div>
     </div>
+  );
+}
+
+export function CommentSidebar({ threads }: { threads: Threads }) {
+  return (
+    <PopoverProvider>
+      <SidebarContent threads={threads} />
+    </PopoverProvider>
   );
 }
