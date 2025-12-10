@@ -1,47 +1,25 @@
 import { logger } from "@/lib/logger";
 import { onMessage } from "@/messaging/";
-import {
-  addVideoToStore,
-  clearStore,
-  getStoreSnapshot,
-  releaseStore,
-  removeVideoFromStore,
-} from "./commentStore";
-import {
-  channelData,
-  threadKey,
-  threadsData,
-  userData,
-  videoData,
-} from "./fetch";
+import { addVideoToStore, clearStore, getStoreSnapshot, removeVideoFromStore } from "./commentStore";
+import { channelData, threadKey, threadsData, userData, videoData } from "./fetch";
 import { search } from "./search";
 
 let read = false;
 async function openUsageIfNotRead() {
   if (read) return;
   read = true;
-  const readFlagKey = "read_usage";
-  const latestDocVersion = "1.0.0";
-  const [k, v] = [readFlagKey, latestDocVersion];
+  const [k, v] = ["read_usage", "1.0.0"];
   const items = await browser.storage.local.get(k);
-  const usageRead: boolean = items[k] === v;
-  if (usageRead) return;
-
-  await browser.tabs.create({
-    url: browser.runtime.getURL("/usage.html"),
-  });
+  if (items[k] === v) return;
+  await browser.tabs.create({ url: browser.runtime.getURL("/usage.html") });
   await browser.storage.local.set({ [k]: v });
 }
 
 export default defineBackground({
   type: "module",
-  main() {
+  async main() {
     browser.runtime.onInstalled.addListener(async (_details) => {
       await openUsageIfNotRead();
-    });
-
-    browser.tabs.onRemoved.addListener((tabId) => {
-      releaseStore(tabId);
     });
 
     onMessage("search", async (payload) => await search(payload));
@@ -82,10 +60,7 @@ export default defineBackground({
   },
 });
 
-const resolveTabId = (
-  explicitTabId: number | undefined,
-  sender: Browser.runtime.MessageSender
-): number => {
+const resolveTabId = (explicitTabId: number | undefined, sender: Browser.runtime.MessageSender): number => {
   if (typeof explicitTabId === "number") {
     return explicitTabId;
   }
@@ -96,10 +71,7 @@ const resolveTabId = (
   throw new Error("Unable to resolve tabId for message");
 };
 
-const broadcastState = async (
-  tabId: number,
-  state: ReturnType<typeof getStoreSnapshot>
-) => {
+const broadcastState = async (tabId: number, state: ReturnType<typeof getStoreSnapshot>) => {
   try {
     await browser.tabs.sendMessage(tabId, {
       type: "comment_state_update",

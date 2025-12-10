@@ -23,33 +23,16 @@ type Fields = {
   "genre.keyword": string; // ジャンル完全一致
 };
 
-type Targets = keyof Pick<
-  Fields,
-  "title" | "description" | "tags" | "tagsExact"
->;
+type Targets = keyof Pick<Fields, "title" | "description" | "tags" | "tagsExact">;
 
 type fields = keyof Omit<Fields, "tagsExact" | "genre.keyword">;
 
 export type _sort = keyof Pick<
   Fields,
-  | "viewCounter"
-  | "mylistCounter"
-  | "likeCounter"
-  | "lengthSeconds"
-  | "startTime"
-  | "commentCounter"
-  | "lastCommentTime"
+  "viewCounter" | "mylistCounter" | "likeCounter" | "lengthSeconds" | "startTime" | "commentCounter" | "lastCommentTime"
 >;
 
-type Filters = keyof Omit<
-  Fields,
-  | "title"
-  | "description"
-  | "userId"
-  | "channelId"
-  | "thumbnailUrl"
-  | "lastResBody"
->;
+type Filters = keyof Omit<Fields, "title" | "description" | "userId" | "channelId" | "thumbnailUrl" | "lastResBody">;
 
 type FiltersQuery = {
   key: Filters;
@@ -100,15 +83,9 @@ export interface SnapShotQuery {
   _context?: string; // 最大40文字
 }
 
-type Nullable<T> = {
-  [P in keyof T]: T[P] | null;
-};
+type Nullable<T> = { [P in keyof T]: T[P] | null };
 type Marge<T, U> = {
-  [P in keyof T | keyof U]: P extends keyof T
-    ? T[P]
-    : P extends keyof U
-      ? U[P]
-      : never;
+  [P in keyof T | keyof U]: P extends keyof T ? T[P] : P extends keyof U ? U[P] : never;
 };
 
 export type SnapShotResponse = {
@@ -116,76 +93,47 @@ export type SnapShotResponse = {
     status: 200 | 400 | 500 | 503;
     errorCode?: "QUERY_PARSE_ERROR" | "INTERNAL_SERVER_ERROR" | "MAINTENANCE";
     errorMessage?: string;
-    totalCount?: number; // ヒット件数
-    id?: string; // リクエストID
+    totalCount?: number;
+    id?: string;
   };
-  data: Marge<Nullable<Fields>, { contentId: string }>[]; // fields によって取得するフィールドが変わる
+  data: Marge<Nullable<Fields>, { contentId: string }>[];
 };
 
-/**
- * スナップショットAPIを使って動画を検索する
- * @see https://site.nicovideo.jp/search-api-docs/snapshot
- */
-export async function search(query: SnapShotQuery): Promise<SnapShotResponse> {
-  try {
-    const url = new URL(
-      "https://snapshot.search.nicovideo.jp/api/v2/snapshot/video/contents/search"
-    );
-    url.searchParams.set("q", query.q);
-    url.searchParams.set("targets", query.targets.join(","));
-    if (query.fields) {
-      url.searchParams.set("fields", query.fields.join(","));
+const buildSearchUrl = (query: SnapShotQuery): URL => {
+  const url = new URL("https://snapshot.search.nicovideo.jp/api/v2/snapshot/video/contents/search");
+  const { searchParams } = url;
+  searchParams.set("q", query.q);
+  searchParams.set("targets", query.targets.join(","));
+  if (query.fields) searchParams.set("fields", query.fields.join(","));
+  query.filters?.forEach((f) => {
+    if (f.operator === "not") {
+      const v = f.value.toString();
+      searchParams.set(`filters[-${f.key}][0]`, v);
+      searchParams.set(`filters[${f.key}][${f.operator}]`, v);
     }
-    if (query.filters) {
-      for (const filter of query.filters) {
-        if (filter.operator === "not") {
-          url.searchParams.set(
-            `filters[-${filter.key}][0]`,
-            filter.value.toString()
-          );
-          url.searchParams.set(
-            `filters[${filter.key}][${filter.operator}]`,
-            filter.value.toString()
-          );
-        }
-      }
-    }
-    if (query.jsonFilter) {
-      url.searchParams.set("jsonFilter", JSON.stringify(query.jsonFilter));
-    }
-    if (query._sort) {
-      url.searchParams.set("_sort", query._sort);
-    }
-    if (query._offset) {
-      url.searchParams.set("_offset", Number(query._offset).toString());
-    }
-    if (query._limit) {
-      url.searchParams.set("_limit", query._limit.toString());
-    }
-    if (query._context) {
-      url.searchParams.set("_context", query._context || "d-comments");
-    }
+  });
+  if (query.jsonFilter) searchParams.set("jsonFilter", JSON.stringify(query.jsonFilter));
+  if (query._sort) searchParams.set("_sort", query._sort);
+  if (query._offset) searchParams.set("_offset", `${Number(query._offset)}`);
+  if (query._limit) searchParams.set("_limit", `${query._limit}`);
+  searchParams.set("_context", query._context || "d-comments");
+  return url;
+};
 
-    const res = await fetch(url).then(
-      async (res) => (await res.json()) as SnapShotResponse
-    );
+const emptyResponse = (message?: string): SnapShotResponse => ({
+  meta: {
+    status: 500,
+    errorCode: "INTERNAL_SERVER_ERROR",
+    errorMessage: message,
+  },
+  data: [],
+});
 
-    if (res.data && (await getConfig("channels_only"))) {
-      res.data = res.data.filter(
-        (v: Marge<Nullable<Fields>, { contentId: string }>) =>
-          v.channelId !== null
-      );
-    }
-
-    return res;
-  } catch (e) {
-    return {
-      meta: {
-        status: 500,
-        errorCode: "INTERNAL_SERVER_ERROR",
-        errorMessage: e instanceof Error && e.message ? e.message : undefined,
-      },
-      data: [],
-    };
-  }
-}
+export const search = async (query: SnapShotQuery): Promise<SnapShotResponse> =>
+  fetch(buildSearchUrl(query))
+    .then((res) => res.json() as Promise<SnapShotResponse>)
+    .then(async (res) => {
+      if (await getConfig("channels_only")) res.data = res.data.filter((v) => v.channelId !== null);
+      return res;
+    })
+    .catch((error: unknown) => emptyResponse(error instanceof Error ? error.message : undefined));

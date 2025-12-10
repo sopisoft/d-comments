@@ -2,12 +2,13 @@ export {
   addPlayingVideo,
   clearPlayingVideos,
   createCommentManager,
+  flattenComments,
   getComments,
   getPlaying,
   getThreads,
   removePlayingVideo,
+  sortComments,
 } from "./manager";
-export { flattenComments, sortComments } from "./selectors";
 export type { CommentService } from "./service";
 export { createCommentService } from "./service";
 export type {

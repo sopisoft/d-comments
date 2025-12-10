@@ -1,25 +1,18 @@
-export async function findElement<T extends HTMLElement>(
-  selector: string
-): Promise<T | null> {
-  let element: T | null = null;
-  while (!element) {
-    element = document.querySelector(selector);
-    if (!element) {
-      await new Promise((resolve) => setTimeout(resolve, 100));
-    }
-  }
-  return element;
-}
+const waitFor = <T>(fn: () => T | null, interval = 100): Promise<T> =>
+  new Promise((resolve) => {
+    const poll = () => {
+      const result = fn();
+      if (result) resolve(result);
+      else setTimeout(poll, interval);
+    };
+    poll();
+  });
 
-export async function findElements<T extends HTMLElement>(
-  selector: string
-): Promise<NodeListOf<T>> {
-  let elements: NodeListOf<T> | null = null;
-  while (!elements || elements.length === 0) {
-    elements = document.querySelectorAll(selector);
-    if (!elements || elements.length === 0) {
-      await new Promise((resolve) => setTimeout(resolve, 100));
-    }
-  }
-  return elements;
-}
+export const findElement = <T extends HTMLElement>(selector: string): Promise<T> =>
+  waitFor(() => document.querySelector<T>(selector));
+
+export const findElements = <T extends HTMLElement>(selector: string): Promise<NodeListOf<T>> =>
+  waitFor(() => {
+    const els = document.querySelectorAll<T>(selector);
+    return els.length > 0 ? els : null;
+  });

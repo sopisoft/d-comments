@@ -6,10 +6,7 @@ export type VideoDictionary = Record<VideoId, CommentVideoData>;
 
 export type MergeOrder = "append" | "prepend";
 
-export const shouldPreferIncoming = (
-  current: CommentVideoData | undefined,
-  incoming: CommentVideoData
-): boolean => {
+export const shouldPreferIncoming = (current: CommentVideoData | undefined, incoming: CommentVideoData): boolean => {
   if (!current) return true;
   const incomingHasThreads = incoming.threads.length > 0;
   if (!incomingHasThreads) return false;
@@ -26,15 +23,13 @@ export const mergeVideoEntries = (
   let changed = false;
   const next: VideoDictionary = { ...entries };
 
-  incoming.forEach((video) => {
+  for (const video of incoming) {
     const id = video.videoData.contentId;
     const current = entries[id];
-    if (!prefer(current, video)) return;
+    if (!prefer(current, video)) continue;
     next[id] = video;
-    if (!changed && current !== video) {
-      changed = true;
-    }
-  });
+    if (!changed && current !== video) changed = true;
+  }
 
   return changed ? next : entries;
 };
@@ -47,10 +42,7 @@ export const mergeVideoOrder = (
   const seen = new Set(order);
   const freshIds = incomingIds.filter((id) => !seen.has(id));
   if (freshIds.length === 0) return order as VideoId[];
-  if (mergeOrder === "prepend") {
-    return [...freshIds, ...order];
-  }
-  return [...order, ...freshIds];
+  return mergeOrder === "prepend" ? [...freshIds, ...order] : [...order, ...freshIds];
 };
 
 export const buildDisplayVideos = (
@@ -61,21 +53,20 @@ export const buildDisplayVideos = (
   const seen = new Set<VideoId>();
   const list: CommentVideoData[] = [];
 
-  playing.forEach((video) => {
+  for (const video of playing) {
     const id = video.videoData.contentId;
-    const entry = entries[id] ?? video;
-    if (seen.has(id)) return;
+    if (seen.has(id)) continue;
     seen.add(id);
-    list.push(entry);
-  });
+    list.push(entries[id] ?? video);
+  }
 
-  order.forEach((id) => {
-    if (seen.has(id)) return;
+  for (const id of order) {
+    if (seen.has(id)) continue;
     const entry = entries[id];
-    if (!entry) return;
+    if (!entry) continue;
     seen.add(id);
     list.push(entry);
-  });
+  }
 
   return list;
 };

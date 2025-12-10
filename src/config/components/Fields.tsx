@@ -1,192 +1,143 @@
-import {
-  Checkbox,
-  ColorInput,
-  Input,
-  NumberInput,
-  Slider,
-  Stack,
-  Switch,
-} from "@mantine/core";
-import { type ConfigKeysWithUIType, getRawDefaultConfig } from "@/config/";
+import { Checkbox, Input, NumberInput, Paper, Slider, Stack, Switch } from "@mantine/core";
+import { memo } from "react";
+import { type BooleanConfigKeys, type ConfigKeysWithUIType, getRawDefaultConfig } from "@/config/";
 import { useConfigValue } from "../hooks/useConfigValue";
+import { useTheme } from "../hooks/useTheme";
 
-export function SwitchField({
-  configKey,
-  label,
-  description,
-}: {
-  configKey: ConfigKeysWithUIType<"switch">;
-  label: string;
-  description: string;
-}) {
-  const { value, defaultValue, isPending, save } = useConfigValue(configKey);
-  const checked = (value ?? defaultValue) as boolean;
+const useFieldAppearance = () => {
+  const { styles: ps } = useTheme();
+  const textStyles = {
+    label: { color: ps.text.primary },
+    description: { color: ps.text.secondary },
+  } as const;
+  return {
+    ps,
+    textStyles,
+    inputStyles: { ...ps.inputStyles, ...textStyles },
+  } as const;
+};
 
+type FieldProps<K> = { configKey: K; label: string; description: string };
+
+export const SwitchField = memo(({ configKey, label, description }: FieldProps<BooleanConfigKeys<"switch">>) => {
+  const { textStyles } = useFieldAppearance();
+  const { currentValue, isPending, save } = useConfigValue(configKey);
   return (
     <Switch
       label={label}
       description={description}
-      checked={checked}
+      checked={currentValue}
       disabled={isPending}
-      onChange={(event) => save(event.currentTarget.checked)}
+      onChange={(e) => save(e.currentTarget.checked)}
+      color="accent"
+      styles={textStyles}
     />
   );
-}
+});
 
-export function ColorField({
-  configKey,
-  label,
-  description,
-}: {
-  configKey: ConfigKeysWithUIType<"color">;
-  label: string;
-  description: string;
-}) {
-  const { value, defaultValue, isPending, save } = useConfigValue(configKey);
-  const current = (value ?? defaultValue) as string;
-
+export const CheckboxField = memo(({ configKey, label, description }: FieldProps<BooleanConfigKeys<"checkbox">>) => {
+  const { textStyles } = useFieldAppearance();
+  const { currentValue, isPending, save } = useConfigValue(configKey);
   return (
-    <ColorInput
+    <Checkbox
       label={label}
-      description={description}
-      value={current}
+      checked={currentValue}
       disabled={isPending}
-      onChange={(color) => save(color)}
+      onChange={(e) => save(e.currentTarget.checked)}
+      color="accent"
+      styles={textStyles}
+      description={description}
     />
   );
-}
+});
 
-export function NumberField({
-  configKey,
-  label,
-  description,
-}: {
-  configKey: ConfigKeysWithUIType<"number">;
-  label: string;
-  description: string;
-}) {
-  const { value, defaultValue, isPending, save } = useConfigValue(configKey);
+export const NumberField = memo(({ configKey, label, description }: FieldProps<ConfigKeysWithUIType<"number">>) => {
   const options = getRawDefaultConfig(configKey).ui_options;
-  const { min, max } = options;
-  const step = "step" in options ? options.step : undefined;
-  const current = Number(value ?? defaultValue);
-
+  const { inputStyles } = useFieldAppearance();
+  const { currentValue, isPending, save } = useConfigValue(configKey);
   return (
     <NumberInput
       label={label}
       description={description}
-      value={current}
+      value={Number(currentValue)}
       disabled={isPending}
-      onChange={(next) => {
-        const numeric = Number(next);
-        if (!Number.isFinite(numeric)) return;
-        save(numeric);
+      onChange={(n) => {
+        const v = Number(n);
+        if (Number.isFinite(v)) save(v);
       }}
-      min={min}
-      max={max}
-      step={step}
+      min={options.min}
+      max={options.max}
+      step={"step" in options ? options.step : undefined}
       clampBehavior="strict"
+      styles={inputStyles}
     />
   );
-}
+});
 
-export function SliderField({
-  configKey,
-  label,
-  description,
-}: {
-  configKey: ConfigKeysWithUIType<"slider">;
-  label: string;
-  description: string;
-}) {
-  const { value, defaultValue, isPending, save } = useConfigValue(configKey);
-  const options = getRawDefaultConfig(configKey).ui_options;
-  const { min, max, step, unit } = options;
-  const current = Number(value ?? defaultValue);
-
+export const SliderField = memo(({ configKey, label, description }: FieldProps<ConfigKeysWithUIType<"slider">>) => {
+  const { min, max, step, unit } = getRawDefaultConfig(configKey).ui_options;
+  const { textStyles } = useFieldAppearance();
+  const { currentValue, isPending, save } = useConfigValue(configKey);
+  const marks = unit
+    ? [
+        { value: min, label: `${min}${unit}` },
+        { value: max, label: `${max}${unit}` },
+      ]
+    : undefined;
   return (
-    <Input.Wrapper label={label} description={description}>
+    <Input.Wrapper label={label} description={description} styles={textStyles}>
       <Slider
-        value={current}
+        value={Number(currentValue)}
         disabled={isPending}
-        onChange={(next) => save(next)}
+        onChange={save}
         min={min}
         max={max}
         step={step}
-        marks={
-          unit
-            ? [
-                { value: min, label: `${min}${unit}` },
-                { value: max, label: `${max}${unit}` },
-              ]
-            : undefined
-        }
+        mt="md"
+        mb="xl"
+        color="accent"
+        marks={marks}
+        styles={{ markLabel: textStyles.description }}
       />
     </Input.Wrapper>
   );
-}
+});
 
-export function CheckboxGroupField({
-  configKey,
-  label,
-  description,
-}: {
-  configKey: ConfigKeysWithUIType<"checkbox_group">;
-  label: string;
-  description: string;
-}) {
-  const { value, defaultValue, isPending, save } = useConfigValue(configKey);
-  const current = value ?? defaultValue;
-  const visible = current
-    .filter((item) => item.enabled)
-    .map((item) => item.key);
-
-  const onCheckedChange = (checked: boolean, key: string) => {
-    const next = current.map((item) =>
-      item.key === key ? { ...item, enabled: checked } : item
+export const CheckboxGroupField = memo(
+  ({ configKey, label, description }: FieldProps<ConfigKeysWithUIType<"checkbox_group">>) => {
+    const { ps, textStyles } = useFieldAppearance();
+    const { currentValue, defaultValue, isPending, save } = useConfigValue(configKey);
+    const effectiveVisible = currentValue.filter((item) => item.enabled).map((item) => item.key);
+    const onCheckedChange = (checked: boolean, key: string) =>
+      save(currentValue.map((item) => (item.key === key ? { ...item, enabled: checked } : item)));
+    return (
+      <Checkbox.Group label={label} description={description} value={effectiveVisible} styles={textStyles}>
+        <Paper
+          p="sm"
+          mt="sm"
+          radius="sm"
+          style={{
+            background: ps.bg.surface,
+            color: ps.text.primary,
+            border: ps.panel.border,
+          }}
+        >
+          <Stack gap="sm">
+            {defaultValue.map((item) => (
+              <Checkbox
+                key={item.key}
+                label={item.value}
+                value={item.key}
+                checked={currentValue.find((i) => i.key === item.key)?.enabled ?? false}
+                onChange={(e) => onCheckedChange(e.currentTarget.checked, item.key)}
+                disabled={isPending}
+                color="accent"
+                styles={{ label: textStyles.label }}
+              />
+            ))}
+          </Stack>
+        </Paper>
+      </Checkbox.Group>
     );
-    save(next);
-  };
-
-  return (
-    <Checkbox.Group label={label} description={description} value={visible}>
-      <Stack gap="sm" mt="sm">
-        {defaultValue.map((item) => (
-          <Checkbox
-            key={item.key}
-            label={item.value}
-            value={item.key}
-            checked={current.find((i) => i.key === item.key)?.enabled ?? false}
-            onChange={(event) =>
-              onCheckedChange(event.currentTarget.checked, item.key)
-            }
-            disabled={isPending}
-          />
-        ))}
-      </Stack>
-    </Checkbox.Group>
-  );
-}
-
-export function CheckboxField({
-  configKey,
-  label,
-  description,
-}: {
-  configKey: ConfigKeysWithUIType<"checkbox">;
-  label: string;
-  description: string;
-}) {
-  const { value, defaultValue, isPending, save } = useConfigValue(configKey);
-  const checked = (value ?? defaultValue) as boolean;
-
-  return (
-    <Checkbox
-      label={label}
-      description={description}
-      checked={checked}
-      disabled={isPending}
-      onChange={(event) => save(event.currentTarget.checked)}
-    />
-  );
-}
+  }
+);

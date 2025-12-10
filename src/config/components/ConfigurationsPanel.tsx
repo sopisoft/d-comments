@@ -1,102 +1,46 @@
-import { Fieldset, Stack, Title } from "@mantine/core";
+import { Divider, Stack } from "@mantine/core";
 import { memo } from "react";
-import {
-  configSections,
-  type SectionDefinition,
-  type SectionField,
-} from "../sections";
-import {
-  CheckboxField,
-  CheckboxGroupField,
-  ColorField,
-  NumberField,
-  SliderField,
-  SwitchField,
-} from "./Fields";
+import { useTheme } from "../hooks/useTheme";
+import { configSections } from "../sections";
+import type { SectionDefinition, SectionField } from "../sections.types";
+import { CheckboxField, CheckboxGroupField, NumberField, SliderField, SwitchField } from "./Fields";
+import { SectionCard } from "./SectionCard";
+import { ThemeSettingsPanel } from "./ThemeSettingsPanel";
 
-const renderField = (field: SectionField) => {
-  switch (field.kind) {
+const renderField = (f: SectionField) => {
+  switch (f.kind) {
     case "switch":
-      return (
-        <SwitchField
-          configKey={field.configKey}
-          label={field.label}
-          description={field.description}
-        />
-      );
+      return <SwitchField configKey={f.configKey} label={f.label} description={f.description} />;
     case "checkbox":
-      return (
-        <CheckboxField
-          configKey={field.configKey}
-          label={field.label}
-          description={field.description}
-        />
-      );
+      return <CheckboxField configKey={f.configKey} label={f.label} description={f.description} />;
     case "number":
-      return (
-        <NumberField
-          configKey={field.configKey}
-          label={field.label}
-          description={field.description}
-        />
-      );
+      return <NumberField configKey={f.configKey} label={f.label} description={f.description} />;
     case "slider":
-      return (
-        <SliderField
-          configKey={field.configKey}
-          label={field.label}
-          description={field.description}
-        />
-      );
-    case "color":
-      return (
-        <ColorField
-          configKey={field.configKey}
-          label={field.label}
-          description={field.description}
-        />
-      );
+      return <SliderField configKey={f.configKey} label={f.label} description={f.description} />;
     case "checkbox_group":
-      return (
-        <CheckboxGroupField
-          configKey={field.configKey}
-          label={field.label}
-          description={field.description}
-        />
-      );
+      return <CheckboxGroupField configKey={f.configKey} label={f.label} description={f.description} />;
+    case "theme_settings":
+      return <ThemeSettingsPanel />;
   }
 };
 
-const ConfigField = memo(({ field }: { field: SectionField }) =>
-  renderField(field)
-);
-
-const sectionStyle = {
-  width: "100%",
-  maxWidth: "56rem",
-  margin: "0 auto",
-} as const;
-
-const ConfigSection = memo(({ section }: { section: SectionDefinition }) => (
-  <Fieldset
-    radius="md"
-    p="lg"
-    style={sectionStyle}
-    legend={<Title order={3}>{section.title}</Title>}
-  >
+const ConfigSection = memo(({ section, dividerColor }: { section: SectionDefinition; dividerColor: string }) => (
+  <SectionCard icon={section.icon} title={section.title} description={section.description}>
     <Stack gap="lg">
-      {section.fields.map((field) => (
-        <ConfigField key={field.id} field={field} />
+      <Divider color={dividerColor} />
+      {section.fields.map((f) => (
+        <div key={f.id}>{renderField(f)}</div>
       ))}
     </Stack>
-  </Fieldset>
+  </SectionCard>
 ));
 
 export function ConfigurationsPanel() {
+  const { styles: ps } = useTheme();
   return (
     <Stack gap="xl" align="center">
-      {configSections.map((section) => (
-        <ConfigSection key={section.key} section={section} />
+      {configSections.map((s) => (
+        <ConfigSection key={s.key} section={s} dividerColor={ps.border.subtle} />
       ))}
     </Stack>
   );

@@ -1,4 +1,3 @@
-import type { CommandInfo } from "./commandParser";
 import {
   CANVAS_HEIGHT,
   COMMENT_SCALE,
@@ -9,42 +8,29 @@ import {
   LINE_COUNTS,
   MIN_FONT_SIZE,
 } from "./constants";
+import type { CommandInfo } from "./parser";
 import type { CommentLineMetric, CommentSize, CommentStyle } from "./types";
 
-const clamp = (value: number, min: number, max: number): number =>
-  Math.min(max, Math.max(min, value));
+const clamp = (value: number, min: number, max: number): number => Math.min(max, Math.max(min, value));
 
-const measurementCanvas =
-  typeof document !== "undefined" ? document.createElement("canvas") : null;
+const measurementCanvas = typeof document !== "undefined" ? document.createElement("canvas") : null;
 const measurementContext = measurementCanvas?.getContext("2d", {
   willReadFrequently: true,
 });
 
 const ensureContext = () => {
-  if (!measurementContext) {
-    throw new Error("Failed to acquire measurement context");
-  }
+  if (!measurementContext) throw new Error("Failed to acquire measurement context");
   return measurementContext;
 };
 
-const computeCharSizeStage = (size: CommentSize): number =>
-  COMMENT_STAGE_SIZE.height / LINE_COUNTS.doubleResized[size];
+const computeCharSizeStage = (size: CommentSize): number => COMMENT_STAGE_SIZE.height / LINE_COUNTS.doubleResized[size];
 
-const computeLineHeightStage = (
-  size: CommentSize,
-  resized: boolean
-): number => {
+const computeLineHeightStage = (size: CommentSize, resized: boolean): number => {
   const charSize = computeCharSizeStage(size);
   const defaultLineCount = LINE_COUNTS.default[size];
-  if (!resized) {
-    return (COMMENT_STAGE_SIZE.height - charSize) / (defaultLineCount - 1);
-  }
+  if (!resized) return (COMMENT_STAGE_SIZE.height - charSize) / (defaultLineCount - 1);
   const resizedLineCount = LINE_COUNTS.resized[size];
-  return (
-    (COMMENT_STAGE_SIZE.height -
-      charSize * (defaultLineCount / resizedLineCount)) /
-    (resizedLineCount - 1)
-  );
+  return (COMMENT_STAGE_SIZE.height - charSize * (defaultLineCount / resizedLineCount)) / (resizedLineCount - 1);
 };
 
 type LineSizing = {
@@ -54,39 +40,17 @@ type LineSizing = {
   readonly resizedX: boolean;
 };
 
-const computeFontStage = (
-  charSizeStage: number
-): {
-  fontSize: number;
-  scale: number;
-} => {
+const computeFontStage = (charSizeStage: number): { fontSize: number; scale: number } => {
   const raw = charSizeStage * 0.8;
   if (raw < MIN_FONT_SIZE) {
-    if (raw >= 1) {
-      const floored = Math.floor(raw);
-      if (floored > 0) {
-        return {
-          fontSize: MIN_FONT_SIZE,
-          scale: floored / MIN_FONT_SIZE,
-        };
-      }
-    }
-    return {
-      fontSize: MIN_FONT_SIZE,
-      scale: raw / MIN_FONT_SIZE,
-    };
+    const floored = Math.floor(raw);
+    if (raw >= 1 && floored > 0) return { fontSize: MIN_FONT_SIZE, scale: floored / MIN_FONT_SIZE };
+    return { fontSize: MIN_FONT_SIZE, scale: raw / MIN_FONT_SIZE };
   }
-  return {
-    fontSize: Math.floor(raw),
-    scale: 1,
-  };
+  return { fontSize: Math.floor(raw), scale: 1 };
 };
 
-const setMeasurementFont = (
-  fontFamily: string,
-  fontWeight: number,
-  fontSize: number
-) => {
+const setMeasurementFont = (fontFamily: string, fontWeight: number, fontSize: number) => {
   const ctx = ensureContext();
   ctx.font = `${fontWeight} ${Math.max(1, fontSize)}px ${fontFamily}`;
   ctx.textBaseline = "alphabetic";
@@ -117,18 +81,13 @@ const applyLineBreakResize = (
   defaultCharStage: number,
   defaultLineHeightStage: number,
   settings: MeasurementSettings
-): {
-  charStage: number;
-  lineHeightStage: number;
-  resized: boolean;
-} => {
-  if (settings.disableResize || lineCount < LINE_BREAK_COUNT[size]) {
+) => {
+  if (settings.disableResize || lineCount < LINE_BREAK_COUNT[size])
     return {
       charStage: defaultCharStage,
       lineHeightStage: defaultLineHeightStage,
       resized: false,
     };
-  }
   const resizedLineHeightStage = computeLineHeightStage(size, true);
   const ratio = resizedLineHeightStage / defaultLineHeightStage;
   return {
@@ -138,14 +97,9 @@ const applyLineBreakResize = (
   };
 };
 
-const resolveWidthLimitStage = (
-  info: CommandInfo,
-  settings: MeasurementSettings
-): number | undefined => {
+const resolveWidthLimitStage = (info: CommandInfo, settings: MeasurementSettings): number | undefined => {
   if (settings.disableResize || info.loc === "middle") return undefined;
-  return info.isFullWidth
-    ? COMMENT_STAGE_SIZE.fullWidth
-    : COMMENT_STAGE_SIZE.width;
+  return info.isFullWidth ? COMMENT_STAGE_SIZE.fullWidth : COMMENT_STAGE_SIZE.width;
 };
 
 const enforceWidthLimit = (
@@ -156,39 +110,28 @@ const enforceWidthLimit = (
   initialLineHeightStage: number,
   widthLimitStage: number | undefined
 ): LineSizing => {
-  let charStage = initialCharStage;
-  let lineHeightStage = initialLineHeightStage;
-  let resizedX = false;
-  let widthStage = measureLinesStage(lines, fontFamily, fontWeight, charStage);
-
-  if (widthLimitStage === undefined || widthStage <= widthLimitStage) {
+  const widthStage = measureLinesStage(lines, fontFamily, fontWeight, initialCharStage);
+  if (widthLimitStage === undefined || widthStage <= widthLimitStage)
     return {
-      charStage,
-      lineHeightStage,
+      charStage: initialCharStage,
+      lineHeightStage: initialLineHeightStage,
       widthStage,
-      resizedX,
+      resizedX: false,
     };
-  }
-
-  resizedX = true;
   const adjusted = adjustForWidthLimit({
     lines,
     fontFamily,
     fontWeight,
-    initialCharStage: charStage,
-    initialLineHeightStage: lineHeightStage,
+    initialCharStage,
+    initialLineHeightStage,
     widthStage,
     widthLimitStage,
   });
-  charStage = adjusted.charStage;
-  lineHeightStage = adjusted.lineHeightStage;
-  widthStage = adjusted.widthStage;
-
   return {
-    charStage,
-    lineHeightStage,
-    widthStage,
-    resizedX,
+    charStage: adjusted.charStage,
+    lineHeightStage: adjusted.lineHeightStage,
+    widthStage: adjusted.widthStage,
+    resizedX: true,
   };
 };
 
@@ -208,67 +151,34 @@ const adjustForWidthLimit = ({
   readonly initialLineHeightStage: number;
   readonly widthStage: number;
   readonly widthLimitStage: number;
-}): {
-  charStage: number;
-  lineHeightStage: number;
-  widthStage: number;
-} => {
-  if (widthStage <= 0 || widthLimitStage <= 0) {
+}) => {
+  if (widthStage <= 0 || widthLimitStage <= 0)
     return {
       charStage: initialCharStage,
       lineHeightStage: initialLineHeightStage,
       widthStage,
     };
-  }
 
-  let charStage = Math.max(
-    0.1,
-    initialCharStage * (widthLimitStage / widthStage)
-  );
-  let lineHeightStage = Math.max(
-    0.1,
-    initialLineHeightStage * (widthLimitStage / widthStage)
-  );
-  let measuredWidth = measureLinesStage(
-    lines,
-    fontFamily,
-    fontWeight,
-    charStage
-  );
+  const ratio = widthLimitStage / widthStage;
+  let charStage = Math.max(0.1, initialCharStage * ratio);
+  let lineHeightStage = Math.max(0.1, initialLineHeightStage * ratio);
+  let measuredWidth = measureLinesStage(lines, fontFamily, fontWeight, charStage);
 
-  let guard = 0;
-  while (measuredWidth > widthLimitStage && guard < 64) {
+  for (let guard = 0; measuredWidth > widthLimitStage && guard < 64; guard++) {
     const nextChar = Math.max(0.1, charStage - 1);
     if (nextChar === charStage) break;
-    const scale = nextChar / charStage;
+    lineHeightStage = Math.max(0.1, lineHeightStage * (nextChar / charStage));
     charStage = nextChar;
-    lineHeightStage = Math.max(0.1, lineHeightStage * scale);
     measuredWidth = measureLinesStage(lines, fontFamily, fontWeight, charStage);
-    guard += 1;
   }
-
-  guard = 0;
-  while (guard < 64) {
+  for (let guard = 0; guard < 64; guard++) {
     const nextChar = charStage + 1;
-    const nextLineHeight = Math.max(
-      0.1,
-      lineHeightStage * (nextChar / charStage)
-    );
-    const nextWidth = measureLinesStage(
-      lines,
-      fontFamily,
-      fontWeight,
-      nextChar
-    );
-    if (nextWidth > widthLimitStage) {
-      break;
-    }
+    const nextWidth = measureLinesStage(lines, fontFamily, fontWeight, nextChar);
+    if (nextWidth > widthLimitStage) break;
+    lineHeightStage = Math.max(0.1, lineHeightStage * (nextChar / charStage));
     charStage = nextChar;
-    lineHeightStage = nextLineHeight;
     measuredWidth = nextWidth;
-    guard += 1;
   }
-
   return { charStage, lineHeightStage, widthStage: measuredWidth };
 };
 
@@ -304,17 +214,12 @@ const buildLineMetrics = (
     const widthStage = Math.ceil(metrics.width * hiResScale);
     const width = Math.ceil(widthStage * stageToPx);
     const ascentStage =
-      (metrics.actualBoundingBoxAscent ??
-        metrics.fontBoundingBoxAscent ??
-        fontSizeForContext) * hiResScale;
+      (metrics.actualBoundingBoxAscent ?? metrics.fontBoundingBoxAscent ?? fontSizeForContext) * hiResScale;
     const descentStage =
-      (metrics.actualBoundingBoxDescent ??
-        metrics.fontBoundingBoxDescent ??
-        fontSizeForContext * 0.2) * hiResScale;
+      (metrics.actualBoundingBoxDescent ?? metrics.fontBoundingBoxDescent ?? fontSizeForContext * 0.2) * hiResScale;
     const ascent = ascentStage * stageToPx;
     const descent = descentStage * stageToPx;
-    const baselineStage =
-      lineHeightStage * (index + 1 + hiResPadding) + fontOffsetStage;
+    const baselineStage = lineHeightStage * (index + 1 + hiResPadding) + fontOffsetStage;
     const baseline = baselineStage * stageToPx;
     const top = baseline - ascent;
     const bottom = baseline + descent;
@@ -354,11 +259,7 @@ export type MeasurementSettings = {
   readonly allowWrap: boolean;
 };
 
-export const measureComment = (
-  body: string,
-  info: CommandInfo,
-  settings: MeasurementSettings
-): CommentStyle => {
+export const measureComment = (body: string, info: CommandInfo, settings: MeasurementSettings): CommentStyle => {
   const explicitLines = body.split(/\r?\n/);
   const lines = explicitLines.length > 0 ? explicitLines : [""];
   const lineCount = Math.max(1, lines.length);
@@ -370,13 +271,7 @@ export const measureComment = (
     charStage: resizedCharStage,
     lineHeightStage: resizedLineHeightStage,
     resized,
-  } = applyLineBreakResize(
-    info.size,
-    lineCount,
-    defaultCharStage,
-    defaultLineHeightStage,
-    settings
-  );
+  } = applyLineBreakResize(info.size, lineCount, defaultCharStage, defaultLineHeightStage, settings);
 
   const widthLimitStage = resolveWidthLimitStage(info, settings);
   const sizing = enforceWidthLimit(
@@ -397,41 +292,31 @@ export const measureComment = (
   const charSize = charStage * COMMENT_SCALE;
   const lineHeight = lineHeightStage * COMMENT_SCALE;
   const fontSize = charStage * 0.8 * COMMENT_SCALE;
-  const laneHeight =
-    (CANVAS_HEIGHT / LINE_COUNTS.default[info.size]) *
-    (lineHeightStage / defaultLineHeightStage);
+  const laneHeight = (CANVAS_HEIGHT / LINE_COUNTS.default[info.size]) * (lineHeightStage / defaultLineHeightStage);
   const strokeWidth = CONTEXT_STROKE_WIDTH * COMMENT_SCALE;
 
-  const { fontSize: fontSizeForContext, scale: hiResScale } =
-    computeFontStage(charStage);
-  const fontOffsetStage =
-    (charStage - lineHeightStage) / 2 +
-    lineHeightStage * -0.16 +
-    info.font.offset;
+  const { fontSize: fontSizeForContext, scale: hiResScale } = computeFontStage(charStage);
+  const fontOffsetStage = (charStage - lineHeightStage) / 2 + lineHeightStage * -0.16 + info.font.offset;
   const fontOffset = fontOffsetStage * COMMENT_SCALE;
   const hiResPadding = computeHiResPadding(hiResScale, lineCount);
 
-  const { lineMetrics, contentWidth, contentHeight, contentTop } =
-    buildLineMetrics(
-      lines,
-      lineHeightStage,
-      info.font.family,
-      info.font.weight,
-      hiResScale,
-      fontSizeForContext,
-      hiResPadding,
-      fontOffsetStage
-    );
+  const { lineMetrics, contentWidth, contentHeight, contentTop } = buildLineMetrics(
+    lines,
+    lineHeightStage,
+    info.font.family,
+    info.font.weight,
+    hiResScale,
+    fontSizeForContext,
+    hiResPadding,
+    fontOffsetStage
+  );
 
   const fillAlpha = clamp(info.fillAlpha ?? 1, 0, 1);
   const strokeAlpha = clamp(info.stroke.alpha ?? 1, 0, 1);
   const backgroundAlpha = info.background?.alpha;
   const borderAlpha = info.border?.alpha;
 
-  const borderWidth =
-    info.border?.color !== undefined
-      ? CONTEXT_STROKE_WIDTH * COMMENT_SCALE
-      : undefined;
+  const borderWidth = info.border?.color !== undefined ? CONTEXT_STROKE_WIDTH * COMMENT_SCALE : undefined;
 
   const padded = Boolean(info.background?.color);
   const padding = 0;
@@ -464,12 +349,10 @@ export const measureComment = (
     padding,
     lineMetrics,
     backgroundColor: info.background?.color,
-    backgroundAlpha:
-      backgroundAlpha !== undefined ? clamp(backgroundAlpha, 0, 1) : undefined,
+    backgroundAlpha: backgroundAlpha !== undefined ? clamp(backgroundAlpha, 0, 1) : undefined,
     borderColor: info.border?.color,
     borderWidth,
-    borderAlpha:
-      borderAlpha !== undefined ? clamp(borderAlpha, 0, 1) : undefined,
+    borderAlpha: borderAlpha !== undefined ? clamp(borderAlpha, 0, 1) : undefined,
     padded,
     resizedY,
     resizedX,

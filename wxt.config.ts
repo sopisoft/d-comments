@@ -21,10 +21,7 @@ export default defineConfig({
       256: "/icon/256.png",
     },
     permissions: ["cookies", "storage", "tabs"],
-    host_permissions: [
-      "https://*.nicovideo.jp/*",
-      "https://animestore.docomo.ne.jp/*",
-    ],
+    host_permissions: ["https://*.nicovideo.jp/*", "https://animestore.docomo.ne.jp/*"],
   }),
   modules: ["@wxt-dev/module-react"],
   browser: "firefox",

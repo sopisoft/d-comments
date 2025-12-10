@@ -32,8 +32,7 @@ export function sanitizeTitle(title: string) {
   ];
   const remakeWords = { "\u3000": " ", "\u00A0": " ", "!": "！" };
 
-  const titleRegex =
-    /^(TV|テレビ|劇場|オリジナル)?\s?(アニメーション|アニメ)\s?[｢「『]/;
+  const titleRegex = /^(TV|テレビ|劇場|オリジナル)?\s?(アニメーション|アニメ)\s?[｢「『]/;
   const match = title.match(titleRegex);
   let trimmedTitle = title;
   if (match && match.index !== undefined) {
@@ -57,10 +56,7 @@ export function sanitizeTitle(title: string) {
 /**
  * Build search query from work title
  */
-export function buildSearchQuery(
-  word: string,
-  sort: SnapShotQuery["_sort"] = "-commentCounter"
-): SnapShotQuery {
+export function buildSearchQuery(word: string, sort: SnapShotQuery["_sort"] = "-commentCounter"): SnapShotQuery {
   const q = sanitizeTitle(word);
   return {
     q,

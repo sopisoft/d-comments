@@ -1,85 +1,27 @@
-import type { ConfigKeysWithUIType } from "@/config/";
-
-export type SwitchFieldConfig = {
-  id: string;
-  kind: "switch";
-  configKey: ConfigKeysWithUIType<"switch">;
-  label: string;
-  description: string;
-};
-
-export type CheckboxFieldConfig = {
-  id: string;
-  kind: "checkbox";
-  configKey: ConfigKeysWithUIType<"checkbox">;
-  label: string;
-  description: string;
-};
-
-export type NumberFieldConfig = {
-  id: string;
-  kind: "number";
-  configKey: ConfigKeysWithUIType<"number">;
-  label: string;
-  description: string;
-};
-
-export type SliderFieldConfig = {
-  id: string;
-  kind: "slider";
-  configKey: ConfigKeysWithUIType<"slider">;
-  label: string;
-  description: string;
-};
-
-export type ColorFieldConfig = {
-  id: string;
-  kind: "color";
-  configKey: ConfigKeysWithUIType<"color">;
-  label: string;
-  description: string;
-};
-
-export type CheckboxGroupFieldConfig = {
-  id: string;
-  kind: "checkbox_group";
-  configKey: ConfigKeysWithUIType<"checkbox_group">;
-  label: string;
-  description: string;
-};
-
-export type SectionField =
-  | SwitchFieldConfig
-  | CheckboxFieldConfig
-  | NumberFieldConfig
-  | SliderFieldConfig
-  | ColorFieldConfig
-  | CheckboxGroupFieldConfig;
-
-export type SectionDefinition = {
-  key: string;
-  title: string;
-  fields: SectionField[];
-};
+import { MdAutorenew, MdChat, MdExtension, MdMovie, MdPalette, MdSettings, MdViewSidebar } from "react-icons/md";
+import type { SectionDefinition } from "./sections.types";
 
 export const configSections: SectionDefinition[] = [
   {
     key: "general",
     title: "一般の設定",
+    description: "ログイン設定など基本的な動作を管理します",
+    icon: MdSettings,
     fields: [
       {
         id: "login",
         kind: "switch",
         configKey: "login",
         label: "ニコニコにログイン",
-        description:
-          "ニコニコ動画にログインすると、ニコニコ動画とNGユーザー・NGワードの同期ができます。",
+        description: "ニコニコ動画にログインすると、ニコニコ動画とNGユーザー・NGワードの同期ができます。",
       },
     ],
   },
   {
     key: "automation",
     title: "自動化設定",
+    description: "検索や再生の自動化を切り替えます",
+    icon: MdAutorenew,
     fields: [
       {
         id: "auto_search",
@@ -100,6 +42,8 @@ export const configSections: SectionDefinition[] = [
   {
     key: "sidebar",
     title: "サイドバーの設定",
+    description: "コメントサイドバーの表示方法を調整します",
+    icon: MdViewSidebar,
     fields: [
       {
         id: "enable_auto_scroll",
@@ -114,20 +58,6 @@ export const configSections: SectionDefinition[] = [
         configKey: "comment_area_width_px",
         label: "サイドバーの幅（px）",
         description: "サイドバーの幅をピクセル単位で設定します。",
-      },
-      {
-        id: "comment_area_background_color",
-        kind: "color",
-        configKey: "comment_area_background_color",
-        label: "サイドバーの背景色",
-        description: "サイドバーの背景色を設定します。",
-      },
-      {
-        id: "comment_text_color",
-        kind: "color",
-        configKey: "comment_text_color",
-        label: "コメントの色",
-        description: "コメントのテキスト色を設定します。",
       },
       {
         id: "comment_area_font_size_px",
@@ -162,6 +92,8 @@ export const configSections: SectionDefinition[] = [
   {
     key: "comment",
     title: "コメントの設定",
+    description: "コメント表示やフィルターを制御します",
+    icon: MdChat,
     fields: [
       {
         id: "show_comments_in_list",
@@ -207,7 +139,7 @@ export const configSections: SectionDefinition[] = [
       },
       {
         id: "enable_smooth_scrolling",
-        kind: "checkbox",
+        kind: "switch",
         configKey: "enable_smooth_scrolling",
         label: "スムーズスクロール",
         description: "コメントリストのスクロールをスムーズにします。",
@@ -225,6 +157,8 @@ export const configSections: SectionDefinition[] = [
   {
     key: "addons",
     title: "アドオンの設定",
+    description: "追加機能のオン/オフを切り替えます",
+    icon: MdExtension,
     fields: [
       {
         id: "enable_addon_smooth_player",
@@ -245,6 +179,8 @@ export const configSections: SectionDefinition[] = [
   {
     key: "work",
     title: "作品ページ",
+    description: "作品ページ固有の挙動を設定します",
+    icon: MdMovie,
     fields: [
       {
         id: "enable_addon_add_button_to_play",
@@ -261,5 +197,12 @@ export const configSections: SectionDefinition[] = [
         description: "動画を同じタブで再生します。",
       },
     ],
+  },
+  {
+    key: "theme",
+    title: "テーマ",
+    description: "配色やカラーモードを調整します",
+    icon: MdPalette,
+    fields: [{ id: "theme_settings_panel", kind: "theme_settings" }],
   },
 ];

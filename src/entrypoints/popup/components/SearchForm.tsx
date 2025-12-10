@@ -1,32 +1,34 @@
 import { Button, Group, Select, Stack, TextInput } from "@mantine/core";
 import { useForm } from "@mantine/form";
-import { getConfig } from "@/config/";
-import type { _sort, SnapShotQuery } from "@/entrypoints/background/search";
+import { useCallback, useEffect } from "react";
+import { getConfig, useTheme } from "@/config/";
+import type { _sort, SnapShotQuery, SnapShotResponse } from "@/entrypoints/background/search";
 import { logger } from "@/lib/logger";
-import { toVideoData } from "@/lib/utils";
-import { sendMessage } from "@/messaging/";
+import { unwrap } from "@/lib/types";
+import { toCommentVideoList } from "@/lib/utils";
+import { requestMessageResult } from "@/messaging/";
 import { buildSearchQuery } from "@/modules/search";
 import type { CommentVideoData } from "@/types/comments";
 
-const sortOptions: Map<_sort, string> = new Map([
+const sortOptions: [_sort, string][] = [
   ["viewCounter", "再生数"],
   ["lengthSeconds", "動画の尺"],
   ["commentCounter", "コメント数"],
-]);
-const sortOrder = new Map([
+];
+const sortOrder: [string, string][] = [
   ["-", "降順（大 → 小）"],
   ["+", "昇順（小 → 大）"],
-]);
-
-interface SearchFormProps {
-  initialWord?: string;
-  addVideos: (videos: CommentVideoData[]) => Promise<void>;
-}
+];
 
 export function SearchForm({
   initialWord,
-  addVideos: addSearchResult,
-}: SearchFormProps) {
+  addVideos,
+}: {
+  initialWord?: string;
+  addVideos: (videos: CommentVideoData[]) => Promise<void>;
+}) {
+  const { styles: ps } = useTheme();
+  const inputStyles = { ...ps.inputStyles, label: { color: ps.text.primary } };
   const form = useForm({
     initialValues: {
       word: initialWord ?? "",
@@ -35,88 +37,57 @@ export function SearchForm({
     },
   });
 
-  async function handleSearch(values: typeof form.values) {
-    const { word, sort_option, sort_order } = values;
-    const sort = `${sort_order}${sort_option}` as SnapShotQuery["_sort"];
-    const query = buildSearchQuery(word, sort);
-
-    const res = await sendMessage("search", query);
-    if (!res || "error" in res) {
-      logger.error("search error", res);
-      return;
-    }
-
-    if (res.meta.status !== 200) {
-      logger.error(res.meta.errorCode, res.meta.errorMessage);
-      return;
-    }
-
-    const data = toVideoData(res);
-    const videos: CommentVideoData[] = data.map((v) => ({
-      date: -1,
-      videoData: v,
-      threads: [],
-    }));
-    await addSearchResult(videos);
-  }
+  const runSearch = useCallback(
+    async (word: string, sort: SnapShotQuery["_sort"]) => {
+      const payload = unwrap<SnapShotResponse>(
+        await requestMessageResult("search", buildSearchQuery(word, sort)),
+        "Search failed"
+      );
+      if (!payload || payload.meta.status !== 200) {
+        logger.error(payload?.meta.errorCode, payload?.meta.errorMessage);
+        return;
+      }
+      await addVideos(toCommentVideoList(payload));
+    },
+    [addVideos]
+  );
 
   useEffect(() => {
     getConfig("auto_search").then(async (v) => {
-      if (!v) return;
-
-      const query = buildSearchQuery(form.getValues().word, "-commentCounter");
-      const res = await sendMessage("search", query);
-      if (!res || "error" in res) {
-        logger.error("search error", res);
-        return;
-      }
-
-      if (res.meta.status !== 200) {
-        logger.error(res.meta.errorCode, res.meta.errorMessage);
-        return;
-      }
-
-      const data = toVideoData(res);
-      const videos: CommentVideoData[] = data.map((v) => ({
-        date: -1,
-        videoData: v,
-        threads: [],
-      }));
-      await addSearchResult(videos);
+      if (v) await runSearch(form.getValues().word, "-commentCounter");
     });
-  }, []);
+  }, [form, runSearch]);
 
   return (
-    <form onSubmit={form.onSubmit((v) => handleSearch(v))}>
-      <Stack>
+    <form
+      onSubmit={form.onSubmit((v) => runSearch(v.word, `${v.sort_order}${v.sort_option}` as SnapShotQuery["_sort"]))}
+    >
+      <Stack gap="md">
         <TextInput
           label="検索ワード"
           required
           placeholder="まちカドまぞく"
           key={form.key("word")}
           {...form.getInputProps("word")}
+          styles={inputStyles}
         />
-        <Group grow>
+        <Group gap="md">
           <Select
             label="並び替え"
-            data={Array.from(sortOptions).map(([value, label]) => ({
-              value,
-              label,
-            }))}
+            data={sortOptions.map(([value, label]) => ({ value, label }))}
             key={form.key("sort_option")}
             {...form.getInputProps("sort_option")}
+            styles={inputStyles}
           />
           <Select
             label="並び順"
-            data={Array.from(sortOrder).map(([value, label]) => ({
-              value,
-              label,
-            }))}
+            data={sortOrder.map(([value, label]) => ({ value, label }))}
             key={form.key("sort_order")}
             {...form.getInputProps("sort_order")}
+            styles={inputStyles}
           />
         </Group>
-        <Button type="submit" loading={form.submitting}>
+        <Button type="submit" loading={form.submitting} variant="filled">
           検索
         </Button>
       </Stack>

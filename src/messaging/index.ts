@@ -1,4 +1,9 @@
-export { onMessage, sendMessage } from "./runtime";
+export {
+  getActiveTabId,
+  onMessage,
+  requestMessageResult,
+  sendMessage,
+} from "./runtime";
 export type {
   MaybePromise,
   Message,

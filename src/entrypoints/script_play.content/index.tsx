@@ -1,13 +1,12 @@
 import "@mantine/core/styles.css";
-import { MantineProvider } from "@mantine/core";
 import { createRoot, type Root } from "react-dom/client";
-import { getConfig, watchConfig } from "@/config/";
-import { err, ok, type Result } from "@/lib/types";
+import { getConfig, ThemedMantineProvider, watchConfig } from "@/config/";
+import type { SnapShotResponse } from "@/entrypoints/background/search";
+import { err, ok, type Result, unwrap } from "@/lib/types";
 import { toVideoData } from "@/lib/utils";
-import { onMessage, sendMessage } from "@/messaging/";
+import { onMessage, requestMessageResult } from "@/messaging/";
 import { createCommentManager, getComments } from "@/modules/comments";
 import { buildSearchQuery } from "@/modules/search";
-import { theme } from "@/theme";
 import type { Threads } from "@/types/api";
 import type { CommentVideoData } from "@/types/comments";
 import { type RendererMode, renderer } from "./renderer";
@@ -17,17 +16,7 @@ import { videoWrapper } from "./wrapper";
 
 const VIDEO_PAGE_PATTERN = "/animestore/sc_d_pc?partId=";
 
-const isVideoPage = (href: string): boolean =>
-  href.includes(VIDEO_PAGE_PATTERN);
-
-const cloneThreads = (threads: Threads): Threads =>
-  threads.map((thread) => ({
-    ...thread,
-    comments: thread.comments.map((comment) => ({
-      ...comment,
-      commands: [...comment.commands],
-    })),
-  }));
+const isVideoPage = (href: string): boolean => href.includes(VIDEO_PAGE_PATTERN);
 
 export default defineContentScript({
   matches: ["*://animestore.docomo.ne.jp/animestore/*"],
@@ -68,9 +57,9 @@ export default defineContentScript({
         sidebarRoot = createRoot(sidebarHost as Element);
       }
       sidebarRoot.render(
-        <MantineProvider theme={theme}>
+        <ThemedMantineProvider>
           <CommentSidebar threads={threads} />
-        </MantineProvider>
+        </ThemedMantineProvider>
       );
     };
 
@@ -83,7 +72,7 @@ export default defineContentScript({
     let currentThreads: Threads = [];
 
     const setThreads = (next: Threads) => {
-      currentThreads = cloneThreads(next);
+      currentThreads = structuredClone(next);
       renderSidebar(currentThreads);
       rendererController?.setThreads(currentThreads);
     };
@@ -115,9 +104,7 @@ export default defineContentScript({
       if (!result.ok) return await ensureRendererMode("niconi", currentThreads);
       return result;
     };
-    const initialMode = (await getConfig("use_new_renderer"))
-      ? "pixi"
-      : "niconi";
+    const initialMode = (await getConfig("use_new_renderer")) ? "pixi" : "niconi";
     await applyRendererMode(initialMode);
     await watchConfig("use_new_renderer", (enabled) => {
       void applyRendererMode(enabled ? "pixi" : "niconi");
@@ -127,19 +114,9 @@ export default defineContentScript({
       setThreads(payload.threads);
     });
 
-    const requestAddVideo = async (
-      video: CommentVideoData
-    ): Promise<Result<CommentVideoData[], Error>> => {
-      const response = await sendMessage("add_video", { video });
-      if (!response || "error" in response) {
-        const message = response?.error ?? "add_video failed";
-        return err(new Error(message));
-      }
-      return ok(response ?? []);
-    };
-
     const handlePartChange = async () => {
-      await sendMessage("clear_videos");
+      const clearRes = await requestMessageResult("clear_videos");
+      unwrap(clearRes, "clear_videos failed");
 
       const workInfoResult = await updateWorkInfo();
       if (!workInfoResult.ok) return err(workInfoResult.error);
@@ -147,17 +124,20 @@ export default defineContentScript({
 
       const enableAutoPlay = await getConfig("enable_auto_play");
       if (!enableAutoPlay) return ok([]);
-      const searchResult = await sendMessage("search", buildSearchQuery(title));
-      if ("error" in searchResult) return err(new Error(searchResult.error));
-      const videos = searchResult ? toVideoData(searchResult) : [];
+      let videos: CommentVideoData["videoData"][] = [];
+      const searchRes = await requestMessageResult("search", buildSearchQuery(title));
+      const snapshot = unwrap<SnapShotResponse>(searchRes, "Search failed");
+      if (!snapshot) return err(new Error("Search failed"));
+      videos = toVideoData(snapshot);
       if (videos.length === 0) return ok([]);
-      const videoDataResult = await getComments(
-        commentManager,
-        videos[0].contentId
-      );
+      const videoDataResult = await getComments(commentManager, videos[0].contentId);
       if (!videoDataResult.ok) return err(videoDataResult.error);
 
-      return requestAddVideo(videoDataResult.value);
+      const addedRes = await requestMessageResult("add_video", {
+        video: videoDataResult.value,
+      });
+      if (addedRes.ok) return ok(addedRes.value as CommentVideoData[]);
+      return err(addedRes.error);
     };
 
     const params = new URLSearchParams(window.location.search);
@@ -165,9 +145,7 @@ export default defineContentScript({
     if (lastPartId) await handlePartChange();
 
     window.setInterval(() => {
-      const currentPartId = new URLSearchParams(window.location.search).get(
-        "partId"
-      );
+      const currentPartId = new URLSearchParams(window.location.search).get("partId");
       if (!currentPartId || currentPartId === lastPartId) {
         return;
       }
