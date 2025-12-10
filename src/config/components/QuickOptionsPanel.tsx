@@ -1,21 +1,16 @@
-import { Fieldset, Stack, Title } from "@mantine/core";
+import { Divider, Stack } from "@mantine/core";
+import { MdFlashOn } from "react-icons/md";
+import { useTheme } from "../hooks/useTheme";
 import { NumberField, SwitchField } from "./Fields";
-
-const panelStyle = {
-  width: "100%",
-  maxWidth: "48rem",
-  margin: "0 auto",
-} as const;
+import { SectionCard } from "./SectionCard";
 
 export function QuickOptionsPanel() {
+  const { styles: ps } = useTheme();
   return (
     <Stack gap="xl" align="center">
-      <Fieldset
-        radius="md"
-        legend={<Title order={2}>クイックオプション</Title>}
-        style={panelStyle}
-      >
+      <SectionCard icon={MdFlashOn} title="クイックオプション" description="よく使う設定を素早く変更できます">
         <Stack gap="lg">
+          <Divider color={ps.border.subtle} />
           <SwitchField
             configKey="login"
             label="ニコニコにログイン"
@@ -42,7 +37,7 @@ export function QuickOptionsPanel() {
             description="コメントの表示タイミングを調整します（ミリ秒単位）。"
           />
         </Stack>
-      </Fieldset>
+      </SectionCard>
     </Stack>
   );
 }

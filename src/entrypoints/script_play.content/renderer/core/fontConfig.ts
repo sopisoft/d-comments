@@ -66,9 +66,7 @@ const fontTemplates = {
   },
 } as const;
 
-const build = (
-  templates: ReadonlyArray<{ font: string; offset: number; weight: number }>
-) =>
+const build = (templates: ReadonlyArray<{ font: string; offset: number; weight: number }>) =>
   templates.reduce(
     (acc, template, index) => {
       if (index === 0) {
@@ -86,29 +84,13 @@ const build = (
 const fontSets = {
   win7: {
     defont: build([fontTemplates.arial]),
-    gothic: build([
-      fontTemplates.gothic,
-      fontTemplates.gulim,
-      fontTemplates.arial,
-    ]),
-    mincho: build([
-      fontTemplates.mincho,
-      fontTemplates.simsun,
-      fontTemplates.arial,
-    ]),
+    gothic: build([fontTemplates.gothic, fontTemplates.gulim, fontTemplates.arial]),
+    mincho: build([fontTemplates.mincho, fontTemplates.simsun, fontTemplates.arial]),
   },
   win8_1: {
     defont: build([fontTemplates.arial]),
-    gothic: build([
-      fontTemplates.gothic,
-      fontTemplates.simsun,
-      fontTemplates.arial,
-    ]),
-    mincho: build([
-      fontTemplates.mincho,
-      fontTemplates.simsun,
-      fontTemplates.arial,
-    ]),
+    gothic: build([fontTemplates.gothic, fontTemplates.simsun, fontTemplates.arial]),
+    mincho: build([fontTemplates.mincho, fontTemplates.simsun, fontTemplates.arial]),
   },
   win: {
     defont: build([fontTemplates.arial]),
@@ -118,20 +100,12 @@ const fontSets = {
   mac10_9: {
     defont: build([fontTemplates.macGothicPro6]),
     gothic: build([fontTemplates.gothic, fontTemplates.macGothicPro3]),
-    mincho: build([
-      fontTemplates.mincho,
-      fontTemplates.macMincho,
-      fontTemplates.macGothicPro3,
-    ]),
+    mincho: build([fontTemplates.mincho, fontTemplates.macMincho, fontTemplates.macGothicPro3]),
   },
   mac10_11: {
     defont: build([fontTemplates.macGothic1]),
     gothic: build([fontTemplates.gothic, fontTemplates.macGothic2]),
-    mincho: build([
-      fontTemplates.mincho,
-      fontTemplates.macMincho,
-      fontTemplates.macGothic2,
-    ]),
+    mincho: build([fontTemplates.mincho, fontTemplates.macMincho, fontTemplates.macGothic2]),
   },
   mac: {
     defont: build([fontTemplates.macGothicPro6]),
@@ -168,10 +142,7 @@ const detectPlatform = (): keyof typeof fontSets => {
 
 let cachedFonts: Record<StandardFontName, FontAttributes> | undefined;
 
-export const getFontDefinitions = (): Record<
-  StandardFontName,
-  FontAttributes
-> => {
+export const getFontDefinitions = (): Record<StandardFontName, FontAttributes> => {
   if (cachedFonts) return cachedFonts;
   const platform = detectPlatform();
   const selected = fontSets[platform] ?? fontSets.other;

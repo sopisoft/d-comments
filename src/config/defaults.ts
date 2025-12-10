@@ -6,12 +6,17 @@ type NumberUiOptions = UiOptions<"number">;
 
 type ConfigValueConstraint<TValue> = TValue extends boolean ? boolean : TValue;
 
-type ConfigWithUiType<TValue, TUiType extends UiType> = ConfigItem<
-  ConfigValueConstraint<TValue>,
-  TUiType
->;
+type ConfigWithUiType<TValue, TUiType extends UiType> = ConfigItem<ConfigValueConstraint<TValue>, TUiType>;
 
-const defaultConfigs = defineConfigs({
+export const defaultConfigs = defineConfigs({
+  /**
+   * テーマの設定
+   */
+  theme_color_mode: {
+    value: "auto" as "light" | "dark" | "auto",
+    ui_type: "switch",
+  },
+
   /**
    * 共通の設定
    */
@@ -46,10 +51,6 @@ const defaultConfigs = defineConfigs({
     ui_type: "number",
     ui_options: { min: 2, max: 40 } satisfies NumberUiOptions,
   },
-  comment_area_background_color: {
-    value: "#FFFFFF",
-    ui_type: "color",
-  },
   comment_area_opacity_percentage: {
     value: 95,
     ui_type: "slider",
@@ -59,10 +60,6 @@ const defaultConfigs = defineConfigs({
       step: 5,
       unit: "%",
     } satisfies SliderUiOptions,
-  },
-  comment_text_color: {
-    value: "#000000",
-    ui_type: "color",
   },
 
   nicoarea_scale: {
@@ -90,34 +87,19 @@ const defaultConfigs = defineConfigs({
   },
   visible_comments: {
     value: [
-      {
-        key: "owner",
-        value: "投稿者コメント",
-        enabled: false,
-      },
-      {
-        key: "main",
-        value: "一般コメント",
-        enabled: true,
-      },
-      {
-        key: "easy",
-        value: "かんたんコメント",
-        enabled: false,
-      },
+      { key: "owner", value: "投稿者コメント", enabled: false },
+      { key: "main", value: "一般コメント", enabled: true },
+      { key: "easy", value: "かんたんコメント", enabled: false },
     ],
     ui_type: "checkbox_group",
-  } satisfies ConfigWithUiType<
-    Array<{ key: string; value: string; enabled: boolean }>,
-    "checkbox_group"
-  >,
+  } satisfies ConfigWithUiType<Array<{ key: string; value: string; enabled: boolean }>, "checkbox_group">,
   channels_only: {
     value: true,
     ui_type: "checkbox",
   },
   enable_smooth_scrolling: {
     value: false,
-    ui_type: "checkbox",
+    ui_type: "switch",
   },
   comment_timing_offset: {
     value: 0,
@@ -178,17 +160,20 @@ const defaultConfigs = defineConfigs({
 
 export type ConfigSchema = typeof defaultConfigs;
 export type ConfigKey = keyof ConfigSchema;
-export type ConfigValue<TKey extends ConfigKey> = ConfigSchema[TKey]["value"];
-export type ConfigKeysWithUiType<TUiType extends UiType> = {
-  [Key in keyof ConfigSchema]: ConfigSchema[Key]["ui_type"] extends TUiType
-    ? Key
-    : never;
+export type ConfigValue<TKey extends ConfigKey> = ConfigSchema[TKey]["value"] extends boolean
+  ? boolean
+  : ConfigSchema[TKey]["value"];
+export type ConfigKeysWithUIType<TUiType extends UiType> = {
+  [Key in keyof ConfigSchema]: ConfigSchema[Key]["ui_type"] extends TUiType ? Key : never;
 }[keyof ConfigSchema];
 
-export const getRawDefaultConfig = <TKey extends ConfigKey>(key: TKey) =>
-  defaultConfigs[key];
+type BooleanUiType = Extract<UiType, "switch" | "checkbox">;
+
+export type BooleanConfigKeys<TUiType extends BooleanUiType> = {
+  [Key in ConfigKeysWithUIType<TUiType>]: ConfigSchema[Key]["value"] extends boolean ? Key : never;
+}[ConfigKeysWithUIType<TUiType>];
+
+export const getRawDefaultConfig = <TKey extends ConfigKey>(key: TKey) => defaultConfigs[key];
 
 export const getDefaultValue = <TKey extends ConfigKey>(key: TKey) =>
   getRawDefaultConfig(key).value as ConfigValue<TKey>;
-
-export { defaultConfigs };

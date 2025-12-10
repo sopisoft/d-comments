@@ -1,4 +1,4 @@
-import { getConfig } from "@/config/";
+import { getConfigs } from "@/config/";
 import { addon_disable_new_window } from "./disable_new_window";
 import { addon_smooth_player } from "./smooth_player";
 import { add_button_to_play } from "./work_page";
@@ -8,14 +8,17 @@ export default defineContentScript({
   async main() {
     const path = window.location.pathname;
     if (path.includes("/animestore/ci_pc")) {
-      if (await getConfig("enable_addon_add_button_to_play")) {
+      const { enable_addon_add_button_to_play: addButton, enable_addon_disable_new_window: disableNewWindow } =
+        await getConfigs(["enable_addon_add_button_to_play", "enable_addon_disable_new_window"] as const);
+      if (addButton) {
         await add_button_to_play();
       }
-      if (await getConfig("enable_addon_disable_new_window")) {
+      if (disableNewWindow) {
         await addon_disable_new_window();
       }
     } else if (path.includes("/animestore/sc_d_pc")) {
-      if (await getConfig("enable_addon_smooth_player")) {
+      const { enable_addon_smooth_player: smoothPlayer } = await getConfigs(["enable_addon_smooth_player"] as const);
+      if (smoothPlayer) {
         await addon_smooth_player();
       }
     }

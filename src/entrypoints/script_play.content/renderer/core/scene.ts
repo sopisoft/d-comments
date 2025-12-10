@@ -7,11 +7,10 @@ export type PixiScene = {
   layer: Container;
 };
 
-export async function createPixiScene(
-  overlay: HTMLElement
-): Promise<PixiScene> {
+export async function createPixiScene(overlay: HTMLElement): Promise<PixiScene> {
   const app = new Application();
   await app.init({
+    preference: "webgpu",
     width: CANVAS_WIDTH,
     height: CANVAS_HEIGHT,
     backgroundAlpha: 0,

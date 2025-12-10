@@ -1,12 +1,6 @@
 import { logger } from "@/lib/logger";
 import type { CommentManager } from "@/modules/comments";
-import {
-  addPlayingVideo,
-  createCommentManager,
-  getPlaying,
-  getThreads,
-  removePlayingVideo,
-} from "@/modules/comments";
+import { addPlayingVideo, createCommentManager, getPlaying, getThreads, removePlayingVideo } from "@/modules/comments";
 import type { Threads } from "@/types/api";
 import type { CommentVideoData } from "@/types/comments";
 
@@ -30,38 +24,25 @@ const storeSnapshot = (manager: CommentManager): CommentStoreSnapshot => ({
   threads: getThreads(manager),
 });
 
-const updateManager = (
-  tabId: number,
-  update: (manager: CommentManager) => CommentManager
-): CommentManager => {
+const updateManager = (tabId: number, update: (manager: CommentManager) => CommentManager): CommentManager => {
   const current = ensureManager(tabId);
   const next = update(current);
   managers.set(tabId, next);
   return next;
 };
 
-export const addVideoToStore = async (
-  tabId: number,
-  video: CommentVideoData
-): Promise<CommentStoreSnapshot> => {
+export const addVideoToStore = async (tabId: number, video: CommentVideoData): Promise<CommentStoreSnapshot> => {
   logger.debug("Adding video to store", {
     tabId,
     id: video.videoData.contentId,
   });
-  const next = updateManager(tabId, (manager) =>
-    addPlayingVideo(manager, video)
-  );
+  const next = updateManager(tabId, (manager) => addPlayingVideo(manager, video));
   return storeSnapshot(next);
 };
 
-export const removeVideoFromStore = (
-  tabId: number,
-  videoId: string
-): CommentStoreSnapshot => {
+export const removeVideoFromStore = (tabId: number, videoId: string): CommentStoreSnapshot => {
   logger.debug("Removing video from store", { tabId, videoId });
-  const next = updateManager(tabId, (manager) =>
-    removePlayingVideo(manager, videoId)
-  );
+  const next = updateManager(tabId, (manager) => removePlayingVideo(manager, videoId));
   return storeSnapshot(next);
 };
 
@@ -71,10 +52,4 @@ export const clearStore = (tabId: number): CommentStoreSnapshot => {
   return storeSnapshot(next);
 };
 
-export const getStoreSnapshot = (tabId: number): CommentStoreSnapshot =>
-  storeSnapshot(ensureManager(tabId));
-
-export const releaseStore = (tabId: number): boolean => {
-  logger.debug("Releasing store", { tabId });
-  return managers.delete(tabId);
-};
+export const getStoreSnapshot = (tabId: number): CommentStoreSnapshot => storeSnapshot(ensureManager(tabId));

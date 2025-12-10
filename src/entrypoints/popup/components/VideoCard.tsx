@@ -1,21 +1,14 @@
-import {
-  ActionIcon,
-  Badge,
-  Box,
-  Card,
-  Group,
-  Image,
-  Stack,
-  Text,
-} from "@mantine/core";
+import { ActionIcon, Badge, Box, Group, Image, Stack, Text, Tooltip } from "@mantine/core";
 import {
   MdOutlineInsertComment,
   MdOutlinePlayArrow,
   MdOutlineVisibility,
   MdOutlineVisibilityOff,
 } from "react-icons/md";
+import { useTheme } from "@/config/";
+import { ui } from "@/config/theme";
+import { toJapaneseNumber, vposToTime } from "@/modules/formatting";
 import type { CommentVideoData } from "@/types";
-import { lengthSecondsToTime, toJapaneseNumber } from "../utils";
 
 export function VideoCard({
   item,
@@ -26,9 +19,18 @@ export function VideoCard({
   playing: boolean;
   togglePlaying: (videoId: string) => Promise<void>;
 }) {
+  const { styles: ps } = useTheme();
+  const cardStyle = {
+    padding: ui.space.sm,
+    borderRadius: ui.radius.md,
+    background: playing ? ps.bg.surface : ps.bg.elevated,
+    border: `1px solid ${playing ? ps.accent : ps.border.default}`,
+    transition: ui.transition,
+  };
+
   return (
-    <Card withBorder padding="sm" radius="md">
-      <Group gap="md" align="center">
+    <div style={cardStyle}>
+      <Group gap="md" align="flex-start">
         <Box
           pos="relative"
           component="a"
@@ -36,16 +38,16 @@ export function VideoCard({
           target="_blank"
           rel="noreferrer noopener"
           style={{
-            width: "160px",
+            width: 140,
             flexShrink: 0,
-            aspectRatio: "16 / 9",
+            aspectRatio: "16/9",
             overflow: "hidden",
+            borderRadius: ui.radius.sm,
           }}
         >
           <Image
             src={item.thumbnailUrl}
             alt={item.title}
-            radius="sm"
             style={{
               width: "100%",
               height: "100%",
@@ -58,50 +60,53 @@ export function VideoCard({
               pos="absolute"
               top={4}
               left={4}
+              size="xs"
               color={item.isDAnime ? "orange" : "cyan"}
               variant="filled"
+              style={{
+                textTransform: "none",
+              }}
             >
               {item.isDAnime ? "dアニメ" : "公式"}
             </Badge>
           )}
-          <Badge
-            pos="absolute"
-            bottom={3}
-            right={4}
-            color="dark"
-            variant="white"
-          >
-            {lengthSecondsToTime(item.lengthSeconds)}
+          <Badge pos="absolute" bottom={4} right={4} size="xs" color="dark" variant="white">
+            {vposToTime(item.lengthSeconds * 1000)}
           </Badge>
         </Box>
-        <Stack justify="space-between" h="100%" style={{ flex: 1 }}>
-          <Text fw={700} lineClamp={3} size="sm">
+        <Stack justify="space-between" gap="xs" style={{ flex: 1, minWidth: 0 }}>
+          <Text fw={600} lineClamp={2} size="sm" c={ps.text.primary} style={{ lineHeight: 1.4 }}>
             {item.title}
           </Text>
-          <Group justify="space-between">
-            <Group gap="xs">
-              <Group gap={2}>
-                <MdOutlinePlayArrow />
-                <Text size="xs">{toJapaneseNumber(item.viewCounter)}</Text>
+          <Group justify="space-between" align="center">
+            <Group gap="sm">
+              <Group gap={4}>
+                <MdOutlinePlayArrow size={14} color={ps.text.muted} />
+                <Text size="xs" c={ps.text.muted}>
+                  {toJapaneseNumber(item.viewCounter)}
+                </Text>
               </Group>
-              <Group gap={2}>
-                <MdOutlineInsertComment />
-                <Text size="xs">{toJapaneseNumber(item.commentCounter)}</Text>
+              <Group gap={4}>
+                <MdOutlineInsertComment size={14} color={ps.text.muted} />
+                <Text size="xs" c={ps.text.muted}>
+                  {toJapaneseNumber(item.commentCounter)}
+                </Text>
               </Group>
             </Group>
-            <ActionIcon
-              variant="subtle"
-              color="gray"
-              onClick={() => {
-                void togglePlaying(item.contentId);
-              }}
-              title={playing ? "表示をやめる" : "表示する"}
-            >
-              {playing ? <MdOutlineVisibility /> : <MdOutlineVisibilityOff />}
-            </ActionIcon>
+            <Tooltip label={playing ? "表示をやめる" : "表示する"} position="left" withArrow>
+              <ActionIcon
+                variant={playing ? "light" : "subtle"}
+                color={playing ? "orange" : "gray"}
+                onClick={() => {
+                  void togglePlaying(item.contentId);
+                }}
+              >
+                {playing ? <MdOutlineVisibility size={18} /> : <MdOutlineVisibilityOff size={18} />}
+              </ActionIcon>
+            </Tooltip>
           </Group>
         </Stack>
       </Group>
-    </Card>
+    </div>
   );
 }

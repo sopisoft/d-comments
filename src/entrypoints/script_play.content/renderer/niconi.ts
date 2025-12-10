@@ -1,22 +1,17 @@
 import type { Options, V1Thread } from "@xpadev-net/niconicomments";
 import NiconiComments from "@xpadev-net/niconicomments";
-import { getConfig, watchConfig } from "@/config/";
+import { getConfigs, watchConfigs } from "@/config/";
 import type { Result } from "@/lib/types";
 import type { Threads } from "@/types/api";
 import { CANVAS_HEIGHT, CANVAS_WIDTH } from "./core/constants";
 import { mountOverlay, queryVideoElement } from "./core/dom";
 import type { RendererController } from "./types";
 
-export const createNiconiRenderer = async (): Promise<
-  Result<RendererController, string>
-> => {
+export const createNiconiRenderer = async (): Promise<Result<RendererController, string>> => {
   const video = queryVideoElement();
-  if (!video) {
-    return { ok: false, error: "Video element not found" };
-  }
+  if (!video) return { ok: false, error: "Video element not found" };
 
   const { overlay } = mountOverlay(video);
-
   const canvas = document.createElement("canvas");
   canvas.id = "d-comments-canvas";
   canvas.width = CANVAS_WIDTH;
@@ -34,24 +29,28 @@ export const createNiconiRenderer = async (): Promise<
   });
   overlay.appendChild(canvas);
 
-  const initialOpacity = await getConfig("comment_area_opacity_percentage");
-  const initialScale = await getConfig("nicoarea_scale");
-  const initialFps = await getConfig("comment_renderer_fps");
-  let offsetMs = await getConfig("comment_timing_offset");
-  let isVisible = await getConfig("show_comments_in_niconico_style");
+  const {
+    comment_area_opacity_percentage: initialOpacity,
+    nicoarea_scale: initialScale,
+    comment_renderer_fps: initialFps,
+    comment_timing_offset: initialOffset,
+    show_comments_in_niconico_style: initialVisibility,
+  } = await getConfigs([
+    "comment_area_opacity_percentage",
+    "nicoarea_scale",
+    "comment_renderer_fps",
+    "comment_timing_offset",
+    "show_comments_in_niconico_style",
+  ] as const);
 
+  let offsetMs = initialOffset;
+  let isVisible = initialVisibility;
   const options: Options = {
     format: "v1",
     keepCA: true,
     scale: Math.max(initialScale / 100, 0),
   };
-
-  const clampFps = (value: number): number => {
-    const rounded = Math.round(value);
-    if (!Number.isFinite(rounded)) return 60;
-    return Math.min(120, Math.max(15, rounded));
-  };
-
+  const clampFps = (v: number) => Math.min(120, Math.max(15, Math.round(Number.isFinite(v) ? v : 60)));
   let frameIntervalMs = 1000 / clampFps(initialFps);
   let lastDrawAt = performance.now();
 
@@ -69,6 +68,9 @@ export const createNiconiRenderer = async (): Promise<
       rafId = null;
     }
   };
+  const startLoop = () => {
+    if (rafId === null) rafId = requestAnimationFrame(tick);
+  };
 
   const tick = (): number => {
     if (!renderer) {
@@ -81,11 +83,8 @@ export const createNiconiRenderer = async (): Promise<
       return 0;
     }
     lastDrawAt = now;
-
-    const currentTimeMs = video.currentTime * 1000 + offsetMs;
-    const vpos = Math.max(0, Math.floor(currentTimeMs / 10));
     try {
-      renderer.drawCanvas(vpos);
+      renderer.drawCanvas(Math.max(0, Math.floor((video.currentTime * 1000 + offsetMs) / 10)));
     } catch {
       renderer = null;
       stopLoop();
@@ -93,10 +92,6 @@ export const createNiconiRenderer = async (): Promise<
     }
     rafId = requestAnimationFrame(tick);
     return 1;
-  };
-
-  const startLoop = () => {
-    if (rafId === null) rafId = requestAnimationFrame(tick);
   };
 
   const rebuild = () => {
@@ -108,11 +103,7 @@ export const createNiconiRenderer = async (): Promise<
     stopLoop();
     renderer?.clear();
     try {
-      renderer = new NiconiComments(
-        canvas,
-        currentThreads as unknown as V1Thread[],
-        options
-      );
+      renderer = new NiconiComments(canvas, currentThreads as V1Thread[], options);
       lastDrawAt = performance.now();
       startLoop();
     } catch {
@@ -124,35 +115,32 @@ export const createNiconiRenderer = async (): Promise<
     isVisible = visible;
     canvas.style.display = visible ? "block" : "none";
     overlay.style.display = visible ? "block" : "none";
-    if (visible) {
-      rebuild();
-    } else {
-      stopLoop();
-      renderer?.clear();
-    }
+    visible
+      ? rebuild()
+      : (() => {
+          stopLoop();
+          renderer?.clear();
+        })();
   };
 
-  await watchConfig("comment_area_opacity_percentage", (value) => {
-    canvas.style.opacity = (value / 100).toString();
-  });
-
-  await watchConfig("nicoarea_scale", (value) => {
-    options.scale = Math.max(value / 100, 0);
-    rebuild();
-  });
-
-  await watchConfig("comment_renderer_fps", (value) => {
-    frameIntervalMs = 1000 / clampFps(value);
-    lastDrawAt = performance.now();
-  });
-
-  await watchConfig("show_comments_in_niconico_style", (value) => {
-    applyVisibility(value);
-  });
-
-  await watchConfig("comment_timing_offset", (value) => {
-    offsetMs = value;
-  });
+  const _stops: (() => void)[] = [];
+  watchConfigs(
+    [
+      "comment_area_opacity_percentage",
+      "nicoarea_scale",
+      "comment_renderer_fps",
+      "show_comments_in_niconico_style",
+      "comment_timing_offset",
+    ] as const,
+    ({ current }) => {
+      canvas.style.opacity = (current.comment_area_opacity_percentage / 100).toString();
+      options.scale = Math.max(current.nicoarea_scale / 100, 0);
+      frameIntervalMs = 1000 / clampFps(current.comment_renderer_fps);
+      lastDrawAt = performance.now();
+      applyVisibility(current.show_comments_in_niconico_style);
+      offsetMs = current.comment_timing_offset;
+    }
+  ).then((stop) => _stops.push(stop));
 
   const setThreads = (threads: Threads): Threads => {
     currentThreads = threads;
@@ -165,6 +153,7 @@ export const createNiconiRenderer = async (): Promise<
     renderer?.clear();
     canvas.remove();
     overlay.remove();
+    for (const s of _stops) s();
     return true;
   };
 

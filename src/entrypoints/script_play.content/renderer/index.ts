@@ -8,9 +8,7 @@ export type { RendererController } from "./types";
 export type RendererMode = "pixi" | "niconi";
 
 export const renderer = {
-  async init(
-    mode: RendererMode = "pixi"
-  ): Promise<Result<RendererController, string>> {
+  async init(mode: RendererMode = "pixi"): Promise<Result<RendererController, string>> {
     return mode === "pixi" ? createPixiRenderer() : createNiconiRenderer();
   },
 };

@@ -1,39 +1,30 @@
-import { useEffect, useState } from "react";
-import {
-  type ConfigKey,
-  type ConfigValue,
-  getConfig,
-  getDefaultValue,
-  setConfig,
-} from "@/config/";
+import { useCallback, useMemo } from "react";
+import { type ConfigKey, type ConfigValue, getDefaultValue } from "../defaults";
+import { setConfig } from "../storage";
+import { useConfigValue as useConfigValueInternal } from "./useConfigs";
 
-export type ConfigState<TKey extends ConfigKey> = {
+export type ConfigState<TKey extends ConfigKey> = Readonly<{
   value: ConfigValue<TKey> | null;
   defaultValue: ConfigValue<TKey>;
+  currentValue: ConfigValue<TKey>;
   isPending: boolean;
   save: (next: ConfigValue<TKey>) => void;
-};
+}>;
 
-export const useConfigValue = <TKey extends ConfigKey>(
-  configKey: TKey
-): ConfigState<TKey> => {
-  const [value, setValue] = useState<ConfigValue<TKey> | null>(null);
+export const useConfigValue = <TKey extends ConfigKey>(configKey: TKey): ConfigState<TKey> => {
+  const currentValue = useConfigValueInternal(configKey);
+  const defaultValue = useMemo(() => getDefaultValue(configKey), [configKey]);
+  const save = useCallback((next: ConfigValue<TKey>) => void setConfig(configKey, next), [configKey]);
 
-  useEffect(() => {
-    getConfig(configKey, setValue);
-  }, [configKey]);
-
-  const defaultValue = getDefaultValue(configKey);
-
-  const save = (next: ConfigValue<TKey>) => {
-    void setConfig(configKey, next);
-    setValue(next);
-  };
-
-  return {
-    value,
-    defaultValue,
-    isPending: value === null,
-    save,
-  };
+  return useMemo(
+    () =>
+      ({
+        value: currentValue,
+        defaultValue,
+        currentValue,
+        isPending: false,
+        save,
+      }) as const,
+    [currentValue, defaultValue, save]
+  );
 };

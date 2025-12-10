@@ -18,7 +18,9 @@
   "formatter": {
     "formatWithErrors": true,
     "indentStyle": "space",
-    "indentWidth": 2
+    "indentWidth": 2,
+    "lineWidth": 120,
+    "expand": "auto"
   },
   "linter": {
     "domains": {

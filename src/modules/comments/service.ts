@@ -1,73 +1,47 @@
-import { err, ok, type Result } from "@/lib/types";
-import { sendMessage } from "@/messaging/";
-import type {
-  NvComment,
-  SuccessfulResponseData,
-  ThreadsDataResponse,
-  VideoData,
-} from "@/types/api";
+import { err, ok, type Result, toError } from "@/lib/types";
+import { requestMessageResult } from "@/messaging/";
+import type { NvComment, SuccessfulResponseData, ThreadsDataResponse, VideoData } from "@/types/api";
 
 export type CommentService = {
-  fetchVideoInfo(
-    videoId: string
-  ): Promise<Result<SuccessfulResponseData<VideoData>, Error>>;
-  fetchComments(
-    nvComment: NvComment
-  ): Promise<Result<SuccessfulResponseData<ThreadsDataResponse>, Error>>;
+  fetchVideoInfo(videoId: string): Promise<Result<SuccessfulResponseData<VideoData>, Error>>;
+  fetchComments(nvComment: NvComment): Promise<Result<SuccessfulResponseData<ThreadsDataResponse>, Error>>;
 };
 
-const toError = (input: unknown, message: string) => {
-  if (!input) return new Error(message);
-  if (typeof input === "object" && input !== null) {
-    return new Error(JSON.stringify(input));
-  }
-  return new Error(String(input));
+type MessageEnvelope<T> = {
+  meta?: { status?: number; errorMessage?: string };
+  data?: T;
+  error?: string;
 };
 
-const wrap = async <T>(
-  promise: Promise<unknown>,
-  message: string
-): Promise<Result<T, Error>> => {
-  try {
-    const res = await promise;
-    if (!res || typeof res !== "object") return err(toError(res, message));
-    const record = res as {
-      error?: unknown;
-      meta?: { status?: number; errorMessage?: string };
-      data?: unknown;
-    };
-    if (record.error !== undefined) return err(toError(record.error, message));
-    if (record.meta?.status === 200 && record.data !== undefined) {
-      return ok(record.data as T);
-    }
-    return err(new Error(record.meta?.errorMessage ?? message));
-  } catch (error: unknown) {
-    return err(
-      new Error(
-        `${message}: ${error instanceof Error ? error.message : String(error)}`
-      )
-    );
-  }
+const hasStatus = <T>(value: unknown): value is MessageEnvelope<T> => typeof value === "object" && value !== null;
+
+const toResult = <T extends VideoData | ThreadsDataResponse>(
+  value: unknown,
+  fallback: string
+): Result<SuccessfulResponseData<T>, Error> => {
+  if (!hasStatus<SuccessfulResponseData<T>>(value)) return err(new Error(fallback));
+
+  if (typeof value === "object" && "error" in value && value.error) return err(new Error(String(value.error)));
+
+  const envelope = value as MessageEnvelope<SuccessfulResponseData<T>>;
+  if (envelope.meta?.status === 200 && envelope.data !== undefined) return ok(envelope.data);
+  if (envelope.meta?.errorMessage) return err(new Error(envelope.meta.errorMessage));
+  if (envelope.data !== undefined) return ok(envelope.data);
+  return err(new Error(fallback));
 };
 
-const buildCommentService = (): CommentService => {
-  const fetchVideoInfo = async (
-    videoId: string
-  ): Promise<Result<SuccessfulResponseData<VideoData>, Error>> =>
-    wrap<SuccessfulResponseData<VideoData>>(
-      sendMessage("video_data", videoId),
-      "Failed to fetch video data"
-    );
+export const createCommentService = (): CommentService => {
+  const fetchVideoInfo = async (videoId: string): Promise<Result<SuccessfulResponseData<VideoData>, Error>> => {
+    const res = await requestMessageResult("video_data", videoId);
+    return res.ok ? toResult<VideoData>(res.value, "Failed to fetch video data") : err(toError(res.error));
+  };
 
   const fetchComments = async (
     nvComment: NvComment
-  ): Promise<Result<SuccessfulResponseData<ThreadsDataResponse>, Error>> =>
-    wrap<SuccessfulResponseData<ThreadsDataResponse>>(
-      sendMessage("threads_data", nvComment),
-      "Failed to fetch comments data"
-    );
+  ): Promise<Result<SuccessfulResponseData<ThreadsDataResponse>, Error>> => {
+    const res = await requestMessageResult("threads_data", nvComment);
+    return res.ok ? toResult<ThreadsDataResponse>(res.value, "Failed to fetch comments data") : err(toError(res.error));
+  };
 
   return { fetchVideoInfo, fetchComments };
 };
-
-export const createCommentService = buildCommentService;

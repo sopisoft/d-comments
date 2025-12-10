@@ -3,8 +3,8 @@ import { useCallback, useEffect, useRef } from "react";
 export function useAnimationFrame(callback: () => void, intervalMs = 0) {
   const saved = useRef(callback);
   const rafRef = useRef<number | null>(null);
-  const runningRef = useRef(false);
-  const nextTickRef = useRef(0);
+  const running = useRef(false);
+  const nextTick = useRef(0);
 
   useEffect(() => {
     saved.current = callback;
@@ -12,27 +12,25 @@ export function useAnimationFrame(callback: () => void, intervalMs = 0) {
 
   const loop = useCallback(
     (time: number) => {
-      if (!runningRef.current) return;
-
-      if (!intervalMs || time >= nextTickRef.current) {
-        nextTickRef.current = intervalMs ? time + intervalMs : time;
+      if (!running.current) return;
+      if (!intervalMs || time >= nextTick.current) {
+        nextTick.current = intervalMs ? time + intervalMs : time;
         saved.current();
       }
-
       rafRef.current = requestAnimationFrame(loop);
     },
     [intervalMs]
   );
 
   const start = useCallback(() => {
-    if (runningRef.current) return;
-    runningRef.current = true;
-    nextTickRef.current = performance.now();
+    if (running.current) return;
+    running.current = true;
+    nextTick.current = performance.now();
     rafRef.current = requestAnimationFrame(loop);
   }, [loop]);
 
   const pause = useCallback(() => {
-    runningRef.current = false;
+    running.current = false;
     if (rafRef.current !== null) {
       cancelAnimationFrame(rafRef.current);
       rafRef.current = null;
@@ -40,6 +38,5 @@ export function useAnimationFrame(callback: () => void, intervalMs = 0) {
   }, []);
 
   useEffect(() => pause, [pause]);
-
   return { start, pause };
 }

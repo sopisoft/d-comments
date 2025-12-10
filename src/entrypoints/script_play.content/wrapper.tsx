@@ -52,7 +52,6 @@ export async function videoWrapper(): Promise<Root | undefined> {
     sideMenu = document.createElement("div");
     sideMenu.id = "d-comments-side";
     Object.assign(sideMenu.style, {
-      backgroundColor: "rgb(0, 0, 0)",
       zIndex: "10",
     });
     wrapper.append(sideMenu);

@@ -1,179 +1,86 @@
-import { ActionIcon, Divider, Paper, Text } from "@mantine/core";
-import { useCallback, useRef } from "react";
-import { Virtuoso, type VirtuosoHandle } from "react-virtuoso";
-import type { NvCommentItem, Threads } from "@/types/api";
-import { SidebarCommentCard } from "./components/SidebarCommentCard";
-import { SidebarPopoverDropdown } from "./components/SidebarPopoverDropdown";
-import { PopoverProvider, usePopover } from "./context/PopoverContext";
-import { useCommentList } from "./hooks/useCommentList";
-import { useSidebarAutoScroll } from "./hooks/useSidebarAutoScroll";
-import { useSidebarConfig, useVideoElement } from "./hooks/useSidebarConfig";
+import { useCallback, useMemo, useRef, useState } from "react";
+import { defaultConfigs } from "@/config/defaults";
+import type { Threads } from "@/types/api";
+import { SidebarComments } from "./components/SidebarComments";
+import {
+  createSidebarStyles,
+  type SidebarConfig,
+  SidebarProvider,
+  useSidebar,
+  useVideoElement,
+} from "./context/SidebarContext";
 
-function SidebarContent({ threads }: { threads: Threads }) {
-  const virtuosoRef = useRef<VirtuosoHandle | null>(null);
-  const { video } = useVideoElement();
-  const config = useSidebarConfig();
-  const comments = useCommentList(threads);
+function ResizeHandle({ config }: { config: SidebarConfig }) {
+  const [isDragging, setIsDragging] = useState(false);
+  const [isHover, setIsHover] = useState(false);
+  const startX = useRef(0);
+  const startWidth = useRef(0);
 
-  const autoScroll = useSidebarAutoScroll({
-    video,
-    config,
-    comments,
-    virtuosoRef,
-  });
+  const { ui_options } = defaultConfigs.comment_area_width_px;
 
-  const { notifyHover, openPopover: hookOpenPopover } = autoScroll;
-  const { comment, setComment, close } = usePopover();
-
-  const openPopover = useCallback(
-    (item: NvCommentItem, selection?: "user" | "word") => {
-      hookOpenPopover(item, selection);
-      setComment(item);
+  const handleMouseDown = useCallback(
+    (e: React.MouseEvent) => {
+      e.preventDefault();
+      setIsDragging(true);
+      startX.current = e.clientX;
+      startWidth.current = config.width;
+      const onMove = (ev: MouseEvent) => config.setWidth(startWidth.current + startX.current - ev.clientX);
+      const onUp = () => {
+        setIsDragging(false);
+        config.saveWidth();
+        document.removeEventListener("mousemove", onMove);
+        document.removeEventListener("mouseup", onUp);
+      };
+      document.addEventListener("mousemove", onMove);
+      document.addEventListener("mouseup", onUp);
     },
-    [hookOpenPopover, setComment]
-  );
-
-  const renderCommentItem = useCallback(
-    (_: number, item: NvCommentItem) => (
-      <SidebarCommentCard
-        comment={item}
-        showNicoru={config.showNicoru ?? false}
-        isActive={comment?.id === item.id}
-        onContext={() => openPopover(item, "user")}
-        onOpen={() => openPopover(item)}
-        onRightDown={() => openPopover(item, "user")}
-      />
-    ),
-    [comment?.id, config.showNicoru, openPopover]
-  );
-
-  const handleSeek = useCallback(
-    (item: NvCommentItem) => {
-      if (video) video.currentTime = item.vposMs / 1000;
-    },
-    [video]
+    [config]
   );
 
   return (
     <div
+      role="slider"
+      aria-orientation="horizontal"
+      aria-label="サイドバー幅の調整"
+      aria-valuemin={ui_options.min}
+      aria-valuemax={ui_options.max}
+      aria-valuenow={config.width}
+      tabIndex={0}
+      onMouseDown={handleMouseDown}
+      onMouseEnter={() => setIsHover(true)}
+      onMouseLeave={() => setIsHover(false)}
       style={{
-        position: "relative",
-        height: "100%",
-        display: config.visibility ? "flex" : "none",
-        flexDirection: "column",
-        backgroundColor: config.bgColor,
-        color: config.textColor,
-        opacity: (config.opacity ?? 100) / 100,
-        width: `${config.width ?? 0}px`,
-        fontSize: `${config.fontSize ?? 0}px`,
+        position: "absolute",
+        left: 0,
+        top: 0,
+        bottom: 0,
+        width: 6,
+        cursor: "ew-resize",
+        backgroundColor: isDragging || isHover ? config.alpha(0.15) : "transparent",
+        zIndex: 10,
+        transition: "background-color 150ms",
       }}
-    >
-      <div
-        style={{
-          padding: "12px",
-          borderBottom: `1px solid ${config.textColor}20`,
-          flexShrink: 0,
-        }}
-      >
-        <Text size="sm" fw={600} ta="center">
-          コメント数: {comments.length}
-        </Text>
-      </div>
+    />
+  );
+}
 
-      <div
-        style={{
-          flex: 1,
-          display: "flex",
-          flexDirection: "column",
-          overflow: "hidden",
-        }}
-      >
-        <section
-          aria-label="コメントリスト"
-          onMouseEnter={() => notifyHover(true)}
-          onMouseLeave={() => notifyHover(false)}
-          style={{
-            flex: 1,
-            minHeight: 0,
-            position: "relative",
-          }}
-        >
-          <Virtuoso
-            ref={virtuosoRef}
-            data={comments}
-            itemContent={renderCommentItem}
-            style={{ height: "100%" }}
-            increaseViewportBy={{ top: 100, bottom: 100 }}
-          />
-        </section>
+function SidebarContent({ threads }: { threads: Threads }) {
+  const { video } = useVideoElement();
+  const config = useSidebar();
+  const styles = useMemo(() => createSidebarStyles(config), [config]);
 
-        {comment ? (
-          <Divider
-            my={0}
-            style={{
-              borderColor: `${config.textColor}40`,
-              flexShrink: 0,
-            }}
-          />
-        ) : null}
-
-        {comment ? (
-          <Paper
-            p="md"
-            style={{
-              flex: 0.6,
-              overflow: "auto",
-              display: "flex",
-              flexDirection: "column",
-              gap: "12px",
-              backgroundColor: `${config.bgColor}40`,
-              borderTop: `2px solid ${config.textColor}40`,
-              flexShrink: 0,
-            }}
-            withBorder={false}
-          >
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                paddingBottom: "8px",
-              }}
-            >
-              <Text size="md" fw={700}>
-                詳細
-              </Text>
-              <ActionIcon
-                onClick={close}
-                bg={config.bgColor}
-                c={config.textColor}
-                style={{
-                  border: `1px solid ${config.textColor}`,
-                  flexShrink: 0,
-                }}
-                size="sm"
-                aria-label="詳細パネルを閉じる"
-              >
-                ×
-              </ActionIcon>
-            </div>
-            <div style={{ flex: 1, overflow: "auto", minHeight: 0 }}>
-              <SidebarPopoverDropdown
-                comment={comment}
-                onSeek={() => handleSeek(comment)}
-              />
-            </div>
-          </Paper>
-        ) : null}
-      </div>
+  return (
+    <div style={styles.root}>
+      <ResizeHandle config={config} />
+      <SidebarComments threads={threads} config={config} video={video} styles={styles} />
     </div>
   );
 }
 
 export function CommentSidebar({ threads }: { threads: Threads }) {
   return (
-    <PopoverProvider>
+    <SidebarProvider>
       <SidebarContent threads={threads} />
-    </PopoverProvider>
+    </SidebarProvider>
   );
 }

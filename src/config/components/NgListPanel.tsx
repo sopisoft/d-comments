@@ -1,70 +1,56 @@
-import {
-  ActionIcon,
-  Button,
-  Checkbox,
-  Group,
-  Paper,
-  Stack,
-  Text,
-  TextInput,
-  Title,
-} from "@mantine/core";
-import { useEffect, useState } from "react";
-import { MdCheck, MdClose, MdDelete, MdEdit } from "react-icons/md";
-import { getConfig, setConfig, watchConfig } from "@/config";
+import { Badge, Button, Divider, Group, Paper, Stack, Text, TextInput, ThemeIcon, Title } from "@mantine/core";
+import { useCallback, useState } from "react";
+import { MdBlock, MdPersonOff } from "react-icons/md";
+import type { NgEntry } from "@/config";
+import { setConfig } from "@/config";
+import { useConfigs } from "@/config/hooks/useConfigs";
+import { useTheme } from "../hooks/useTheme";
+import { NgEntryRow } from "./NgEntryRow";
 
-type NgEntry = { value: string; enabled: boolean };
+type PS = ReturnType<typeof useTheme>["styles"];
+
+const useNgLists = () => {
+  const { values } = useConfigs(["ng_user_ids", "ng_words"] as const);
+  return {
+    userEntries: (values.ng_user_ids ?? []) as NgEntry[],
+    wordEntries: (values.ng_words ?? []) as NgEntry[],
+    updateUser: useCallback((next: NgEntry[]) => setConfig("ng_user_ids", next), []),
+    updateWord: useCallback((next: NgEntry[]) => setConfig("ng_words", next), []),
+  } as const;
+};
 
 export function NgListPanel() {
-  const [lists, setLists] = useState({
-    user: [] as NgEntry[],
-    word: [] as NgEntry[],
-  });
-
-  useEffect(() => {
-    let unwatch1: (() => void) | null = null;
-    let unwatch2: (() => void) | null = null;
-    (async () => {
-      const [u, w] = await Promise.all([
-        getConfig("ng_user_ids") as Promise<NgEntry[] | undefined>,
-        getConfig("ng_words") as Promise<NgEntry[] | undefined>,
-      ]);
-      setLists({ user: u ?? [], word: w ?? [] });
-      unwatch1 = await watchConfig("ng_user_ids", (v) =>
-        setLists((p) => ({ ...p, user: v as NgEntry[] }))
-      );
-      unwatch2 = await watchConfig("ng_words", (v) =>
-        setLists((p) => ({ ...p, word: v as NgEntry[] }))
-      );
-    })();
-    return () => {
-      unwatch1?.();
-      unwatch2?.();
-    };
-  }, []);
-
-  const updateList = async (type: "user" | "word", list: NgEntry[]) => {
-    await setConfig(type === "user" ? "ng_user_ids" : "ng_words", list);
-  };
-
+  const { styles: ps } = useTheme();
+  const { userEntries, wordEntries, updateUser, updateWord } = useNgLists();
   return (
-    <Stack gap="md">
-      <Title order={3}>NG 管理</Title>
+    <Stack gap="lg">
+      <Group gap="sm" align="center">
+        <MdBlock size={24} style={{ color: ps.accent }} />
+        <Title order={3} fw={600} c={ps.text.primary}>
+          NG 管理
+        </Title>
+      </Group>
+      <Divider color={ps.border.subtle} />
       <Section
         type="user"
         title="NG ユーザー"
-        description="ユーザーのコメントを除外します"
+        description="指定したユーザーIDのコメントを非表示にします"
         placeholder="ユーザーIDを入力"
-        entries={lists.user}
-        onUpdate={(list) => updateList("user", list)}
+        entries={userEntries}
+        onUpdate={updateUser}
+        icon={<MdPersonOff size={18} />}
+        ps={ps}
       />
+      <Divider color={ps.border.subtle} />
       <Section
         type="word"
         title="NG ワード"
         description="コメント内に含まれるワードを除外します。正規表現も使用可能です。"
         placeholder="(ねた|ネタ)|(ばれ|バレ)"
-        entries={lists.word}
-        onUpdate={(list) => updateList("word", list)}
+        entries={wordEntries}
+        onUpdate={updateWord}
+        icon={<MdBlock size={18} />}
+        ps={ps}
       />
     </Stack>
   );
@@ -77,6 +63,8 @@ function Section({
   placeholder,
   entries,
   onUpdate,
+  icon,
+  ps,
 }: {
   type: "user" | "word";
   title: string;
@@ -84,165 +72,105 @@ function Section({
   placeholder: string;
   entries: NgEntry[];
   onUpdate: (list: NgEntry[]) => Promise<void>;
+  icon: React.ReactNode;
+  ps: PS;
 }) {
   const [input, setInput] = useState("");
   const [editing, setEditing] = useState<string | null>(null);
-
+  const { bg } = ps.pairs;
   const handleAdd = async () => {
-    const trimmed = input.trim();
-    if (!trimmed || entries.some((e) => e.value === trimmed)) return;
-    await onUpdate([...entries, { value: trimmed, enabled: true }]);
+    const v = input.trim();
+    if (!v || entries.some((e) => e.value === v)) return;
+    await onUpdate([...entries, { value: v, enabled: true }]);
     setInput("");
   };
-
   const handleSave = async (editValue: string) => {
-    const trimmed = editValue.trim();
-    if (!trimmed) return;
-    await onUpdate(
-      entries.map((e) => (e.value === editing ? { ...e, value: trimmed } : e))
-    );
+    const v = editValue.trim();
+    if (v) await onUpdate(entries.map((e) => (e.value === editing ? { ...e, value: v } : e)));
     setEditing(null);
   };
-
-  const handleToggle = async (value: string) => {
-    await onUpdate(
-      entries.map((e) =>
-        e.value === value ? { ...e, enabled: !e.enabled } : e
-      )
-    );
+  const boxStyle = {
+    background: bg.elevated.background,
+    border: `1px solid ${ps.border.default}`,
   };
-
-  const handleDelete = async (value: string) => {
-    await onUpdate(entries.filter((x) => x.value !== value));
-  };
-
   return (
-    <Paper withBorder p="md" radius="md">
+    <Paper p="md" radius="md" style={boxStyle}>
       <Stack gap="md">
-        <div>
-          <Title order={5} mb="xs">
-            {title}
-          </Title>
-          <Text size="sm" c="dimmed">
-            {description}
-          </Text>
-        </div>
-
-        <Group align="flex-end" gap="sm">
-          <TextInput
-            label={type === "user" ? "ユーザーID" : "NG ワード"}
-            placeholder={placeholder}
-            value={input}
-            onChange={(e) => setInput(e.currentTarget.value)}
-            onKeyDown={(e) => e.key === "Enter" && handleAdd()}
-            flex={1}
-            size="sm"
-          />
-          <Button onClick={handleAdd} size="sm">
-            追加
-          </Button>
+        <Group gap="sm" align="flex-start">
+          <ThemeIcon color="accent" size={34} radius="md">
+            {icon}
+          </ThemeIcon>
+          <div style={{ flex: 1 }}>
+            <Group gap="xs">
+              <Title order={5} fw={600} c={ps.text.primary}>
+                {title}
+              </Title>
+              <Badge size="sm" variant="light" color="dark">
+                {entries.length}
+              </Badge>
+            </Group>
+            <Text size="sm" c={ps.text.muted} mt={4}>
+              {description}
+            </Text>
+          </div>
         </Group>
-
+        <Paper p="sm" radius="sm" style={{ background: bg.base.background, border: ps.panel.border }}>
+          <Group align="flex-end" gap="sm">
+            <TextInput
+              label={type === "user" ? "ユーザーID" : "NG ワード"}
+              placeholder={placeholder}
+              value={input}
+              onChange={(e) => setInput(e.currentTarget.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleAdd()}
+              flex={1}
+              size="sm"
+              styles={{
+                input: {
+                  background: bg.surface.background,
+                  borderColor: ps.border.default,
+                },
+                label: { color: ps.text.primary },
+              }}
+            />
+            <Button onClick={handleAdd} size="sm" variant="light" disabled={!input.trim()} c={ps.text.primary}>
+              追加
+            </Button>
+          </Group>
+        </Paper>
         {entries.length === 0 ? (
-          <Text size="sm" c="dimmed" ta="center" py="md">
-            登録されていません
-          </Text>
+          <Paper
+            p="lg"
+            radius="sm"
+            ta="center"
+            style={{
+              background: bg.base.background,
+              border: `1px dashed ${ps.border.subtle}`,
+            }}
+          >
+            <Text size="sm" c={ps.text.muted}>
+              登録されていません
+            </Text>
+          </Paper>
         ) : (
           <Stack gap="xs">
             {entries.map((entry) => (
-              <EntryRow
+              <NgEntryRow
                 key={entry.value}
                 entry={entry}
                 isEditing={editing === entry.value}
                 onEdit={() => setEditing(entry.value)}
                 onSave={handleSave}
                 onCancel={() => setEditing(null)}
-                onToggle={() => handleToggle(entry.value)}
-                onDelete={() => handleDelete(entry.value)}
+                onToggle={() =>
+                  onUpdate(entries.map((e) => (e.value === entry.value ? { ...e, enabled: !e.enabled } : e)))
+                }
+                onDelete={() => onUpdate(entries.filter((e) => e.value !== entry.value))}
+                ps={ps}
               />
             ))}
           </Stack>
         )}
       </Stack>
-    </Paper>
-  );
-}
-
-function EntryRow({
-  entry,
-  isEditing,
-  onEdit,
-  onSave,
-  onCancel,
-  onToggle,
-  onDelete,
-}: {
-  entry: NgEntry;
-  isEditing: boolean;
-  onEdit: () => void;
-  onSave: (value: string) => void;
-  onCancel: () => void;
-  onToggle: () => void;
-  onDelete: () => void;
-}) {
-  const [value, setValue] = useState(entry.value);
-
-  if (isEditing) {
-    return (
-      <Paper withBorder p="sm" radius="sm">
-        <Group justify="space-between" align="center">
-          <TextInput
-            size="xs"
-            value={value}
-            onChange={(e) => setValue(e.currentTarget.value)}
-            onKeyDown={(e) => e.key === "Enter" && onSave(value)}
-            placeholder="値を入力"
-            autoFocus
-            flex={1}
-          />
-          <Group gap={4}>
-            <ActionIcon
-              size="sm"
-              color="green"
-              onClick={() => onSave(value)}
-              title="保存"
-            >
-              <MdCheck size={16} />
-            </ActionIcon>
-            <ActionIcon
-              size="sm"
-              color="gray"
-              onClick={onCancel}
-              title="キャンセル"
-            >
-              <MdClose size={16} />
-            </ActionIcon>
-          </Group>
-        </Group>
-      </Paper>
-    );
-  }
-
-  return (
-    <Paper withBorder p="sm" radius="sm">
-      <Group justify="space-between" align="center">
-        <Checkbox
-          label={entry.value}
-          checked={entry.enabled}
-          onChange={onToggle}
-          flex={1}
-          size="sm"
-          style={{ opacity: entry.enabled ? 1 : 0.6 }}
-        />
-        <Group gap={4}>
-          <ActionIcon size="sm" onClick={onEdit} title="編集">
-            <MdEdit size={16} />
-          </ActionIcon>
-          <ActionIcon size="sm" color="red" onClick={onDelete} title="削除">
-            <MdDelete size={16} />
-          </ActionIcon>
-        </Group>
-      </Group>
     </Paper>
   );
 }

@@ -1,7 +1,4 @@
 {
-	"[html]": {
-		"editor.defaultFormatter": "vscode.html-language-features"
-	},
 	"editor.formatOnSave": true,
 	"editor.formatOnPaste": true,
 	"editor.codeActionsOnSave": {

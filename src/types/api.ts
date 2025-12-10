@@ -1,30 +1,24 @@
-type BaseResponse<T = unknown> =
-  | {
-      meta: {
-        status: 200;
-        id?: string;
-      };
-      data: T;
-    }
-  | {
-      meta: {
-        status: 500;
-        id?: string;
-        errorCode?: string;
-        errorMessage?: string;
-      };
-      data: null;
-    };
+export type ApiSuccess<T> = {
+  meta: {
+    status: 200;
+    id?: string;
+  };
+  data: T;
+};
 
-export type SuccessfulResponseData<T extends VideoData | ThreadsDataResponse> =
-  T extends {
-    meta: {
-      status: 200;
-    };
-    data: infer D;
-  }
-    ? D
-    : never;
+export type ApiError = {
+  meta: {
+    status: 500;
+    id?: string;
+    errorCode?: string;
+    errorMessage?: string;
+  };
+  data: null;
+};
+
+export type BaseResponse<T> = ApiSuccess<T> | ApiError;
+
+export type SuccessfulResponseData<T extends BaseResponse<unknown>> = T extends ApiSuccess<infer D> ? D : never;
 
 type Thread = {
   id: number;
@@ -118,13 +112,7 @@ export type VideoData = BaseResponse<{
         threadkey: string;
         is184Forced: boolean;
         hasNicoscript: boolean;
-        label:
-          | "owner"
-          | "default"
-          | "community"
-          | "easy"
-          | "extra-community"
-          | "extra-easy";
+        label: "owner" | "default" | "community" | "easy" | "extra-community" | "extra-easy";
         postKeyStatus: number;
         server: string;
       }[];
