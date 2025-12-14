@@ -9,6 +9,7 @@ import {
   useSidebar,
   useVideoElement,
 } from "./context/SidebarContext";
+import { useCommentList } from "./hooks/useCommentList";
 
 function ResizeHandle({ config }: { config: SidebarConfig }) {
   const [isDragging, setIsDragging] = useState(false);
@@ -68,9 +69,12 @@ function SidebarContent({ threads }: { threads: Threads }) {
   const { video } = useVideoElement();
   const config = useSidebar();
   const styles = useMemo(() => createSidebarStyles(config), [config]);
-
+  const comments = useCommentList(threads);
+  const length = comments.length;
+  const root: React.CSSProperties = { ...styles.root };
+  if (length === 0) root.width = 0;
   return (
-    <div style={styles.root}>
+    <div style={root}>
       <ResizeHandle config={config} />
       <SidebarComments threads={threads} config={config} video={video} styles={styles} />
     </div>

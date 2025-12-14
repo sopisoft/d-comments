@@ -107,7 +107,7 @@ export const CommentDetailView = memo<CommentDetailViewProps>(({ comment, theme,
             },
           }}
         />
-        <Button {...btnProps} variant="light" mt={6} onClick={blockWord}>
+        <Button {...btnProps} variant="outline" mt={6} onClick={blockWord}>
           NG ワードとして登録
         </Button>
       </div>

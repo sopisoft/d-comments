@@ -1,4 +1,4 @@
-import { compositeRgb, hexToRgb, type RgbColor, readableTextOn } from "@/lib/color";
+import type { RgbColor } from "@/lib/color";
 
 /**
  * Format time in vpos (milliseconds) to MM:SS format
@@ -33,7 +33,6 @@ export function toJapaneseNumber(num: number): string {
 }
 
 const NICORU_RGB: RgbColor = { r: 252, g: 216, b: 66 };
-const DEFAULT_BASE_RGB: RgbColor = { r: 26, g: 27, b: 30 };
 
 const getNicoruAlpha = (nicoru: number): number => {
   if (nicoru === 0) return 0;
@@ -47,12 +46,4 @@ const rgbaString = (alpha: number): string => `rgba(${NICORU_RGB.r}, ${NICORU_RG
 
 export function nicoruColor(nicoru: number): string {
   return rgbaString(getNicoruAlpha(nicoru));
-}
-
-export function nicoruTextColor(nicoru: number, baseHex: string): string {
-  const alpha = getNicoruAlpha(nicoru);
-  if (alpha === 0) return "";
-  const base = hexToRgb(baseHex) ?? DEFAULT_BASE_RGB;
-  const background = compositeRgb(NICORU_RGB, alpha, base);
-  return readableTextOn(background);
 }
