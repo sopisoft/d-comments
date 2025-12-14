@@ -1,6 +1,6 @@
 import { ActionIcon, Button, Group, Stack, Text, Textarea } from "@mantine/core";
 import { memo, useCallback, useState } from "react";
-import { addNgEntry } from "@/config/";
+import { addNgEntry } from "@/config/storage";
 import { ui } from "@/config/theme";
 import { vposToTime } from "@/modules/formatting";
 import type { NvCommentItem } from "@/types/api";
@@ -32,9 +32,9 @@ export const CommentDetailView = memo<CommentDetailViewProps>(({ comment, theme,
   };
   const btnProps = {
     fullWidth: true,
-    size: "xs" as const,
-    variant: "filled" as const,
-    color: "accent" as const,
+    size: "xs",
+    variant: "filled",
+    color: "accent",
   };
 
   return (

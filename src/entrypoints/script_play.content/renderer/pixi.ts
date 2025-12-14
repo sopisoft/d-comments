@@ -1,4 +1,5 @@
 import { Container, type TextStyle } from "pixi.js";
+import { getConfigs, watchConfig } from "@/config/storage";
 import type { Result } from "@/lib/types";
 import type { Threads } from "@/types/api";
 import { buildTimeline } from "./core/comments";
@@ -39,9 +40,57 @@ export const createPixiRenderer = async (): Promise<Result<RendererController, s
   commentLayer.eventMode = "none";
   layer.addChild(commentLayer);
 
+  const {
+    comment_area_opacity_percentage: initialOpacity,
+    nicoarea_scale: initialScale,
+    comment_renderer_fps: initialFps,
+    comment_timing_offset: initialOffset,
+    show_comments_in_niconico_style: initialVisibility,
+  } = await getConfigs([
+    "comment_area_opacity_percentage",
+    "nicoarea_scale",
+    "comment_renderer_fps",
+    "comment_timing_offset",
+    "show_comments_in_niconico_style",
+  ]);
+
+  let offsetMs = initialOffset;
+  let fontScale = Math.max(initialScale / 100, 0);
+  let cachedThreads: Threads | null = null;
+
   const styleCache = new Map<string, TextStyle>();
   const nodeCache = new Map<string, CommentNode>();
   const pool = new Map<string, CommentNode[]>();
+
+  app.ticker.maxFPS = initialFps;
+
+  const applyOpacity = (value: number) => {
+    const alpha = Math.max(value / 100, 0);
+    commentLayer.alpha = alpha;
+    overlay.style.opacity = alpha.toString();
+    app.canvas.style.opacity = alpha.toString();
+  };
+
+  const applyVisibility = (visible: boolean) => {
+    commentLayer.visible = visible;
+    overlay.style.display = visible ? "block" : "none";
+    app.canvas.style.display = visible ? "block" : "none";
+  };
+
+  const applyOffset = (value: number) => {
+    offsetMs = value;
+    if (cachedThreads) setThreads(cachedThreads);
+  };
+
+  function applyScale(value: number) {
+    const scale = Math.max(value / 100, 0);
+    if (scale === fontScale) return;
+    fontScale = scale;
+    styleCache.clear();
+    nodeCache.clear();
+    pool.clear();
+    if (cachedThreads) setThreads(cachedThreads);
+  }
 
   const detach = (c: Container) => c.parent?.removeChild(c);
 
@@ -96,13 +145,13 @@ export const createPixiRenderer = async (): Promise<Result<RendererController, s
   };
 
   const tick = (): number => {
-    const nowMs = (video.currentTime * 1000) | 0;
+    const nowMs = (video.currentTime * 1000 + offsetMs) | 0;
     if (nowMs < 0) return 0;
     let updates = 0;
 
     // シーク検出（80ms以上戻った場合）
     if (nowMs + 80 < lastMs) {
-      for (const a of active) a.node.container.parent?.removeChild(a.node.container);
+      for (const a of active) detach(a.node.container);
       active.length = 0;
       nextIndex = 0;
       lastMs = nowMs;
@@ -127,7 +176,7 @@ export const createPixiRenderer = async (): Promise<Result<RendererController, s
     for (let i = active.length - 1; i >= 0; i--) {
       const it = active[i];
       if (nowMs >= it.exitMs) {
-        it.node.container.parent?.removeChild(it.node.container);
+        detach(it.node.container);
         active[i] = active[active.length - 1];
         active.pop();
       } else {
@@ -143,13 +192,15 @@ export const createPixiRenderer = async (): Promise<Result<RendererController, s
   app.ticker.add(tick);
 
   const clearAll = () => {
-    for (const a of active) a.node.container.parent?.removeChild(a.node.container);
+    for (const layer of active) detach(layer.node.container);
     active.length = 0;
   };
 
-  const setThreads = (threads: Threads) => {
-    timeline = buildTimeline(threads);
-    const now = (video.currentTime * 1000) | 0;
+  const v = video;
+  function setThreads(threads: Threads) {
+    cachedThreads = threads;
+    timeline = buildTimeline(threads, fontScale);
+    const now = (v.currentTime * 1000 + offsetMs) | 0;
     clearAll();
     nextIndex = 0;
     lastMs = now;
@@ -173,22 +224,20 @@ export const createPixiRenderer = async (): Promise<Result<RendererController, s
     const keys = new Set(timeline.map((t) => t.styleKey));
     for (const k of styleCache.keys()) if (!keys.has(k)) styleCache.delete(k);
     return threads;
-  };
+  }
 
-  const dispose = (): boolean => {
-    app.ticker.remove(tick);
-    app.ticker.stop();
-    clearAll();
-    commentLayer.destroy({ children: true });
-    for (const n of nodeCache.values()) n.container.destroy({ children: true });
-    nodeCache.clear();
-    for (const arr of pool.values()) for (const n of arr) n.container.destroy({ children: true });
-    pool.clear();
-    styleCache.clear();
-    app.destroy(true, { children: true });
-    overlay.remove();
-    return true;
-  };
+  watchConfig("comment_area_opacity_percentage", (value) => applyOpacity(value));
+  watchConfig("nicoarea_scale", (value) => applyScale(value));
+  watchConfig("comment_renderer_fps", (value) => {
+    app.ticker.maxFPS = value;
+  });
+  watchConfig("show_comments_in_niconico_style", (value) => applyVisibility(value));
+  watchConfig("comment_timing_offset", (value) => applyOffset(value));
 
-  return { ok: true, value: { setThreads, dispose } };
+  applyOpacity(initialOpacity);
+  applyVisibility(initialVisibility);
+  applyOffset(initialOffset);
+  applyScale(initialScale);
+
+  return { ok: true, value: { setThreads } };
 };

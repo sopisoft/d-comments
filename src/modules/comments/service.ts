@@ -1,5 +1,5 @@
 import { err, ok, type Result, toError } from "@/lib/types";
-import { requestMessageResult } from "@/messaging/";
+import { requestMessageResult } from "@/messaging/runtime";
 import type { NvComment, SuccessfulResponseData, ThreadsDataResponse, VideoData } from "@/types/api";
 
 export type CommentService = {

@@ -81,6 +81,7 @@ export const CommentCardView = memo<CommentCardViewProps>(
               lineClamp={4}
               style={{
                 wordBreak: "break-word",
+                fontSize: theme.fontSizePx,
               }}
             >
               {comment.body}

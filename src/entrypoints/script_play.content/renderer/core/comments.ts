@@ -26,6 +26,35 @@ const createStyleKey = (s: CommentStyle): string =>
     s.padding
   }|${+s.padded}|${+s.resizedY}|${+s.resizedX}`;
 
+const applyFontScale = (style: CommentStyle, fontScale: number): CommentStyle => {
+  if (fontScale === 1) return style;
+  const scaledLineMetrics = style.lineMetrics.map((metric) => ({
+    ...metric,
+    width: metric.width * fontScale,
+    baseline: metric.baseline * fontScale,
+    ascent: metric.ascent * fontScale,
+    descent: metric.descent * fontScale,
+    top: metric.top * fontScale,
+    bottom: metric.bottom * fontScale,
+  }));
+  return {
+    ...style,
+    fontSize: style.fontSize * fontScale,
+    strokeWidth: style.strokeWidth * fontScale,
+    lineHeight: style.lineHeight * fontScale,
+    laneHeight: style.laneHeight * fontScale,
+    charSize: style.charSize * fontScale,
+    fontOffset: style.fontOffset * fontScale,
+    padding: style.padding * fontScale,
+    contentWidth: style.contentWidth * fontScale,
+    contentHeight: style.contentHeight * fontScale,
+    contentTop: style.contentTop * fontScale,
+    maxWidth: style.maxWidth !== undefined ? style.maxWidth * fontScale : undefined,
+    borderWidth: style.borderWidth !== undefined ? style.borderWidth * fontScale : undefined,
+    lineMetrics: scaledLineMetrics,
+  };
+};
+
 const FLOW_MIN_LEAD_VPOS = 160;
 const FLOW_EXIT_EXTENSION_VPOS = 125;
 const VPOS_FRAME_MS = 10;
@@ -53,7 +82,7 @@ const computeFlowExitMs = (width: number, durationVpos: number, vposMs: number):
   return vposMs + Math.max(minVpos, Math.ceil(rawExit)) * VPOS_FRAME_MS;
 };
 
-export const buildTimeline = (threads: Threads): TimelineComment[] => {
+export const buildTimeline = (threads: Threads, fontScale: number): TimelineComment[] => {
   const pending: PendingTimelineEntry[] = [];
   let sequence = 0;
 
@@ -65,10 +94,11 @@ export const buildTimeline = (threads: Threads): TimelineComment[] => {
       const info = parseMailCommands(normalizeCommands(raw.commands), {
         isPremium: raw.isPremium,
       });
-      const style = measureComment(raw.body, info, {
+      const measuredStyle = measureComment(raw.body, info, {
         disableResize: info.disableResize,
         allowWrap: info.loc !== "middle",
       });
+      const style = applyFontScale(measuredStyle, fontScale);
       const durationVpos = Math.max(1, Math.round(info.durationMs / 10));
       const timingPadding = computeTimingPadding(style);
       const baseWidth = style.resizedX && style.maxWidth !== undefined ? Math.ceil(style.maxWidth) : style.contentWidth;

@@ -17,14 +17,13 @@ export const useConfigValue = <TKey extends ConfigKey>(configKey: TKey): ConfigS
   const save = useCallback((next: ConfigValue<TKey>) => void setConfig(configKey, next), [configKey]);
 
   return useMemo(
-    () =>
-      ({
-        value: currentValue,
-        defaultValue,
-        currentValue,
-        isPending: false,
-        save,
-      }) as const,
+    () => ({
+      value: currentValue,
+      defaultValue,
+      currentValue,
+      isPending: false,
+      save,
+    }),
     [currentValue, defaultValue, save]
   );
 };

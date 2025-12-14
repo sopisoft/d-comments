@@ -1,11 +1,12 @@
 import "@mantine/core/styles.css";
 import { createRoot, type Root } from "react-dom/client";
-import { getConfig, ThemedMantineProvider, watchConfig } from "@/config/";
+import { getConfig, watchConfig } from "@/config/storage";
+import { ThemedMantineProvider } from "@/config/theme";
 import type { SnapShotResponse } from "@/entrypoints/background/search";
 import { err, ok, type Result, unwrap } from "@/lib/types";
 import { toVideoData } from "@/lib/utils";
-import { onMessage, requestMessageResult } from "@/messaging/";
-import { createCommentManager, getComments } from "@/modules/comments";
+import { onMessage, requestMessageResult } from "@/messaging/runtime";
+import { createCommentManager, getComments } from "@/modules/comments/manager";
 import { buildSearchQuery } from "@/modules/search";
 import type { Threads } from "@/types/api";
 import type { CommentVideoData } from "@/types/comments";
@@ -64,7 +65,6 @@ export default defineContentScript({
     };
 
     let rendererController: {
-      dispose: () => void;
       setThreads: (threads: Threads) => void;
     } | null = null;
     let rendererMode: RendererMode | null = null;
@@ -86,7 +86,6 @@ export default defineContentScript({
         return ok(nextMode);
       }
 
-      rendererController?.dispose();
       const init = await renderer.init(nextMode);
       if (!init.ok) {
         rendererController = null;

@@ -1,12 +1,13 @@
 import { Button, Group, Select, Stack, TextInput } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useCallback, useEffect } from "react";
-import { getConfig, useTheme } from "@/config/";
+import { useTheme } from "@/config/hooks/useTheme";
+import { getConfig } from "@/config/storage";
 import type { _sort, SnapShotQuery, SnapShotResponse } from "@/entrypoints/background/search";
 import { logger } from "@/lib/logger";
 import { unwrap } from "@/lib/types";
 import { toCommentVideoList } from "@/lib/utils";
-import { requestMessageResult } from "@/messaging/";
+import { requestMessageResult } from "@/messaging/runtime";
 import { buildSearchQuery } from "@/modules/search";
 import type { CommentVideoData } from "@/types/comments";
 

@@ -1,6 +1,7 @@
 import { Anchor, Divider, Group, Stack, Text } from "@mantine/core";
 import { MdOpenInNew } from "react-icons/md";
-import { QuickOptionsPanel, useTheme } from "@/config";
+import { QuickOptionsPanel } from "@/config/components/QuickOptionsPanel";
+import { useTheme } from "@/config/hooks/useTheme";
 import { ui } from "@/config/theme";
 
 export function SettingsPanel() {

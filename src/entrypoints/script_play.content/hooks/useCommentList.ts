@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { getConfig } from "@/config/";
-import { flattenComments, sortComments } from "@/modules/comments";
+import { getConfig } from "@/config/storage";
+import { flattenComments, sortComments } from "@/modules/comments/manager";
 import type { NvCommentItem, Threads } from "@/types/api";
 
 export function useCommentList(threads: Threads) {

@@ -1,4 +1,4 @@
-import { getConfigs } from "@/config";
+import { getConfigs } from "@/config/storage";
 import { ok, type Result } from "@/lib/types";
 import { toCommentVideoData } from "@/lib/utils";
 import type { NvCommentItem, Threads } from "@/types/api";

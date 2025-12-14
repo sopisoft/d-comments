@@ -1,10 +1,9 @@
 import { Badge, Button, Divider, Group, Paper, Stack, Text, TextInput, ThemeIcon, Title } from "@mantine/core";
 import { useCallback, useState } from "react";
 import { MdBlock, MdPersonOff } from "react-icons/md";
-import type { NgEntry } from "@/config";
-import { setConfig } from "@/config";
 import { useConfigs } from "@/config/hooks/useConfigs";
 import { useTheme } from "../hooks/useTheme";
+import { type NgEntry, setConfig } from "../storage";
 import { NgEntryRow } from "./NgEntryRow";
 
 type PS = ReturnType<typeof useTheme>["styles"];

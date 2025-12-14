@@ -1,6 +1,6 @@
 import type { Options, V1Thread } from "@xpadev-net/niconicomments";
 import NiconiComments from "@xpadev-net/niconicomments";
-import { getConfigs, watchConfigs } from "@/config/";
+import { getConfigs, watchConfigs } from "@/config/storage";
 import type { Result } from "@/lib/types";
 import type { Threads } from "@/types/api";
 import { CANVAS_HEIGHT, CANVAS_WIDTH } from "./core/constants";
@@ -41,7 +41,7 @@ export const createNiconiRenderer = async (): Promise<Result<RendererController,
     "comment_renderer_fps",
     "comment_timing_offset",
     "show_comments_in_niconico_style",
-  ] as const);
+  ]);
 
   let offsetMs = initialOffset;
   let isVisible = initialVisibility;
@@ -131,7 +131,7 @@ export const createNiconiRenderer = async (): Promise<Result<RendererController,
       "comment_renderer_fps",
       "show_comments_in_niconico_style",
       "comment_timing_offset",
-    ] as const,
+    ],
     ({ current }) => {
       canvas.style.opacity = (current.comment_area_opacity_percentage / 100).toString();
       options.scale = Math.max(current.nicoarea_scale / 100, 0);
@@ -148,14 +148,5 @@ export const createNiconiRenderer = async (): Promise<Result<RendererController,
     return currentThreads;
   };
 
-  const dispose = (): boolean => {
-    stopLoop();
-    renderer?.clear();
-    canvas.remove();
-    overlay.remove();
-    for (const s of _stops) s();
-    return true;
-  };
-
-  return { ok: true, value: { setThreads, dispose } };
+  return { ok: true, value: { setThreads } };
 };

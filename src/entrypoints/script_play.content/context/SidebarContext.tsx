@@ -8,10 +8,10 @@ import {
   useMemo,
   useState,
 } from "react";
-import { type ConfigKey, setConfig } from "@/config/";
-import { defaultConfigs, getDefaultValue } from "@/config/defaults";
+import { type ConfigKey, defaultConfigs, getDefaultValue } from "@/config/defaults";
 import { useConfigs } from "@/config/hooks/useConfigs";
 import { createPalette, type ThemeConfig, useTheme } from "@/config/hooks/useTheme";
+import { setConfig } from "@/config/storage";
 import { ui } from "@/config/theme";
 import { findElement } from "@/lib/dom";
 
@@ -107,7 +107,7 @@ export const SidebarProvider = ({ children }: { children: ReactNode }) => {
   const handleSaveWidth = useCallback(
     () =>
       setLayout((l) => {
-        void setConfig("comment_area_width_px", l.width);
+        setConfig("comment_area_width_px", l.width);
         return l;
       }),
     []

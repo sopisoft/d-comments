@@ -1,5 +1,6 @@
 import type { SnapShotResponse } from "@/entrypoints/background/search";
-import type { CommentVideoData, SuccessfulResponseData, VideoData } from "@/types/";
+import type { SuccessfulResponseData, VideoData } from "@/types/api";
+import type { CommentVideoData } from "@/types/comments";
 
 const isDAnimeChannel = (channelId: number): boolean => channelId === 2632720;
 

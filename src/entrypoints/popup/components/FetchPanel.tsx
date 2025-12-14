@@ -1,11 +1,11 @@
 import { Grid, ScrollArea, Stack, Tabs, Text } from "@mantine/core";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { MdSearch, MdTag } from "react-icons/md";
-import { useTheme } from "@/config/";
+import { useTheme } from "@/config/hooks/useTheme";
 import { ui } from "@/config/theme";
 import { unwrap } from "@/lib/types";
-import { getActiveTabId, onMessage, requestMessageResult } from "@/messaging/";
-import { createCommentManager, getComments } from "@/modules/comments";
+import { getActiveTabId, onMessage, requestMessageResult } from "@/messaging/runtime";
+import { createCommentManager, getComments } from "@/modules/comments/manager";
 import type { CommentVideoData } from "@/types/comments";
 import {
   buildDisplayVideos,
@@ -26,13 +26,6 @@ export function FetchPanel({ title }: { title: string }) {
     border: ps.panel.border,
     borderRadius: ui.radius.md,
     padding: ui.space.md,
-  };
-  const emptyStyle = {
-    ...cardStyle,
-    background: ps.bg.surface,
-    border: `1px dashed ${ps.border.subtle}`,
-    textAlign: "center" as const,
-    padding: ui.space.xl,
   };
   const [tabId, setTabId] = useState<number | null>(null);
   const [playingVideos, setPlayingVideos] = useState<CommentVideoData[]>([]);
@@ -149,7 +142,15 @@ export function FetchPanel({ title }: { title: string }) {
       <Grid.Col span={7}>
         <ScrollArea h="calc(100vh - 140px)" scrollbarSize={6}>
           {displayVideos.length === 0 ? (
-            <div style={emptyStyle}>
+            <div
+              style={{
+                ...cardStyle,
+                background: ps.bg.surface,
+                border: `1px dashed ${ps.border.subtle}`,
+                textAlign: "center",
+                padding: ui.space.xl,
+              }}
+            >
               <Text c={ps.text.muted} size="sm">
                 動画を検索してください
               </Text>

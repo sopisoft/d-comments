@@ -1,6 +1,12 @@
 import { logger } from "@/lib/logger";
-import type { CommentManager } from "@/modules/comments";
-import { addPlayingVideo, createCommentManager, getPlaying, getThreads, removePlayingVideo } from "@/modules/comments";
+import {
+  addPlayingVideo,
+  createCommentManager,
+  getPlaying,
+  getThreads,
+  removePlayingVideo,
+} from "@/modules/comments/manager";
+import type { CommentManager } from "@/modules/comments/types";
 import type { Threads } from "@/types/api";
 import type { CommentVideoData } from "@/types/comments";
 

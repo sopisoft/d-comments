@@ -1,6 +1,5 @@
 import type { ConfigKey, ConfigSchema, ConfigValue } from "./defaults";
 import { getDefaultValue, getRawDefaultConfig } from "./defaults";
-import type { ConfigItem, ConfigValueShape, UiType } from "./types";
 
 type BrowserStorageArea = Pick<Browser.storage.StorageArea, "get" | "set">;
 type BrowserStorageEvent = typeof browser.storage.onChanged;
@@ -28,10 +27,11 @@ const defaultStorage: StorageLike = {
 };
 
 const clampNumberValue = <TKey extends ConfigKey>(key: TKey, value: number) => {
-  const { ui_options: options } = getRawDefaultConfig(key) as ConfigItem<ConfigValueShape, UiType>;
-  if (!options) return value;
-
-  const { min, max } = options;
+  const cfg = getRawDefaultConfig(key) as { ui_options?: unknown };
+  const options = cfg.ui_options;
+  if (!options || typeof options !== "object") return value;
+  if (!("min" in options) || !("max" in options)) return value;
+  const { min, max } = options as { min?: number; max?: number };
   if (min === undefined && max === undefined) return value;
 
   const clampedLower = min !== undefined ? Math.max(min, value) : value;

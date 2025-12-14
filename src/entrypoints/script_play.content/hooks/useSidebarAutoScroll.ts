@@ -1,6 +1,6 @@
 import { type RefObject, useCallback, useEffect, useRef } from "react";
 import type { VirtuosoHandle } from "react-virtuoso";
-import { getConfig, watchConfig } from "@/config";
+import { getConfig, watchConfig } from "@/config/storage";
 import type { NvCommentItem } from "@/types/api";
 import type { SidebarConfig } from "../context/SidebarContext";
 import { useAnimationFrame } from "./useAnimationFrame";

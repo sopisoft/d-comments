@@ -1,7 +1,7 @@
 import { AppShell, Group, Tabs, Text, Title } from "@mantine/core";
 import { useEffect, useState } from "react";
-import { useTheme } from "@/config/";
-import { getActiveTabId } from "@/messaging/";
+import { useTheme } from "@/config/hooks/useTheme";
+import { getActiveTabId } from "@/messaging/runtime";
 import { FetchPanel } from "./components/FetchPanel";
 import { OtherPanel } from "./components/OtherPanel";
 import { SettingsPanel } from "./components/SettingsPanel";
