@@ -20,9 +20,7 @@ export const hexToRgb = (hex: string): RgbColor | null => {
 };
 
 const toHex = (v: number): string => v.toString(16).padStart(2, "0");
-
-export const rgbToHex = ({ r, g, b }: RgbColor): string =>
-  `#${toHex(clampCh(r))}${toHex(clampCh(g))}${toHex(clampCh(b))}`;
+const rgbToHex = ({ r, g, b }: RgbColor): string => `#${toHex(clampCh(r))}${toHex(clampCh(g))}${toHex(clampCh(b))}`;
 
 export const adjustColor = (hex: string, amount: number): string => {
   const rgb = hexToRgb(hex);
@@ -33,21 +31,15 @@ export const adjustColor = (hex: string, amount: number): string => {
   return rgbToHex({ r: mix(rgb.r), g: mix(rgb.g), b: mix(rgb.b) });
 };
 
-export const compositeRgb = (overlay: RgbColor, alpha: number, base: RgbColor): RgbColor => ({
-  r: Math.round(overlay.r * alpha + base.r * (1 - alpha)),
-  g: Math.round(overlay.g * alpha + base.g * (1 - alpha)),
-  b: Math.round(overlay.b * alpha + base.b * (1 - alpha)),
-});
-
 const srgbToLinear = (v: number): number => {
   const c = v / 255;
   return c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
 };
 
-export const relativeLuminance = ({ r, g, b }: RgbColor): number =>
+const relativeLuminance = ({ r, g, b }: RgbColor): number =>
   0.2126 * srgbToLinear(r) + 0.7152 * srgbToLinear(g) + 0.0722 * srgbToLinear(b);
 
-export const contrastRatio = (l1: number, l2: number): number => {
+const contrastRatio = (l1: number, l2: number): number => {
   const [max, min] = l1 > l2 ? [l1, l2] : [l2, l1];
   return (max + 0.05) / (min + 0.05);
 };
@@ -57,12 +49,10 @@ const DARK_TEXT_RGB = hexToRgb(HEX_DARK_TEXT) as RgbColor;
 const LIGHT_LUM = relativeLuminance(LIGHT_TEXT_RGB);
 const DARK_LUM = relativeLuminance(DARK_TEXT_RGB);
 
-export const readableTextOn = (bg: RgbColor): string => {
+const readableTextOn = (bg: RgbColor): string => {
   const lum = relativeLuminance(bg);
   return contrastRatio(lum, LIGHT_LUM) >= contrastRatio(lum, DARK_LUM) ? HEX_LIGHT_TEXT : HEX_DARK_TEXT;
 };
 
 export const readableTextOnHex = (hex: string, fallback = DARK_TEXT_RGB): string =>
   readableTextOn(hexToRgb(hex) ?? fallback);
-
-export const parseHexToRgb = (hex: string, fallback: RgbColor): RgbColor => hexToRgb(hex) ?? fallback;

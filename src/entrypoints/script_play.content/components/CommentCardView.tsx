@@ -3,7 +3,7 @@ import type { CSSProperties } from "react";
 import { memo, useMemo } from "react";
 import { ui } from "@/config/theme";
 import { adjustColor } from "@/lib/color";
-import { nicoruColor, nicoruTextColor, vposToTime } from "@/modules/formatting";
+import { nicoruColor, vposToTime } from "@/modules/formatting";
 import type { NvCommentItem } from "@/types/api";
 import type { ThemeProps } from "./types";
 
@@ -26,13 +26,8 @@ export const NicoruIcon = memo<{ size?: number; color?: string }>(({ size = 20, 
   </svg>
 ));
 
-const computeCardStyle = (
-  isActive: boolean,
-  hovered: boolean,
-  nicorubg: string | undefined,
-  accent: string
-): CSSProperties => {
-  const hasNicoruBg = nicorubg && nicorubg !== "rgba(255, 216, 66, 0)";
+const computeCardStyle = (isActive: boolean, hovered: boolean, nicorubg: string, accent: string): CSSProperties => {
+  const hasNicoruBg = nicorubg !== nicoruColor(0);
   const bg = isActive
     ? activeGrad(accent)
     : hovered && hasNicoruBg
@@ -64,11 +59,7 @@ export type CommentCardViewProps = {
 
 export const CommentCardView = memo<CommentCardViewProps>(
   ({ comment, theme, isActive, hovered, onMouseEnter, onMouseLeave, onClick }) => {
-    const nicorubg = theme.showNicoru ? nicoruColor(comment.nicoruCount) : undefined;
-    const textColor =
-      theme.showNicoru && comment.nicoruCount > 0
-        ? nicoruTextColor(comment.nicoruCount, theme.palette.bg.base) || theme.palette.text.primary
-        : theme.palette.text.primary;
+    const nicorubg = theme.showNicoru ? nicoruColor(comment.nicoruCount) : nicoruColor(0);
     const style = useMemo(
       () => computeCardStyle(isActive, hovered, nicorubg, theme.palette.accent),
       [isActive, hovered, nicorubg, theme.palette.accent]
@@ -86,7 +77,12 @@ export const CommentCardView = memo<CommentCardViewProps>(
       >
         <Group gap="xs" wrap="nowrap" align="flex-start">
           <Stack gap="xs" style={{ flex: 1, minWidth: 0 }}>
-            <Text c={textColor} lineClamp={4} style={{ wordBreak: "break-word" }}>
+            <Text
+              lineClamp={4}
+              style={{
+                wordBreak: "break-word",
+              }}
+            >
               {comment.body}
             </Text>
             <Badge
@@ -102,10 +98,8 @@ export const CommentCardView = memo<CommentCardViewProps>(
           </Stack>
           {theme.showNicoru && (
             <Stack gap={4} align="center" justify="center" style={{ flexShrink: 0 }}>
-              <NicoruIcon size={20} color={comment.nicoruCount > 0 ? "#ffae00ff" : theme.palette.text.muted} />
-              <Text size="xs" fw={500} c={comment.nicoruCount > 0 ? "#ffae00ff" : theme.palette.text.muted}>
-                {comment.nicoruCount}
-              </Text>
+              <NicoruIcon size={20} />
+              <Text size="xs">{comment.nicoruCount}</Text>
             </Stack>
           )}
         </Group>

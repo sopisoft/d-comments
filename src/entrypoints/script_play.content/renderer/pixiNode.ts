@@ -44,8 +44,8 @@ export const createCommentNode = (
 
   const hi = stableHiResScale(c.style.hiResScale);
   for (const m of c.style.lineMetrics) {
-    const txt = m.text.length > 0 ? m.text : " ";
-    const t = new Text(txt, textStyle);
+    const text = m.text.length > 0 ? m.text : " ";
+    const t = new Text({ text, style: textStyle });
     t.resolution = resolution;
     t.roundPixels = true;
     t.scale.set(hi);

@@ -9,7 +9,7 @@ import {
   useState,
 } from "react";
 import { type ConfigKey, setConfig } from "@/config/";
-import { defaultConfigs } from "@/config/defaults";
+import { defaultConfigs, getDefaultValue } from "@/config/defaults";
 import { useConfigs } from "@/config/hooks/useConfigs";
 import { createPalette, type ThemeConfig, useTheme } from "@/config/hooks/useTheme";
 import { ui } from "@/config/theme";
@@ -33,13 +33,17 @@ export type SidebarConfig = {
 } & LayoutState &
   FeatureState;
 
-const defaultLayout: LayoutState = { width: 320, fontSize: 14, opacity: 100 };
+const defaultLayout: LayoutState = {
+  width: getDefaultValue("comment_area_width_px"),
+  fontSize: getDefaultValue("comment_area_font_size_px"),
+  opacity: getDefaultValue("comment_area_opacity_percentage"),
+};
 const defaultFeatures: FeatureState = {
-  visibility: true,
-  showNicoru: true,
-  scrollSmoothly: true,
-  timingOffset: 0,
-  fps: 30,
+  visibility: getDefaultValue("show_comments_in_list"),
+  showNicoru: getDefaultValue("show_nicoru_count"),
+  scrollSmoothly: getDefaultValue("enable_smooth_scrolling"),
+  timingOffset: getDefaultValue("comment_timing_offset"),
+  fps: getDefaultValue("comment_renderer_fps"),
 };
 const defaultPalette = createPalette("light");
 const sidebarDefaultConfig: SidebarConfig = {
