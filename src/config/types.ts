@@ -1,6 +1,6 @@
 import type { IconType } from "react-icons";
 
-export type UiType = "switch" | "number" | "slider" | "checkbox" | "checkbox_group" | "segmented_control";
+export type UiType = "switch" | "number" | "slider" | "checkbox_group" | "segmented_control";
 
 export type UiOptions<TUiType extends UiType> = TUiType extends "slider"
   ? { min: number; max: number; step: number; unit?: string }

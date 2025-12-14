@@ -45,22 +45,6 @@ export const SwitchField = memo(({ configKey, label, description }: FieldProps<C
   );
 });
 
-export const CheckboxField = memo(({ configKey, label, description }: FieldProps<ConfigKeysWithUIType<"checkbox">>) => {
-  const { textStyles } = useFieldAppearance();
-  const { currentValue, isPending, save } = useConfigValue(configKey);
-  return (
-    <Checkbox
-      label={label}
-      checked={currentValue}
-      disabled={isPending}
-      onChange={(e) => save(e.currentTarget.checked)}
-      color="accent"
-      styles={textStyles}
-      description={description}
-    />
-  );
-});
-
 export const NumberField = memo(({ configKey, label, description }: FieldProps<ConfigKeysWithUIType<"number">>) => {
   const options = getRawDefaultConfig(configKey).ui_options;
   const { inputStyles } = useFieldAppearance();

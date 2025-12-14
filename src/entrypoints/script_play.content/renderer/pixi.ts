@@ -151,7 +151,7 @@ export const createPixiRenderer = async (): Promise<Result<RendererController, s
 
     // シーク検出（80ms以上戻った場合）
     if (nowMs + 80 < lastMs) {
-      for (const a of active) a.node.container.parent?.removeChild(a.node.container);
+      for (const a of active) detach(a.node.container);
       active.length = 0;
       nextIndex = 0;
       lastMs = nowMs;
@@ -176,7 +176,7 @@ export const createPixiRenderer = async (): Promise<Result<RendererController, s
     for (let i = active.length - 1; i >= 0; i--) {
       const it = active[i];
       if (nowMs >= it.exitMs) {
-        it.node.container.parent?.removeChild(it.node.container);
+        detach(it.node.container);
         active[i] = active[active.length - 1];
         active.pop();
       } else {
@@ -192,7 +192,7 @@ export const createPixiRenderer = async (): Promise<Result<RendererController, s
   app.ticker.add(tick);
 
   const clearAll = () => {
-    active.map((layer) => layer.node.container.parent?.removeChild(layer.node.container));
+    for (const layer of active) detach(layer.node.container);
     active.length = 0;
   };
 

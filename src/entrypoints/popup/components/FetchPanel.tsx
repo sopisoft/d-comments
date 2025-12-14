@@ -27,13 +27,6 @@ export function FetchPanel({ title }: { title: string }) {
     borderRadius: ui.radius.md,
     padding: ui.space.md,
   };
-  const emptyStyle = {
-    ...cardStyle,
-    background: ps.bg.surface,
-    border: `1px dashed ${ps.border.subtle}`,
-    textAlign: "center",
-    padding: ui.space.xl,
-  } as const;
   const [tabId, setTabId] = useState<number | null>(null);
   const [playingVideos, setPlayingVideos] = useState<CommentVideoData[]>([]);
   const [videoEntries, setVideoEntries] = useState<VideoDictionary>({});
@@ -149,7 +142,15 @@ export function FetchPanel({ title }: { title: string }) {
       <Grid.Col span={7}>
         <ScrollArea h="calc(100vh - 140px)" scrollbarSize={6}>
           {displayVideos.length === 0 ? (
-            <div style={emptyStyle}>
+            <div
+              style={{
+                ...cardStyle,
+                background: ps.bg.surface,
+                border: `1px dashed ${ps.border.subtle}`,
+                textAlign: "center",
+                padding: ui.space.xl,
+              }}
+            >
               <Text c={ps.text.muted} size="sm">
                 動画を検索してください
               </Text>
