@@ -1,4 +1,4 @@
-import { getConfig } from "@/config/";
+import { getConfig } from "@/config/storage";
 
 type Integer = number;
 type Fields = {

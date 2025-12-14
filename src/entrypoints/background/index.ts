@@ -1,5 +1,5 @@
 import { logger } from "@/lib/logger";
-import { onMessage } from "@/messaging/";
+import { onMessage } from "@/messaging/runtime";
 import { addVideoToStore, clearStore, getStoreSnapshot, removeVideoFromStore } from "./commentStore";
 import { channelData, threadKey, threadsData, userData, videoData } from "./fetch";
 import { search } from "./search";

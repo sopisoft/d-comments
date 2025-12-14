@@ -5,10 +5,10 @@ import {
   MdOutlineVisibility,
   MdOutlineVisibilityOff,
 } from "react-icons/md";
-import { useTheme } from "@/config/";
+import { useTheme } from "@/config/hooks/useTheme";
 import { ui } from "@/config/theme";
 import { toJapaneseNumber, vposToTime } from "@/modules/formatting";
-import type { CommentVideoData } from "@/types";
+import type { CommentVideoData } from "@/types/comments";
 
 export function VideoCard({
   item,

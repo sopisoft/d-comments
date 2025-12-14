@@ -1,4 +1,4 @@
-import type { NgEntry } from "@/config";
+import type { NgEntry } from "@/config/storage";
 import type { NvCommentItem } from "@/types/api";
 
 export type CommentShape = Pick<NvCommentItem, "body" | "userId">;

@@ -125,8 +125,9 @@ export const SidebarComments = memo<SidebarCommentsProps>(({ threads, config, vi
       palette: config.palette,
       showNicoru: config.showNicoru,
       alpha: config.alpha,
+      fontSizePx: config.fontSize,
     }),
-    [config.palette, config.showNicoru, config.alpha]
+    [config.palette, config.showNicoru, config.alpha, config.fontSize]
   );
   const popoverWidth = config.width * 0.8;
   const { notifyHover } = useSidebarAutoScroll({

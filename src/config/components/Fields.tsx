@@ -1,8 +1,20 @@
-import { Checkbox, Input, NumberInput, Paper, Slider, Stack, Switch } from "@mantine/core";
+import { Checkbox, Input, NumberInput, Paper, SegmentedControl, Slider, Stack, Switch } from "@mantine/core";
 import { memo } from "react";
-import { type BooleanConfigKeys, type ConfigKeysWithUIType, getRawDefaultConfig } from "@/config/";
+import {
+  type ConfigKey,
+  type ConfigKeysWithUIType,
+  type ConfigValue,
+  getRawDefaultConfig,
+  getUiOptions,
+} from "@/config/defaults";
 import { useConfigValue } from "../hooks/useConfigValue";
 import { useTheme } from "../hooks/useTheme";
+
+type FieldProps<TKey extends ConfigKey> = {
+  configKey: TKey;
+  label: string;
+  description?: string;
+};
 
 const useFieldAppearance = () => {
   const { styles: ps } = useTheme();
@@ -17,9 +29,7 @@ const useFieldAppearance = () => {
   } as const;
 };
 
-type FieldProps<K> = { configKey: K; label: string; description: string };
-
-export const SwitchField = memo(({ configKey, label, description }: FieldProps<BooleanConfigKeys<"switch">>) => {
+export const SwitchField = memo(({ configKey, label, description }: FieldProps<ConfigKeysWithUIType<"switch">>) => {
   const { textStyles } = useFieldAppearance();
   const { currentValue, isPending, save } = useConfigValue(configKey);
   return (
@@ -35,7 +45,7 @@ export const SwitchField = memo(({ configKey, label, description }: FieldProps<B
   );
 });
 
-export const CheckboxField = memo(({ configKey, label, description }: FieldProps<BooleanConfigKeys<"checkbox">>) => {
+export const CheckboxField = memo(({ configKey, label, description }: FieldProps<ConfigKeysWithUIType<"checkbox">>) => {
   const { textStyles } = useFieldAppearance();
   const { currentValue, isPending, save } = useConfigValue(configKey);
   return (
@@ -107,9 +117,10 @@ export const CheckboxGroupField = memo(
   ({ configKey, label, description }: FieldProps<ConfigKeysWithUIType<"checkbox_group">>) => {
     const { ps, textStyles } = useFieldAppearance();
     const { currentValue, defaultValue, isPending, save } = useConfigValue(configKey);
-    const effectiveVisible = currentValue.filter((item) => item.enabled).map((item) => item.key);
+    const keyOf = (item: { key?: string; value: string }) => item.key ?? item.value;
+    const effectiveVisible = currentValue.filter((item) => item.enabled).map(keyOf);
     const onCheckedChange = (checked: boolean, key: string) =>
-      save(currentValue.map((item) => (item.key === key ? { ...item, enabled: checked } : item)));
+      save(currentValue.map((item) => (keyOf(item) === key ? { ...item, enabled: checked } : item)));
     return (
       <Checkbox.Group label={label} description={description} value={effectiveVisible} styles={textStyles}>
         <Paper
@@ -123,21 +134,63 @@ export const CheckboxGroupField = memo(
           }}
         >
           <Stack gap="sm">
-            {defaultValue.map((item) => (
-              <Checkbox
-                key={item.key}
-                label={item.value}
-                value={item.key}
-                checked={currentValue.find((i) => i.key === item.key)?.enabled ?? false}
-                onChange={(e) => onCheckedChange(e.currentTarget.checked, item.key)}
-                disabled={isPending}
-                color="accent"
-                styles={{ label: textStyles.label }}
-              />
-            ))}
+            {defaultValue.map((item) => {
+              const k = keyOf(item);
+              return (
+                <Checkbox
+                  key={k}
+                  label={item.value}
+                  value={k}
+                  checked={currentValue.find((i) => keyOf(i) === k)?.enabled ?? false}
+                  onChange={(e) => onCheckedChange(e.currentTarget.checked, k)}
+                  disabled={isPending}
+                  color="accent"
+                  styles={{ label: textStyles.label }}
+                />
+              );
+            })}
           </Stack>
         </Paper>
       </Checkbox.Group>
+    );
+  }
+);
+
+export const SegmentedControlField = memo(
+  <TKey extends ConfigKeysWithUIType<"segmented_control">>({ configKey, label, description }: FieldProps<TKey>) => {
+    const { styles } = useTheme();
+    const { textStyles } = useFieldAppearance();
+    const { currentValue, defaultValue, isPending, save } = useConfigValue(configKey);
+    type ValueType = Extract<ConfigValue<TKey>, string>;
+    const options = getUiOptions(configKey);
+    if (!options || !Array.isArray(options)) return null;
+
+    const current = (currentValue ?? defaultValue) as ValueType;
+    const saveFromString = (v: string) => save(v as unknown as ConfigValue<TKey>);
+
+    return (
+      <Input.Wrapper label={label} description={description} styles={textStyles}>
+        <SegmentedControl
+          fullWidth
+          my="md"
+          value={String(current)}
+          disabled={isPending}
+          onChange={saveFromString}
+          data={options.map((option) => ({
+            value: String(option.value),
+            label: option.icon ? (
+              <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+                <option.icon size={16} />
+                {option.label}
+              </span>
+            ) : (
+              option.label
+            ),
+          }))}
+          styles={{ label: textStyles.label }}
+          style={{ color: styles.text.primary, background: styles.bg.surface }}
+        />
+      </Input.Wrapper>
     );
   }
 );

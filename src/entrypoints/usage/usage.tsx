@@ -4,9 +4,9 @@ import { useEffect, useRef, useState } from "react";
 import Markdown from "react-markdown";
 import rehypeSlug from "rehype-slug";
 import remarkGfm from "remark-gfm";
-import { useTheme } from "@/config";
 import MD from "./usage.md?raw";
 import "./usage.css";
+import { useTheme } from "@/config/hooks/useTheme";
 
 type TocItem = { level: number; text: string; id: string };
 

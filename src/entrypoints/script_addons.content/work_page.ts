@@ -1,4 +1,4 @@
-import { getConfig } from "@/config/";
+import { getConfig } from "@/config/storage";
 import { findElements } from "@/lib/dom";
 import { logger } from "@/lib/logger";
 

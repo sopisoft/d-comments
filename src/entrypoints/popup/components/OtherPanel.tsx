@@ -1,7 +1,7 @@
 import { Accordion, Anchor, Badge, Code, Divider, Group, Paper, Stack, Text, Title } from "@mantine/core";
 import { useEffect, useState } from "react";
 import { MdBugReport, MdHelp, MdOpenInNew, MdSettings, MdStorage } from "react-icons/md";
-import { useTheme } from "@/config/";
+import { useTheme } from "@/config/hooks/useTheme";
 import { ui } from "@/config/theme";
 
 type JsonValue = string | number | boolean | null | JsonValue[] | JsonObject;

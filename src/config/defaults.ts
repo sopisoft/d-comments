@@ -1,8 +1,6 @@
+import { MdDarkMode, MdLightMode, MdSettings } from "react-icons/md";
 import type { ConfigItem, UiOptions, UiType } from "./types";
 import { defineConfigs } from "./types";
-
-type SliderUiOptions = UiOptions<"slider">;
-type NumberUiOptions = UiOptions<"number">;
 
 type ConfigValueConstraint<TValue> = TValue extends boolean ? boolean : TValue;
 
@@ -13,8 +11,13 @@ export const defaultConfigs = defineConfigs({
    * テーマの設定
    */
   theme_color_mode: {
-    value: "auto" as "light" | "dark" | "auto",
-    ui_type: "switch",
+    value: "auto",
+    ui_type: "segmented_control",
+    ui_options: [
+      { value: "light", label: "Light", icon: MdLightMode },
+      { value: "dark", label: "Dark", icon: MdDarkMode },
+      { value: "auto", label: "Auto", icon: MdSettings },
+    ],
   },
 
   /**
@@ -41,15 +44,19 @@ export const defaultConfigs = defineConfigs({
    * サイドバーの設定
    */
 
+  show_comments_in_list: {
+    value: true,
+    ui_type: "switch",
+  },
   comment_area_width_px: {
     value: 600,
     ui_type: "number",
-    ui_options: { min: 100, max: 2000, step: 10 } satisfies NumberUiOptions,
+    ui_options: { min: 100, max: 2000, step: 1 } satisfies UiOptions<"number">,
   },
   comment_area_font_size_px: {
     value: 16,
     ui_type: "number",
-    ui_options: { min: 2, max: 40 } satisfies NumberUiOptions,
+    ui_options: { min: 2, max: 40 } satisfies UiOptions<"number">,
   },
   comment_area_opacity_percentage: {
     value: 95,
@@ -59,7 +66,7 @@ export const defaultConfigs = defineConfigs({
       max: 100,
       step: 5,
       unit: "%",
-    } satisfies SliderUiOptions,
+    } satisfies UiOptions<"slider">,
   },
 
   nicoarea_scale: {
@@ -70,20 +77,16 @@ export const defaultConfigs = defineConfigs({
       max: 100,
       step: 10,
       unit: "%",
-    } satisfies SliderUiOptions,
+    } satisfies UiOptions<"slider">,
   },
 
-  show_comments_in_list: {
-    value: true,
-    ui_type: "checkbox",
-  },
   show_nicoru_count: {
     value: true,
-    ui_type: "checkbox",
+    ui_type: "switch",
   },
   show_comments_in_niconico_style: {
     value: true,
-    ui_type: "checkbox",
+    ui_type: "switch",
   },
   visible_comments: {
     value: [
@@ -95,7 +98,7 @@ export const defaultConfigs = defineConfigs({
   } satisfies ConfigWithUiType<Array<{ key: string; value: string; enabled: boolean }>, "checkbox_group">,
   channels_only: {
     value: true,
-    ui_type: "checkbox",
+    ui_type: "switch",
   },
   enable_smooth_scrolling: {
     value: false,
@@ -107,8 +110,8 @@ export const defaultConfigs = defineConfigs({
     ui_options: {
       min: -100000,
       max: 100000,
-      step: 100,
-    } satisfies NumberUiOptions,
+      step: 10,
+    } satisfies UiOptions<"number">,
   },
   comment_renderer_fps: {
     value: 60,
@@ -118,7 +121,7 @@ export const defaultConfigs = defineConfigs({
       max: 120,
       step: 5,
       unit: "fps",
-    } satisfies SliderUiOptions,
+    } satisfies UiOptions<"slider">,
   },
   use_new_renderer: {
     value: false,
@@ -150,11 +153,11 @@ export const defaultConfigs = defineConfigs({
   },
   ng_user_ids: {
     value: [] as Array<{ value: string; enabled: boolean }>,
-    ui_type: "checkbox",
+    ui_type: "checkbox_group",
   },
   ng_words: {
     value: [] as Array<{ value: string; enabled: boolean; isRegex?: boolean }>,
-    ui_type: "checkbox",
+    ui_type: "checkbox_group",
   },
 });
 
@@ -167,13 +170,19 @@ export type ConfigKeysWithUIType<TUiType extends UiType> = {
   [Key in keyof ConfigSchema]: ConfigSchema[Key]["ui_type"] extends TUiType ? Key : never;
 }[keyof ConfigSchema];
 
-type BooleanUiType = Extract<UiType, "switch" | "checkbox">;
-
-export type BooleanConfigKeys<TUiType extends BooleanUiType> = {
-  [Key in ConfigKeysWithUIType<TUiType>]: ConfigSchema[Key]["value"] extends boolean ? Key : never;
-}[ConfigKeysWithUIType<TUiType>];
-
 export const getRawDefaultConfig = <TKey extends ConfigKey>(key: TKey) => defaultConfigs[key];
+
+export function getUiOptions<TKey extends ConfigKey>(key: TKey): UiOptions<UiType> | undefined {
+  return (
+    defaultConfigs[key] as unknown as {
+      ui_options?: UiOptions<UiType>;
+    }
+  ).ui_options;
+}
+
+export function getUiType<TKey extends ConfigKey>(key: TKey): UiType {
+  return (defaultConfigs[key] as unknown as { ui_type: ConfigSchema[TKey]["ui_type"] }).ui_type;
+}
 
 export const getDefaultValue = <TKey extends ConfigKey>(key: TKey) =>
   getRawDefaultConfig(key).value as ConfigValue<TKey>;

@@ -1,8 +1,8 @@
 import { ActionIcon, Checkbox, Group, Paper, Text, TextInput, Tooltip } from "@mantine/core";
 import { useState } from "react";
 import { MdCheck, MdClose, MdDelete, MdEdit } from "react-icons/md";
-import type { NgEntry } from "@/config";
 import type { useTheme } from "../hooks/useTheme";
+import type { NgEntry } from "../storage";
 
 type PS = ReturnType<typeof useTheme>["styles"];
 

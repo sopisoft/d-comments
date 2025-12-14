@@ -1,7 +1,7 @@
 import { Button, Stack, Text, TextInput } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { MdDownload } from "react-icons/md";
-import { useTheme } from "@/config/";
+import { useTheme } from "@/config/hooks/useTheme";
 
 const VIDEO_ID_REGEX = /^(sm|nm|so|ca|ax|yo|nl|ig|na|cw|z[a-e]|om|sk|yk)\d{1,14}$/;
 
