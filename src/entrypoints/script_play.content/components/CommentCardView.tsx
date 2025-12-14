@@ -81,7 +81,6 @@ export const CommentCardView = memo<CommentCardViewProps>(
               lineClamp={4}
               style={{
                 wordBreak: "break-word",
-                textStroke: `1px ${theme.palette.bg.surface}`,
               }}
             >
               {comment.body}
@@ -100,9 +99,7 @@ export const CommentCardView = memo<CommentCardViewProps>(
           {theme.showNicoru && (
             <Stack gap={4} align="center" justify="center" style={{ flexShrink: 0 }}>
               <NicoruIcon size={20} />
-              <Text style={{ textStroke: `1px ${theme.palette.bg.surface}` }} size="xs" fw={500}>
-                {comment.nicoruCount}
-              </Text>
+              <Text size="xs">{comment.nicoruCount}</Text>
             </Stack>
           )}
         </Group>
