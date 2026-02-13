@@ -1,9 +1,14 @@
 {
+	"[typescript]": {
+		"editor.defaultFormatter": "oxc.oxc-vscode",
+		"editor.formatOnSave": true
+	},
+	"oxc.fmt.configPath": ".oxfmtrc.json",
+	"editor.defaultFormatter": "oxc.oxc-vscode",
 	"editor.formatOnSave": true,
 	"editor.formatOnPaste": true,
 	"editor.codeActionsOnSave": {
-		"source.fixAll.biome": "explicit",
-		"source.organizeImports.biome": "explicit"
+		"source.fixAll.oxc": "always"
 	},
 	"files.eol": "\n",
 	"json.schemas": [
@@ -14,6 +19,7 @@
 			"url": "http://json.schemastore.org/chrome-manifest"
 		}
 	],
+	"oxc.typeAware": true,
 	"typescript.autoClosingTags": true,
 	"typescript.check.npmIsInstalled": true,
 	"typescript.format.enable": false,

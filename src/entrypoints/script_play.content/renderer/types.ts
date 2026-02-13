@@ -1,5 +1,6 @@
-import type { Threads } from "@/types/api";
+import type { Threads } from '@/types/api';
 
 export type RendererController = {
   setThreads(threads: Threads): Threads;
+  dispose?: () => void;
 };

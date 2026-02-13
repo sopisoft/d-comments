@@ -1,6 +1,6 @@
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef } from 'react';
 
-export function useAnimationFrame(callback: () => void, intervalMs = 0) {
+export function useAnimationFrame(callback: () => void, intervalMs = 0): { pause: () => void; start: () => void } {
   const saved = useRef(callback);
   const rafRef = useRef<number | null>(null);
   const running = useRef(false);
@@ -38,5 +38,5 @@ export function useAnimationFrame(callback: () => void, intervalMs = 0) {
   }, []);
 
   useEffect(() => pause, [pause]);
-  return { start, pause };
+  return { pause, start };
 }

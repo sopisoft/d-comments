@@ -1,24 +1,24 @@
-import { Badge, Button, Divider, Group, Paper, Stack, Text, TextInput, ThemeIcon, Title } from "@mantine/core";
-import { useCallback, useState } from "react";
-import { MdBlock, MdPersonOff } from "react-icons/md";
-import { useConfigs } from "@/config/hooks/useConfigs";
-import { useTheme } from "../hooks/useTheme";
-import { type NgEntry, setConfig } from "../storage";
-import { NgEntryRow } from "./NgEntryRow";
+import { Badge, Button, Divider, Group, Paper, Stack, Text, TextInput, ThemeIcon, Title } from '@mantine/core';
+import { useCallback, useState } from 'react';
+import { MdBlock, MdPersonOff } from 'react-icons/md';
+import { useConfigs } from '@/config/hooks/useConfigs';
+import { useTheme } from '../hooks/useTheme';
+import { type NgEntry, setConfig } from '../storage';
+import { NgEntryRow } from './NgEntryRow';
 
-type PS = ReturnType<typeof useTheme>["styles"];
+type PS = ReturnType<typeof useTheme>['styles'];
 
 const useNgLists = () => {
-  const { values } = useConfigs(["ng_user_ids", "ng_words"] as const);
+  const { values } = useConfigs(['ng_user_ids', 'ng_words'] as const);
   return {
+    updateUser: useCallback((next: NgEntry[]) => setConfig('ng_user_ids', next), []),
+    updateWord: useCallback((next: NgEntry[]) => setConfig('ng_words', next), []),
     userEntries: (values.ng_user_ids ?? []) as NgEntry[],
     wordEntries: (values.ng_words ?? []) as NgEntry[],
-    updateUser: useCallback((next: NgEntry[]) => setConfig("ng_user_ids", next), []),
-    updateWord: useCallback((next: NgEntry[]) => setConfig("ng_words", next), []),
   } as const;
 };
 
-export function NgListPanel() {
+export function NgListPanel(): React.ReactElement {
   const { styles: ps } = useTheme();
   const { userEntries, wordEntries, updateUser, updateWord } = useNgLists();
   return (
@@ -65,7 +65,7 @@ function Section({
   icon,
   ps,
 }: {
-  type: "user" | "word";
+  type: 'user' | 'word';
   title: string;
   description: string;
   placeholder: string;
@@ -73,15 +73,15 @@ function Section({
   onUpdate: (list: NgEntry[]) => Promise<void>;
   icon: React.ReactNode;
   ps: PS;
-}) {
-  const [input, setInput] = useState("");
+}): React.ReactElement {
+  const [input, setInput] = useState('');
   const [editing, setEditing] = useState<string | null>(null);
   const { bg } = ps.pairs;
   const handleAdd = async () => {
     const v = input.trim();
     if (!v || entries.some((e) => e.value === v)) return;
-    await onUpdate([...entries, { value: v, enabled: true }]);
-    setInput("");
+    await onUpdate([...entries, { enabled: true, value: v }]);
+    setInput('');
   };
   const handleSave = async (editValue: string) => {
     const v = editValue.trim();
@@ -116,11 +116,11 @@ function Section({
         <Paper p="sm" radius="sm" style={{ background: bg.base.background, border: ps.panel.border }}>
           <Group align="flex-end" gap="sm">
             <TextInput
-              label={type === "user" ? "ユーザーID" : "NG ワード"}
+              label={type === 'user' ? 'ユーザーID' : 'NG ワード'}
               placeholder={placeholder}
               value={input}
               onChange={(e) => setInput(e.currentTarget.value)}
-              onKeyDown={(e) => e.key === "Enter" && handleAdd()}
+              onKeyDown={(e) => e.key === 'Enter' && handleAdd()}
               flex={1}
               size="sm"
               styles={{

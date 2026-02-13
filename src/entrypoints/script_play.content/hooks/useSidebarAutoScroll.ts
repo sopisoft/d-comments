@@ -1,9 +1,9 @@
-import { type RefObject, useCallback, useEffect, useRef } from "react";
-import type { VirtuosoHandle } from "react-virtuoso";
-import { getConfig, watchConfig } from "@/config/storage";
-import type { NvCommentItem } from "@/types/api";
-import type { SidebarConfig } from "../context/SidebarContext";
-import { useAnimationFrame } from "./useAnimationFrame";
+import { type RefObject, useCallback, useEffect, useRef } from 'react';
+import type { VirtuosoHandle } from 'react-virtuoso';
+import { getConfig, watchConfig } from '@/config/storage';
+import type { NvCommentItem } from '@/types/api';
+import type { SidebarConfig } from '../context/SidebarContext';
+import { useAnimationFrame } from './useAnimationFrame';
 
 type Options = {
   video: HTMLVideoElement | null;
@@ -13,40 +13,57 @@ type Options = {
   isPopoverOpen: boolean;
 };
 
-const pickNearestIndex = (items: NvCommentItem[], target: number) => {
-  if (!items.length) return -1;
-  let i = items.findIndex((c) => c.vposMs >= target);
-  if (i < 0) i = items.length - 1;
-  if (i > 0 && Math.abs(items[i - 1].vposMs - target) <= Math.abs(items[i].vposMs - target)) i -= 1;
-  return i;
+const findNearestIndex = (items: NvCommentItem[], target: number): number => {
+  if (items.length === 0) return -1;
+  const nextIdx = items.findIndex((c) => c.vposMs >= target);
+  const idx = nextIdx < 0 ? items.length - 1 : nextIdx;
+  if (idx > 0) {
+    const prevDiff = Math.abs(items[idx - 1].vposMs - target);
+    const curDiff = Math.abs(items[idx].vposMs - target);
+    if (prevDiff <= curDiff) return idx - 1;
+  }
+  return idx;
 };
 
-export function useSidebarAutoScroll({ video, config, comments, virtuosoRef, isPopoverOpen }: Options) {
+export function useSidebarAutoScroll({ video, config, comments, virtuosoRef, isPopoverOpen }: Options): {
+  notifyHover: (h: boolean) => void;
+} {
   const lastIdx = useRef(-1);
   const autoEnabled = useRef(true);
-  const manualPause = useRef(false);
   const hover = useRef(false);
+  const lastTarget = useRef<number | null>(null);
+
+  useEffect(() => {
+    lastIdx.current = -1;
+    hover.current = false;
+    lastTarget.current = null;
+  }, [comments]);
 
   const scroll = useCallback(() => {
-    if (
-      !video ||
-      video.paused ||
-      !autoEnabled.current ||
-      manualPause.current ||
-      hover.current ||
-      isPopoverOpen ||
-      !comments.length
-    )
-      return;
+    const v = video && document.contains(video) ? video : (document.querySelector('video') as HTMLVideoElement | null);
+    if (!v || comments.length === 0) return;
+
+    const target = v.currentTime * 1000 + (config.timingOffset ?? 0);
+    const isPaused = v.paused;
+    const disabled = isPaused || !autoEnabled.current || hover.current || isPopoverOpen;
+    if (disabled) return;
+
     if (lastIdx.current >= comments.length) lastIdx.current = -1;
-    const target = video.currentTime * 1000 + (config.timingOffset ?? 0);
-    const i = pickNearestIndex(comments, target);
-    if (i < 0 || (lastIdx.current >= 0 && i < lastIdx.current)) return;
-    lastIdx.current = i;
+
+    const prevTarget = lastTarget.current;
+    if (prevTarget !== null && target + 1000 < prevTarget) lastIdx.current = -1;
+
+    lastTarget.current = target;
+
+    const idx = findNearestIndex(comments, target);
+    if (idx < 0) return;
+    if (lastIdx.current >= 0 && idx < lastIdx.current) return;
+
+    lastIdx.current = idx;
     virtuosoRef.current?.scrollToIndex({
-      index: i,
-      align: "end",
-      behavior: config.scrollSmoothly ? "smooth" : "auto",
+      align: 'end',
+      behavior: config.scrollSmoothly ? 'smooth' : 'auto',
+      index: idx,
     });
   }, [video, config, comments, virtuosoRef, isPopoverOpen]);
 
@@ -54,36 +71,59 @@ export function useSidebarAutoScroll({ video, config, comments, virtuosoRef, isP
 
   useEffect(() => {
     start();
+    scroll();
     return pause;
-  }, [pause, start]);
+  }, [pause, start, scroll]);
 
-  const notifyManualScroll = useCallback(() => {
-    if (autoEnabled.current) manualPause.current = true;
-  }, []);
-  const notifyHover = useCallback((h: boolean) => {
-    hover.current = h;
-  }, []);
+  const notifyHover = useCallback(
+    (h: boolean) => {
+      hover.current = h;
+      if (!h) {
+        if (autoEnabled.current) start();
+        return;
+      }
+      pause();
+      const v =
+        video && document.contains(video) ? video : (document.querySelector('video') as HTMLVideoElement | null);
+      if (v) lastTarget.current = v.currentTime * 1000 + (config.timingOffset ?? 0);
+    },
+    [video, config.timingOffset, pause, start]
+  );
 
   useEffect(() => {
-    let active = true;
-    let stop: (() => void) | undefined;
+    let stopped = false;
+    let stopFn: (() => void) | undefined;
+
     (async () => {
-      const init = await getConfig("enable_auto_scroll");
-      if (!active) return;
+      const init = await getConfig('enable_auto_scroll');
+      if (stopped) return;
       autoEnabled.current = init === true;
-      manualPause.current = false;
       lastIdx.current = -1;
-      stop = await watchConfig("enable_auto_scroll", (v) => {
+      stopFn = await watchConfig('enable_auto_scroll', (v) => {
         autoEnabled.current = v === true;
-        manualPause.current = false;
         lastIdx.current = -1;
       });
     })();
+
     return () => {
-      active = false;
-      stop?.();
+      stopped = true;
+      stopFn?.();
     };
   }, []);
+  useEffect(() => {
+    if (!video) return;
+    const onPlay = () => scroll();
+    const onSeeked = () => {
+      lastTarget.current = video.currentTime * 1000 + (config.timingOffset ?? 0);
+      scroll();
+    };
+    video.addEventListener('play', onPlay);
+    video.addEventListener('seeked', onSeeked);
+    return () => {
+      video.removeEventListener('play', onPlay);
+      video.removeEventListener('seeked', onSeeked);
+    };
+  }, [video, config.timingOffset, scroll]);
 
-  return { notifyManualScroll, notifyHover };
+  return { notifyHover };
 }

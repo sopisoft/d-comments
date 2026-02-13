@@ -1,4 +1,4 @@
-import type { RgbColor } from "@/lib/color";
+import type { RgbColor } from '@/lib/color';
 
 /**
  * Format time in vpos (milliseconds) to MM:SS format
@@ -8,8 +8,8 @@ export const vposToTime = (ms: number): string => {
   const hours = Math.floor(totalSeconds / 3600);
   const minutes = Math.floor((totalSeconds % 3600) / 60);
   const seconds = totalSeconds % 60;
-  const mm = String(minutes).padStart(2, "0");
-  const ss = String(seconds).padStart(2, "0");
+  const mm = String(minutes).padStart(2, '0');
+  const ss = String(seconds).padStart(2, '0');
   return hours > 0 ? `${hours}:${mm}:${ss}` : `${mm}:${ss}`;
 };
 
@@ -32,7 +32,7 @@ export function toJapaneseNumber(num: number): string {
   return num.toString();
 }
 
-const NICORU_RGB: RgbColor = { r: 252, g: 216, b: 66 };
+const NICORU_RGB: RgbColor = { b: 66, g: 216, r: 252 };
 
 const getNicoruAlpha = (nicoru: number): number => {
   if (nicoru === 0) return 0;

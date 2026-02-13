@@ -1,6 +1,6 @@
-import type { NvCommentItem, Threads } from "@/types/api";
-import type { CommentVideoData } from "@/types/comments";
-import type { CommentService } from "./service";
+import type { NvCommentItem, Threads } from '@/types/api';
+import type { CommentVideoData } from '@/types/comments';
+import type { CommentService } from './service';
 
 export type CommentManagerDependencies = {
   service?: CommentService;

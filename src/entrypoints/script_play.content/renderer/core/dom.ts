@@ -1,39 +1,34 @@
-const OVERLAY_ID = "d-comments-canvas-container";
+const OVERLAY_ID = 'd-comments-canvas-container';
 const OVERLAY_STYLE: Record<string, string> = {
-  position: "absolute",
-  inset: "0",
-  width: "100%",
-  height: "100%",
-  display: "block",
-  overflow: "hidden",
-  pointerEvents: "none",
-  zIndex: "2",
+  display: 'block',
+  height: '100%',
+  inset: '0',
+  overflow: 'hidden',
+  pointerEvents: 'none',
+  position: 'absolute',
+  width: '100%',
+  zIndex: '2',
 };
 
 export function queryVideoElement(): HTMLVideoElement | null {
-  return document.querySelector<HTMLVideoElement>("video");
+  return document.querySelector<HTMLVideoElement>('video');
 }
 
 export function mountOverlay(video: HTMLVideoElement): {
   video: HTMLVideoElement;
   overlay: HTMLDivElement;
 } {
-  const current = document.getElementById(OVERLAY_ID);
-  current?.remove();
-
+  const existing = document.getElementById(OVERLAY_ID) as HTMLDivElement | null;
   const container = video.parentElement;
-  if (!container) {
-    const overlay = document.createElement("div");
-    overlay.id = OVERLAY_ID;
-    Object.assign(overlay.style, OVERLAY_STYLE);
-    document.body.appendChild(overlay);
-    return { video, overlay };
+  if (existing) {
+    if (container && existing.parentElement !== container) container.appendChild(existing);
+    return { overlay: existing, video };
   }
 
-  const overlay = document.createElement("div");
+  const overlay = document.createElement('div');
   overlay.id = OVERLAY_ID;
   Object.assign(overlay.style, OVERLAY_STYLE);
-  container.appendChild(overlay);
-
-  return { video, overlay };
+  if (!container) document.body.appendChild(overlay);
+  else container.appendChild(overlay);
+  return { overlay, video };
 }

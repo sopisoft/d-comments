@@ -1,30 +1,30 @@
-import { ActionIcon, Badge, Box, Group, Image, Stack, Text, Tooltip } from "@mantine/core";
+import { ActionIcon, Badge, Box, Group, Image, Stack, Text, Tooltip } from '@mantine/core';
 import {
   MdOutlineInsertComment,
   MdOutlinePlayArrow,
   MdOutlineVisibility,
   MdOutlineVisibilityOff,
-} from "react-icons/md";
-import { useTheme } from "@/config/hooks/useTheme";
-import { ui } from "@/config/theme";
-import { toJapaneseNumber, vposToTime } from "@/modules/formatting";
-import type { CommentVideoData } from "@/types/comments";
+} from 'react-icons/md';
+import { useTheme } from '@/config/hooks/useTheme';
+import { ui } from '@/config/theme';
+import { toJapaneseNumber, vposToTime } from '@/modules/formatting';
+import type { CommentVideoData } from '@/types/comments';
 
 export function VideoCard({
   item,
   playing,
   togglePlaying,
 }: {
-  item: CommentVideoData["videoData"];
+  item: CommentVideoData['videoData'];
   playing: boolean;
   togglePlaying: (videoId: string) => Promise<void>;
-}) {
+}): React.ReactElement {
   const { styles: ps } = useTheme();
   const cardStyle = {
-    padding: ui.space.sm,
-    borderRadius: ui.radius.md,
     background: playing ? ps.bg.surface : ps.bg.elevated,
     border: `1px solid ${playing ? ps.accent : ps.border.default}`,
+    borderRadius: ui.radius.md,
+    padding: ui.space.sm,
     transition: ui.transition,
   };
 
@@ -38,21 +38,21 @@ export function VideoCard({
           target="_blank"
           rel="noreferrer noopener"
           style={{
-            width: 140,
-            flexShrink: 0,
-            aspectRatio: "16/9",
-            overflow: "hidden",
+            aspectRatio: '16/9',
             borderRadius: ui.radius.sm,
+            flexShrink: 0,
+            overflow: 'hidden',
+            width: 140,
           }}
         >
           <Image
             src={item.thumbnailUrl}
             alt={item.title}
             style={{
-              width: "100%",
-              height: "100%",
-              objectFit: "cover",
-              objectPosition: "center",
+              height: '100%',
+              objectFit: 'cover',
+              objectPosition: 'center',
+              width: '100%',
             }}
           />
           {item.channelId && (
@@ -61,13 +61,13 @@ export function VideoCard({
               top={4}
               left={4}
               size="xs"
-              color={item.isDAnime ? "orange" : "cyan"}
+              color={item.isDAnime ? 'orange' : 'cyan'}
               variant="filled"
               style={{
-                textTransform: "none",
+                textTransform: 'none',
               }}
             >
-              {item.isDAnime ? "dアニメ" : "公式"}
+              {item.isDAnime ? 'dアニメ' : '公式'}
             </Badge>
           )}
           <Badge pos="absolute" bottom={4} right={4} size="xs" color="dark" variant="white">
@@ -93,12 +93,12 @@ export function VideoCard({
                 </Text>
               </Group>
             </Group>
-            <Tooltip label={playing ? "表示をやめる" : "表示する"} position="left" withArrow>
+            <Tooltip label={playing ? '表示をやめる' : '表示する'} position="left" withArrow>
               <ActionIcon
-                variant={playing ? "light" : "subtle"}
-                color={playing ? "orange" : "gray"}
+                variant={playing ? 'light' : 'subtle'}
+                color={playing ? 'orange' : 'gray'}
                 onClick={() => {
-                  void togglePlaying(item.contentId);
+                  togglePlaying(item.contentId);
                 }}
               >
                 {playing ? <MdOutlineVisibility size={18} /> : <MdOutlineVisibilityOff size={18} />}

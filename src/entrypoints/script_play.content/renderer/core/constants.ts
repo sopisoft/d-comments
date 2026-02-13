@@ -3,7 +3,7 @@ export const CANVAS_HEIGHT = 1080;
 
 export const COMMENT_DRAW_RANGE = 1530;
 export const COMMENT_DRAW_PADDING = 195;
-export const NAKA_COMMENT_SPEED_OFFSET = 0.95;
+export const SCROLL_SPEED_FACTOR = 0.95;
 
 export const COLLISION_RANGE = {
   left: 235,
@@ -13,9 +13,9 @@ export const COLLISION_RANGE = {
 export const COLLISION_PADDING = 5;
 
 export const COMMENT_STAGE_SIZE = {
-  width: 512,
   fullWidth: 683,
   height: 384,
+  width: 512,
 } as const;
 
 export const COMMENT_SCALE = CANVAS_WIDTH / COMMENT_STAGE_SIZE.fullWidth;
@@ -32,15 +32,15 @@ export const LINE_COUNTS = {
     medium: 13.1,
     small: 21,
   },
-  resized: {
-    big: 16,
-    medium: 25.4,
-    small: 38,
-  },
   doubleResized: {
     big: 7.8,
     medium: 11.3,
     small: 16.6,
+  },
+  resized: {
+    big: 16,
+    medium: 25.4,
+    small: 38,
   },
 } as const;
 

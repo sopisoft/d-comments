@@ -1,10 +1,10 @@
-import type { CommentVideoData } from "@/types/comments";
+import type { CommentVideoData } from '@/types/comments';
 
 type VideoId = string;
 
 export type VideoDictionary = Record<VideoId, CommentVideoData>;
 
-export type MergeOrder = "append" | "prepend";
+export type MergeOrder = 'append' | 'prepend';
 
 export const shouldPreferIncoming = (current: CommentVideoData | undefined, incoming: CommentVideoData): boolean => {
   if (!current) return true;
@@ -42,7 +42,7 @@ export const mergeVideoOrder = (
   const seen = new Set(order);
   const freshIds = incomingIds.filter((id) => !seen.has(id));
   if (freshIds.length === 0) return order as VideoId[];
-  return mergeOrder === "prepend" ? [...freshIds, ...order] : [...order, ...freshIds];
+  return mergeOrder === 'prepend' ? [...freshIds, ...order] : [...order, ...freshIds];
 };
 
 export const buildDisplayVideos = (

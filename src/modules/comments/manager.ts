@@ -1,22 +1,24 @@
-import { getConfigs } from "@/config/storage";
-import { ok, type Result } from "@/lib/types";
-import { toCommentVideoData } from "@/lib/utils";
-import type { NvCommentItem, Threads } from "@/types/api";
-import type { CommentVideoData } from "@/types/comments";
-import { createNgFilter, normalizeNgList } from "./ngFilters";
-import { createCommentService } from "./service";
-import type { CommentManager, CommentManagerDependencies } from "./types";
+import { getConfig } from '@/config/storage';
+import { ok, type Result } from '@/lib/types';
+import { toCommentVideoData } from '@/lib/utils';
+import type { NvCommentItem, Threads } from '@/types/api';
+import type { CommentVideoData } from '@/types/comments';
+import { createNgFilter, normalizeNgList } from './ngFilters';
+import { createCommentService } from './service';
+import type { CommentManager, CommentManagerDependencies } from './types';
+
+const clone = <T>(value: T): T => structuredClone(value);
 
 const filterThreadComments = (threads: Threads, shouldFilterComment: (comment: NvCommentItem) => boolean): Threads =>
   threads.map((thread) => ({
     ...thread,
-    comments: thread.comments.filter((comment) => !shouldFilterComment(comment)).map((c) => structuredClone(c)),
+    comments: thread.comments.filter((comment) => !shouldFilterComment(comment)).map(clone),
   }));
 
 export const createCommentManager = (deps: CommentManagerDependencies = {}): CommentManager => ({
-  service: deps.service ?? createCommentService(),
   now: deps.now ?? (() => Date.now()),
   playing: [],
+  service: deps.service ?? createCommentService(),
 });
 
 export const getComments = async (
@@ -29,29 +31,27 @@ export const getComments = async (
   const threadsResponse = await manager.service.fetchComments(videoInfo.value.response.comment.nvComment);
   if (!threadsResponse.ok) return threadsResponse;
 
-  const { ng_user_ids, ng_words } = await getConfigs(["ng_user_ids", "ng_words"] as const);
   const shouldFilterComment = createNgFilter({
-    userEntries: normalizeNgList(ng_user_ids),
-    wordEntries: normalizeNgList(ng_words),
+    userEntries: normalizeNgList(await getConfig('ng_user_ids')),
+    wordEntries: normalizeNgList(await getConfig('ng_words')),
   });
 
   const threads = filterThreadComments(threadsResponse.value.threads, shouldFilterComment);
 
   return ok({
     date: manager.now(),
-    videoData: toCommentVideoData(videoInfo.value),
     threads,
+    videoData: toCommentVideoData(videoInfo.value),
   });
 };
 
-export const getPlaying = (manager: CommentManager): CommentVideoData[] =>
-  manager.playing.map((v) => structuredClone(v));
+export const getPlaying = (manager: CommentManager): CommentVideoData[] => manager.playing.map(clone);
 
 export const getThreads = (manager: CommentManager): Threads =>
-  manager.playing.flatMap((video) => video.threads.map((t) => structuredClone(t)));
+  manager.playing.flatMap((video) => video.threads.map(clone));
 
 export const addPlayingVideo = (manager: CommentManager, video: CommentVideoData): CommentManager => {
-  const updated = structuredClone({ ...video, date: manager.now() });
+  const updated = clone({ ...video, date: manager.now() });
   const index = manager.playing.findIndex((item) => item.videoData.contentId === updated.videoData.contentId);
   if (index >= 0) {
     const copy = [...manager.playing];
@@ -76,7 +76,5 @@ export const sortComments = (list: readonly NvCommentItem[]): NvCommentItem[] =>
 
 export const flattenComments = (threads: Threads, forks: readonly string[]): NvCommentItem[] => {
   const targets = new Set(forks);
-  return threads
-    .filter((thread) => targets.has(thread.fork))
-    .flatMap((thread) => thread.comments.map((c) => structuredClone(c)));
+  return threads.filter((thread) => targets.has(thread.fork)).flatMap((thread) => thread.comments.map(clone));
 };

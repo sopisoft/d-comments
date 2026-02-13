@@ -1,8 +1,8 @@
-import { Accordion, Anchor, Badge, Code, Divider, Group, Paper, Stack, Text, Title } from "@mantine/core";
-import { useEffect, useState } from "react";
-import { MdBugReport, MdHelp, MdOpenInNew, MdSettings, MdStorage } from "react-icons/md";
-import { useTheme } from "@/config/hooks/useTheme";
-import { ui } from "@/config/theme";
+import { Accordion, Anchor, Badge, Code, Divider, Group, Paper, Stack, Text, Title } from '@mantine/core';
+import { useEffect, useState } from 'react';
+import { MdBugReport, MdHelp, MdOpenInNew, MdSettings, MdStorage } from 'react-icons/md';
+import { useTheme } from '@/config/hooks/useTheme';
+import { ui } from '@/config/theme';
 
 type JsonValue = string | number | boolean | null | JsonValue[] | JsonObject;
 type JsonObject = { [key: string]: JsonValue };
@@ -10,25 +10,25 @@ type JsonObject = { [key: string]: JsonValue };
 const toJsonValue = (value: unknown): JsonValue => {
   if (value === null || value === undefined) return null;
   if (Array.isArray(value)) return value.map(toJsonValue);
-  if (typeof value === "object") {
+  if (typeof value === 'object') {
     return Object.fromEntries(Object.entries(value as Record<string, unknown>).map(([k, v]) => [k, toJsonValue(v)]));
   }
-  if (typeof value === "string" || typeof value === "number" || typeof value === "boolean") return value;
+  if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') return value;
   return String(value);
 };
 
 const toJsonObject = (value: unknown): JsonObject =>
-  typeof value === "object" && value !== null ? (toJsonValue(value) as JsonObject) : {};
+  typeof value === 'object' && value !== null ? (toJsonValue(value) as JsonObject) : {};
 
 function formUrl(): URL {
   const version = browser.runtime.getManifest().version;
-  const url = new URL("https://forms.office.com/Pages/ResponsePage.aspx");
-  url.searchParams.append("id", "DQSIkWdsW0yxEjajBLZtrQAAAAAAAAAAAAMAABWTsPtUNkUyNzMwSFkyNEVENTExTVdINUNBUDBFNC4u");
-  url.searchParams.append("r4fc5e3af4be04561a824b6564847f811", version);
+  const url = new URL('https://forms.office.com/Pages/ResponsePage.aspx');
+  url.searchParams.append('id', 'DQSIkWdsW0yxEjajBLZtrQAAAAAAAAAAAAMAABWTsPtUNkUyNzMwSFkyNEVENTExTVdINUNBUDBFNC4u');
+  url.searchParams.append('r4fc5e3af4be04561a824b6564847f811', version);
   return url;
 }
 
-export function OtherPanel() {
+export function OtherPanel(): React.ReactElement {
   const { styles: ps } = useTheme();
   const [stored, setStored] = useState<JsonObject>({});
   useEffect(() => {
@@ -65,7 +65,7 @@ export function OtherPanel() {
           </Anchor>
           <Divider color={ps.border.subtle} />
           <Anchor
-            href={browser.runtime.getURL("/usage.html").toString()}
+            href={browser.runtime.getURL('/usage.html').toString()}
             target="_blank"
             rel="noopener noreferrer"
             size="sm"
@@ -77,7 +77,7 @@ export function OtherPanel() {
           </Anchor>
           <Divider color={ps.border.subtle} />
           <Anchor
-            href={browser.runtime.getURL("/options.html").toString()}
+            href={browser.runtime.getURL('/options.html').toString()}
             target="_blank"
             rel="noopener noreferrer"
             size="sm"
@@ -90,7 +90,7 @@ export function OtherPanel() {
         </Stack>
       </Paper>
 
-      <Accordion variant="separated" radius="md" styles={{ item: panelStyle, control: { padding: ui.space.md } }}>
+      <Accordion variant="separated" radius="md" styles={{ control: { padding: ui.space.md }, item: panelStyle }}>
         <Accordion.Item value="storage">
           <Accordion.Control>
             <Group gap="xs">
@@ -119,7 +119,7 @@ export function OtherPanel() {
                     </Text>
                   </Accordion.Control>
                   <Accordion.Panel>
-                    <Code block style={{ background: ps.bg.deep, fontSize: "0.75rem" }}>
+                    <Code block style={{ background: ps.bg.deep, fontSize: '0.75rem' }}>
                       {JSON.stringify(value, null, 2)}
                     </Code>
                   </Accordion.Panel>

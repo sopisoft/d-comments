@@ -1,243 +1,344 @@
-import { Container, type TextStyle } from "pixi.js";
-import { getConfigs, watchConfig } from "@/config/storage";
-import type { Result } from "@/lib/types";
-import type { Threads } from "@/types/api";
-import { buildTimeline } from "./core/comments";
+import { Container, type RenderTexture, type TextStyle } from 'pixi.js';
+import { getConfig, watchConfig } from '@/config/storage';
+import type { Result } from '@/lib/types';
+import type { Threads } from '@/types/api';
+import { buildTimeline } from './core/comments';
 import {
   CANVAS_HEIGHT,
   CANVAS_WIDTH,
   COMMENT_DRAW_PADDING,
   COMMENT_DRAW_RANGE,
-  NAKA_COMMENT_SPEED_OFFSET,
-} from "./core/constants";
-import { mountOverlay, queryVideoElement } from "./core/dom";
-import { createPixiScene } from "./core/scene";
-import type { CommentLocation, TimelineComment } from "./core/types";
-import { type CommentNode, createCommentNode, ensureResolution, signatureOf } from "./pixiNode";
-import type { RendererController } from "./types";
+  SCROLL_SPEED_FACTOR,
+} from './core/constants';
+import { mountOverlay, queryVideoElement } from './core/dom';
+import { createNodeOps, type Node } from './core/node';
+import { createPixiScene } from './core/scene';
+import type { CommentLocation, TimelineComment } from './core/types';
+import type { RendererController } from './types';
 
 type ActiveItem = {
   comment: TimelineComment;
-  node: CommentNode;
-  anchorMs: number;
-  exitMs: number;
+  node: Node;
+  anchorVpos: number;
   location: CommentLocation;
+  scrollSpeed: number;
+  staticX: number;
 };
 
-const computeElapsedVpos = (ms: number) => (ms / 10) | 0;
-const computeScrollX = (width: number, durationVpos: number, elapsedMs: number) => {
-  const speed = (COMMENT_DRAW_RANGE + width * NAKA_COMMENT_SPEED_OFFSET) / (durationVpos + 100);
-  return COMMENT_DRAW_PADDING + COMMENT_DRAW_RANGE - (computeElapsedVpos(elapsedMs) + 100) * speed;
-};
+const computeScrollSpeed = (width: number, durationVpos: number) =>
+  (COMMENT_DRAW_RANGE + width * SCROLL_SPEED_FACTOR) / (durationVpos + 100);
 
 export const createPixiRenderer = async (): Promise<Result<RendererController, string>> => {
   const video = queryVideoElement();
-  if (!video) return { ok: false, error: "Video element not found" };
+  if (!video) return { error: 'Video element not found', ok: false };
 
   const { overlay } = mountOverlay(video);
   const { app, layer } = await createPixiScene(overlay);
   const commentLayer = new Container();
-  commentLayer.eventMode = "none";
+  commentLayer.eventMode = 'none';
+  commentLayer.interactiveChildren = false;
   layer.addChild(commentLayer);
 
-  const {
-    comment_area_opacity_percentage: initialOpacity,
-    nicoarea_scale: initialScale,
-    comment_renderer_fps: initialFps,
-    comment_timing_offset: initialOffset,
-    show_comments_in_niconico_style: initialVisibility,
-  } = await getConfigs([
-    "comment_area_opacity_percentage",
-    "nicoarea_scale",
-    "comment_renderer_fps",
-    "comment_timing_offset",
-    "show_comments_in_niconico_style",
-  ]);
+  const initialOpacity = await getConfig('comment_area_opacity_percentage');
+  const initialScale = await getConfig('nicoarea_scale');
+  const initialFps = await getConfig('comment_renderer_fps');
+  const initialOffset = await getConfig('comment_timing_offset');
+  const initialVisibility = await getConfig('show_comments_in_niconico_style');
 
   let offsetMs = initialOffset;
   let fontScale = Math.max(initialScale / 100, 0);
   let cachedThreads: Threads | null = null;
+  let currentVideo: HTMLVideoElement | null = video;
+  let clockVideo: HTMLVideoElement | null = null;
+  let renderVpos = Number.NaN;
+  let clockVpos = Number.NaN;
+  let clockAt = 0;
+  let targetFps = initialFps;
 
   const styleCache = new Map<string, TextStyle>();
-  const nodeCache = new Map<string, CommentNode>();
-  const pool = new Map<string, CommentNode[]>();
+  const textureCache = new Map<string, RenderTexture>();
+  const nodeOps = createNodeOps({
+    getResolution: () => app.renderer.resolution,
+    renderer: app.renderer,
+    styleCache,
+    textureCache,
+  });
+  const nodeCache = new Map<string, Node>();
+  const pool = new Map<string, Node[]>();
 
-  app.ticker.maxFPS = initialFps;
+  const setFps = (value: number) => {
+    app.ticker.maxFPS = Math.max(60, value);
+    app.ticker.minFPS = 0;
+    targetFps = Math.max(1, value);
+  };
+  setFps(initialFps);
+  app.ticker.autoStart = false;
+  app.ticker.stop();
 
-  const applyOpacity = (value: number) => {
-    const alpha = Math.max(value / 100, 0);
-    commentLayer.alpha = alpha;
-    overlay.style.opacity = alpha.toString();
-    app.canvas.style.opacity = alpha.toString();
+  const opacity = (value: number) => {
+    app.canvas.style.opacity = Math.max(value / 100, 0).toString();
   };
 
-  const applyVisibility = (visible: boolean) => {
-    commentLayer.visible = visible;
-    overlay.style.display = visible ? "block" : "none";
-    app.canvas.style.display = visible ? "block" : "none";
+  let isVisible = initialVisibility;
+  const updateTickerState = () => {
+    const shouldRun = isVisible && Boolean(cachedThreads);
+    if (shouldRun) {
+      if (!app.ticker.started) app.ticker.start();
+    } else if (app.ticker.started) {
+      app.ticker.stop();
+    }
   };
 
-  const applyOffset = (value: number) => {
+  const visible = (value: boolean) => {
+    isVisible = value;
+    commentLayer.visible = value;
+    const display = value ? 'block' : 'none';
+    overlay.style.display = display;
+    app.canvas.style.display = display;
+    updateTickerState();
+  };
+
+  const offset = (value: number) => {
     offsetMs = value;
-    if (cachedThreads) setThreads(cachedThreads);
+    if (!cachedThreads) return;
+    resetActive();
   };
 
-  function applyScale(value: number) {
-    const scale = Math.max(value / 100, 0);
-    if (scale === fontScale) return;
-    fontScale = scale;
+  function scale(value: number) {
+    const nextScale = Math.max(value / 100, 0);
+    if (nextScale === fontScale) return;
+    fontScale = nextScale;
     styleCache.clear();
     nodeCache.clear();
     pool.clear();
+    nodeOps.clearTextures();
     if (cachedThreads) setThreads(cachedThreads);
   }
 
-  const detach = (c: Container) => c.parent?.removeChild(c);
+  const detach = (container: Container) => container.parent?.removeChild(container);
 
-  const getNode = (c: TimelineComment): CommentNode => {
-    const sig = signatureOf(c);
-    const cached = nodeCache.get(c.id);
-    if (cached?.signature === sig) {
-      ensureResolution(cached, app.renderer.resolution);
-      detach(cached.container);
-      cached.width = c.width;
-      cached.height = c.height;
+  const getVideo = () => {
+    if (currentVideo?.isConnected) return currentVideo;
+    currentVideo = queryVideoElement();
+    return currentVideo;
+  };
+
+  const getNode = (comment: TimelineComment): ReturnType<(typeof nodeOps)['makeNode']> => {
+    const cached = nodeCache.get(comment.id);
+    if (cached) {
+      nodeOps.updateNode(cached, comment);
       return cached;
     }
-    if (cached) nodeCache.delete(c.id);
-    const bucket = pool.get(sig);
-    const node = bucket?.pop() ?? createCommentNode(c, app.renderer.resolution, styleCache);
-    node.signature = sig;
-    node.width = c.width;
-    node.height = c.height;
-    node.resolution = app.renderer.resolution;
-    nodeCache.set(c.id, node);
-    if (!bucket?.length) pool.delete(sig);
-    return node;
+    const signature = nodeOps.nodeSignature(comment);
+    const bucket = pool.get(signature);
+    const node = bucket?.pop();
+    if (node) nodeOps.updateNode(node, comment);
+    const created = node ?? nodeOps.makeNode(comment);
+    nodeCache.set(comment.id, created);
+    if (!bucket?.length) pool.delete(signature);
+    return created;
   };
 
-  const releaseNode = (id: string): boolean => {
-    const n = nodeCache.get(id);
-    if (!n) return false;
-    detach(n.container);
+  const releaseNode = (id: string): void => {
+    const node = nodeCache.get(id);
+    if (!node) return;
+    detach(node.container);
     nodeCache.delete(id);
-    let arr = pool.get(n.signature);
-    if (!arr) {
-      arr = [];
-      pool.set(n.signature, arr);
+    // Drop unused textures to avoid WebGPU memory growth.
+    const texture = node.sprite.texture;
+    let used = false;
+    for (const item of nodeCache.values()) {
+      if (item.sprite.texture === texture) {
+        used = true;
+        break;
+      }
     }
-    arr.push(n);
-    return true;
+    if (!used) {
+      for (const [key, cached] of textureCache.entries()) {
+        if (cached !== texture) continue;
+        texture.destroy(true);
+        textureCache.delete(key);
+        break;
+      }
+    }
+    let bucket = pool.get(node.signature);
+    if (!bucket) {
+      bucket = [];
+      pool.set(node.signature, bucket);
+    }
+    bucket.push(node);
   };
 
-  let timeline: TimelineComment[] = [];
-  let nextIndex = 0;
-  let lastMs = 0;
+  let timeline: Record<number, TimelineComment[]> = {};
+  let lastVposInt = Number.NEGATIVE_INFINITY;
   const active: ActiveItem[] = [];
+  let activeSet = new Set<string>();
+  let nextActive = new Set<string>();
 
-  const updateOne = (it: ActiveItem, nowMs: number) => {
-    const { comment: cm, node: nd } = it;
-    nd.container.y = cm.loc === "bottom" ? CANVAS_HEIGHT - nd.height - cm.posY : cm.posY;
-    nd.container.x =
-      it.location === "middle"
-        ? computeScrollX(nd.width, cm.durationVpos || 1, nowMs - it.anchorMs)
-        : ((CANVAS_WIDTH - nd.width) / 2) | 0;
+  const updateOne = (item: ActiveItem, nowVpos: number) => {
+    if (item.location !== 'middle') return;
+    item.node.container.x =
+      COMMENT_DRAW_PADDING + COMMENT_DRAW_RANGE - (nowVpos - item.anchorVpos + 100) * item.scrollSpeed;
+  };
+
+  const placeItem = (item: ActiveItem, nowVpos: number) => {
+    const { comment, node } = item;
+    node.container.y = comment.loc === 'bottom' ? CANVAS_HEIGHT - comment.height - comment.posY : comment.posY;
+    if (item.location === 'middle') updateOne(item, nowVpos);
+    else node.container.x = item.staticX;
+  };
+
+  const addActive = (comment: TimelineComment, nowVpos: number) => {
+    const node = getNode(comment);
+    commentLayer.addChild(node.container);
+    const isMiddle = comment.loc === 'middle';
+    const speed = isMiddle ? computeScrollSpeed(comment.width, comment.durationVpos || 1) : 0;
+    const staticX = isMiddle ? 0 : (CANVAS_WIDTH - comment.width) / 2;
+    const item: ActiveItem = {
+      anchorVpos: comment.vpos,
+      comment,
+      location: comment.loc,
+      node,
+      scrollSpeed: speed,
+      staticX,
+    };
+    active.push(item);
+    placeItem(item, nowVpos);
   };
 
   const tick = (): number => {
-    const nowMs = (video.currentTime * 1000 + offsetMs) | 0;
-    if (nowMs < 0) return 0;
-    let updates = 0;
-
-    // シーク検出（80ms以上戻った場合）
-    if (nowMs + 80 < lastMs) {
-      for (const a of active) detach(a.node.container);
-      active.length = 0;
-      nextIndex = 0;
-      lastMs = nowMs;
-    }
-
-    // 新規コメント追加
-    while (nextIndex < timeline.length && timeline[nextIndex].enterMs <= nowMs) {
-      const c = timeline[nextIndex++];
-      const n = getNode(c);
-      commentLayer.addChild(n.container);
-      active.push({
-        comment: c,
-        node: n,
-        anchorMs: c.vposMs,
-        exitMs: c.exitMs,
-        location: c.loc,
-      });
-      updates++;
-    }
-
-    // 位置更新と終了判定
-    for (let i = active.length - 1; i >= 0; i--) {
-      const it = active[i];
-      if (nowMs >= it.exitMs) {
-        detach(it.node.container);
-        active[i] = active[active.length - 1];
-        active.pop();
-      } else {
-        updateOne(it, nowMs);
+    const video = getVideo();
+    if (!video) return 0;
+    const rawVpos = video.currentTime * 100 + offsetMs / 10;
+    if (!Number.isFinite(rawVpos) || rawVpos < 0) return 0;
+    const rate = Number.isFinite(video.playbackRate) ? video.playbackRate : 1;
+    const playing = video.readyState >= 2 && !video.paused && !video.ended;
+    const fps = Math.max(1, targetFps);
+    const dt = Math.min(app.ticker.deltaMS || 1000 / fps, 100);
+    const alpha = 1 - Math.exp(-dt / ((1000 / fps) * 6));
+    const now = performance.now();
+    const sync = (hard = false) => {
+      if (hard) resetActive();
+      clockVideo = video;
+      clockVpos = rawVpos;
+      clockAt = now;
+      renderVpos = rawVpos;
+    };
+    if (video !== clockVideo || !Number.isFinite(renderVpos)) sync();
+    const clocked = clockVpos + ((now - clockAt) * rate) / 10;
+    if (!playing) sync();
+    else {
+      const drift = rawVpos - clocked;
+      if (Math.abs(drift) > 60) sync(true);
+      else if (Math.abs(drift) > 0.5) {
+        clockVpos = rawVpos;
+        clockAt = now;
       }
-      updates++;
+    }
+    let target = clockVpos + ((playing ? now - clockAt : 0) * rate) / 10;
+    if (playing) {
+      const diff = target - renderVpos;
+      if (Math.abs(diff) > 60) {
+        sync(true);
+        target = renderVpos;
+      } else renderVpos += diff * alpha;
+    } else renderVpos = target;
+    const nowVpos = renderVpos;
+    let nowVposInt = Math.floor(target);
+    if (playing && rate >= 0 && nowVposInt < lastVposInt) nowVposInt = lastVposInt;
+    const rangeChanged = nowVposInt !== lastVposInt;
+    if (rangeChanged) {
+      nextActive.clear();
+      const timelineRange = timeline[nowVposInt];
+      if (timelineRange) {
+        for (const comment of timelineRange) {
+          if (!activeSet.has(comment.id)) addActive(comment, nowVpos);
+          nextActive.add(comment.id);
+        }
+      }
     }
 
-    lastMs = nowMs;
-    return updates;
+    for (let index = active.length - 1; index >= 0; index--) {
+      const item = active[index];
+      if (rangeChanged && !nextActive.has(item.comment.id)) {
+        releaseNode(item.comment.id);
+        active[index] = active[active.length - 1];
+        active.pop();
+      } else updateOne(item, nowVpos);
+    }
+
+    if (rangeChanged) {
+      [activeSet, nextActive] = [nextActive, activeSet];
+      lastVposInt = nowVposInt;
+    }
+    return 1;
   };
 
   app.ticker.add(tick);
 
+  const stops: (() => void)[] = [];
+
   const clearAll = () => {
-    for (const layer of active) detach(layer.node.container);
+    for (const layer of active) releaseNode(layer.comment.id);
     active.length = 0;
+    activeSet.clear();
+    updateTickerState();
   };
 
-  const v = video;
+  const resetActive = () => {
+    clearAll();
+    lastVposInt = Number.NEGATIVE_INFINITY;
+    renderVpos = Number.NaN;
+    clockVpos = Number.NaN;
+    clockAt = 0;
+    clockVideo = null;
+    updateTickerState();
+  };
+
   function setThreads(threads: Threads) {
     cachedThreads = threads;
     timeline = buildTimeline(threads, fontScale);
-    const now = (v.currentTime * 1000 + offsetMs) | 0;
-    clearAll();
-    nextIndex = 0;
-    lastMs = now;
-    // 現在時刻までのコメントを追加
-    while (nextIndex < timeline.length && timeline[nextIndex].enterMs <= now) {
-      const c = timeline[nextIndex++];
-      const n = getNode(c);
-      commentLayer.addChild(n.container);
-      active.push({
-        comment: c,
-        node: n,
-        anchorMs: c.vposMs,
-        exitMs: c.exitMs,
-        location: c.loc,
-      });
+    resetActive();
+    const ids = new Set<string>();
+    const keys = new Set<string>();
+    const textures = new Set<string>();
+    for (const list of Object.values(timeline)) {
+      for (const comment of list) {
+        ids.add(comment.id);
+        keys.add(comment.styleKey);
+        textures.add(nodeOps.textureKey(comment));
+      }
     }
-    for (const it of active) updateOne(it, now);
-    // キャッシュを削除
-    const ids = new Set(timeline.map((t) => t.id));
-    for (const k of nodeCache.keys()) if (!ids.has(k)) releaseNode(k);
-    const keys = new Set(timeline.map((t) => t.styleKey));
-    for (const k of styleCache.keys()) if (!keys.has(k)) styleCache.delete(k);
+    for (const id of nodeCache.keys()) if (!ids.has(id)) releaseNode(id);
+    for (const key of styleCache.keys()) if (!keys.has(key)) styleCache.delete(key);
+    for (const [key, texture] of textureCache.entries()) {
+      if (textures.has(key)) continue;
+      texture.destroy(true);
+      textureCache.delete(key);
+    }
     return threads;
   }
 
-  watchConfig("comment_area_opacity_percentage", (value) => applyOpacity(value));
-  watchConfig("nicoarea_scale", (value) => applyScale(value));
-  watchConfig("comment_renderer_fps", (value) => {
-    app.ticker.maxFPS = value;
-  });
-  watchConfig("show_comments_in_niconico_style", (value) => applyVisibility(value));
-  watchConfig("comment_timing_offset", (value) => applyOffset(value));
+  watchConfig('comment_area_opacity_percentage', (value) => opacity(value)).then((stop) => stops.push(stop));
+  watchConfig('nicoarea_scale', (value) => scale(value)).then((stop) => stops.push(stop));
+  watchConfig('comment_renderer_fps', (value) => setFps(value)).then((stop) => stops.push(stop));
+  watchConfig('show_comments_in_niconico_style', (value) => visible(value)).then((stop) => stops.push(stop));
+  watchConfig('comment_timing_offset', (value) => offset(value)).then((stop) => stops.push(stop));
 
-  applyOpacity(initialOpacity);
-  applyVisibility(initialVisibility);
-  applyOffset(initialOffset);
-  applyScale(initialScale);
+  opacity(initialOpacity);
+  visible(initialVisibility);
+  offset(initialOffset);
+  scale(initialScale);
 
-  return { ok: true, value: { setThreads } };
+  updateTickerState();
+
+  const dispose = () => {
+    app.ticker.remove(tick);
+    clearAll();
+    nodeOps.clearTextures();
+    for (const stop of stops) stop();
+    app.destroy(true, { children: true, texture: true, textureSource: true });
+  };
+
+  return { ok: true, value: { dispose, setThreads } };
 };

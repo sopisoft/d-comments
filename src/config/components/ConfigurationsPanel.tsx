@@ -1,50 +1,49 @@
-import { Divider, Stack } from "@mantine/core";
-import { memo } from "react";
-import { type ConfigKeysWithUIType, getUiType } from "../defaults";
-import { useTheme } from "../hooks/useTheme";
-import { configSections, type SectionDefinition, type SectionField } from "../sections";
-import { CheckboxGroupField, NumberField, SegmentedControlField, SliderField, SwitchField } from "./Fields";
-import { SectionCard } from "./SectionCard";
+import { Divider, Stack } from '@mantine/core';
+import { type ConfigKeysWithUIType, getUiType } from '../defaults';
+import { useTheme } from '../hooks/useTheme';
+import { configSections, type SectionDefinition, type SectionField } from '../sections';
+import { CheckboxGroupField, NumberField, SegmentedControlField, SliderField, SwitchField } from './Fields';
+import { SectionCard } from './SectionCard';
 
-const renderField = (f: SectionField) => {
+const renderField = (f: SectionField): React.ReactElement => {
   const kind = getUiType(f.configKey);
   switch (kind) {
-    case "switch":
+    case 'switch':
       return (
         <SwitchField
-          configKey={f.configKey as ConfigKeysWithUIType<"switch">}
+          configKey={f.configKey as ConfigKeysWithUIType<'switch'>}
           label={f.label}
           description={f.description}
         />
       );
-    case "number":
+    case 'number':
       return (
         <NumberField
-          configKey={f.configKey as ConfigKeysWithUIType<"number">}
+          configKey={f.configKey as ConfigKeysWithUIType<'number'>}
           label={f.label}
           description={f.description}
         />
       );
-    case "slider":
+    case 'slider':
       return (
         <SliderField
-          configKey={f.configKey as ConfigKeysWithUIType<"slider">}
+          configKey={f.configKey as ConfigKeysWithUIType<'slider'>}
           label={f.label}
           description={f.description}
         />
       );
-    case "checkbox_group":
+    case 'checkbox_group':
       return (
         <CheckboxGroupField
-          configKey={f.configKey as ConfigKeysWithUIType<"checkbox_group">}
+          configKey={f.configKey as ConfigKeysWithUIType<'checkbox_group'>}
           label={f.label}
           description={f.description}
         />
       );
-    case "segmented_control":
+    case 'segmented_control':
       return (
         <SegmentedControlField
-          configKey={f.configKey as ConfigKeysWithUIType<"segmented_control">}
+          configKey={f.configKey as ConfigKeysWithUIType<'segmented_control'>}
           label={f.label}
           description={f.description}
         />
@@ -52,7 +51,13 @@ const renderField = (f: SectionField) => {
   }
 };
 
-const ConfigSection = memo(({ section, dividerColor }: { section: SectionDefinition; dividerColor: string }) => (
+const ConfigSection = ({
+  section,
+  dividerColor,
+}: {
+  section: SectionDefinition;
+  dividerColor: string;
+}): React.ReactElement => (
   <SectionCard icon={section.icon} title={section.title} description={section.description}>
     <Stack gap="lg">
       <Divider color={dividerColor} />
@@ -61,9 +66,9 @@ const ConfigSection = memo(({ section, dividerColor }: { section: SectionDefinit
       ))}
     </Stack>
   </SectionCard>
-));
+);
 
-export function ConfigurationsPanel() {
+export function ConfigurationsPanel(): React.ReactElement {
   const { styles: ps } = useTheme();
   return (
     <Stack gap="xl" align="center">

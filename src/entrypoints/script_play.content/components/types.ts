@@ -1,8 +1,8 @@
-import type { SidebarConfig } from "../context/SidebarContext";
+import type { SidebarConfig } from '../context/SidebarContext';
 
 export type ThemeProps = {
-  palette: SidebarConfig["palette"];
+  palette: SidebarConfig['palette'];
   showNicoru: boolean;
-  alpha: SidebarConfig["alpha"];
+  alpha: SidebarConfig['alpha'];
   fontSizePx?: number;
 };

@@ -1,0 +1,70 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "ignorePatterns": ["src/generated/**"],
+  "plugins": ["import", "jest", "jsdoc", "node", "oxc", "promise", "typescript", "unicorn"],
+  "rules": {
+    "capitalized-comments": "error",
+    "eqeqeq": [
+      "error",
+      "always",
+      {
+        "null": "ignore"
+      }
+    ],
+    "import/no-cycle": "error",
+    "import/no-dynamic-require": "error",
+    "no-console": [
+      "error",
+      {
+        "allow": ["error", "info", "warn"]
+      }
+    ],
+    "no-debugger": "error",
+    "no-eq-null": "error",
+    "no-shadow": "error",
+    "no-unused-vars": [
+      "error",
+      {
+        "argsIgnorePattern": "^_",
+        "caughtErrorsIgnorePattern": "^_",
+        "varsIgnorePattern": "^_"
+      }
+    ],
+    "no-var": "error",
+    "no-void": "error",
+    "oxc/no-this-in-exported-function": "error",
+    "prefer-const": "error",
+    "promise/valid-params": "error",
+    "sort-imports": [
+      "error",
+      {
+        "ignoreCase": true,
+        "ignoreDeclarationSort": true
+      }
+    ],
+    "typescript/explicit-module-boundary-types": "error",
+    "typescript/no-deprecated": "error",
+    "typescript/no-explicit-any": "error",
+    "typescript/no-extraneous-class": "error",
+    "typescript/no-floating-promises": "error",
+    "typescript/no-namespace": "off",
+    "typescript/no-unnecessary-type-assertion": "error",
+    "typescript/no-unsafe-function-type": "error",
+    "typescript/no-unsafe-return": "error",
+    "typescript/no-unsafe-type-assertion": "error",
+    "typescript/prefer-nullish-coalescing": "error",
+    "typescript/prefer-optional-chain": "error",
+    "typescript/require-await": "error",
+    "typescript/typedef": [
+      "error",
+      {
+        "arrowParameter": false,
+        "memberVariableDeclaration": true,
+        "parameter": false,
+        "propertyDeclaration": true,
+        "variableDeclaration": true
+      }
+    ],
+    "unicorn/prefer-array-find": "error"
+  }
+}

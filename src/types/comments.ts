@@ -1,4 +1,4 @@
-import type { Threads } from "./api";
+import type { Threads } from './api';
 
 type VideoData = {
   contentId: string;
