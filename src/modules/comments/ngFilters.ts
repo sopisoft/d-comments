@@ -1,10 +1,10 @@
-import type { NgEntry } from "@/config/storage";
-import type { NvCommentItem } from "@/types/api";
+import type { NgEntry } from '@/config/storage';
+import type { NvCommentItem } from '@/types/api';
 
-export type CommentShape = Pick<NvCommentItem, "body" | "userId">;
+export type CommentShape = Pick<NvCommentItem, 'body' | 'userId'>;
 export type NgFilter = (comment: CommentShape) => boolean;
 
-const REGEX_PREFIX = "re:" as const;
+const REGEX_PREFIX = 're:' as const;
 const SLASH_REGEX = /^\/(.*)\/(i?)$/;
 
 type WordRule = {
@@ -17,15 +17,11 @@ const toRegex = (raw: string): RegExp | null => {
   const match = normalized.match(SLASH_REGEX);
   const source = match ? match[1] : normalized;
   const flags = match ? match[2] : undefined;
-  try {
-    return new RegExp(source, flags);
-  } catch {
-    return null;
-  }
+  return new RegExp(source, flags);
 };
 
 const buildWordRule = (entry: NgEntry): WordRule | null => {
-  const rawValue = entry.value?.trim();
+  const rawValue = entry.value.trim();
   if (!rawValue) return null;
   const treatAsRegex = entry.isRegex || rawValue.startsWith(REGEX_PREFIX);
   if (treatAsRegex) {
@@ -38,21 +34,17 @@ const buildWordRule = (entry: NgEntry): WordRule | null => {
   return { test: (value: string) => value.toLowerCase().includes(needle) };
 };
 
-const isRecord = (value: unknown): value is Record<string, unknown> => typeof value === "object" && value !== null;
-
-export const normalizeNgList = (value: unknown): NgEntry[] => {
-  if (!Array.isArray(value)) return [];
+export const normalizeNgList = (value: NgEntry[]): NgEntry[] => {
   const normalized: NgEntry[] = [];
   const seen = new Set<string>();
   for (const item of value) {
-    if (!isRecord(item)) continue;
-    const rawValue = typeof item.value === "string" ? item.value.trim() : "";
+    const rawValue = item.value.trim();
     if (!rawValue || seen.has(rawValue)) continue;
     seen.add(rawValue);
     normalized.push({
-      value: rawValue,
       enabled: item.enabled !== false,
       isRegex: item.isRegex === true,
+      value: rawValue,
     });
   }
   return normalized;

@@ -14,31 +14,6 @@ const fontTemplates = {
     offset: 0.03,
     weight: 400,
   },
-  mincho: {
-    font: '"游明朝体", "游明朝", "Yu Mincho", YuMincho, yumincho, YuMin-Medium',
-    offset: -0.01,
-    weight: 400,
-  },
-  simsun: {
-    font: '"宋体", SimSun',
-    offset: 0.135,
-    weight: 400,
-  },
-  macGothicPro6: {
-    font: '"ヒラギノ角ゴ ProN W6", HiraKakuProN-W6, "ヒラギノ角ゴ ProN", HiraKakuProN, "Hiragino Kaku Gothic ProN"',
-    offset: -0.05,
-    weight: 600,
-  },
-  macGothicPro3: {
-    font: '"ヒラギノ角ゴ ProN W3", HiraKakuProN-W3, "ヒラギノ角ゴ ProN", HiraKakuProN, "Hiragino Kaku Gothic ProN"',
-    offset: -0.04,
-    weight: 300,
-  },
-  macMincho: {
-    font: '"ヒラギノ明朝 ProN W3", HiraMinProN-W3, "ヒラギノ明朝 ProN", HiraMinProN, "Hiragino Mincho ProN"',
-    offset: -0.02,
-    weight: 300,
-  },
   macGothic1: {
     font: '"ヒラギノ角ゴシック", "Hiragino Sans", HiraginoSans',
     offset: -0.05,
@@ -49,19 +24,44 @@ const fontTemplates = {
     offset: -0.04,
     weight: 300,
   },
-  sansSerif600: {
-    font: "sans-serif",
-    offset: 0,
+  macGothicPro3: {
+    font: '"ヒラギノ角ゴ ProN W3", HiraKakuProN-W3, "ヒラギノ角ゴ ProN", HiraKakuProN, "Hiragino Kaku Gothic ProN"',
+    offset: -0.04,
+    weight: 300,
+  },
+  macGothicPro6: {
+    font: '"ヒラギノ角ゴ ProN W6", HiraKakuProN-W6, "ヒラギノ角ゴ ProN", HiraKakuProN, "Hiragino Kaku Gothic ProN"',
+    offset: -0.05,
     weight: 600,
   },
+  macMincho: {
+    font: '"ヒラギノ明朝 ProN W3", HiraMinProN-W3, "ヒラギノ明朝 ProN", HiraMinProN, "Hiragino Mincho ProN"',
+    offset: -0.02,
+    weight: 300,
+  },
+  mincho: {
+    font: '"游明朝体", "游明朝", "Yu Mincho", YuMincho, yumincho, YuMin-Medium',
+    offset: -0.01,
+    weight: 400,
+  },
   sansSerif400: {
-    font: "sans-serif",
+    font: 'sans-serif',
     offset: 0,
     weight: 400,
   },
-  serif: {
-    font: "serif",
+  sansSerif600: {
+    font: 'sans-serif',
     offset: 0,
+    weight: 600,
+  },
+  serif: {
+    font: 'serif',
+    offset: 0,
+    weight: 400,
+  },
+  simsun: {
+    font: '"宋体", SimSun',
+    offset: 0.135,
     weight: 400,
   },
 } as const;
@@ -78,10 +78,35 @@ const build = (templates: ReadonlyArray<{ font: string; offset: number; weight: 
       acc.font += `, ${template.font}`;
       return acc;
     },
-    { font: "", offset: 0, weight: 600 }
+    { font: '', offset: 0, weight: 600 }
   );
 
 const fontSets = {
+  mac: {
+    defont: build([fontTemplates.macGothicPro6]),
+    gothic: build([fontTemplates.macGothicPro3]),
+    mincho: build([fontTemplates.macMincho]),
+  },
+  mac10_11: {
+    defont: build([fontTemplates.macGothic1]),
+    gothic: build([fontTemplates.gothic, fontTemplates.macGothic2]),
+    mincho: build([fontTemplates.mincho, fontTemplates.macMincho, fontTemplates.macGothic2]),
+  },
+  mac10_9: {
+    defont: build([fontTemplates.macGothicPro6]),
+    gothic: build([fontTemplates.gothic, fontTemplates.macGothicPro3]),
+    mincho: build([fontTemplates.mincho, fontTemplates.macMincho, fontTemplates.macGothicPro3]),
+  },
+  other: {
+    defont: build([fontTemplates.sansSerif600]),
+    gothic: build([fontTemplates.sansSerif400]),
+    mincho: build([fontTemplates.serif]),
+  },
+  win: {
+    defont: build([fontTemplates.arial]),
+    gothic: build([fontTemplates.gulim, fontTemplates.arial]),
+    mincho: build([fontTemplates.simsun, fontTemplates.arial]),
+  },
   win7: {
     defont: build([fontTemplates.arial]),
     gothic: build([fontTemplates.gothic, fontTemplates.gulim, fontTemplates.arial]),
@@ -92,34 +117,9 @@ const fontSets = {
     gothic: build([fontTemplates.gothic, fontTemplates.simsun, fontTemplates.arial]),
     mincho: build([fontTemplates.mincho, fontTemplates.simsun, fontTemplates.arial]),
   },
-  win: {
-    defont: build([fontTemplates.arial]),
-    gothic: build([fontTemplates.gulim, fontTemplates.arial]),
-    mincho: build([fontTemplates.simsun, fontTemplates.arial]),
-  },
-  mac10_9: {
-    defont: build([fontTemplates.macGothicPro6]),
-    gothic: build([fontTemplates.gothic, fontTemplates.macGothicPro3]),
-    mincho: build([fontTemplates.mincho, fontTemplates.macMincho, fontTemplates.macGothicPro3]),
-  },
-  mac10_11: {
-    defont: build([fontTemplates.macGothic1]),
-    gothic: build([fontTemplates.gothic, fontTemplates.macGothic2]),
-    mincho: build([fontTemplates.mincho, fontTemplates.macMincho, fontTemplates.macGothic2]),
-  },
-  mac: {
-    defont: build([fontTemplates.macGothicPro6]),
-    gothic: build([fontTemplates.macGothicPro3]),
-    mincho: build([fontTemplates.macMincho]),
-  },
-  other: {
-    defont: build([fontTemplates.sansSerif600]),
-    gothic: build([fontTemplates.sansSerif400]),
-    mincho: build([fontTemplates.serif]),
-  },
 } as const;
 
-export type StandardFontName = "defont" | "gothic" | "mincho";
+export type StandardFontName = 'defont' | 'gothic' | 'mincho';
 
 export type FontAttributes = {
   key: StandardFontName;
@@ -129,15 +129,15 @@ export type FontAttributes = {
 };
 
 const detectPlatform = (): keyof typeof fontSets => {
-  if (typeof navigator === "undefined") return "other";
+  if (typeof navigator === 'undefined') return 'other';
   const ua = navigator.userAgent;
-  if (/windows nt 6\.[12]/i.test(ua)) return "win7";
-  if (/windows nt (6\.3|10\.\d+)|win32/i.test(ua)) return "win8_1";
-  if (/mac os x 10_[89]/i.test(ua)) return "mac10_9";
-  if (/mac os x 10_1[01]/i.test(ua)) return "mac10_11";
-  if (/mac os x/i.test(ua)) return "mac";
-  if (/windows/i.test(ua)) return "win";
-  return "other";
+  if (/windows nt 6\.[12]/i.test(ua)) return 'win7';
+  if (/windows nt (6\.3|10\.\d+)|win32/i.test(ua)) return 'win8_1';
+  if (/mac os x 10_[89]/i.test(ua)) return 'mac10_9';
+  if (/mac os x 10_1[01]/i.test(ua)) return 'mac10_11';
+  if (/mac os x/i.test(ua)) return 'mac';
+  if (/windows/i.test(ua)) return 'win';
+  return 'other';
 };
 
 let cachedFonts: Record<StandardFontName, FontAttributes> | undefined;
@@ -148,22 +148,22 @@ export const getFontDefinitions = (): Record<StandardFontName, FontAttributes> =
   const selected = fontSets[platform] ?? fontSets.other;
   cachedFonts = {
     defont: {
-      key: "defont",
       family: selected.defont.font,
-      weight: selected.defont.weight,
+      key: 'defont',
       offset: selected.defont.offset,
+      weight: selected.defont.weight,
     },
     gothic: {
-      key: "gothic",
       family: selected.gothic.font,
-      weight: selected.gothic.weight,
+      key: 'gothic',
       offset: selected.gothic.offset,
+      weight: selected.gothic.weight,
     },
     mincho: {
-      key: "mincho",
       family: selected.mincho.font,
-      weight: selected.mincho.weight,
+      key: 'mincho',
       offset: selected.mincho.offset,
+      weight: selected.mincho.weight,
     },
   };
   return cachedFonts;

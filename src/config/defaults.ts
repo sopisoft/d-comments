@@ -1,43 +1,39 @@
-import { MdDarkMode, MdLightMode, MdSettings } from "react-icons/md";
-import type { ConfigItem, UiOptions, UiType } from "./types";
-import { defineConfigs } from "./types";
-
-type ConfigValueConstraint<TValue> = TValue extends boolean ? boolean : TValue;
-
-type ConfigWithUiType<TValue, TUiType extends UiType> = ConfigItem<ConfigValueConstraint<TValue>, TUiType>;
+import { MdDarkMode, MdLightMode, MdSettings } from 'react-icons/md';
+import type { UiOptions, UiType } from './types';
+import { defineConfigs } from './types';
 
 export const defaultConfigs = defineConfigs({
   /**
    * テーマの設定
    */
   theme_color_mode: {
-    value: "auto",
-    ui_type: "segmented_control",
     ui_options: [
-      { value: "light", label: "Light", icon: MdLightMode },
-      { value: "dark", label: "Dark", icon: MdDarkMode },
-      { value: "auto", label: "Auto", icon: MdSettings },
+      { value: 'light', label: 'Light', icon: MdLightMode },
+      { value: 'dark', label: 'Dark', icon: MdDarkMode },
+      { value: 'auto', label: 'Auto', icon: MdSettings },
     ],
+    ui_type: 'segmented_control',
+    value: 'auto',
   },
 
   /**
    * 共通の設定
    */
   login: {
+    ui_type: 'switch',
     value: false,
-    ui_type: "switch",
   },
   enable_auto_play: {
+    ui_type: 'switch',
     value: true,
-    ui_type: "switch",
   },
   auto_search: {
+    ui_type: 'switch',
     value: false,
-    ui_type: "switch",
   },
   enable_auto_scroll: {
+    ui_type: 'switch',
     value: true,
-    ui_type: "switch",
   },
 
   /**
@@ -45,144 +41,136 @@ export const defaultConfigs = defineConfigs({
    */
 
   show_comments_in_list: {
+    ui_type: 'switch',
     value: true,
-    ui_type: "switch",
   },
   comment_area_width_px: {
+    ui_options: { min: 100, max: 2000, step: 1 } satisfies UiOptions,
+    ui_type: 'number',
     value: 600,
-    ui_type: "number",
-    ui_options: { min: 100, max: 2000, step: 1 } satisfies UiOptions<"number">,
   },
   comment_area_font_size_px: {
+    ui_options: { min: 2, max: 40 } satisfies UiOptions,
+    ui_type: 'number',
     value: 16,
-    ui_type: "number",
-    ui_options: { min: 2, max: 40 } satisfies UiOptions<"number">,
   },
   comment_area_opacity_percentage: {
-    value: 95,
-    ui_type: "slider",
     ui_options: {
       min: 0,
       max: 100,
       step: 5,
-      unit: "%",
-    } satisfies UiOptions<"slider">,
+      unit: '%',
+    } satisfies UiOptions,
+    ui_type: 'slider',
+    value: 95,
   },
 
   nicoarea_scale: {
-    value: 100,
-    ui_type: "slider",
     ui_options: {
       min: 0,
       max: 100,
       step: 10,
-      unit: "%",
-    } satisfies UiOptions<"slider">,
+      unit: '%',
+    } satisfies UiOptions,
+    ui_type: 'slider',
+    value: 100,
   },
 
   show_nicoru_count: {
+    ui_type: 'switch',
     value: true,
-    ui_type: "switch",
   },
   show_comments_in_niconico_style: {
+    ui_type: 'switch',
     value: true,
-    ui_type: "switch",
   },
   visible_comments: {
+    ui_type: 'checkbox_group',
     value: [
-      { key: "owner", value: "投稿者コメント", enabled: false },
-      { key: "main", value: "一般コメント", enabled: true },
-      { key: "easy", value: "かんたんコメント", enabled: false },
+      { key: 'owner', value: '投稿者コメント', enabled: false },
+      { key: 'main', value: '一般コメント', enabled: true },
+      { key: 'easy', value: 'かんたんコメント', enabled: false },
     ],
-    ui_type: "checkbox_group",
-  } satisfies ConfigWithUiType<Array<{ key: string; value: string; enabled: boolean }>, "checkbox_group">,
+  },
   channels_only: {
+    ui_type: 'switch',
     value: true,
-    ui_type: "switch",
   },
   enable_smooth_scrolling: {
+    ui_type: 'switch',
     value: false,
-    ui_type: "switch",
   },
   comment_timing_offset: {
-    value: 0,
-    ui_type: "number",
     ui_options: {
       min: -100000,
       max: 100000,
       step: 10,
-    } satisfies UiOptions<"number">,
+    } satisfies UiOptions,
+    ui_type: 'number',
+    value: 0,
   },
   comment_renderer_fps: {
-    value: 60,
-    ui_type: "slider",
     ui_options: {
       min: 15,
       max: 120,
       step: 5,
-      unit: "fps",
-    } satisfies UiOptions<"slider">,
+      unit: 'fps',
+    } satisfies UiOptions,
+    ui_type: 'slider',
+    value: 60,
   },
   use_new_renderer: {
+    ui_type: 'switch',
     value: false,
-    ui_type: "switch",
   },
 
   /**
    * アドオンの設定
    */
-  enable_addon_smooth_player: {
-    value: true,
-    ui_type: "switch",
-  },
   enable_addon_disable_new_window: {
+    ui_type: 'switch',
     value: false,
-    ui_type: "switch",
   },
 
   /**
-   * ci_pc 作品ページ
+   * Ci_pc 作品ページ
    */
   enable_addon_add_button_to_play: {
+    ui_type: 'switch',
     value: true,
-    ui_type: "switch",
   },
   addon_option_play_in_same_tab: {
+    ui_type: 'switch',
     value: true,
-    ui_type: "switch",
   },
   ng_user_ids: {
+    ui_type: 'checkbox_group',
     value: [] as Array<{ value: string; enabled: boolean }>,
-    ui_type: "checkbox_group",
   },
   ng_words: {
+    ui_type: 'checkbox_group',
     value: [] as Array<{ value: string; enabled: boolean; isRegex?: boolean }>,
-    ui_type: "checkbox_group",
   },
 });
 
 export type ConfigSchema = typeof defaultConfigs;
 export type ConfigKey = keyof ConfigSchema;
-export type ConfigValue<TKey extends ConfigKey> = ConfigSchema[TKey]["value"] extends boolean
+export type ConfigValue<TKey extends ConfigKey> = ConfigSchema[TKey]['value'] extends boolean
   ? boolean
-  : ConfigSchema[TKey]["value"];
+  : ConfigSchema[TKey]['value'];
 export type ConfigKeysWithUIType<TUiType extends UiType> = {
-  [Key in keyof ConfigSchema]: ConfigSchema[Key]["ui_type"] extends TUiType ? Key : never;
+  [Key in keyof ConfigSchema]: ConfigSchema[Key]['ui_type'] extends TUiType ? Key : never;
 }[keyof ConfigSchema];
 
-export const getRawDefaultConfig = <TKey extends ConfigKey>(key: TKey) => defaultConfigs[key];
+export const getRawDefaultConfig = <TKey extends ConfigKey>(key: TKey): ConfigSchema[TKey] => defaultConfigs[key];
 
-export function getUiOptions<TKey extends ConfigKey>(key: TKey): UiOptions<UiType> | undefined {
-  return (
-    defaultConfigs[key] as unknown as {
-      ui_options?: UiOptions<UiType>;
-    }
-  ).ui_options;
+export function getUiOptions<TKey extends ConfigKey>(key: TKey): unknown {
+  return (defaultConfigs[key] as { ui_options?: unknown }).ui_options;
 }
 
-export function getUiType<TKey extends ConfigKey>(key: TKey): UiType {
-  return (defaultConfigs[key] as unknown as { ui_type: ConfigSchema[TKey]["ui_type"] }).ui_type;
+export function getUiType<TKey extends ConfigKey>(key: TKey): ConfigSchema[TKey]['ui_type'] {
+  return defaultConfigs[key].ui_type;
 }
 
-export const getDefaultValue = <TKey extends ConfigKey>(key: TKey) =>
+export const getDefaultValue = <TKey extends ConfigKey>(key: TKey): ConfigValue<TKey> =>
   getRawDefaultConfig(key).value as ConfigValue<TKey>;

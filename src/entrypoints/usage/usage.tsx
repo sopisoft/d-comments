@@ -1,31 +1,31 @@
-import { AppShell, Burger, Container, Group, NavLink, Title, Typography } from "@mantine/core";
-import { useDisclosure } from "@mantine/hooks";
-import { useEffect, useRef, useState } from "react";
-import Markdown from "react-markdown";
-import rehypeSlug from "rehype-slug";
-import remarkGfm from "remark-gfm";
-import MD from "./usage.md?raw";
-import "./usage.css";
-import { useTheme } from "@/config/hooks/useTheme";
+import './usage.css';
+import { AppShell, Burger, Container, Group, NavLink, Title, Typography } from '@mantine/core';
+import { useDisclosure } from '@mantine/hooks';
+import { useEffect, useRef, useState } from 'react';
+import Markdown from 'react-markdown';
+import rehypeSlug from 'rehype-slug';
+import remarkGfm from 'remark-gfm';
+import { useTheme } from '@/config/hooks/useTheme';
+import MD from './usage.md?raw';
 
 type TocItem = { level: number; text: string; id: string };
 
 const extractToc = (c: HTMLElement): TocItem[] =>
-  Array.from(c.querySelectorAll("h1, h2, h3")).map((h) => ({
-    level: Number.parseInt(h.tagName.substring(1), 10),
-    text: h.textContent || "",
+  Array.from(c.querySelectorAll('h1, h2, h3')).map((h) => ({
     id: h.id,
+    level: Number.parseInt(h.tagName.substring(1), 10),
+    text: h.textContent || '',
   }));
 const scrollToId = (id: string) => {
   const el = document.getElementById(id);
   if (el)
     window.scrollTo({
+      behavior: 'smooth',
       top: el.getBoundingClientRect().top + window.scrollY - 80,
-      behavior: "smooth",
     });
 };
 
-export function Usage() {
+export function Usage(): React.ReactElement {
   const { styles: ps } = useTheme();
   const [opened, { toggle }] = useDisclosure();
   const [toc, setToc] = useState<TocItem[]>([]);
@@ -45,22 +45,22 @@ export function Usage() {
   }, []);
 
   const shellStyles = {
-    root: { backgroundColor: ps.bg.base },
-    main: { backgroundColor: ps.bg.base },
     header: {
       backgroundColor: ps.bg.elevated,
       borderBottom: `1px solid ${ps.border.default}`,
     },
+    main: { backgroundColor: ps.bg.base },
     navbar: {
       backgroundColor: ps.bg.elevated,
       borderRight: `1px solid ${ps.border.default}`,
     },
+    root: { backgroundColor: ps.bg.base },
   };
 
   return (
     <AppShell
       header={{ height: 60 }}
-      navbar={{ width: 300, breakpoint: "sm", collapsed: { mobile: !opened } }}
+      navbar={{ breakpoint: 'sm', collapsed: { mobile: !opened }, width: 300 }}
       padding="md"
       styles={shellStyles}
     >

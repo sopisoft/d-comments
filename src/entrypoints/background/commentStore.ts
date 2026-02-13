@@ -1,14 +1,14 @@
-import { logger } from "@/lib/logger";
+import { logger } from '@/lib/logger';
 import {
   addPlayingVideo,
   createCommentManager,
   getPlaying,
   getThreads,
   removePlayingVideo,
-} from "@/modules/comments/manager";
-import type { CommentManager } from "@/modules/comments/types";
-import type { Threads } from "@/types/api";
-import type { CommentVideoData } from "@/types/comments";
+} from '@/modules/comments/manager';
+import type { CommentManager } from '@/modules/comments/types';
+import type { Threads } from '@/types/api';
+import type { CommentVideoData } from '@/types/comments';
 
 export type CommentStoreSnapshot = {
   videos: CommentVideoData[];
@@ -26,8 +26,8 @@ const ensureManager = (tabId: number): CommentManager => {
 };
 
 const storeSnapshot = (manager: CommentManager): CommentStoreSnapshot => ({
-  videos: getPlaying(manager),
   threads: getThreads(manager),
+  videos: getPlaying(manager),
 });
 
 const updateManager = (tabId: number, update: (manager: CommentManager) => CommentManager): CommentManager => {
@@ -38,22 +38,22 @@ const updateManager = (tabId: number, update: (manager: CommentManager) => Comme
 };
 
 export const addVideoToStore = async (tabId: number, video: CommentVideoData): Promise<CommentStoreSnapshot> => {
-  logger.debug("Adding video to store", {
-    tabId,
+  logger.debug('Adding video to store', {
     id: video.videoData.contentId,
+    tabId,
   });
   const next = updateManager(tabId, (manager) => addPlayingVideo(manager, video));
   return storeSnapshot(next);
 };
 
 export const removeVideoFromStore = (tabId: number, videoId: string): CommentStoreSnapshot => {
-  logger.debug("Removing video from store", { tabId, videoId });
+  logger.debug('Removing video from store', { tabId, videoId });
   const next = updateManager(tabId, (manager) => removePlayingVideo(manager, videoId));
   return storeSnapshot(next);
 };
 
 export const clearStore = (tabId: number): CommentStoreSnapshot => {
-  logger.debug("Clearing store", { tabId });
+  logger.debug('Clearing store', { tabId });
   const next = updateManager(tabId, (manager) => ({ ...manager, playing: [] }));
   return storeSnapshot(next);
 };

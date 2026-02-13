@@ -4,22 +4,22 @@ const clamp = (v: number, min: number, max: number): number => Math.min(max, Mat
 const clampCh = (v: number): number => Math.round(clamp(v, 0, 255));
 
 const normalizeHex = (hex: string): string => {
-  const s = hex.replace("#", "").trim();
-  return s.length === 3 ? [...s].map((c) => c + c).join("") : s;
+  const s = hex.replace('#', '').trim();
+  return s.length === 3 ? [...s].map((c) => c + c).join('') : s;
 };
 
-const HEX_LIGHT_TEXT = "#F8F9FA";
-const HEX_DARK_TEXT = "#0B0B0B";
+const HEX_LIGHT_TEXT = '#F8F9FA';
+const HEX_DARK_TEXT = '#0B0B0B';
 
 export const hexToRgb = (hex: string): RgbColor | null => {
   const n = normalizeHex(hex);
   if (!/^[0-9a-f]{6}$/i.test(n)) return null;
   const num = Number.parseInt(n, 16);
   if (Number.isNaN(num)) return null;
-  return { r: (num >> 16) & 0xff, g: (num >> 8) & 0xff, b: num & 0xff };
+  return { b: num & 0xff, g: (num >> 8) & 0xff, r: (num >> 16) & 0xff };
 };
 
-const toHex = (v: number): string => v.toString(16).padStart(2, "0");
+const toHex = (v: number): string => v.toString(16).padStart(2, '0');
 const rgbToHex = ({ r, g, b }: RgbColor): string => `#${toHex(clampCh(r))}${toHex(clampCh(g))}${toHex(clampCh(b))}`;
 
 export const adjustColor = (hex: string, amount: number): string => {
@@ -28,7 +28,7 @@ export const adjustColor = (hex: string, amount: number): string => {
   const ratio = clamp(Math.abs(amount), 0, 1);
   const target = amount >= 0 ? 255 : 0;
   const mix = (ch: number) => clampCh(ch + (target - ch) * ratio);
-  return rgbToHex({ r: mix(rgb.r), g: mix(rgb.g), b: mix(rgb.b) });
+  return rgbToHex({ b: mix(rgb.b), g: mix(rgb.g), r: mix(rgb.r) });
 };
 
 const srgbToLinear = (v: number): number => {

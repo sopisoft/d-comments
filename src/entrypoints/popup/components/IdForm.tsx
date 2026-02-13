@@ -1,16 +1,16 @@
-import { Button, Stack, Text, TextInput } from "@mantine/core";
-import { useForm } from "@mantine/form";
-import { MdDownload } from "react-icons/md";
-import { useTheme } from "@/config/hooks/useTheme";
+import { Button, Stack, Text, TextInput } from '@mantine/core';
+import { useForm } from '@mantine/form';
+import { MdDownload } from 'react-icons/md';
+import { useTheme } from '@/config/hooks/useTheme';
 
 const VIDEO_ID_REGEX = /^(sm|nm|so|ca|ax|yo|nl|ig|na|cw|z[a-e]|om|sk|yk)\d{1,14}$/;
 
-export function IdForm({ addPlaying }: { addPlaying: (id: string) => Promise<void> }) {
+export function IdForm({ addPlaying }: { addPlaying: (id: string) => Promise<void> }): React.ReactElement {
   const { styles: ps } = useTheme();
   const form = useForm({
-    initialValues: { id: "" },
+    initialValues: { id: '' },
     validate: {
-      id: (v) => (VIDEO_ID_REGEX.test(v) ? null : "動画IDの形式が正しくありません"),
+      id: (v) => (VIDEO_ID_REGEX.test(v) ? null : '動画IDの形式が正しくありません'),
     },
   });
 
@@ -24,8 +24,8 @@ export function IdForm({ addPlaying }: { addPlaying: (id: string) => Promise<voi
           label="動画ID"
           required
           placeholder="so35384944"
-          key={form.key("id")}
-          {...form.getInputProps("id")}
+          key={form.key('id')}
+          {...form.getInputProps('id')}
           styles={{ ...ps.inputStyles, label: { color: ps.text.primary } }}
         />
         <Button

@@ -5,11 +5,14 @@ import {
   COLLISION_RANGE,
   COMMENT_DRAW_PADDING,
   COMMENT_DRAW_RANGE,
-  NAKA_COMMENT_SPEED_OFFSET,
-} from "./constants";
-import type { CommentLocation, TimelineComment } from "./types";
+  SCROLL_SPEED_FACTOR,
+} from './constants';
+import type { CommentLocation, TimelineComment } from './types';
 
 const PUSH_GUARD_LIMIT = 10;
+
+export const computeBeforeVpos = (width: number, long: number): number =>
+  Math.round(-288 / ((1632 + width) / (long + 125))) - 100;
 
 type LayoutItem = {
   index: number;
@@ -48,10 +51,10 @@ const pushUnique = (map: CollisionMap, key: number, value: LayoutItem) => {
 };
 
 const computeScrollSpeed = (width: number, long: number): number =>
-  (COMMENT_DRAW_RANGE + width * NAKA_COMMENT_SPEED_OFFSET) / (long + 100);
+  (COMMENT_DRAW_RANGE + width * SCROLL_SPEED_FACTOR) / (long + 100);
 
 const computeScrollLeft = (item: LayoutItem, vpos: number): number =>
-  item.loc !== "middle"
+  item.loc !== 'middle'
     ? (CANVAS_WIDTH - item.width) / 2
     : COMMENT_DRAW_PADDING + COMMENT_DRAW_RANGE - (vpos - item.vpos + 100) * computeScrollSpeed(item.width, item.long);
 
@@ -63,31 +66,32 @@ const resolvePosY = (
   collisions: readonly LayoutItem[] | undefined,
   isChanged = false
 ): PosYResult => {
-  if (!collisions?.length) return { currentPos, isChanged, isBreak: false };
+  if (!collisions?.length) return { currentPos, isBreak: false, isChanged };
 
   let pos = currentPos;
   let changed = isChanged;
-  for (const c of collisions) {
-    if (c.index === target.index || c.posY < 0 || c.owner !== target.owner || c.layer !== target.layer) continue;
-    const cBottom = c.posY + c.height;
-    if (pos < cBottom && pos + target.height > c.posY) {
-      if (cBottom > pos) {
-        pos = cBottom;
+  for (const item of collisions) {
+    if (item.index === target.index || item.posY < 0 || item.owner !== target.owner || item.layer !== target.layer)
+      continue;
+    const bottom = item.posY + item.height;
+    if (pos < bottom && pos + target.height > item.posY) {
+      if (bottom > pos) {
+        pos = bottom;
         changed = true;
       }
       if (pos + target.height > CANVAS_HEIGHT) {
         if (CANVAS_HEIGHT < target.height) {
-          pos = target.loc === "middle" ? (target.height - CANVAS_HEIGHT) / -2 : 0;
+          pos = target.loc === 'middle' ? (target.height - CANVAS_HEIGHT) / -2 : 0;
         } else {
           const limit = CANVAS_HEIGHT - target.height;
           pos = limit > 0 ? Math.floor(Math.random() * limit) : 0;
         }
-        return { currentPos: pos, isChanged: changed, isBreak: true };
+        return { currentPos: pos, isBreak: true, isChanged: changed };
       }
       return resolvePosY(pos, target, collisions, true);
     }
   }
-  return { currentPos: pos, isChanged: changed, isBreak: false };
+  return { currentPos: pos, isBreak: false, isChanged: changed };
 };
 
 const getFixedPosY = (item: LayoutItem, collision: CollisionMap): number => {
@@ -150,7 +154,7 @@ const processFixed = (item: LayoutItem, collision: CollisionMap) => {
 };
 
 const processMovable = (item: LayoutItem, collision: CollisionState) => {
-  const beforeVpos = Math.round(-288 / ((1632 + item.width) / (item.long + 125))) - 100;
+  const beforeVpos = computeBeforeVpos(item.width, item.long);
   const pos = getMovablePosY(item, collision, beforeVpos);
   item.posY = pos;
   item.comment.posY = pos;
@@ -172,39 +176,39 @@ export const applyLayout = (comments: readonly TimelineComment[]): void => {
 
   const items: LayoutItem[] = comments.map((comment, index) => {
     const lineCount = Math.max(1, comment.style.lineCount);
-    const laneHeight = comment.loc === "middle" ? 0 : comment.style.laneHeight;
+    const laneHeight = comment.loc === 'middle' ? 0 : comment.style.laneHeight;
     return {
-      index,
       comment,
-      width: comment.width,
-      height: comment.loc === "middle" ? comment.height : Math.max(comment.height, laneHeight * lineCount),
-      vpos: comment.vpos,
-      long: Math.max(1, comment.durationVpos),
-      owner: comment.owner,
+      height: comment.loc === 'middle' ? comment.height : Math.max(comment.height, laneHeight * lineCount),
+      index,
+      laneHeight,
       layer: comment.layer,
       loc: comment.loc,
+      long: Math.max(1, comment.durationVpos),
+      owner: comment.owner,
       posY: comment.posY,
-      laneHeight,
+      vpos: comment.vpos,
+      width: comment.width,
     };
   });
 
-  const sorted = [...items].sort((a, b) =>
-    a.vpos !== b.vpos
-      ? a.vpos - b.vpos
-      : a.comment.enterMs !== b.comment.enterMs
-        ? a.comment.enterMs - b.comment.enterMs
-        : a.index - b.index
+  const sorted = [...items].sort((left, right) =>
+    left.vpos !== right.vpos
+      ? left.vpos - right.vpos
+      : left.comment.enterMs !== right.comment.enterMs
+        ? left.comment.enterMs - right.comment.enterMs
+        : left.index - right.index
   );
 
   const collision: CollisionState = {
-    top: new Map(),
     bottom: new Map(),
     left: new Map(),
     right: new Map(),
+    top: new Map(),
   };
 
   for (const item of sorted) {
-    if (item.loc === "middle") processMovable(item, collision);
-    else processFixed(item, item.loc === "top" ? collision.top : collision.bottom);
+    if (item.loc === 'middle') processMovable(item, collision);
+    else processFixed(item, item.loc === 'top' ? collision.top : collision.bottom);
   }
 };

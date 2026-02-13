@@ -1,8 +1,8 @@
-import { createRoot, type Root } from "react-dom/client";
-import { findElement } from "@/lib/dom";
+import { createRoot, type Root } from 'react-dom/client';
+import { findElement } from '@/lib/dom';
 
 export async function videoWrapper(): Promise<Root | undefined> {
-  const video = await findElement<HTMLVideoElement>("video");
+  const video = await findElement<HTMLVideoElement>('video');
   if (!video) return undefined;
 
   const lookupHost = () => video.parentElement?.parentElement ?? null;
@@ -25,18 +25,18 @@ export async function videoWrapper(): Promise<Root | undefined> {
   }
   if (!host) return undefined;
 
-  let wrapper = document.getElementById("d-comments-wrapper");
+  let wrapper = document.getElementById('d-comments-wrapper');
   if (!wrapper) {
-    wrapper = document.createElement("div");
-    wrapper.id = "d-comments-wrapper";
+    wrapper = document.createElement('div');
+    wrapper.id = 'd-comments-wrapper';
     Object.assign(wrapper.style, {
-      display: "flex",
-      flexDirection: "row",
-      maxWidth: "100%",
-      width: "100%",
-      maxHeight: "100%",
-      height: "100%",
-      overflow: "hidden",
+      display: 'flex',
+      flexDirection: 'row',
+      height: '100%',
+      maxHeight: '100%',
+      maxWidth: '100%',
+      overflow: 'hidden',
+      width: '100%',
     });
   }
 
@@ -47,12 +47,12 @@ export async function videoWrapper(): Promise<Root | undefined> {
     wrapper.append(container);
   }
 
-  let sideMenu = document.getElementById("d-comments-side");
+  let sideMenu = document.getElementById('d-comments-side');
   if (!sideMenu) {
-    sideMenu = document.createElement("div");
-    sideMenu.id = "d-comments-side";
+    sideMenu = document.createElement('div');
+    sideMenu.id = 'd-comments-side';
     Object.assign(sideMenu.style, {
-      zIndex: "10",
+      zIndex: '10',
     });
     wrapper.append(sideMenu);
   } else if (!sideMenu.parentElement) {

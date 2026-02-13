@@ -23,7 +23,7 @@ export type SuccessfulResponseData<T extends BaseResponse<unknown>> = T extends 
 type Thread = {
   id: number;
   fork: number;
-  forkLabel: "owner" | "main" | "easy";
+  forkLabel: 'owner' | 'main' | 'easy';
 };
 
 export type NvComment = {
@@ -32,8 +32,8 @@ export type NvComment = {
   params: {
     language: string; // "ja-jp"
     targets: {
-      id: string; // thread["id"] to stringify
-      fork: Thread["forkLabel"];
+      id: string; // Thread["id"] to stringify
+      fork: Thread['forkLabel'];
     }[];
   };
 };
@@ -50,13 +50,13 @@ export type NvCommentItem = {
   postedAt: string; // ISO8601
   nicoruCount: number;
   nicoruId: string | null; // 自分がニコった場合26文字の大文字か数字で構成される文字列が返る(ULID?) @see https://gist.github.com/otya128/9c7499cf667e75964b43d46c8c567e37
-  source: "leaf" | "nicoru" | "trunk";
+  source: 'leaf' | 'nicoru' | 'trunk';
   isMyPost: boolean;
 };
 
 export type Threads = {
-  id: Thread["id"];
-  fork: Thread["forkLabel"];
+  id: Thread['id'];
+  fork: Thread['forkLabel'];
   commentCount: number;
   comments: NvCommentItem[];
 }[];
@@ -99,10 +99,10 @@ export type VideoData = BaseResponse<{
         threadIds: Thread[];
       }[];
       threads: {
-        id: Thread["id"];
-        fork: Thread["fork"];
-        forkLabel: Thread["forkLabel"];
-        videoId: string; // contentId
+        id: Thread['id'];
+        fork: Thread['fork'];
+        forkLabel: Thread['forkLabel'];
+        videoId: string; // ContentId
         isOwnerThread: boolean;
         isActive: boolean;
         isDefaultPostTarget: boolean;
@@ -112,14 +112,14 @@ export type VideoData = BaseResponse<{
         threadkey: string;
         is184Forced: boolean;
         hasNicoscript: boolean;
-        label: "owner" | "default" | "community" | "easy" | "extra-community" | "extra-easy";
+        label: 'owner' | 'default' | 'community' | 'easy' | 'extra-community' | 'extra-easy';
         postKeyStatus: number;
         server: string;
       }[];
       nvComment: NvComment;
     };
     video: {
-      id: string; // contentId
+      id: string; // ContentId
       title: string;
       description: string; // HTML
       count: {

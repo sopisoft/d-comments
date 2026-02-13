@@ -1,10 +1,10 @@
-import { Anchor, Divider, Group, Stack, Text } from "@mantine/core";
-import { MdOpenInNew } from "react-icons/md";
-import { QuickOptionsPanel } from "@/config/components/QuickOptionsPanel";
-import { useTheme } from "@/config/hooks/useTheme";
-import { ui } from "@/config/theme";
+import { Anchor, Divider, Group, Stack, Text } from '@mantine/core';
+import { MdOpenInNew } from 'react-icons/md';
+import { QuickOptionsPanel } from '@/config/components/QuickOptionsPanel';
+import { useTheme } from '@/config/hooks/useTheme';
+import { ui } from '@/config/theme';
 
-export function SettingsPanel() {
+export function SettingsPanel(): React.ReactElement {
   const { styles: ps } = useTheme();
   return (
     <Stack p="md" gap="lg">
@@ -23,7 +23,7 @@ export function SettingsPanel() {
             より詳細な設定はオプションページで行えます
           </Text>
           <Anchor
-            href={browser.runtime.getURL("/options.html").toString()}
+            href={browser.runtime.getURL('/options.html').toString()}
             target="_blank"
             rel="noopener noreferrer"
             size="sm"

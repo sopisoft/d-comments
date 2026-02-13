@@ -1,7 +1,7 @@
-import { Group, Paper, Stack, Text, ThemeIcon, Title } from "@mantine/core";
-import type { ReactNode } from "react";
-import type { IconType } from "react-icons";
-import { useTheme } from "../hooks/useTheme";
+import { Group, Paper, Stack, Text, ThemeIcon, Title } from '@mantine/core';
+import type { ReactNode } from 'react';
+import type { IconType } from 'react-icons';
+import { useTheme } from '../hooks/useTheme';
 
 export function SectionCard({
   title,
@@ -13,18 +13,18 @@ export function SectionCard({
   description?: string;
   icon?: IconType;
   children: ReactNode;
-}) {
+}): React.ReactElement {
   const { styles: ps } = useTheme();
   return (
     <Paper
       radius="md"
       p="lg"
       style={{
-        width: "100%",
-        maxWidth: "56rem",
-        margin: "0 auto",
         background: ps.pairs.bg.elevated.background,
         border: ps.panel.border,
+        margin: '0 auto',
+        maxWidth: '56rem',
+        width: '100%',
       }}
     >
       <Stack gap="lg">

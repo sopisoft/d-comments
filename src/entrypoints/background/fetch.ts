@@ -1,32 +1,28 @@
-import { getConfig } from "@/config/storage";
-import { err, ok, type Result, toError } from "@/lib/types";
-import type { NvComment, Owner, ThreadKeyResponse, ThreadsDataResponse, VideoData } from "@/types/api";
+import { getConfig } from '@/config/storage';
+import { err, ok, type Result } from '@/lib/types';
+import type { NvComment, Owner, ThreadKeyResponse, ThreadsDataResponse, VideoData } from '@/types/api';
 
 async function apiFetch<T>(input: RequestInfo, init?: RequestInit): Promise<Result<T, Error>> {
-  try {
-    const res = await fetch(input, init);
-    if (!res.ok) {
-      const message = `HTTP error: ${res.status}`;
-      return err(new Error(message));
-    }
-    const data = (await res.json()) as T;
-    return ok(data);
-  } catch (error) {
-    return err(toError(error));
+  const res = await fetch(input, init);
+  if (!res.ok) {
+    const message = `HTTP error: ${res.status}`;
+    return err(new Error(message));
   }
+  const data = (await res.json()) as T;
+  return ok(data);
 }
 
 async function buildAuthRequestInit(r: RequestInit): Promise<RequestInit> {
-  // add cookie/credential headers when user is logged-in
-  if (!(await getConfig("login"))) return r;
+  // Add cookie/credential headers when user is logged-in
+  if (!(await getConfig('login'))) return r;
   const cookie = await browser.cookies.get({
-    url: "https://www.nicovideo.jp",
-    name: "user_session",
+    name: 'user_session',
+    url: 'https://www.nicovideo.jp',
   });
   if (!cookie) return r;
   return {
     ...r,
-    credentials: "include",
+    credentials: 'include',
     headers: {
       ...(r.headers as Record<string, string>),
       Cookie: `user_session=${cookie.value}`,
@@ -34,100 +30,92 @@ async function buildAuthRequestInit(r: RequestInit): Promise<RequestInit> {
   };
 }
 
-export async function videoData(videoId: string): Promise<VideoData> {
+export async function videoData(videoId: string): Promise<Result<VideoData, Error>> {
   const url = `https://www.nicovideo.jp/watch/${videoId}?responseType=json`;
   const req: RequestInit = {
-    mode: "cors",
-    cache: "no-cache",
-    credentials: "omit",
+    cache: 'no-cache',
+    credentials: 'omit',
+    mode: 'cors',
   };
-  const json = await apiFetch<VideoData>(url, await buildAuthRequestInit(req));
-  if (!json.ok) throw json.error;
-  return json.value;
+  return apiFetch<VideoData>(url, await buildAuthRequestInit(req));
 }
 
-export async function threadsData(nvComment: NvComment): Promise<ThreadsDataResponse> {
+export async function threadsData(nvComment: NvComment): Promise<Result<ThreadsDataResponse, Error>> {
   const { server, threadKey, params } = nvComment;
   const endpoint = `${server}/v1/threads`;
   const req: RequestInit = {
-    headers: {
-      "Content-Type": "text/plain;charset=UTF-8",
-      "x-client-os-type": "others",
-      "x-frontend-id": "6",
-      "x-frontend-version": "0",
-    },
-    method: "POST",
     body: JSON.stringify({
       threadKey: threadKey,
       params: params,
       additionals: {},
     }),
+    headers: {
+      'Content-Type': 'text/plain;charset=UTF-8',
+      'x-client-os-type': 'others',
+      'x-frontend-id': '6',
+      'x-frontend-version': '0',
+    },
+    method: 'POST',
   };
-  const json = await apiFetch<ThreadsDataResponse>(endpoint, req);
-  if (!json.ok) throw json.error;
-  return json.value;
+  return apiFetch<ThreadsDataResponse>(endpoint, req);
 }
 
-export async function threadKey(videoId: string): Promise<ThreadKeyResponse> {
+export async function threadKey(videoId: string): Promise<Result<ThreadKeyResponse, Error>> {
   const url = `https://nvapi.nicovideo.jp/v1/comment/keys/thread?videoId=${videoId}`;
   const req: RequestInit = {
-    mode: "cors",
-    method: "GET",
-    cache: "no-cache",
-    credentials: "omit",
+    cache: 'no-cache',
+    credentials: 'omit',
     headers: {
-      "Content-Type": "text/plain;charset=UTF-8",
-      "x-client-os-type": "others",
-      "x-frontend-id": "6",
-      "x-frontend-version": "0",
+      'Content-Type': 'text/plain;charset=UTF-8',
+      'x-client-os-type': 'others',
+      'x-frontend-id': '6',
+      'x-frontend-version': '0',
     },
+    method: 'GET',
+    mode: 'cors',
   };
-  const json = await apiFetch<ThreadKeyResponse>(url, await buildAuthRequestInit(req));
-  if (!json.ok) throw json.error;
-  return json.value;
+  return apiFetch<ThreadKeyResponse>(url, await buildAuthRequestInit(req));
 }
 
 /**
  *
  * @param userId SnapShot API で取得したユーザーID
  */
-export async function userData(userId: string): Promise<Owner> {
+export async function userData(userId: string): Promise<Result<Owner, Error>> {
   const url = `https://nvapi.nicovideo.jp/v1/users/${userId}`;
   type UserResponse = {
     data?: { user?: { nickname?: string; icons?: { small?: string } } };
   };
   const req: RequestInit = {
     headers: {
-      "User-Agent": navigator.userAgent ?? "",
-      "x-frontend-id": "6",
-      "x-frontend-version": "0",
+      'User-Agent': navigator.userAgent ?? '',
+      'x-frontend-id': '6',
+      'x-frontend-version': '0',
     },
   };
   const json = await apiFetch<UserResponse>(url, req);
-  if (!json.ok) throw json.error;
+  if (!json.ok) return err(json.error);
   const { nickname, icons } = json.value.data?.user ?? {};
-  const owner: Owner = {
+  return ok({
+    ownerIconUrl: icons?.small || '',
     ownerId: userId,
-    ownerName: nickname || "",
-    ownerIconUrl: icons?.small || "",
-  };
-  return owner;
+    ownerName: nickname || '',
+  });
 }
 
 /**
  *
  * @param channelId SnapShot API で取得したチャンネルID
  */
-export async function channelData(channelId: string): Promise<Owner> {
+export async function channelData(channelId: string): Promise<Result<Owner, Error>> {
   const url = `https://api.cas.nicovideo.jp/v2/tanzakus/channel/ch${channelId}`;
   type ChannelResponse = { data?: { name?: string; icon?: string } };
   const json = await apiFetch<ChannelResponse>(url);
-  if (!json.ok) throw json.error;
+  if (!json.ok) return err(json.error);
   const { name, icon } = json.value.data ?? {};
-  const owner: Owner = {
+  return ok({
+    ownerIconUrl: icon || '',
     ownerId: channelId,
-    ownerName: name || "",
-    ownerIconUrl: icon || "",
-  };
-  return owner;
+    ownerName: name || '',
+  });
 }

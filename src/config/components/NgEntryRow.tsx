@@ -1,10 +1,10 @@
-import { ActionIcon, Checkbox, Group, Paper, Text, TextInput, Tooltip } from "@mantine/core";
-import { useState } from "react";
-import { MdCheck, MdClose, MdDelete, MdEdit } from "react-icons/md";
-import type { useTheme } from "../hooks/useTheme";
-import type { NgEntry } from "../storage";
+import { ActionIcon, Checkbox, Group, Paper, Text, TextInput, Tooltip } from '@mantine/core';
+import { useState } from 'react';
+import { MdCheck, MdClose, MdDelete, MdEdit } from 'react-icons/md';
+import type { useTheme } from '../hooks/useTheme';
+import type { NgEntry } from '../storage';
 
-type PS = ReturnType<typeof useTheme>["styles"];
+type PS = ReturnType<typeof useTheme>['styles'];
 
 type EntryRowProps = {
   entry: NgEntry;
@@ -17,7 +17,16 @@ type EntryRowProps = {
   ps: PS;
 };
 
-export function NgEntryRow({ entry, isEditing, onEdit, onSave, onCancel, onToggle, onDelete, ps }: EntryRowProps) {
+export function NgEntryRow({
+  entry,
+  isEditing,
+  onEdit,
+  onSave,
+  onCancel,
+  onToggle,
+  onDelete,
+  ps,
+}: EntryRowProps): React.ReactElement {
   const [value, setValue] = useState(entry.value);
   const { accent, bg } = ps.pairs;
   const rowStyle = {
@@ -33,7 +42,7 @@ export function NgEntryRow({ entry, isEditing, onEdit, onSave, onCancel, onToggl
             size="xs"
             value={value}
             onChange={(e) => setValue(e.currentTarget.value)}
-            onKeyDown={(e) => e.key === "Enter" && onSave(value)}
+            onKeyDown={(e) => e.key === 'Enter' && onSave(value)}
             placeholder="値を入力"
             autoFocus
             flex={1}
@@ -66,7 +75,7 @@ export function NgEntryRow({ entry, isEditing, onEdit, onSave, onCancel, onToggl
       <Group justify="space-between" align="center" gap="sm">
         <Checkbox
           label={
-            <Text size="sm" style={{ wordBreak: "break-all" }} c={ps.text.primary}>
+            <Text size="sm" style={{ wordBreak: 'break-all' }} c={ps.text.primary}>
               {entry.value}
             </Text>
           }

@@ -1,12 +1,12 @@
-import { Anchor, AppShell, Group, Paper, Tabs, Title } from "@mantine/core";
-import { MdOpenInNew } from "react-icons/md";
-import { ConfigurationsPanel } from "@/config/components/ConfigurationsPanel";
-import { NgListPanel } from "@/config/components/NgListPanel";
-import { QuickOptionsPanel } from "@/config/components/QuickOptionsPanel";
-import { SurveyFormPanel } from "@/config/components/SurveyForm";
-import { useTheme } from "@/config/hooks/useTheme";
+import { Anchor, AppShell, Group, Paper, Tabs, Title } from '@mantine/core';
+import { MdOpenInNew } from 'react-icons/md';
+import { ConfigurationsPanel } from '@/config/components/ConfigurationsPanel';
+import { NgListPanel } from '@/config/components/NgListPanel';
+import { QuickOptionsPanel } from '@/config/components/QuickOptionsPanel';
+import { SurveyFormPanel } from '@/config/components/SurveyForm';
+import { useTheme } from '@/config/hooks/useTheme';
 
-export function Options() {
+export function Options(): React.ReactElement {
   const { styles: ps } = useTheme();
   return (
     <Tabs defaultValue="configurations" variant="pills">
@@ -32,11 +32,11 @@ export function Options() {
         </AppShell.Header>
         <AppShell.Main
           style={{
-            color: ps.text.primary,
             backgroundColor: ps.bg.surface,
+            color: ps.text.primary,
           }}
         >
-          <div style={{ maxWidth: "900px", margin: "0 auto" }}>
+          <div style={{ margin: '0 auto', maxWidth: '900px' }}>
             <Tabs.Panel value="quick">
               <QuickOptionsPanel />
             </Tabs.Panel>
@@ -58,7 +58,7 @@ export function Options() {
                   </Title>
                 </Anchor>
               </Paper>
-              <iframe title="Usage" src="usage.html" style={{ width: "100%", height: "80vh", border: "none" }} />
+              <iframe title="Usage" src="usage.html" style={{ border: 'none', height: '80vh', width: '100%' }} />
             </Tabs.Panel>
           </div>
         </AppShell.Main>

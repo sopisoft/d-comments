@@ -1,24 +1,24 @@
-import { Grid, ScrollArea, Stack, Tabs, Text } from "@mantine/core";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { MdSearch, MdTag } from "react-icons/md";
-import { useTheme } from "@/config/hooks/useTheme";
-import { ui } from "@/config/theme";
-import { unwrap } from "@/lib/types";
-import { getActiveTabId, onMessage, requestMessageResult } from "@/messaging/runtime";
-import { createCommentManager, getComments } from "@/modules/comments/manager";
-import type { CommentVideoData } from "@/types/comments";
+import { Grid, ScrollArea, Stack, Tabs, Text } from '@mantine/core';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { MdSearch, MdTag } from 'react-icons/md';
+import { useTheme } from '@/config/hooks/useTheme';
+import { ui } from '@/config/theme';
+import { unwrap } from '@/lib/types';
+import { getActiveTabId, onMessage, requestMessageResult } from '@/messaging/runtime';
+import { createCommentManager, getComments } from '@/modules/comments/manager';
+import type { CommentVideoData } from '@/types/comments';
 import {
   buildDisplayVideos,
   type MergeOrder,
   mergeVideoEntries,
   mergeVideoOrder,
   type VideoDictionary,
-} from "../utils/videoList";
-import { IdForm } from "./IdForm";
-import { SearchForm } from "./SearchForm";
-import { VideoCard } from "./VideoCard";
+} from '../utils/videoList';
+import { IdForm } from './IdForm';
+import { SearchForm } from './SearchForm';
+import { VideoCard } from './VideoCard';
 
-export function FetchPanel({ title }: { title: string }) {
+export function FetchPanel({ title }: { title: string }): React.ReactElement {
   const { styles: ps } = useTheme();
   const manager = useMemo(() => createCommentManager(), []);
   const cardStyle = {
@@ -39,7 +39,7 @@ export function FetchPanel({ title }: { title: string }) {
     return id;
   }, [tabId]);
 
-  const mergeVideos = useCallback((incoming: CommentVideoData[], order: MergeOrder = "append") => {
+  const mergeVideos = useCallback((incoming: CommentVideoData[], order: MergeOrder = 'append') => {
     if (incoming.length === 0) return;
     setVideoEntries((prev) => mergeVideoEntries(prev, incoming));
     setVideoOrder((prev) =>
@@ -64,8 +64,8 @@ export function FetchPanel({ title }: { title: string }) {
     (async () => {
       const id = await resolveTabId();
       if (cancelled || id === null) return;
-      const res = await requestMessageResult("playing_video", { tabId: id });
-      const value = unwrap<CommentVideoData[]>(res, "Initial playing_video failed");
+      const res = await requestMessageResult('playing_video', { tabId: id });
+      const value = unwrap<CommentVideoData[]>(res, 'Initial playing_video failed');
       if (value) applyPlayingResponse(value);
     })();
     return () => {
@@ -75,7 +75,7 @@ export function FetchPanel({ title }: { title: string }) {
 
   useEffect(
     () =>
-      onMessage("comment_state_update", (payload) => {
+      onMessage('comment_state_update', (payload) => {
         if (tabId !== null && payload.tabId !== tabId) return;
         if (tabId === null) setTabId(payload.tabId);
         mergeVideos(payload.videos);
@@ -88,13 +88,13 @@ export function FetchPanel({ title }: { title: string }) {
     async (videoId: string, existingTabId?: number) => {
       const id = existingTabId ?? (await resolveTabId());
       if (id === null) return;
-      const video = unwrap(await getComments(manager, videoId), "Failed to fetch comments");
+      const video = unwrap(await getComments(manager, videoId), 'Failed to fetch comments');
       if (!video) return;
-      const res = await requestMessageResult("add_video", {
+      const res = await requestMessageResult('add_video', {
         tabId: id,
         video: video,
       });
-      const added = unwrap<CommentVideoData[]>(res, "Adding video failed");
+      const added = unwrap<CommentVideoData[]>(res, 'Adding video failed');
       if (added) applyPlayingResponse(added);
       mergeVideos([video]);
     },
@@ -106,11 +106,11 @@ export function FetchPanel({ title }: { title: string }) {
       const id = await resolveTabId();
       if (id === null) return;
       if (playingVideos.some((v) => v.videoData.contentId === videoId)) {
-        const res = await requestMessageResult("remove_video", {
+        const res = await requestMessageResult('remove_video', {
           tabId: id,
           videoId,
         });
-        const removed = unwrap<CommentVideoData[]>(res, "Removing video failed");
+        const removed = unwrap<CommentVideoData[]>(res, 'Removing video failed');
         if (removed) applyPlayingResponse(removed);
       } else {
         await addPlaying(videoId, id);
@@ -147,8 +147,8 @@ export function FetchPanel({ title }: { title: string }) {
                 ...cardStyle,
                 background: ps.bg.surface,
                 border: `1px dashed ${ps.border.subtle}`,
-                textAlign: "center",
                 padding: ui.space.xl,
+                textAlign: 'center',
               }}
             >
               <Text c={ps.text.muted} size="sm">

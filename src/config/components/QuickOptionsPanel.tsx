@@ -1,10 +1,10 @@
-import { Divider, Stack } from "@mantine/core";
-import { MdFlashOn } from "react-icons/md";
-import { useTheme } from "../hooks/useTheme";
-import { NumberField, SwitchField } from "./Fields";
-import { SectionCard } from "./SectionCard";
+import { Divider, Stack } from '@mantine/core';
+import { MdFlashOn } from 'react-icons/md';
+import { useTheme } from '../hooks/useTheme';
+import { NumberField, SwitchField } from './Fields';
+import { SectionCard } from './SectionCard';
 
-export function QuickOptionsPanel() {
+export function QuickOptionsPanel(): React.ReactElement {
   const { styles: ps } = useTheme();
   return (
     <Stack gap="xl" align="center">

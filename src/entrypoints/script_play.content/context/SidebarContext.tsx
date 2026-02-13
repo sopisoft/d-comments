@@ -1,19 +1,20 @@
 import {
-  type CSSProperties,
   createContext,
+  type CSSProperties,
+  type ReactElement,
   type ReactNode,
   useCallback,
   useContext,
   useEffect,
   useMemo,
   useState,
-} from "react";
-import { type ConfigKey, defaultConfigs, getDefaultValue } from "@/config/defaults";
-import { useConfigs } from "@/config/hooks/useConfigs";
-import { createPalette, type ThemeConfig, useTheme } from "@/config/hooks/useTheme";
-import { setConfig } from "@/config/storage";
-import { ui } from "@/config/theme";
-import { findElement } from "@/lib/dom";
+} from 'react';
+import { type ConfigKey, defaultConfigs, getDefaultValue } from '@/config/defaults';
+import { useConfigs } from '@/config/hooks/useConfigs';
+import { createPalette, type ThemeConfig, useTheme } from '@/config/hooks/useTheme';
+import { setConfig } from '@/config/storage';
+import { ui } from '@/config/theme';
+import { findElement } from '@/lib/dom';
 
 type LayoutState = { width: number; fontSize: number; opacity: number };
 type FeatureState = {
@@ -25,8 +26,8 @@ type FeatureState = {
 };
 
 export type SidebarConfig = {
-  mode: ThemeConfig["mode"];
-  palette: ThemeConfig["palette"];
+  mode: ThemeConfig['mode'];
+  palette: ThemeConfig['palette'];
   alpha: (a: number) => string;
   setWidth: (width: number) => void;
   saveWidth: () => void;
@@ -34,24 +35,24 @@ export type SidebarConfig = {
   FeatureState;
 
 const defaultLayout: LayoutState = {
-  width: getDefaultValue("comment_area_width_px"),
-  fontSize: getDefaultValue("comment_area_font_size_px"),
-  opacity: getDefaultValue("comment_area_opacity_percentage"),
+  fontSize: getDefaultValue('comment_area_font_size_px'),
+  opacity: getDefaultValue('comment_area_opacity_percentage'),
+  width: getDefaultValue('comment_area_width_px'),
 };
 const defaultFeatures: FeatureState = {
-  visibility: getDefaultValue("show_comments_in_list"),
-  showNicoru: getDefaultValue("show_nicoru_count"),
-  scrollSmoothly: getDefaultValue("enable_smooth_scrolling"),
-  timingOffset: getDefaultValue("comment_timing_offset"),
-  fps: getDefaultValue("comment_renderer_fps"),
+  fps: getDefaultValue('comment_renderer_fps'),
+  scrollSmoothly: getDefaultValue('enable_smooth_scrolling'),
+  showNicoru: getDefaultValue('show_nicoru_count'),
+  timingOffset: getDefaultValue('comment_timing_offset'),
+  visibility: getDefaultValue('show_comments_in_list'),
 };
-const defaultPalette = createPalette("light");
+const defaultPalette = createPalette('light');
 const sidebarDefaultConfig: SidebarConfig = {
-  mode: "light",
+  mode: 'light',
   palette: defaultPalette,
   ...defaultLayout,
   ...defaultFeatures,
-  alpha: (a) => ui.alpha("#F8F9FA", a),
+  alpha: (a) => ui.alpha('#F8F9FA', a),
   setWidth: () => {},
   saveWidth: () => {},
 };
@@ -59,19 +60,19 @@ const sidebarDefaultConfig: SidebarConfig = {
 const SidebarContext = createContext<SidebarConfig>(sidebarDefaultConfig);
 const createAlpha = (textColor: string) => (a: number) => ui.alpha(textColor, a);
 const layoutKeys: ConfigKey[] = [
-  "comment_area_width_px",
-  "comment_area_font_size_px",
-  "comment_area_opacity_percentage",
+  'comment_area_width_px',
+  'comment_area_font_size_px',
+  'comment_area_opacity_percentage',
 ];
 const featureKeys: ConfigKey[] = [
-  "show_comments_in_list",
-  "show_nicoru_count",
-  "enable_smooth_scrolling",
-  "comment_timing_offset",
-  "comment_renderer_fps",
+  'show_comments_in_list',
+  'show_nicoru_count',
+  'enable_smooth_scrolling',
+  'comment_timing_offset',
+  'comment_renderer_fps',
 ];
 
-export const SidebarProvider = ({ children }: { children: ReactNode }) => {
+export const SidebarProvider = ({ children }: { children: ReactNode }): ReactElement => {
   const { mode, palette } = useTheme();
   const [layout, setLayout] = useState<LayoutState>(defaultLayout);
   const [features, setFeatures] = useState<FeatureState>(defaultFeatures);
@@ -80,18 +81,18 @@ export const SidebarProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     setLayout({
-      width: lv.comment_area_width_px,
       fontSize: lv.comment_area_font_size_px,
       opacity: lv.comment_area_opacity_percentage,
+      width: lv.comment_area_width_px,
     });
   }, [lv]);
   useEffect(() => {
     setFeatures({
-      visibility: fv.show_comments_in_list,
-      showNicoru: fv.show_nicoru_count,
-      scrollSmoothly: fv.enable_smooth_scrolling,
-      timingOffset: fv.comment_timing_offset,
       fps: fv.comment_renderer_fps,
+      scrollSmoothly: fv.enable_smooth_scrolling,
+      showNicoru: fv.show_nicoru_count,
+      timingOffset: fv.comment_timing_offset,
+      visibility: fv.show_comments_in_list,
     });
   }, [fv]);
 
@@ -107,7 +108,7 @@ export const SidebarProvider = ({ children }: { children: ReactNode }) => {
   const handleSaveWidth = useCallback(
     () =>
       setLayout((l) => {
-        setConfig("comment_area_width_px", l.width);
+        setConfig('comment_area_width_px', l.width);
         return l;
       }),
     []
@@ -132,55 +133,55 @@ export const SidebarProvider = ({ children }: { children: ReactNode }) => {
 export const useSidebar = (): SidebarConfig => useContext(SidebarContext);
 
 export const createSidebarStyles = (c: SidebarConfig): Record<string, CSSProperties> => ({
-  root: {
-    position: "relative",
-    height: "100%",
-    display: c.visibility ? "flex" : "none",
-    flexDirection: "column",
-    backgroundColor: c.palette.bg.base,
-    color: c.palette.text.primary,
-    opacity: c.opacity / 100,
-    width: c.width,
-    fontSize: c.fontSize,
-    overflow: "hidden",
-  },
   header: {
     padding: `${ui.space.sm}px ${ui.space.md}px`,
     borderBottom: `1px solid ${c.alpha(0.08)}`,
     flexShrink: 0,
   },
+  list: { flex: 1, minHeight: 0, overflow: 'hidden' },
   main: {
     flex: 1,
-    display: "flex",
-    flexDirection: "column",
-    overflow: "hidden",
+    display: 'flex',
+    flexDirection: 'column',
+    overflow: 'hidden',
     minHeight: 0,
   },
-  list: { flex: 1, minHeight: 0, overflow: "hidden" },
+  root: {
+    position: 'relative',
+    height: '100%',
+    display: c.visibility ? 'flex' : 'none',
+    flexDirection: 'column',
+    backgroundColor: c.palette.bg.base,
+    color: c.palette.text.primary,
+    opacity: c.opacity / 100,
+    width: c.width,
+    fontSize: c.fontSize,
+    overflow: 'hidden',
+  },
 });
 
-export const useVideoElement = () => {
+export const useVideoElement = (): { isPlaying: boolean; video: HTMLVideoElement | null } => {
   const [video, setVideo] = useState<HTMLVideoElement | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
 
   useEffect(() => {
     let cleanup: (() => void) | undefined;
     (async () => {
-      const el = await findElement<HTMLVideoElement>("video");
+      const el = await findElement<HTMLVideoElement>('video');
       if (!el) return;
       setVideo(el);
       setIsPlaying(!el.paused);
       const onPlay = () => setIsPlaying(true);
       const onPause = () => setIsPlaying(false);
-      el.addEventListener("play", onPlay);
-      el.addEventListener("pause", onPause);
+      el.addEventListener('play', onPlay);
+      el.addEventListener('pause', onPause);
       cleanup = () => {
-        el.removeEventListener("play", onPlay);
-        el.removeEventListener("pause", onPause);
+        el.removeEventListener('play', onPlay);
+        el.removeEventListener('pause', onPause);
       };
     })();
     return () => cleanup?.();
   }, []);
 
-  return { video, isPlaying };
+  return { isPlaying, video };
 };

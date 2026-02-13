@@ -1,11 +1,11 @@
 {
   "name": "d-comments",
   "displayName": "d-anime comments viewer",
-  "description": "dアニメストアでニコニコ動画のコメントを表示するブラウザ拡張機能",
-  "author": "sopi",
-  "version": "2025.12.14",
+  "version": "2026.2.1",
   "private": true,
+  "description": "dアニメストアでニコニコ動画のコメントを表示するブラウザ拡張機能",
   "license": "GPL-3.0",
+  "author": "sopi",
   "type": "module",
   "scripts": {
     "dev": "pnpm run /^dev:.*/",
@@ -19,30 +19,32 @@
     "zip:firefox": "wxt zip -b firefox",
     "compile": "tsc --noEmit",
     "postinstall": "wxt prepare",
-    "format": "biome format --write .",
-    "lint": "biome check --write ."
+    "format": "oxfmt",
+    "lint": "oxlint --fix"
   },
-  "packageManager": "pnpm@10.25.0",
   "dependencies": {
-    "@mantine/core": "^8.3.10",
-    "@mantine/form": "^8.3.10",
-    "@mantine/hooks": "^8.3.10",
+    "@mantine/core": "^8.3.14",
+    "@mantine/form": "^8.3.14",
+    "@mantine/hooks": "^8.3.14",
     "@xpadev-net/niconicomments": "^0.2.76",
-    "pixi.js": "^8.14.3",
-    "react": "^19.2.3",
-    "react-dom": "^19.2.3",
+    "pixi.js": "^8.16.0",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
     "react-markdown": "^10.1.0",
-    "react-virtuoso": "^4.17.0",
+    "react-virtuoso": "^4.18.1",
     "rehype-slug": "^6.0.0",
     "remark-gfm": "^4.0.1"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.3.8",
-    "@types/react": "^19.2.7",
+    "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "@wxt-dev/module-react": "^1.1.5",
+    "babel-plugin-react-compiler": "^1.0.0",
+    "oxfmt": "^0.32.0",
+    "oxlint": "^1.47.0",
     "react-icons": "^5.5.0",
     "typescript": "^5.9.3",
-    "wxt": "0.20.11"
-  }
+    "wxt": "0.20.17"
+  },
+  "packageManager": "pnpm@10.29.3"
 }

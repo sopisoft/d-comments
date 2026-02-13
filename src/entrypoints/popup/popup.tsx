@@ -1,17 +1,17 @@
-import { AppShell, Group, Tabs, Text, Title } from "@mantine/core";
-import { useEffect, useState } from "react";
-import { useTheme } from "@/config/hooks/useTheme";
-import { getActiveTabId } from "@/messaging/runtime";
-import { FetchPanel } from "./components/FetchPanel";
-import { OtherPanel } from "./components/OtherPanel";
-import { SettingsPanel } from "./components/SettingsPanel";
+import { AppShell, Group, Tabs, Text, Title } from '@mantine/core';
+import { useEffect, useState } from 'react';
+import { useTheme } from '@/config/hooks/useTheme';
+import { getActiveTabId } from '@/messaging/runtime';
+import { FetchPanel } from './components/FetchPanel';
+import { OtherPanel } from './components/OtherPanel';
+import { SettingsPanel } from './components/SettingsPanel';
 
-const PLAYING_PATH = "animestore/sc_d_pc?partId=";
+const PLAYING_PATH = 'animestore/sc_d_pc?partId=';
 
-export function Popup() {
+export function Popup(): React.ReactElement {
   const { styles: ps } = useTheme();
-  const [url, setUrl] = useState("");
-  const [title, setTitle] = useState("");
+  const [url, setUrl] = useState('');
+  const [title, setTitle] = useState('');
 
   useEffect(() => {
     let cancelled = false;
@@ -19,8 +19,8 @@ export function Popup() {
       const id = await getActiveTabId();
       if (cancelled || id === null) return;
       const tab = await browser.tabs.get(id);
-      setUrl(tab.url ?? "");
-      setTitle(tab.title ?? "");
+      setUrl(tab.url ?? '');
+      setTitle(tab.title ?? '');
     })();
     return () => {
       cancelled = true;
@@ -30,17 +30,17 @@ export function Popup() {
   const canFetch = url.includes(PLAYING_PATH);
 
   return (
-    <Tabs defaultValue="fetch" variant="pills" style={{ width: "720px", height: "600px", backgroundColor: ps.bg.base }}>
+    <Tabs defaultValue="fetch" variant="pills" style={{ backgroundColor: ps.bg.base, height: '600px', width: '720px' }}>
       <AppShell
         header={{ height: 56 }}
         padding="md"
         styles={{
-          root: { backgroundColor: ps.bg.surface },
-          main: { backgroundColor: ps.bg.surface },
           header: {
             backgroundColor: ps.bg.elevated,
             borderBottom: `1px solid ${ps.border.default}`,
           },
+          main: { backgroundColor: ps.bg.surface },
+          root: { backgroundColor: ps.bg.surface },
         }}
       >
         <AppShell.Header>
@@ -68,12 +68,12 @@ export function Popup() {
             ) : (
               <div
                 style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  height: "300px",
-                  gap: "16px",
+                  alignItems: 'center',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '16px',
+                  height: '300px',
+                  justifyContent: 'center',
                 }}
               >
                 <Text size="lg" c={ps.text.muted}>

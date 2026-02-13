@@ -1,10 +1,10 @@
-import { ActionIcon, Button, Group, Stack, Text, Textarea } from "@mantine/core";
-import { memo, useCallback, useState } from "react";
-import { addNgEntry } from "@/config/storage";
-import { ui } from "@/config/theme";
-import { vposToTime } from "@/modules/formatting";
-import type { NvCommentItem } from "@/types/api";
-import type { ThemeProps } from "./types";
+import { ActionIcon, Button, Group, Stack, Text, Textarea } from '@mantine/core';
+import { useCallback, useState } from 'react';
+import { addNgEntry } from '@/config/storage';
+import { ui } from '@/config/theme';
+import { vposToTime } from '@/modules/formatting';
+import type { NvCommentItem } from '@/types/api';
+import type { ThemeProps } from './types';
 
 export type CommentDetailViewProps = {
   comment: NvCommentItem;
@@ -13,28 +13,28 @@ export type CommentDetailViewProps = {
   onClose: () => void;
 };
 
-export const CommentDetailView = memo<CommentDetailViewProps>(({ comment, theme, onSeek, onClose }) => {
+export const CommentDetailView = ({ comment, theme, onSeek, onClose }: CommentDetailViewProps): React.ReactElement => {
   const [ngWord, setNgWord] = useState(comment.body);
-  const blockUser = useCallback(() => addNgEntry("ng_user_ids", comment.userId), [comment.userId]);
-  const blockWord = useCallback(() => addNgEntry("ng_words", ngWord), [ngWord]);
+  const blockUser = useCallback(() => addNgEntry('ng_user_ids', comment.userId), [comment.userId]);
+  const blockWord = useCallback(() => addNgEntry('ng_words', ngWord), [ngWord]);
 
   const boxStyle = {
-    padding: ui.space.sm,
+    backgroundColor: theme.alpha(0.02),
     border: `1px solid ${theme.alpha(0.15)}`,
     borderRadius: ui.radius.md,
-    backgroundColor: theme.alpha(0.02),
+    padding: ui.space.sm,
   };
   const quoteStyle = {
-    padding: ui.space.sm,
     backgroundColor: theme.alpha(0.04),
-    borderRadius: ui.radius.sm,
     borderLeft: `3px solid ${theme.palette.accent}`,
+    borderRadius: ui.radius.sm,
+    padding: ui.space.sm,
   };
   const btnProps = {
+    color: 'accent',
     fullWidth: true,
-    size: "xs",
-    variant: "filled",
-    color: "accent",
+    size: 'xs',
+    variant: 'filled',
   };
 
   return (
@@ -42,9 +42,9 @@ export const CommentDetailView = memo<CommentDetailViewProps>(({ comment, theme,
       gap="sm"
       style={{
         ...boxStyle,
-        width: "100%",
-        boxSizing: "border-box",
-        overflow: "hidden",
+        boxSizing: 'border-box',
+        overflow: 'hidden',
+        width: '100%',
       }}
     >
       <Group justify="space-between" align="center">
@@ -60,10 +60,10 @@ export const CommentDetailView = memo<CommentDetailViewProps>(({ comment, theme,
           size="sm"
           c={theme.palette.text.primary}
           style={{
-            whiteSpace: "pre-wrap",
             lineHeight: 1.6,
-            wordBreak: "break-word",
-            overflowWrap: "anywhere",
+            overflowWrap: 'anywhere',
+            whiteSpace: 'pre-wrap',
+            wordBreak: 'break-word',
           }}
         >
           {comment.body}
@@ -83,8 +83,8 @@ export const CommentDetailView = memo<CommentDetailViewProps>(({ comment, theme,
       <div
         style={{
           borderTop: `1px solid ${theme.alpha(0.1)}`,
-          paddingTop: ui.space.sm,
           marginTop: ui.space.xs,
+          paddingTop: ui.space.sm,
         }}
       >
         <Text size="xs" c={theme.palette.text.secondary} mb={6}>
@@ -100,10 +100,10 @@ export const CommentDetailView = memo<CommentDetailViewProps>(({ comment, theme,
           autosize
           styles={{
             input: {
-              color: theme.palette.text.primary,
+              backgroundColor: 'transparent',
               borderColor: theme.alpha(0.15),
-              backgroundColor: "transparent",
-              resize: "none",
+              color: theme.palette.text.primary,
+              resize: 'none',
             },
           }}
         />
@@ -113,4 +113,4 @@ export const CommentDetailView = memo<CommentDetailViewProps>(({ comment, theme,
       </div>
     </Stack>
   );
-});
+};
