@@ -1,55 +1,8 @@
-import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
+import { useEffect, useRef, useSyncExternalStore } from 'react';
 import { type ConfigKey, type ConfigValue, getDefaultValue } from '@/config/defaults';
 import { getConfig, setConfig, watchConfig } from '@/config/storage';
 
-type ConfigSelection<TKeys extends readonly ConfigKey[]> = {
-  [K in TKeys[number]]: ConfigValue<K>;
-};
-
-const createDefaults = <TKeys extends readonly ConfigKey[]>(keys: TKeys): ConfigSelection<TKeys> =>
-  Object.fromEntries(keys.map((key) => [key, getDefaultValue(key)])) as ConfigSelection<TKeys>;
-
-export const useConfigs = <const TKeys extends readonly ConfigKey[]>(
-  keys: TKeys
-): Readonly<{ values: ConfigSelection<TKeys> }> => {
-  const keysRef = useRef(keys);
-  const [values, setValues] = useState<ConfigSelection<TKeys>>(() => createDefaults(keys));
-
-  useEffect(() => {
-    let active = true;
-    const cleanups: (() => void)[] = [];
-
-    const load = async () => {
-      const initial = createDefaults(keysRef.current) as ConfigSelection<TKeys>;
-      for (const key of keysRef.current)
-        (initial as Record<ConfigKey, ConfigValue<ConfigKey>>)[key] = await getConfig(key);
-      return initial;
-    };
-    load().then((initial) => {
-      if (!active) return;
-      setValues(initial);
-    });
-
-    for (const key of keysRef.current) {
-      watchConfig(key, (newValue) => {
-        if (!active) return;
-        setValues((prev) => ({ ...prev, [key]: newValue }));
-      }).then((cleanup) => {
-        if (active) cleanups.push(cleanup);
-        else cleanup();
-      });
-    }
-
-    return () => {
-      active = false;
-      for (const cleanup of cleanups) cleanup();
-    };
-  }, []);
-
-  return { values } as const;
-};
-
-export const useConfigValue = <TKey extends ConfigKey>(
+export const useConfig = <TKey extends ConfigKey>(
   configKey: TKey
 ): Readonly<{
   currentValue: ConfigValue<TKey>;
@@ -101,4 +54,4 @@ export const useConfigValue = <TKey extends ConfigKey>(
   return { currentValue: value, defaultValue, save, isPending: false } as const;
 };
 
-export default useConfigs;
+export default useConfig;

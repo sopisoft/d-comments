@@ -9,49 +9,39 @@ import {
   useMemo,
   useState,
 } from 'react';
-import { type ConfigKey, defaultConfigs, getDefaultValue } from '@/config/defaults';
-import { useConfigs } from '@/config/hooks/useConfigs';
+import { defaultConfigs, getDefaultValue } from '@/config/defaults';
+import { useConfig } from '@/config/hooks/useConfigs';
 import { createPalette, type ThemeConfig, useTheme } from '@/config/hooks/useTheme';
-import { setConfig } from '@/config/storage';
 import { ui } from '@/config/theme';
 import { findElement } from '@/lib/dom';
 
-type LayoutState = { width: number; fontSize: number; opacity: number };
-type FeatureState = {
+export type SidebarConfig = {
+  mode: ThemeConfig['mode'];
+  palette: ThemeConfig['palette'];
+  width: number;
+  fontSize: number;
+  opacity: number;
   visibility: boolean;
   showNicoru: boolean;
   scrollSmoothly: boolean;
   timingOffset: number;
   fps: number;
-};
-
-export type SidebarConfig = {
-  mode: ThemeConfig['mode'];
-  palette: ThemeConfig['palette'];
   alpha: (a: number) => string;
   setWidth: (width: number) => void;
-  saveWidth: () => void;
-} & LayoutState &
-  FeatureState;
-
-const defaultLayout: LayoutState = {
-  fontSize: getDefaultValue('comment_area_font_size_px'),
-  opacity: getDefaultValue('comment_area_opacity_percentage'),
-  width: getDefaultValue('comment_area_width_px'),
-};
-const defaultFeatures: FeatureState = {
-  fps: getDefaultValue('comment_renderer_fps'),
-  scrollSmoothly: getDefaultValue('enable_smooth_scrolling'),
-  showNicoru: getDefaultValue('show_nicoru_count'),
-  timingOffset: getDefaultValue('comment_timing_offset'),
-  visibility: getDefaultValue('show_comments_in_list'),
+  saveWidth: (width: number) => void;
 };
 const defaultPalette = createPalette('light');
 const sidebarDefaultConfig: SidebarConfig = {
   mode: 'light',
   palette: defaultPalette,
-  ...defaultLayout,
-  ...defaultFeatures,
+  width: getDefaultValue('comment_area_width_px'),
+  fontSize: getDefaultValue('comment_area_font_size_px'),
+  opacity: getDefaultValue('comment_area_opacity_percentage'),
+  visibility: getDefaultValue('show_comments_in_list'),
+  showNicoru: getDefaultValue('show_nicoru_count'),
+  scrollSmoothly: getDefaultValue('enable_smooth_scrolling'),
+  timingOffset: getDefaultValue('comment_timing_offset'),
+  fps: getDefaultValue('comment_renderer_fps'),
   alpha: (a) => ui.alpha('#F8F9FA', a),
   setWidth: () => {},
   saveWidth: () => {},
@@ -59,72 +49,59 @@ const sidebarDefaultConfig: SidebarConfig = {
 
 const SidebarContext = createContext<SidebarConfig>(sidebarDefaultConfig);
 const createAlpha = (textColor: string) => (a: number) => ui.alpha(textColor, a);
-const layoutKeys: ConfigKey[] = [
-  'comment_area_width_px',
-  'comment_area_font_size_px',
-  'comment_area_opacity_percentage',
-];
-const featureKeys: ConfigKey[] = [
-  'show_comments_in_list',
-  'show_nicoru_count',
-  'enable_smooth_scrolling',
-  'comment_timing_offset',
-  'comment_renderer_fps',
-];
 
 export const SidebarProvider = ({ children }: { children: ReactNode }): ReactElement => {
   const { mode, palette } = useTheme();
-  const [layout, setLayout] = useState<LayoutState>(defaultLayout);
-  const [features, setFeatures] = useState<FeatureState>(defaultFeatures);
-  const { values: lv } = useConfigs(layoutKeys);
-  const { values: fv } = useConfigs(featureKeys);
+  const { currentValue: configWidth, save: saveWidthConfig } = useConfig('comment_area_width_px');
+  const { currentValue: fontSize } = useConfig('comment_area_font_size_px');
+  const { currentValue: opacity } = useConfig('comment_area_opacity_percentage');
+  const { currentValue: visibility } = useConfig('show_comments_in_list');
+  const { currentValue: showNicoru } = useConfig('show_nicoru_count');
+  const { currentValue: scrollSmoothly } = useConfig('enable_smooth_scrolling');
+  const { currentValue: timingOffset } = useConfig('comment_timing_offset');
+  const { currentValue: fps } = useConfig('comment_renderer_fps');
+  const [width, setWidth] = useState(configWidth);
 
   useEffect(() => {
-    setLayout({
-      fontSize: lv.comment_area_font_size_px,
-      opacity: lv.comment_area_opacity_percentage,
-      width: lv.comment_area_width_px,
-    });
-  }, [lv]);
-  useEffect(() => {
-    setFeatures({
-      fps: fv.comment_renderer_fps,
-      scrollSmoothly: fv.enable_smooth_scrolling,
-      showNicoru: fv.show_nicoru_count,
-      timingOffset: fv.comment_timing_offset,
-      visibility: fv.show_comments_in_list,
-    });
-  }, [fv]);
+    setWidth(configWidth);
+  }, [configWidth]);
 
   const { ui_options } = defaultConfigs.comment_area_width_px;
   const handleSetWidth = useCallback(
-    (w: number) =>
-      setLayout((l) => ({
-        ...l,
-        width: Math.max(ui_options.min, Math.min(ui_options.max, w)),
-      })),
+    (w: number) => setWidth(Math.max(ui_options.min, Math.min(ui_options.max, w))),
     [ui_options.min, ui_options.max]
-  );
-  const handleSaveWidth = useCallback(
-    () =>
-      setLayout((l) => {
-        setConfig('comment_area_width_px', l.width);
-        return l;
-      }),
-    []
   );
 
   const value = useMemo<SidebarConfig>(
     () => ({
       mode,
       palette,
-      ...layout,
-      ...features,
+      width,
+      fontSize,
+      opacity,
+      visibility,
+      showNicoru,
+      scrollSmoothly,
+      timingOffset,
+      fps,
       alpha: createAlpha(palette.text.primary),
       setWidth: handleSetWidth,
-      saveWidth: handleSaveWidth,
+      saveWidth: saveWidthConfig,
     }),
-    [mode, palette, layout, features, handleSetWidth, handleSaveWidth]
+    [
+      mode,
+      palette,
+      width,
+      fontSize,
+      opacity,
+      visibility,
+      showNicoru,
+      scrollSmoothly,
+      timingOffset,
+      fps,
+      handleSetWidth,
+      saveWidthConfig,
+    ]
   );
 
   return <SidebarContext.Provider value={value}>{children}</SidebarContext.Provider>;

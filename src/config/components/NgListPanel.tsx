@@ -1,7 +1,7 @@
 import { Badge, Button, Divider, Group, Paper, Stack, Text, TextInput, ThemeIcon, Title } from '@mantine/core';
 import { useCallback, useState } from 'react';
 import { MdBlock, MdPersonOff } from 'react-icons/md';
-import { useConfigs } from '@/config/hooks/useConfigs';
+import { useConfig } from '@/config/hooks/useConfigs';
 import { useTheme } from '../hooks/useTheme';
 import { type NgEntry, setConfig } from '../storage';
 import { NgEntryRow } from './NgEntryRow';
@@ -9,12 +9,13 @@ import { NgEntryRow } from './NgEntryRow';
 type PS = ReturnType<typeof useTheme>['styles'];
 
 const useNgLists = () => {
-  const { values } = useConfigs(['ng_user_ids', 'ng_words'] as const);
+  const { currentValue: ngUserIds } = useConfig('ng_user_ids');
+  const { currentValue: ngWords } = useConfig('ng_words');
   return {
     updateUser: useCallback((next: NgEntry[]) => setConfig('ng_user_ids', next), []),
     updateWord: useCallback((next: NgEntry[]) => setConfig('ng_words', next), []),
-    userEntries: (values.ng_user_ids ?? []) as NgEntry[],
-    wordEntries: (values.ng_words ?? []) as NgEntry[],
+    userEntries: (ngUserIds ?? []) as NgEntry[],
+    wordEntries: (ngWords ?? []) as NgEntry[],
   } as const;
 };
 
