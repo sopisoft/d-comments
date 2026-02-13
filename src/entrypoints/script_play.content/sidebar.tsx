@@ -6,6 +6,14 @@ import { createSidebarStyles, SidebarProvider, useSidebar, useVideoElement } fro
 import { useCommentList } from './hooks/useCommentList';
 
 export function CommentSidebar({ threads }: { threads: Threads }): React.ReactElement {
+  return (
+    <SidebarProvider>
+      <SidebarContent threads={threads} />
+    </SidebarProvider>
+  );
+}
+
+function SidebarContent({ threads }: { threads: Threads }): React.ReactElement {
   const { video } = useVideoElement();
   const config = useSidebar();
   const styles = useMemo(() => createSidebarStyles(config), [config]);
@@ -13,11 +21,9 @@ export function CommentSidebar({ threads }: { threads: Threads }): React.ReactEl
   const root: React.CSSProperties = { ...styles.root };
   if (comments.length === 0) root.width = 0;
   return (
-    <SidebarProvider>
-      <div style={root}>
-        <ResizeHandle config={config} />
-        <SidebarComments threads={threads} config={config} video={video} styles={styles} />
-      </div>
-    </SidebarProvider>
+    <div style={root}>
+      <ResizeHandle config={config} />
+      <SidebarComments threads={threads} config={config} video={video} styles={styles} />
+    </div>
   );
 }

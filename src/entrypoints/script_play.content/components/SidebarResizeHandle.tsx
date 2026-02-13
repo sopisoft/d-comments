@@ -1,5 +1,6 @@
+import { useCallback, useRef, useState } from 'react';
 import { defaultConfigs } from '@/config/defaults';
-import { SidebarConfig } from '../context/SidebarContext';
+import type { SidebarConfig } from '../context/SidebarContext';
 
 export function ResizeHandle({ config }: { config: SidebarConfig }): React.ReactElement {
   const [isDragging, setIsDragging] = useState(false);
@@ -15,10 +16,13 @@ export function ResizeHandle({ config }: { config: SidebarConfig }): React.React
       setIsDragging(true);
       startX.current = e.clientX;
       startWidth.current = config.width;
-      const onMove = (ev: MouseEvent) => config.setWidth(startWidth.current + startX.current - ev.clientX);
-      const onUp = () => {
+      const getNextWidth = (x: number) => startWidth.current + startX.current - x;
+      const onMove = (ev: MouseEvent) => config.setWidth(getNextWidth(ev.clientX));
+      const onUp = (ev: MouseEvent) => {
         setIsDragging(false);
-        config.saveWidth();
+        const nextWidth = getNextWidth(ev.clientX);
+        config.setWidth(nextWidth);
+        config.saveWidth(nextWidth);
         document.removeEventListener('mousemove', onMove);
         document.removeEventListener('mouseup', onUp);
       };

@@ -1,7 +1,7 @@
 {
   "name": "d-comments",
   "displayName": "d-anime comments viewer",
-  "version": "2026.2.1",
+  "version": "2026.2.2",
   "private": true,
   "description": "dアニメストアでニコニコ動画のコメントを表示するブラウザ拡張機能",
   "license": "GPL-3.0",
