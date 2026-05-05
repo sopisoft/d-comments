@@ -8,7 +8,7 @@
   "trailingComma": "es5",
   "endOfLine": "lf",
   "experimentalSortImports": {
-    "groups": [["side-effect"], ["builtin"], ["external"], ["internal"], ["parent", "sibling", "index"]],
+    "groups": [["builtin"], ["external"], ["internal"], ["parent", "sibling", "index"]],
     "sortSideEffects": false,
     "newlinesBetween": false,
     "ignoreCase": true

@@ -30,6 +30,7 @@
         "varsIgnorePattern": "^_"
       }
     ],
+    "eslint/no-shadow": "off",
     "no-var": "error",
     "no-void": "error",
     "oxc/no-this-in-exported-function": "error",
@@ -55,16 +56,6 @@
     "typescript/prefer-nullish-coalescing": "error",
     "typescript/prefer-optional-chain": "error",
     "typescript/require-await": "error",
-    "typescript/typedef": [
-      "error",
-      {
-        "arrowParameter": false,
-        "memberVariableDeclaration": true,
-        "parameter": false,
-        "propertyDeclaration": true,
-        "variableDeclaration": true
-      }
-    ],
     "unicorn/prefer-array-find": "error"
   }
 }

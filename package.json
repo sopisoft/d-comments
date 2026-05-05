@@ -23,28 +23,28 @@
     "lint": "oxlint --fix"
   },
   "dependencies": {
-    "@mantine/core": "^8.3.14",
-    "@mantine/form": "^8.3.14",
-    "@mantine/hooks": "^8.3.14",
-    "@xpadev-net/niconicomments": "^0.2.76",
-    "pixi.js": "^8.16.0",
-    "react": "^19.2.4",
-    "react-dom": "^19.2.4",
+    "@mantine/core": "^9.1.1",
+    "@mantine/form": "^9.1.1",
+    "@mantine/hooks": "^9.1.1",
+    "@xpadev-net/niconicomments": "^0.2.78",
+    "pixi.js": "^8.18.1",
+    "react": "^19.2.5",
+    "react-dom": "^19.2.5",
     "react-markdown": "^10.1.0",
-    "react-virtuoso": "^4.18.1",
+    "react-virtuoso": "^4.18.6",
     "rehype-slug": "^6.0.0",
     "remark-gfm": "^4.0.1"
   },
   "devDependencies": {
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
-    "@wxt-dev/module-react": "^1.1.5",
+    "@wxt-dev/module-react": "^1.2.2",
     "babel-plugin-react-compiler": "^1.0.0",
-    "oxfmt": "^0.32.0",
-    "oxlint": "^1.47.0",
-    "react-icons": "^5.5.0",
-    "typescript": "^5.9.3",
-    "wxt": "0.20.17"
+    "oxfmt": "^0.48.0",
+    "oxlint": "^1.63.0",
+    "react-icons": "^5.6.0",
+    "typescript": "^6.0.3",
+    "wxt": "0.20.25"
   },
-  "packageManager": "pnpm@10.29.3"
+  "packageManager": "pnpm@10.33.3"
 }
