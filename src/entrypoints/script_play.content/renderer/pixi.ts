@@ -1,3 +1,4 @@
+import 'pixi.js/unsafe-eval';
 import { Container, type RenderTexture, type TextStyle } from 'pixi.js';
 import { getConfig, watchConfig } from '@/config/storage';
 import type { Result } from '@/lib/types';
