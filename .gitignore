@@ -10,6 +10,10 @@ lerna-debug.log*
 node_modules
 dist
 .wxt
+.direnv
+storybook-static
+test-results
+playwright-report
 
 # Editor directories and files
 .vscode/*

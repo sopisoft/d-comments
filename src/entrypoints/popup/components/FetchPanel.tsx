@@ -1,8 +1,9 @@
 import { Grid, ScrollArea, Stack, Tabs, Text } from '@mantine/core';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { MdSearch, MdTag } from 'react-icons/md';
 import { useTheme } from '@/config/hooks/useTheme';
 import { ui } from '@/config/theme';
+import { logger } from '@/lib/logger';
 import { unwrap } from '@/lib/types';
 import { getActiveTabId, onMessage, requestMessageResult } from '@/messaging/runtime';
 import { createCommentManager, getComments } from '@/modules/comments/manager';
@@ -27,17 +28,19 @@ export function FetchPanel({ title }: { title: string }): React.ReactElement {
     borderRadius: ui.radius.md,
     padding: ui.space.md,
   };
-  const [tabId, setTabId] = useState<number | null>(null);
+  const tabIdRef = useRef<number | null>(null);
   const [playingVideos, setPlayingVideos] = useState<CommentVideoData[]>([]);
   const [videoEntries, setVideoEntries] = useState<VideoDictionary>({});
   const [videoOrder, setVideoOrder] = useState<string[]>([]);
 
   const resolveTabId = useCallback(async () => {
-    if (tabId !== null) return tabId;
+    if (tabIdRef.current !== null) return tabIdRef.current;
     const id = await getActiveTabId();
-    if (id !== null) setTabId(id);
+    if (id !== null) {
+      tabIdRef.current = id;
+    }
     return id;
-  }, [tabId]);
+  }, []);
 
   const mergeVideos = useCallback((incoming: CommentVideoData[], order: MergeOrder = 'append') => {
     if (incoming.length === 0) return;
@@ -67,7 +70,7 @@ export function FetchPanel({ title }: { title: string }): React.ReactElement {
       const res = await requestMessageResult('playing_video', { tabId: id });
       const value = unwrap<CommentVideoData[]>(res, 'Initial playing_video failed');
       if (value) applyPlayingResponse(value);
-    })();
+    })().catch(logger.error);
     return () => {
       cancelled = true;
     };
@@ -76,12 +79,14 @@ export function FetchPanel({ title }: { title: string }): React.ReactElement {
   useEffect(
     () =>
       onMessage('comment_state_update', (payload) => {
-        if (tabId !== null && payload.tabId !== tabId) return;
-        if (tabId === null) setTabId(payload.tabId);
+        if (tabIdRef.current !== null && payload.tabId !== tabIdRef.current) return;
+        if (tabIdRef.current === null) {
+          tabIdRef.current = payload.tabId;
+        }
         mergeVideos(payload.videos);
         setPlayingVideos(payload.videos);
       }),
-    [tabId, mergeVideos]
+    [mergeVideos]
   );
 
   const addPlaying = useCallback(
@@ -138,7 +143,7 @@ export function FetchPanel({ title }: { title: string }): React.ReactElement {
   );
 
   return (
-    <Grid gutter="md">
+    <Grid gap="md">
       <Grid.Col span={7}>
         <ScrollArea h="calc(100vh - 140px)" scrollbarSize={6}>
           {displayVideos.length === 0 ? (
@@ -173,10 +178,10 @@ export function FetchPanel({ title }: { title: string }): React.ReactElement {
         <div style={cardStyle}>
           <Tabs defaultValue="search" variant="pills">
             <Tabs.List grow mb="md">
-              <Tabs.Tab value="search" leftSection={<MdSearch size={16} />}>
+              <Tabs.Tab value="search" leftSection={<MdSearch size={ui.icon.md} />}>
                 検索
               </Tabs.Tab>
-              <Tabs.Tab value="id" leftSection={<MdTag size={16} />}>
+              <Tabs.Tab value="id" leftSection={<MdTag size={ui.icon.md} />}>
                 動画ID
               </Tabs.Tab>
             </Tabs.List>

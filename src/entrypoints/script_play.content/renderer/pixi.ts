@@ -261,9 +261,12 @@ export const createPixiRenderer = async (): Promise<Result<RendererController, s
 
     for (let index = active.length - 1; index >= 0; index--) {
       const item = active[index];
+      if (!item) continue;
       if (rangeChanged && !nextActive.has(item.comment.id)) {
         releaseNode(item.comment.id);
-        active[index] = active[active.length - 1];
+        const replacement = active.at(-1);
+        if (replacement === undefined) continue;
+        active[index] = replacement;
         active.pop();
       } else updateOne(item, nowVpos);
     }
@@ -320,11 +323,11 @@ export const createPixiRenderer = async (): Promise<Result<RendererController, s
     return threads;
   }
 
-  watchConfig('comment_area_opacity_percentage', (value) => opacity(value)).then((stop) => stops.push(stop));
-  watchConfig('nicoarea_scale', (value) => scale(value)).then((stop) => stops.push(stop));
-  watchConfig('comment_renderer_fps', (value) => setFps(value)).then((stop) => stops.push(stop));
-  watchConfig('show_comments_in_niconico_style', (value) => visible(value)).then((stop) => stops.push(stop));
-  watchConfig('comment_timing_offset', (value) => offset(value)).then((stop) => stops.push(stop));
+  stops.push(watchConfig('comment_area_opacity_percentage', (value) => opacity(value)));
+  stops.push(watchConfig('nicoarea_scale', (value) => scale(value)));
+  stops.push(watchConfig('comment_renderer_fps', (value) => setFps(value)));
+  stops.push(watchConfig('show_comments_in_niconico_style', (value) => visible(value)));
+  stops.push(watchConfig('comment_timing_offset', (value) => offset(value)));
 
   opacity(initialOpacity);
   visible(initialVisibility);

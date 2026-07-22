@@ -66,7 +66,9 @@ const expandHex = (hex: string): string =>
 const parseHexColor = (token: string, allowAlpha: boolean): RGBAColor | null => {
   const shortMatch = token.match(HEX_SHORT);
   if (shortMatch) {
-    const expanded = expandHex(shortMatch[1]);
+    const value = shortMatch[1];
+    if (!value) return null;
+    const expanded = expandHex(value);
     if (!allowAlpha && expanded.length === 8) return null;
     const color = Number.parseInt(expanded.slice(0, 6), 16) & 0xffffff;
     if (expanded.length === 8) {
@@ -79,12 +81,16 @@ const parseHexColor = (token: string, allowAlpha: boolean): RGBAColor | null => 
   }
   const longMatch = token.match(HEX_LONG);
   if (longMatch) {
-    return { color: Number.parseInt(longMatch[1], 16) & 0xffffff };
+    const value = longMatch[1];
+    return value ? { color: Number.parseInt(value, 16) & 0xffffff } : null;
   }
   const withAlphaMatch = token.match(HEX_WITH_ALPHA);
   if (allowAlpha && withAlphaMatch) {
-    const color = Number.parseInt(withAlphaMatch[1], 16) & 0xffffff;
-    const alpha = Number.parseInt(withAlphaMatch[2], 16) / 255;
+    const value = withAlphaMatch[1];
+    const alphaValue = withAlphaMatch[2];
+    if (!value || !alphaValue) return null;
+    const color = Number.parseInt(value, 16) & 0xffffff;
+    const alpha = Number.parseInt(alphaValue, 16) / 255;
     return { alpha: clampValue(alpha, 0, 1), color };
   }
   return null;
@@ -93,7 +99,10 @@ const parseHexColor = (token: string, allowAlpha: boolean): RGBAColor | null => 
 const parseRgbaColor = (token: string): RGBAColor | null => {
   const match = token.match(RGBA_PATTERN);
   if (!match) return null;
-  const [redRaw, greenRaw, blueRaw, alphaRaw] = match[1].split(',').map((part) => part.trim());
+  const values = match[1]?.split(',').map((part) => part.trim());
+  if (!values) return null;
+  const [redRaw, greenRaw, blueRaw, alphaRaw] = values;
+  if (!redRaw || !greenRaw || !blueRaw) return null;
   const red = parseIntSafe(redRaw, 10);
   const green = parseIntSafe(greenRaw, 10);
   const blue = parseIntSafe(blueRaw, 10);

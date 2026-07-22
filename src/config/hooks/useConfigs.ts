@@ -1,6 +1,7 @@
 import { useEffect, useRef, useSyncExternalStore } from 'react';
 import { type ConfigKey, type ConfigValue, getDefaultValue } from '@/config/defaults';
 import { getConfig, setConfig, watchConfig } from '@/config/storage';
+import { logger } from '@/lib/logger';
 
 export const useConfig = <TKey extends ConfigKey>(
   configKey: TKey
@@ -17,22 +18,19 @@ export const useConfig = <TKey extends ConfigKey>(
 
   useEffect(() => {
     let active = true;
-    let cleanup: (() => void) | undefined;
-
-    getConfig(configKey).then((value) => {
-      if (!active) return;
-      storeRef.current.value = value;
-      for (const listener of storeRef.current.listeners) listener();
-    });
-
-    watchConfig(configKey, (newValue) => {
+    const cleanup = watchConfig(configKey, (newValue) => {
       if (!active) return;
       storeRef.current.value = newValue;
       for (const listener of storeRef.current.listeners) listener();
-    }).then((c) => {
-      if (active) cleanup = c;
-      else c();
     });
+
+    getConfig(configKey)
+      .then((value) => {
+        if (!active) return;
+        storeRef.current.value = value;
+        for (const listener of storeRef.current.listeners) listener();
+      })
+      .catch(logger.error);
 
     return () => {
       active = false;

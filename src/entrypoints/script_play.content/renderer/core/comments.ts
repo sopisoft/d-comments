@@ -135,6 +135,7 @@ export const buildTimeline = (threads: Threads, fontScale: number): Record<numbe
   const all: TimelineComment[] = [];
   for (let threadIndex = 0; threadIndex < threads.length; threadIndex++) {
     const thread = threads[threadIndex];
+    if (!thread) continue;
     const owner = thread.fork === 'owner';
     for (const raw of thread.comments) {
       if (!raw?.body) continue;

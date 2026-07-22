@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { adjustColor, readableTextOnHex } from '@/lib/color';
+import { logger } from '@/lib/logger';
 import { getConfig, watchConfig } from '../storage';
 import {
   type ColorMode,
@@ -24,7 +25,7 @@ type ThemeState = {
   isPending: boolean;
 };
 
-const ACCENT = '#EB5528';
+const ACCENT = '#B93815';
 const getSystemMode = (): ThemeMode => (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
 const resolveMode = (s: ThemeState): ThemeMode => (s.configMode === 'auto' ? s.systemMode : s.configMode);
 const isColorMode = (v: unknown): v is ColorMode => v === 'light' || v === 'dark' || v === 'auto';
@@ -47,7 +48,7 @@ const BASE_PALETTES: Record<ThemeMode, Omit<ThemePalette, 'accent'>> = {
       surface: '#F1F3F5',
       deep: '#E9ECEF',
     },
-    text: { primary: '#212529', secondary: '#495057', muted: '#6C757D' },
+    text: { primary: '#212529', secondary: '#495057', muted: '#5C636A' },
     border: { default: '#CED4DA', subtle: '#DEE2E6' },
   },
 };
@@ -116,15 +117,17 @@ export function useTheme(): ThemeConfig {
 
   useEffect(() => {
     let active = true;
-    getConfig('theme_color_mode').then((m) => {
-      if (active)
-        setState((p) => ({
-          ...p,
-          configMode: isColorMode(m) ? m : 'auto',
-          isPending: false,
-        }));
-    });
-    const modeWatcher = watchConfig('theme_color_mode', (m) =>
+    getConfig('theme_color_mode')
+      .then((m) => {
+        if (active)
+          setState((p) => ({
+            ...p,
+            configMode: isColorMode(m) ? m : 'auto',
+            isPending: false,
+          }));
+      })
+      .catch(logger.error);
+    const stopModeWatcher = watchConfig('theme_color_mode', (m) =>
       setState((p) => ({ ...p, configMode: isColorMode(m) ? m : p.configMode }))
     );
     const mq = window.matchMedia('(prefers-color-scheme: dark)');
@@ -132,7 +135,7 @@ export function useTheme(): ThemeConfig {
     mq.addEventListener('change', onChange);
     return () => {
       active = false;
-      modeWatcher.then((d) => d?.());
+      stopModeWatcher();
       mq.removeEventListener('change', onChange);
     };
   }, []);

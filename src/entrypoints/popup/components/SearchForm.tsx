@@ -44,7 +44,7 @@ export function SearchForm({
         await requestMessageResult('search', buildSearchQuery(word, sort)),
         'Search failed'
       );
-      if (!payload || payload.meta.status !== 200) {
+      if (payload?.meta.status !== 200) {
         logger.error(payload?.meta.errorCode, payload?.meta.errorMessage);
         return;
       }
@@ -54,9 +54,11 @@ export function SearchForm({
   );
 
   useEffect(() => {
-    getConfig('auto_search').then(async (v) => {
-      if (v) await runSearch(form.getValues().word, '-commentCounter');
-    });
+    getConfig('auto_search')
+      .then(async (v) => {
+        if (v) await runSearch(form.getValues().word, '-commentCounter');
+      })
+      .catch(logger.error);
   }, [form, runSearch]);
 
   return (

@@ -36,7 +36,7 @@ export function sanitizeTitle(title: string): string {
   const titleRegex = /^(TV|テレビ|劇場|オリジナル)?\s?(アニメーション|アニメ)\s?[｢「『]/;
   const match = title.match(titleRegex);
   let trimmedTitle = title;
-  if (match && match.index !== undefined) {
+  if (match?.index !== undefined) {
     const index = match.index + match[0].length;
     trimmedTitle = trimmedTitle.substring(index).replace(/[」｣』]/, ' ');
   }

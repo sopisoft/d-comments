@@ -2,6 +2,19 @@
   "extends": "./.wxt/tsconfig.json",
   "compilerOptions": {
     "allowImportingTsExtensions": true,
-    "jsx": "react-jsx"
+    "allowUnreachableCode": false,
+    "allowUnusedLabels": false,
+    "forceConsistentCasingInFileNames": true,
+    "jsx": "react-jsx",
+    "noFallthroughCasesInSwitch": true,
+    "noEmit": true,
+    "noImplicitOverride": true,
+    "noImplicitReturns": true,
+    "noUncheckedIndexedAccess": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noUncheckedSideEffectImports": true,
+    "skipLibCheck": true,
+    "verbatimModuleSyntax": true
   }
 }

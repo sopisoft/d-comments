@@ -2,6 +2,7 @@ import { Badge, Button, Divider, Group, Paper, Stack, Text, TextInput, ThemeIcon
 import { useCallback, useState } from 'react';
 import { MdBlock, MdPersonOff } from 'react-icons/md';
 import { useConfig } from '@/config/hooks/useConfigs';
+import { ui } from '@/config/theme';
 import { useTheme } from '../hooks/useTheme';
 import { type NgEntry, setConfig } from '../storage';
 import { NgEntryRow } from './NgEntryRow';
@@ -25,8 +26,8 @@ export function NgListPanel(): React.ReactElement {
   return (
     <Stack gap="lg">
       <Group gap="sm" align="center">
-        <MdBlock size={24} style={{ color: ps.accent }} />
-        <Title order={3} fw={600} c={ps.text.primary}>
+        <MdBlock size={ui.icon.xl + ui.space.xs} style={{ color: ps.accent }} />
+        <Title order={3} fw={ui.font.weight.semibold} c={ps.text.primary}>
           NG 管理
         </Title>
       </Group>
@@ -38,7 +39,7 @@ export function NgListPanel(): React.ReactElement {
         placeholder="ユーザーIDを入力"
         entries={userEntries}
         onUpdate={updateUser}
-        icon={<MdPersonOff size={18} />}
+        icon={<MdPersonOff size={ui.icon.lg} />}
         ps={ps}
       />
       <Divider color={ps.border.subtle} />
@@ -49,7 +50,7 @@ export function NgListPanel(): React.ReactElement {
         placeholder="(ねた|ネタ)|(ばれ|バレ)"
         entries={wordEntries}
         onUpdate={updateWord}
-        icon={<MdBlock size={18} />}
+        icon={<MdBlock size={ui.icon.lg} />}
         ps={ps}
       />
     </Stack>
@@ -97,12 +98,12 @@ function Section({
     <Paper p="md" radius="md" style={boxStyle}>
       <Stack gap="md">
         <Group gap="sm" align="flex-start">
-          <ThemeIcon color="accent" size={34} radius="md">
+          <ThemeIcon color="accent" size={ui.icon.section} radius="md">
             {icon}
           </ThemeIcon>
           <div style={{ flex: 1 }}>
             <Group gap="xs">
-              <Title order={5} fw={600} c={ps.text.primary}>
+              <Title order={4} fw={ui.font.weight.semibold} c={ps.text.primary}>
                 {title}
               </Title>
               <Badge size="sm" variant="light" color="dark">

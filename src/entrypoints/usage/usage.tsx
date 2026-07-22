@@ -1,12 +1,10 @@
 import './usage.css';
-import { AppShell, Burger, Container, Group, NavLink, Title, Typography } from '@mantine/core';
+import { AppShell, Burger, Container, Group, NavLink, Title } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { useEffect, useRef, useState } from 'react';
-import Markdown from 'react-markdown';
-import rehypeSlug from 'rehype-slug';
-import remarkGfm from 'remark-gfm';
 import { useTheme } from '@/config/hooks/useTheme';
-import MD from './usage.md?raw';
+import { ui } from '@/config/theme';
+import { UsageDocument } from './UsageDocument';
 
 type TocItem = { level: number; text: string; id: string };
 
@@ -21,7 +19,7 @@ const scrollToId = (id: string) => {
   if (el)
     window.scrollTo({
       behavior: 'smooth',
-      top: el.getBoundingClientRect().top + window.scrollY - 80,
+      top: el.getBoundingClientRect().top + window.scrollY - ui.layout.usageScrollOffset,
     });
 };
 
@@ -59,8 +57,8 @@ export function Usage(): React.ReactElement {
 
   return (
     <AppShell
-      header={{ height: 60 }}
-      navbar={{ breakpoint: 'sm', collapsed: { mobile: !opened }, width: 300 }}
+      header={{ height: ui.layout.usageHeaderHeight }}
+      navbar={{ breakpoint: 'sm', collapsed: { mobile: !opened }, width: ui.layout.usageNavbarWidth }}
       padding="md"
       styles={shellStyles}
     >
@@ -88,12 +86,8 @@ export function Usage(): React.ReactElement {
         ))}
       </AppShell.Navbar>
       <AppShell.Main>
-        <Container ref={contentRef} size="md" pb="lg">
-          <Typography>
-            <Markdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeSlug]}>
-              {MD}
-            </Markdown>
-          </Typography>
+        <Container size="md" pb="lg">
+          <UsageDocument contentRef={contentRef} />
         </Container>
       </AppShell.Main>
     </AppShell>

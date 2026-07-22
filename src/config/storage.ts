@@ -49,15 +49,16 @@ export const setConfig = async <TKey extends ConfigKey>(
   await storage.area.set({ [key]: nextValue });
 };
 
-export const watchConfig = async <TKey extends ConfigKey>(
+export const watchConfig = <TKey extends ConfigKey>(
   key: TKey,
   callback: (newValue: ConfigValue<TKey>, oldValue: ConfigValue<TKey>) => void,
   storageOverride?: Partial<StorageLike>
-): Promise<() => void> => {
+): (() => void) => {
   const storage = resolveStorage(storageOverride);
   const listener = (changes: Record<string, Browser.storage.StorageChange>, areaName: string) => {
     if (areaName !== 'local' || !(key in changes)) return;
     const change = changes[key];
+    if (!change) return;
     const newVal = change.newValue as ConfigValue<TKey> | undefined;
     const oldVal = change.oldValue as ConfigValue<TKey> | undefined;
     callback(resolveValue(key, newVal), resolveValue(key, oldVal));

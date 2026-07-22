@@ -15,7 +15,7 @@ const toRegex = (raw: string): RegExp | null => {
   const normalized = raw.trim();
   if (!normalized) return null;
   const match = normalized.match(SLASH_REGEX);
-  const source = match ? match[1] : normalized;
+  const source = match?.[1] ?? normalized;
   const flags = match ? match[2] : undefined;
   return new RegExp(source, flags);
 };

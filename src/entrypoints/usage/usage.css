@@ -3,3 +3,7 @@
   border: 1px solid #e7e7e7 !important;
   border-radius: 1.25rem;
 }
+
+.d-comments-Typography-root a {
+  text-decoration: underline;
+}

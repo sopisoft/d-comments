@@ -18,7 +18,8 @@ export function mountOverlay(video: HTMLVideoElement): {
   video: HTMLVideoElement;
   overlay: HTMLDivElement;
 } {
-  const existing = document.getElementById(OVERLAY_ID) as HTMLDivElement | null;
+  const existingElement = document.getElementById(OVERLAY_ID);
+  const existing = existingElement instanceof HTMLDivElement ? existingElement : null;
   const container = video.parentElement;
   if (existing) {
     if (container && existing.parentElement !== container) container.appendChild(existing);

@@ -1,5 +1,6 @@
 import { useCallback, useRef, useState } from 'react';
 import { defaultConfigs } from '@/config/defaults';
+import { ui } from '@/config/theme';
 import type { SidebarConfig } from '../context/SidebarContext';
 
 export function ResizeHandle({ config }: { config: SidebarConfig }): React.ReactElement {
@@ -32,6 +33,7 @@ export function ResizeHandle({ config }: { config: SidebarConfig }): React.React
     [config]
   );
 
+  // This custom handle must remain a div because it tracks horizontal drag distance.
   return (
     <div
       role="slider"
@@ -51,8 +53,8 @@ export function ResizeHandle({ config }: { config: SidebarConfig }): React.React
         left: 0,
         position: 'absolute',
         top: 0,
-        transition: 'background-color 150ms',
-        width: 6,
+        transition: `background-color ${ui.transition.fast}`,
+        width: ui.control.resizeHandle,
         zIndex: 10,
       }}
     />

@@ -162,10 +162,16 @@ export type ConfigKeysWithUIType<TUiType extends UiType> = {
   [Key in keyof ConfigSchema]: ConfigSchema[Key]['ui_type'] extends TUiType ? Key : never;
 }[keyof ConfigSchema];
 
+export type ConfigUiOptions<TKey extends ConfigKey> = ConfigSchema[TKey] extends { ui_options?: infer TOptions }
+  ? TOptions
+  : undefined;
+
 export const getRawDefaultConfig = <TKey extends ConfigKey>(key: TKey): ConfigSchema[TKey] => defaultConfigs[key];
 
-export function getUiOptions<TKey extends ConfigKey>(key: TKey): unknown {
-  return (defaultConfigs[key] as { ui_options?: unknown }).ui_options;
+export function getUiOptions<TKey extends ConfigKey>(key: TKey): ConfigUiOptions<TKey> {
+  const config = defaultConfigs[key];
+  if ('ui_options' in config) return config.ui_options as ConfigUiOptions<TKey>;
+  return undefined as ConfigUiOptions<TKey>;
 }
 
 export function getUiType<TKey extends ConfigKey>(key: TKey): ConfigSchema[TKey]['ui_type'] {

@@ -1,6 +1,8 @@
 import { AppShell, Group, Tabs, Text, Title } from '@mantine/core';
 import { useEffect, useState } from 'react';
 import { useTheme } from '@/config/hooks/useTheme';
+import { ui } from '@/config/theme';
+import { logger } from '@/lib/logger';
 import { getActiveTabId } from '@/messaging/runtime';
 import { FetchPanel } from './components/FetchPanel';
 import { OtherPanel } from './components/OtherPanel';
@@ -21,7 +23,7 @@ export function Popup(): React.ReactElement {
       const tab = await browser.tabs.get(id);
       setUrl(tab.url ?? '');
       setTitle(tab.title ?? '');
-    })();
+    })().catch(logger.error);
     return () => {
       cancelled = true;
     };
@@ -30,9 +32,13 @@ export function Popup(): React.ReactElement {
   const canFetch = url.includes(PLAYING_PATH);
 
   return (
-    <Tabs defaultValue="fetch" variant="pills" style={{ backgroundColor: ps.bg.base, height: '600px', width: '720px' }}>
+    <Tabs
+      defaultValue="fetch"
+      variant="pills"
+      style={{ backgroundColor: ps.bg.base, height: ui.layout.popup.height, width: ui.layout.popup.width }}
+    >
       <AppShell
-        header={{ height: 56 }}
+        header={{ height: ui.layout.headerHeight }}
         padding="md"
         styles={{
           header: {

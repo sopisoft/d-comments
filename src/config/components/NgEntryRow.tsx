@@ -1,6 +1,7 @@
 import { ActionIcon, Checkbox, Group, Paper, Text, TextInput, Tooltip } from '@mantine/core';
 import { useState } from 'react';
 import { MdCheck, MdClose, MdDelete, MdEdit } from 'react-icons/md';
+import { ui } from '@/config/theme';
 import type { useTheme } from '../hooks/useTheme';
 import type { NgEntry } from '../storage';
 
@@ -44,7 +45,6 @@ export function NgEntryRow({
             onChange={(e) => setValue(e.currentTarget.value)}
             onKeyDown={(e) => e.key === 'Enter' && onSave(value)}
             placeholder="値を入力"
-            autoFocus
             flex={1}
             styles={{
               input: {
@@ -55,13 +55,13 @@ export function NgEntryRow({
           />
           <Group gap={4}>
             <Tooltip label="保存">
-              <ActionIcon size="sm" variant="light" color="green" onClick={() => onSave(value)}>
-                <MdCheck size={16} />
+              <ActionIcon aria-label="保存" size="sm" variant="light" color="green" onClick={() => onSave(value)}>
+                <MdCheck size={ui.icon.md} />
               </ActionIcon>
             </Tooltip>
             <Tooltip label="キャンセル">
-              <ActionIcon size="sm" variant="subtle" color="gray" onClick={onCancel}>
-                <MdClose size={16} />
+              <ActionIcon aria-label="キャンセル" size="sm" variant="subtle" color="gray" onClick={onCancel}>
+                <MdClose size={ui.icon.md} />
               </ActionIcon>
             </Tooltip>
           </Group>
@@ -85,13 +85,13 @@ export function NgEntryRow({
         />
         <Group gap={4}>
           <Tooltip label="編集">
-            <ActionIcon size="sm" variant="subtle" color="gray" onClick={onEdit}>
-              <MdEdit size={16} />
+            <ActionIcon aria-label="編集" size="sm" variant="subtle" color="gray" onClick={onEdit}>
+              <MdEdit size={ui.icon.md} />
             </ActionIcon>
           </Tooltip>
           <Tooltip label="削除">
-            <ActionIcon size="sm" variant="subtle" color="red" onClick={onDelete}>
-              <MdDelete size={16} />
+            <ActionIcon aria-label="削除" size="sm" variant="subtle" color="red" onClick={onDelete}>
+              <MdDelete size={ui.icon.md} />
             </ActionIcon>
           </Tooltip>
         </Group>

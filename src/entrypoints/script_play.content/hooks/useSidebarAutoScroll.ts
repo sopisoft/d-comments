@@ -1,6 +1,7 @@
 import { type RefObject, useCallback, useEffect, useRef } from 'react';
 import type { VirtuosoHandle } from 'react-virtuoso';
 import { getConfig, watchConfig } from '@/config/storage';
+import { logger } from '@/lib/logger';
 import type { NvCommentItem } from '@/types/api';
 import type { SidebarConfig } from '../context/SidebarContext';
 import { useAnimationFrame } from './useAnimationFrame';
@@ -18,8 +19,11 @@ const findNearestIndex = (items: NvCommentItem[], target: number): number => {
   const nextIdx = items.findIndex((c) => c.vposMs >= target);
   const idx = nextIdx < 0 ? items.length - 1 : nextIdx;
   if (idx > 0) {
-    const prevDiff = Math.abs(items[idx - 1].vposMs - target);
-    const curDiff = Math.abs(items[idx].vposMs - target);
+    const previous = items[idx - 1];
+    const current = items[idx];
+    if (!previous || !current) return idx;
+    const prevDiff = Math.abs(previous.vposMs - target);
+    const curDiff = Math.abs(current.vposMs - target);
     if (prevDiff <= curDiff) return idx - 1;
   }
   return idx;
@@ -99,11 +103,11 @@ export function useSidebarAutoScroll({ video, config, comments, virtuosoRef, isP
       if (stopped) return;
       autoEnabled.current = init === true;
       lastIdx.current = -1;
-      stopFn = await watchConfig('enable_auto_scroll', (v) => {
+      stopFn = watchConfig('enable_auto_scroll', (v) => {
         autoEnabled.current = v === true;
         lastIdx.current = -1;
       });
-    })();
+    })().catch(logger.error);
 
     return () => {
       stopped = true;

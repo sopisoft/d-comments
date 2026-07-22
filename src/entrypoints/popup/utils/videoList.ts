@@ -41,7 +41,7 @@ export const mergeVideoOrder = (
 ): VideoId[] => {
   const seen = new Set(order);
   const freshIds = incomingIds.filter((id) => !seen.has(id));
-  if (freshIds.length === 0) return order as VideoId[];
+  if (freshIds.length === 0) return [...order];
   return mergeOrder === 'prepend' ? [...freshIds, ...order] : [...order, ...freshIds];
 };
 

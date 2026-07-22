@@ -36,8 +36,23 @@ export const ThemedMantineProvider = ({ children }: { children: ReactNode }): Re
       colors,
       defaultRadius: ui.radius.sm,
       focusRing: 'auto',
+      fontSizes: {
+        xs: `${ui.font.size.xs}px`,
+        sm: `${ui.font.size.sm}px`,
+        md: `${ui.font.size.md}px`,
+        lg: `${ui.font.size.lg}px`,
+        xl: `${ui.font.size.xl}px`,
+      },
       fontFamily: ui.font.sans,
       fontFamilyMonospace: ui.font.mono,
+      headings: { fontWeight: String(ui.font.weight.semibold) },
+      lineHeights: {
+        xs: String(ui.font.lineHeight.tight),
+        sm: String(ui.font.lineHeight.normal),
+        md: String(ui.font.lineHeight.normal),
+        lg: String(ui.font.lineHeight.normal),
+        xl: String(ui.font.lineHeight.relaxed),
+      },
       primaryColor: currentScheme.primaryColor,
       primaryShade: { light: 5, dark: 5 },
     });

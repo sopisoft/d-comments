@@ -14,6 +14,7 @@ import { useConfig } from '@/config/hooks/useConfigs';
 import { createPalette, type ThemeConfig, useTheme } from '@/config/hooks/useTheme';
 import { ui } from '@/config/theme';
 import { findElement } from '@/lib/dom';
+import { logger } from '@/lib/logger';
 
 export type SidebarConfig = {
   mode: ThemeConfig['mode'];
@@ -156,7 +157,7 @@ export const useVideoElement = (): { isPlaying: boolean; video: HTMLVideoElement
         el.removeEventListener('play', onPlay);
         el.removeEventListener('pause', onPause);
       };
-    })();
+    })().catch(logger.error);
     return () => cleanup?.();
   }, []);
 

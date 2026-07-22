@@ -87,6 +87,7 @@ const resolveFont = (tokens: readonly string[]) => {
 const resolveFill = (tokens: readonly string[], ctx: CommandParseContext): RGBAColor => {
   for (let index = tokens.length - 1; index >= 0; index -= 1) {
     const token = tokens[index];
+    if (!token) continue;
     const parsed = parseColorToken(token, ctx, false);
     if (parsed) return parsed;
     const override = parseCommandColorOverride(token);
@@ -186,7 +187,7 @@ export const parseMailCommands = (commands: readonly string[], ctx: CommandParse
     if (token === '_live' && !explicitOpacity) opacity = CONTEXT_FILL_LIVE_OPACITY;
   }
 
-  if (!info.stroke || info.stroke.color === undefined) {
+  if (info.stroke?.color === undefined) {
     info.stroke = {
       alpha: CONTEXT_STROKE_OPACITY,
       color: info.fill === 0x000000 ? CONTEXT_STROKE_INVERSION_COLOR : CONTEXT_STROKE_COLOR,
