@@ -40,11 +40,7 @@ export const createNiconiRenderer = async (): Promise<Result<RendererController,
 
   let offsetMs = initialOffset;
   let isVisible = initialVisibility;
-  const options: Options = {
-    format: 'v1',
-    keepCA: true,
-    scale: Math.max(initialScale / 100, 0),
-  };
+  const options: Options = { format: 'v1', keepCA: true, scale: Math.max(initialScale / 100, 0) };
   const clampFps = (value: number) => Math.min(120, Math.max(15, Math.round(Number.isFinite(value) ? value : 60)));
   let frameIntervalMs = 1000 / clampFps(initialFps);
   let lastDrawAt = performance.now();

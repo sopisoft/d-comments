@@ -5,10 +5,7 @@ const meta = {
   title: 'Settings/Fields/SliderField',
   component: SliderField,
   parameters: { layout: 'padded' },
-  args: {
-    configKey: 'comment_area_opacity_percentage',
-    label: 'コメントの透明度',
-  },
+  args: { configKey: 'comment_area_opacity_percentage', label: 'コメントの透明度' },
 } satisfies Meta<typeof SliderField>;
 
 export default meta;

@@ -29,12 +29,7 @@ type LayoutItem = {
 };
 
 type CollisionMap = Map<number, LayoutItem[]>;
-type CollisionState = {
-  top: CollisionMap;
-  bottom: CollisionMap;
-  left: CollisionMap;
-  right: CollisionMap;
-};
+type CollisionState = { top: CollisionMap; bottom: CollisionMap; left: CollisionMap; right: CollisionMap };
 
 const ensureList = (map: CollisionMap, key: number): LayoutItem[] => {
   let list = map.get(key);
@@ -200,12 +195,7 @@ export const applyLayout = (comments: readonly TimelineComment[]): void => {
         : left.index - right.index
   );
 
-  const collision: CollisionState = {
-    bottom: new Map(),
-    left: new Map(),
-    right: new Map(),
-    top: new Map(),
-  };
+  const collision: CollisionState = { bottom: new Map(), left: new Map(), right: new Map(), top: new Map() };
 
   for (const item of sorted) {
     if (item.loc === 'middle') processMovable(item, collision);

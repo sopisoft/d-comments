@@ -9,10 +9,7 @@ const config: StorybookConfig = {
   stories: ['../src/**/*.stories.@(ts|tsx)'],
   staticDirs: ['../.storybook/public', '../src/raw'],
   addons: ['@storybook/addon-a11y', '@storybook/addon-vitest'],
-  framework: {
-    name: '@storybook/react-vite',
-    options: {},
-  },
+  framework: { name: '@storybook/react-vite', options: {} },
   viteFinal: async (config) => {
     config.plugins ??= [];
     config.plugins.push(markdownHtmlPlugin());
@@ -22,9 +19,7 @@ const config: StorybookConfig = {
       '@': path.resolve(rootDir, '../src'),
     };
     config.server ??= {};
-    config.server.watch = {
-      ignored: ['**/.direnv/**', '**/dist/**', '**/.wxt/**', '**/storybook-static/**'],
-    };
+    config.server.watch = { ignored: ['**/.direnv/**', '**/dist/**', '**/.wxt/**', '**/storybook-static/**'] };
     return config;
   },
 };

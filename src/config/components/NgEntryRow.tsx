@@ -30,10 +30,7 @@ export function NgEntryRow({
 }: EntryRowProps): React.ReactElement {
   const [value, setValue] = useState(entry.value);
   const { accent, bg } = ps.pairs;
-  const rowStyle = {
-    background: bg.surface.background,
-    border: `1px solid ${ps.border.default}`,
-  };
+  const rowStyle = { background: bg.surface.background, border: `1px solid ${ps.border.default}` };
 
   if (isEditing) {
     return (
@@ -46,12 +43,7 @@ export function NgEntryRow({
             onKeyDown={(e) => e.key === 'Enter' && onSave(value)}
             placeholder="値を入力"
             flex={1}
-            styles={{
-              input: {
-                background: bg.elevated.background,
-                borderColor: accent.background,
-              },
-            }}
+            styles={{ input: { background: bg.elevated.background, borderColor: accent.background } }}
           />
           <Group gap={4}>
             <Tooltip label="保存">

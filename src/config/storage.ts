@@ -5,10 +5,7 @@ type StorageLike = {
   onChanged: typeof browser.storage.onChanged;
 };
 
-const defaultStorage: StorageLike = {
-  area: browser.storage.local,
-  onChanged: browser.storage.onChanged,
-};
+const defaultStorage: StorageLike = { area: browser.storage.local, onChanged: browser.storage.onChanged };
 
 const clampNumberValue = <TKey extends ConfigKey>(key: TKey, value: number) => {
   const options = getUiOptions(key) as { min?: number | null; max?: number | null } | undefined;
@@ -70,11 +67,7 @@ export const watchConfig = <TKey extends ConfigKey>(
 };
 
 export type NgListKey = 'ng_user_ids' | 'ng_words';
-export type NgEntry = {
-  value: string;
-  enabled: boolean;
-  isRegex?: boolean;
-};
+export type NgEntry = { value: string; enabled: boolean; isRegex?: boolean };
 
 export const addNgEntry = async (key: NgListKey, rawValue: string): Promise<void> => {
   const value = rawValue.trim();

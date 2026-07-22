@@ -30,13 +30,7 @@ export function SearchForm({
 }): React.ReactElement {
   const { styles: ps } = useTheme();
   const inputStyles = { ...ps.inputStyles, label: { color: ps.text.primary } };
-  const form = useForm({
-    initialValues: {
-      sort_option: 'commentCounter',
-      sort_order: '-',
-      word: initialWord ?? '',
-    },
-  });
+  const form = useForm({ initialValues: { sort_option: 'commentCounter', sort_order: '-', word: initialWord ?? '' } });
 
   const runSearch = useCallback(
     async (word: string, sort: SnapShotQuery['_sort']) => {

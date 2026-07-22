@@ -95,10 +95,7 @@ export function FetchPanel({ title }: { title: string }): React.ReactElement {
       if (id === null) return;
       const video = unwrap(await getComments(manager, videoId), 'Failed to fetch comments');
       if (!video) return;
-      const res = await requestMessageResult('add_video', {
-        tabId: id,
-        video: video,
-      });
+      const res = await requestMessageResult('add_video', { tabId: id, video: video });
       const added = unwrap<CommentVideoData[]>(res, 'Adding video failed');
       if (added) applyPlayingResponse(added);
       mergeVideos([video]);
@@ -111,10 +108,7 @@ export function FetchPanel({ title }: { title: string }): React.ReactElement {
       const id = await resolveTabId();
       if (id === null) return;
       if (playingVideos.some((v) => v.videoData.contentId === videoId)) {
-        const res = await requestMessageResult('remove_video', {
-          tabId: id,
-          videoId,
-        });
+        const res = await requestMessageResult('remove_video', { tabId: id, videoId });
         const removed = unwrap<CommentVideoData[]>(res, 'Removing video failed');
         if (removed) applyPlayingResponse(removed);
       } else {

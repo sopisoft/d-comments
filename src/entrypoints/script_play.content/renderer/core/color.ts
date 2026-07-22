@@ -1,9 +1,6 @@
 const clampValue = (value: number, min: number, max: number): number => Math.min(max, Math.max(min, value));
 
-export type RGBAColor = {
-  color: number;
-  alpha?: number;
-};
+export type RGBAColor = { color: number; alpha?: number };
 
 export const COLOR_MAP: Record<string, number> = {
   black: 0x000000,
@@ -72,10 +69,7 @@ const parseHexColor = (token: string, allowAlpha: boolean): RGBAColor | null => 
     if (!allowAlpha && expanded.length === 8) return null;
     const color = Number.parseInt(expanded.slice(0, 6), 16) & 0xffffff;
     if (expanded.length === 8) {
-      return {
-        alpha: clampValue(Number.parseInt(expanded.slice(6, 8), 16) / 255, 0, 1),
-        color,
-      };
+      return { alpha: clampValue(Number.parseInt(expanded.slice(6, 8), 16) / 255, 0, 1), color };
     }
     return { color };
   }
@@ -148,9 +142,7 @@ export const parseCommandColorOverride = (value: string): RGBAColor | null => {
   return null;
 };
 
-export type CommandParseContext = {
-  readonly isPremium: boolean;
-};
+export type CommandParseContext = { readonly isPremium: boolean };
 
 export const parseColorToken = (token: string, ctx: CommandParseContext, allowAlpha: boolean): RGBAColor | null => {
   const named = COLOR_MAP[token];

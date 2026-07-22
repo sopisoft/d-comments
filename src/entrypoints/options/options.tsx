@@ -12,12 +12,7 @@ export function Options(): React.ReactElement {
   return (
     <Tabs defaultValue="configurations" variant="pills">
       <AppShell header={{ height: ui.layout.headerHeight }} padding="lg">
-        <AppShell.Header
-          style={{
-            backgroundColor: ps.bg.elevated,
-            borderBottom: `1px solid ${ps.border.default}`,
-          }}
-        >
+        <AppShell.Header style={{ backgroundColor: ps.bg.elevated, borderBottom: `1px solid ${ps.border.default}` }}>
           <Group h="100%" px="lg" justify="space-between">
             <Title order={4} c={ps.accent}>
               d-comments 設定
@@ -31,12 +26,7 @@ export function Options(): React.ReactElement {
             </Tabs.List>
           </Group>
         </AppShell.Header>
-        <AppShell.Main
-          style={{
-            backgroundColor: ps.bg.surface,
-            color: ps.text.primary,
-          }}
-        >
+        <AppShell.Main style={{ backgroundColor: ps.bg.surface, color: ps.text.primary }}>
           <div style={{ margin: '0 auto', maxWidth: ui.layout.contentMaxWidth }}>
             <Tabs.Panel value="quick">
               <QuickOptionsPanel />

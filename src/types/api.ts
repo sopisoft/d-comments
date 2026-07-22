@@ -1,30 +1,12 @@
-export type ApiSuccess<T> = {
-  meta: {
-    status: 200;
-    id?: string;
-  };
-  data: T;
-};
+export type ApiSuccess<T> = { meta: { status: 200; id?: string }; data: T };
 
-export type ApiError = {
-  meta: {
-    status: 500;
-    id?: string;
-    errorCode?: string;
-    errorMessage?: string;
-  };
-  data: null;
-};
+export type ApiError = { meta: { status: 500; id?: string; errorCode?: string; errorMessage?: string }; data: null };
 
 export type BaseResponse<T> = ApiSuccess<T> | ApiError;
 
 export type SuccessfulResponseData<T extends BaseResponse<unknown>> = T extends ApiSuccess<infer D> ? D : never;
 
-type Thread = {
-  id: number;
-  fork: number;
-  forkLabel: 'owner' | 'main' | 'easy';
-};
+type Thread = { id: number; fork: number; forkLabel: 'owner' | 'main' | 'easy' };
 
 export type NvComment = {
   threadKey: string;
@@ -68,36 +50,14 @@ export type VideoData = BaseResponse<{
       name: string;
       isOfficialAnime: boolean;
       isDisplayAdBanner: boolean;
-      thumbnail: {
-        url: string;
-        smallUrl: string;
-      };
-      viewer: {
-        follow: {
-          isFollowed: boolean;
-          isBookmarked: boolean;
-          token: string;
-          tokenTimestamp: number;
-        };
-      };
+      thumbnail: { url: string; smallUrl: string };
+      viewer: { follow: { isFollowed: boolean; isBookmarked: boolean; token: string; tokenTimestamp: number } };
     } | null;
-    client: {
-      nicosid: string;
-      watchId: string;
-      watchTrackId: string;
-    };
+    client: { nicosid: string; watchId: string; watchTrackId: string };
     comment: {
-      server: {
-        url: string;
-      };
-      keys: {
-        userKey: string;
-      };
-      layers: {
-        index: number;
-        isTranslucent: boolean;
-        threadIds: Thread[];
-      }[];
+      server: { url: string };
+      keys: { userKey: string };
+      layers: { index: number; isTranslucent: boolean; threadIds: Thread[] }[];
       threads: {
         id: Thread['id'];
         fork: Thread['fork'];
@@ -122,40 +82,15 @@ export type VideoData = BaseResponse<{
       id: string; // ContentId
       title: string;
       description: string; // HTML
-      count: {
-        view: number;
-        comment: number;
-        mylist: number;
-        like: number;
-      };
+      count: { view: number; comment: number; mylist: number; like: number };
       duration: number;
-      thumbnail: {
-        url: string;
-        middleUrl: string;
-        largeUrl: string;
-        player: string;
-        ogp: string;
-      };
+      thumbnail: { url: string; middleUrl: string; largeUrl: string; player: string; ogp: string };
     };
   };
 }>;
 
-export type ThreadsDataResponse = BaseResponse<{
-  globalComments: [
-    {
-      id: number;
-      count: number;
-    },
-  ];
-  threads: Threads;
-}>;
+export type ThreadsDataResponse = BaseResponse<{ globalComments: [{ id: number; count: number }]; threads: Threads }>;
 
-export type ThreadKeyResponse = BaseResponse<{
-  threadKey: string;
-}>;
+export type ThreadKeyResponse = BaseResponse<{ threadKey: string }>;
 
-export type Owner = {
-  ownerId: string;
-  ownerName: string;
-  ownerIconUrl: string;
-};
+export type Owner = { ownerId: string; ownerName: string; ownerIconUrl: string };

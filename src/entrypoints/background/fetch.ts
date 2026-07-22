@@ -15,28 +15,18 @@ async function apiFetch<T>(input: RequestInfo, init?: RequestInit): Promise<Resu
 async function buildAuthRequestInit(r: RequestInit): Promise<RequestInit> {
   // Add cookie/credential headers when user is logged-in
   if (!(await getConfig('login'))) return r;
-  const cookie = await browser.cookies.get({
-    name: 'user_session',
-    url: 'https://www.nicovideo.jp',
-  });
+  const cookie = await browser.cookies.get({ name: 'user_session', url: 'https://www.nicovideo.jp' });
   if (!cookie) return r;
   return {
     ...r,
     credentials: 'include',
-    headers: {
-      ...(r.headers as Record<string, string>),
-      Cookie: `user_session=${cookie.value}`,
-    },
+    headers: { ...(r.headers as Record<string, string>), Cookie: `user_session=${cookie.value}` },
   };
 }
 
 export async function videoData(videoId: string): Promise<Result<VideoData, Error>> {
   const url = `https://www.nicovideo.jp/watch/${videoId}?responseType=json`;
-  const req: RequestInit = {
-    cache: 'no-cache',
-    credentials: 'omit',
-    mode: 'cors',
-  };
+  const req: RequestInit = { cache: 'no-cache', credentials: 'omit', mode: 'cors' };
   return apiFetch<VideoData>(url, await buildAuthRequestInit(req));
 }
 
@@ -44,11 +34,7 @@ export async function threadsData(nvComment: NvComment): Promise<Result<ThreadsD
   const { server, threadKey, params } = nvComment;
   const endpoint = `${server}/v1/threads`;
   const req: RequestInit = {
-    body: JSON.stringify({
-      threadKey: threadKey,
-      params: params,
-      additionals: {},
-    }),
+    body: JSON.stringify({ threadKey: threadKey, params: params, additionals: {} }),
     headers: {
       'Content-Type': 'text/plain;charset=UTF-8',
       'x-client-os-type': 'others',
@@ -83,24 +69,14 @@ export async function threadKey(videoId: string): Promise<Result<ThreadKeyRespon
  */
 export async function userData(userId: string): Promise<Result<Owner, Error>> {
   const url = `https://nvapi.nicovideo.jp/v1/users/${userId}`;
-  type UserResponse = {
-    data?: { user?: { nickname?: string; icons?: { small?: string } } };
-  };
+  type UserResponse = { data?: { user?: { nickname?: string; icons?: { small?: string } } } };
   const req: RequestInit = {
-    headers: {
-      'User-Agent': navigator.userAgent ?? '',
-      'x-frontend-id': '6',
-      'x-frontend-version': '0',
-    },
+    headers: { 'User-Agent': navigator.userAgent ?? '', 'x-frontend-id': '6', 'x-frontend-version': '0' },
   };
   const json = await apiFetch<UserResponse>(url, req);
   if (!json.ok) return err(json.error);
   const { nickname, icons } = json.value.data?.user ?? {};
-  return ok({
-    ownerIconUrl: icons?.small || '',
-    ownerId: userId,
-    ownerName: nickname || '',
-  });
+  return ok({ ownerIconUrl: icons?.small || '', ownerId: userId, ownerName: nickname || '' });
 }
 
 /**
@@ -113,9 +89,5 @@ export async function channelData(channelId: string): Promise<Result<Owner, Erro
   const json = await apiFetch<ChannelResponse>(url);
   if (!json.ok) return err(json.error);
   const { name, icon } = json.value.data ?? {};
-  return ok({
-    ownerIconUrl: icon || '',
-    ownerId: channelId,
-    ownerName: name || '',
-  });
+  return ok({ ownerIconUrl: icon || '', ownerId: channelId, ownerName: name || '' });
 }

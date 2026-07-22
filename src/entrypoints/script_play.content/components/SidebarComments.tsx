@@ -133,13 +133,7 @@ export const SidebarComments = ({ threads, config, video, styles }: SidebarComme
     }),
     [config.palette, config.showNicoru, config.alpha, config.fontSize]
   );
-  const { notifyHover } = useSidebarAutoScroll({
-    comments,
-    config,
-    isPopoverOpen: hasActive,
-    video,
-    virtuosoRef,
-  });
+  const { notifyHover } = useSidebarAutoScroll({ comments, config, isPopoverOpen: hasActive, video, virtuosoRef });
   const sectionRef = useRef<HTMLElement | null>(null);
   const prevHoverRef = useRef(false);
   useEffect(() => {

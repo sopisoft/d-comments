@@ -41,10 +41,7 @@ export const CommentDetailView = ({ comment, theme, onSeek, onClose }: CommentDe
   const btnProps = {
     fullWidth: true,
     size: 'xs',
-    styles: {
-      inner: { justifyContent: 'flex-start' },
-      label: { flex: 1, textAlign: 'left' as const },
-    },
+    styles: { inner: { justifyContent: 'flex-start' }, label: { flex: 1, textAlign: 'left' as const } },
   };
   const filledButtonStyle = {
     backgroundColor: theme.palette.accent,
@@ -58,14 +55,7 @@ export const CommentDetailView = ({ comment, theme, onSeek, onClose }: CommentDe
   };
 
   return (
-    <Stack
-      gap="xs"
-      style={{
-        boxSizing: 'border-box',
-        overflow: 'hidden',
-        width: '100%',
-      }}
-    >
+    <Stack gap="xs" style={{ boxSizing: 'border-box', overflow: 'hidden', width: '100%' }}>
       <Group justify="space-between" align="center" gap="xs" wrap="nowrap">
         <Group gap="xs" align="center" wrap="nowrap">
           <Text size="xs" c={theme.palette.text.secondary}>
@@ -105,13 +95,7 @@ export const CommentDetailView = ({ comment, theme, onSeek, onClose }: CommentDe
         <Button
           {...btnProps}
           leftSection={
-            <span
-              style={{
-                display: 'inline-flex',
-                justifyContent: 'center',
-                width: ui.icon.xl,
-              }}
-            >
+            <span style={{ display: 'inline-flex', justifyContent: 'center', width: ui.icon.xl }}>
               <MdPlayArrow size={ui.icon.md} />
             </span>
           }
@@ -123,13 +107,7 @@ export const CommentDetailView = ({ comment, theme, onSeek, onClose }: CommentDe
         <Button
           {...btnProps}
           leftSection={
-            <span
-              style={{
-                display: 'inline-flex',
-                justifyContent: 'center',
-                width: ui.icon.xl,
-              }}
-            >
+            <span style={{ display: 'inline-flex', justifyContent: 'center', width: ui.icon.xl }}>
               <MdPersonOff size={ui.icon.md} />
             </span>
           }
@@ -142,13 +120,7 @@ export const CommentDetailView = ({ comment, theme, onSeek, onClose }: CommentDe
         <Button
           {...btnProps}
           leftSection={
-            <span
-              style={{
-                display: 'inline-flex',
-                justifyContent: 'center',
-                width: ui.icon.xl,
-              }}
-            >
+            <span style={{ display: 'inline-flex', justifyContent: 'center', width: ui.icon.xl }}>
               <MdBlock size={ui.icon.md} />
             </span>
           }

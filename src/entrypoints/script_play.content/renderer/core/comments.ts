@@ -139,14 +139,10 @@ export const buildTimeline = (threads: Threads, fontScale: number): Record<numbe
     const owner = thread.fork === 'owner';
     for (const raw of thread.comments) {
       if (!raw?.body) continue;
-      const info = parseMailCommands(normalizeCommands(raw.commands), {
-        isPremium: raw.isPremium,
-      });
+      const info = parseMailCommands(normalizeCommands(raw.commands), { isPremium: raw.isPremium });
       if (info.invisible) continue;
       const content = raw.body.replace(/\t/g, '\u2003\u2003');
-      const measuredStyle = measureComment(content, info, {
-        disableResize: info.disableResize,
-      });
+      const measuredStyle = measureComment(content, info, { disableResize: info.disableResize });
       const style = applyFontScale(measuredStyle, fontScale);
       const durationVpos = Math.max(1, Math.floor(info.durationMs / 10));
       const laneCount = Math.max(1, style.lineCount);

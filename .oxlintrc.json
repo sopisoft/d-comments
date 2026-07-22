@@ -1,59 +1,40 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
   "ignorePatterns": ["src/generated/**"],
-  "options": {
-    "denyWarnings": true,
-    "reportUnusedDisableDirectives": "error",
-    "typeAware": true,
-    "typeCheck": true
-  },
-  "plugins": ["import", "jest", "jsdoc", "jsx-a11y", "node", "oxc", "promise", "react", "typescript", "unicorn", "vitest"],
+  "options": { "denyWarnings": true, "reportUnusedDisableDirectives": "error", "typeAware": true, "typeCheck": true },
+  "plugins": [
+    "import",
+    "jest",
+    "jsdoc",
+    "jsx-a11y",
+    "node",
+    "oxc",
+    "promise",
+    "react",
+    "typescript",
+    "unicorn",
+    "vitest"
+  ],
   "rules": {
     "capitalized-comments": "error",
-    "eqeqeq": [
-      "error",
-      "always",
-      {
-        "null": "ignore"
-      }
-    ],
+    "eqeqeq": ["error", "always", { "null": "ignore" }],
     "import/no-cycle": "error",
     "import/no-dynamic-require": "error",
-    "no-console": [
-      "error",
-      {
-        "allow": ["error", "info", "warn"]
-      }
-    ],
+    "no-console": ["error", { "allow": ["error", "info", "warn"] }],
     "no-debugger": "error",
     "no-eq-null": "error",
     "no-shadow": "error",
     "no-unused-vars": [
       "error",
-      {
-        "argsIgnorePattern": "^_",
-        "caughtErrorsIgnorePattern": "^_",
-        "varsIgnorePattern": "^_"
-      }
+      { "argsIgnorePattern": "^_", "caughtErrorsIgnorePattern": "^_", "varsIgnorePattern": "^_" }
     ],
     "eslint/no-shadow": "off",
     "no-var": "error",
-    "no-void": [
-      "error",
-      {
-        "allowAsStatement": true
-      }
-    ],
+    "no-void": ["error", { "allowAsStatement": true }],
     "oxc/no-this-in-exported-function": "error",
     "prefer-const": "error",
     "promise/valid-params": "error",
-    "sort-imports": [
-      "error",
-      {
-        "ignoreCase": true,
-        "ignoreDeclarationSort": true
-      }
-    ],
+    "sort-imports": ["error", { "ignoreCase": true, "ignoreDeclarationSort": true }],
     "typescript/explicit-module-boundary-types": "error",
     "typescript/no-deprecated": "error",
     "typescript/no-explicit-any": "error",

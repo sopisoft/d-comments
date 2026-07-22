@@ -11,10 +11,10 @@ export const useConfig = <TKey extends ConfigKey>(
   save: (next: ConfigValue<TKey>) => void;
   isPending: boolean;
 }> => {
-  const storeRef = useRef<{
-    value: ConfigValue<TKey>;
-    listeners: Set<() => void>;
-  }>({ listeners: new Set(), value: getDefaultValue(configKey) });
+  const storeRef = useRef<{ value: ConfigValue<TKey>; listeners: Set<() => void> }>({
+    listeners: new Set(),
+    value: getDefaultValue(configKey),
+  });
 
   useEffect(() => {
     let active = true;

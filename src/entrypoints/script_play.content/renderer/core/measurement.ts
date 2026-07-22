@@ -13,9 +13,7 @@ import type { CommentSize, CommentStyle } from './types';
 const clamp = (value: number, min: number, max: number): number => Math.min(max, Math.max(min, value));
 
 const measurementCanvas = typeof document !== 'undefined' ? document.createElement('canvas') : null;
-const measurementContext = measurementCanvas?.getContext('2d', {
-  willReadFrequently: true,
-});
+const measurementContext = measurementCanvas?.getContext('2d', { willReadFrequently: true });
 
 const ensureContext = (): CanvasRenderingContext2D => {
   if (!measurementContext) throw new Error('Failed to acquire measurement context');
@@ -32,11 +30,7 @@ const computeLineHeightStage = (size: CommentSize, resized: boolean): number => 
   return (COMMENT_STAGE_SIZE.height - charSize * (defaultLineCount / resizedLineCount)) / (resizedLineCount - 1);
 };
 
-type LineSizing = {
-  readonly charStage: number;
-  readonly lineHeightStage: number;
-  readonly widthStage: number;
-};
+type LineSizing = { readonly charStage: number; readonly lineHeightStage: number; readonly widthStage: number };
 
 const computeFontStage = (charSizeStage: number): { fontSize: number; scale: number } => {
   const baseSize = charSizeStage * 0.8;
@@ -81,16 +75,10 @@ const applyLineBreakResize = (
   settings: MeasurementSettings
 ) => {
   if (settings.disableResize || lineCount < LINE_BREAK_COUNT[size])
-    return {
-      charStage: defaultCharStage,
-      lineHeightStage: defaultLineHeightStage,
-    };
+    return { charStage: defaultCharStage, lineHeightStage: defaultLineHeightStage };
   const resizedLineHeightStage = computeLineHeightStage(size, true);
   const ratio = resizedLineHeightStage / defaultLineHeightStage;
-  return {
-    charStage: defaultCharStage * ratio,
-    lineHeightStage: resizedLineHeightStage,
-  };
+  return { charStage: defaultCharStage * ratio, lineHeightStage: resizedLineHeightStage };
 };
 
 const resolveWidthLimitStage = (info: CommandInfo, settings: MeasurementSettings): number | undefined => {
@@ -108,11 +96,7 @@ const enforceWidthLimit = (
 ): LineSizing => {
   const widthStage = measureLinesStage(lines, fontFamily, fontWeight, initialCharStage);
   if (widthLimitStage === undefined || widthStage <= widthLimitStage)
-    return {
-      charStage: initialCharStage,
-      lineHeightStage: initialLineHeightStage,
-      widthStage,
-    };
+    return { charStage: initialCharStage, lineHeightStage: initialLineHeightStage, widthStage };
   const adjusted = adjustForWidthLimit({
     fontFamily,
     fontWeight,
@@ -122,11 +106,7 @@ const enforceWidthLimit = (
     widthLimitStage,
     widthStage,
   });
-  return {
-    charStage: adjusted.charStage,
-    lineHeightStage: adjusted.lineHeightStage,
-    widthStage: adjusted.widthStage,
-  };
+  return { charStage: adjusted.charStage, lineHeightStage: adjusted.lineHeightStage, widthStage: adjusted.widthStage };
 };
 
 const adjustForWidthLimit = ({
@@ -147,11 +127,7 @@ const adjustForWidthLimit = ({
   readonly widthLimitStage: number;
 }) => {
   if (widthStage <= 0 || widthLimitStage <= 0)
-    return {
-      charStage: initialCharStage,
-      lineHeightStage: initialLineHeightStage,
-      widthStage,
-    };
+    return { charStage: initialCharStage, lineHeightStage: initialLineHeightStage, widthStage };
 
   const ratio = widthLimitStage / widthStage;
   let charStage = Math.max(0.1, initialCharStage * ratio);
@@ -176,9 +152,7 @@ const adjustForWidthLimit = ({
   return { charStage, lineHeightStage, widthStage: measuredWidth };
 };
 
-export type MeasurementSettings = {
-  readonly disableResize: boolean;
-};
+export type MeasurementSettings = { readonly disableResize: boolean };
 
 export const measureComment = (body: string, info: CommandInfo, settings: MeasurementSettings): CommentStyle => {
   const explicitLines = body.split(/\r?\n/);

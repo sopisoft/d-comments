@@ -16,12 +16,7 @@ export { parseColorToken };
 export type CommandInfo = {
   size: CommentSize;
   loc: CommentLocation;
-  font: {
-    key: StandardFontName;
-    family: string;
-    weight: number;
-    offset: number;
-  };
+  font: { key: StandardFontName; family: string; weight: number; offset: number };
   durationMs: number;
   fill: number;
   fillAlpha?: number;
@@ -38,11 +33,7 @@ const DEFAULT_FILL = 0xffffff;
 
 const FONT_DEFINITIONS: Record<StandardFontName, FontAttributes> = getFontDefinitions();
 
-const FONT_ALIAS_MAP: Record<string, StandardFontName> = {
-  defont: 'defont',
-  gothic: 'gothic',
-  mincho: 'mincho',
-};
+const FONT_ALIAS_MAP: Record<string, StandardFontName> = { defont: 'defont', gothic: 'gothic', mincho: 'mincho' };
 
 const TOKEN_SPLIT = /\s+/;
 
@@ -67,21 +58,11 @@ const resolveFont = (tokens: readonly string[]) => {
     const key = FONT_ALIAS_MAP[token];
     if (key) {
       const def = FONT_DEFINITIONS[key];
-      return {
-        family: def.family,
-        key,
-        offset: def.offset,
-        weight: def.weight,
-      };
+      return { family: def.family, key, offset: def.offset, weight: def.weight };
     }
   }
   const def = FONT_DEFINITIONS.defont;
-  return {
-    family: def.family,
-    key: 'defont' as StandardFontName,
-    offset: def.offset,
-    weight: def.weight,
-  };
+  return { family: def.family, key: 'defont' as StandardFontName, offset: def.offset, weight: def.weight };
 };
 
 const resolveFill = (tokens: readonly string[], ctx: CommandParseContext): RGBAColor => {
@@ -102,12 +83,7 @@ const createDefaultInfo = (): CommandInfo => {
     disableResize: false,
     durationMs: 3000,
     fill: DEFAULT_FILL,
-    font: {
-      key: 'defont' as StandardFontName,
-      family: def.family,
-      weight: def.weight,
-      offset: def.offset,
-    },
+    font: { key: 'defont' as StandardFontName, family: def.family, weight: def.weight, offset: def.offset },
     isFullWidth: false,
     loc: 'middle',
     size: 'medium',

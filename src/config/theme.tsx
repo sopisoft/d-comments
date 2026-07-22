@@ -28,10 +28,7 @@ export const ThemedMantineProvider = ({ children }: { children: ReactNode }): Re
   const theme = useMemo(() => {
     if (isPending) return null;
     const currentScheme = schemes[mode];
-    const colors = {
-      ...DEFAULT_THEME.colors,
-      ...currentScheme.colors,
-    } satisfies typeof DEFAULT_THEME.colors;
+    const colors = { ...DEFAULT_THEME.colors, ...currentScheme.colors } satisfies typeof DEFAULT_THEME.colors;
     return createTheme({
       colors,
       defaultRadius: ui.radius.sm,
@@ -69,11 +66,7 @@ export const ThemedMantineProvider = ({ children }: { children: ReactNode }): Re
     <div
       ref={containerRef}
       {...{ [THEME_ROOT_ATTR]: '' }}
-      style={{
-        backgroundColor: styles.bg.surface,
-        color: styles.text.primary,
-        display: 'contents',
-      }}
+      style={{ backgroundColor: styles.bg.surface, color: styles.text.primary, display: 'contents' }}
     >
       <MantineProvider
         theme={theme}

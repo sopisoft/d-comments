@@ -5,15 +5,9 @@ type RuntimeSender = Pick<typeof browser.runtime, 'sendMessage' | 'onMessage'>;
 
 type TabsApi = Pick<typeof browser.tabs, 'query' | 'sendMessage'>;
 
-type RuntimeEnvironment = {
-  runtime: RuntimeSender;
-  tabs?: TabsApi;
-};
+type RuntimeEnvironment = { runtime: RuntimeSender; tabs?: TabsApi };
 
-const defaultEnvironment: RuntimeEnvironment = {
-  runtime: browser.runtime,
-  tabs: browser.tabs,
-};
+const defaultEnvironment: RuntimeEnvironment = { runtime: browser.runtime, tabs: browser.tabs };
 
 const resolveEnv = (env?: Partial<RuntimeEnvironment>): RuntimeEnvironment => ({
   runtime: env?.runtime ?? defaultEnvironment.runtime,

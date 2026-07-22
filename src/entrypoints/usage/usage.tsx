@@ -43,15 +43,9 @@ export function Usage(): React.ReactElement {
   }, []);
 
   const shellStyles = {
-    header: {
-      backgroundColor: ps.bg.elevated,
-      borderBottom: `1px solid ${ps.border.default}`,
-    },
+    header: { backgroundColor: ps.bg.elevated, borderBottom: `1px solid ${ps.border.default}` },
     main: { backgroundColor: ps.bg.base },
-    navbar: {
-      backgroundColor: ps.bg.elevated,
-      borderRight: `1px solid ${ps.border.default}`,
-    },
+    navbar: { backgroundColor: ps.bg.elevated, borderRight: `1px solid ${ps.border.default}` },
     root: { backgroundColor: ps.bg.base },
   };
 

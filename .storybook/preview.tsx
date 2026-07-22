@@ -11,14 +11,7 @@ import { configureBrowserMock } from './browser';
 const ThemeCanvas = ({ children }: { children: ReactNode }) => {
   const { styles } = useTheme();
   return (
-    <div
-      style={{
-        background: styles.bg.base,
-        color: styles.text.primary,
-        minHeight: '100vh',
-        padding: ui.space.lg,
-      }}
-    >
+    <div style={{ background: styles.bg.base, color: styles.text.primary, minHeight: '100vh', padding: ui.space.lg }}>
       {children}
     </div>
   );
@@ -96,19 +89,11 @@ const preview: Preview = {
     theme: {
       description: '表示テーマ',
       defaultValue: 'auto',
-      toolbar: {
-        icon: 'paintbrush',
-        items: ['light', 'dark', 'auto'],
-      },
+      toolbar: { icon: 'paintbrush', items: ['light', 'dark', 'auto'] },
     },
   },
   decorators: [withExtensionTheme],
-  parameters: {
-    a11y: { test: 'error' },
-    controls: { expanded: true },
-    extension: { themeMode: 'auto' },
-    popup: false,
-  },
+  parameters: { a11y: { test: 'error' }, controls: { expanded: true }, extension: { themeMode: 'auto' }, popup: false },
 };
 
 export default preview;

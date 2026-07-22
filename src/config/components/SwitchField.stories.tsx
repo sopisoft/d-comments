@@ -5,11 +5,7 @@ const meta = {
   title: 'Settings/Fields/SwitchField',
   component: SwitchField,
   parameters: { layout: 'padded' },
-  args: {
-    configKey: 'auto_search',
-    label: '自動検索',
-    description: 'ポップアップ表示時に検索します',
-  },
+  args: { configKey: 'auto_search', label: '自動検索', description: 'ポップアップ表示時に検索します' },
 } satisfies Meta<typeof SwitchField>;
 
 export default meta;

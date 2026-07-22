@@ -123,9 +123,7 @@ export default defineContentScript({
         if (!firstVideo) return ok([]);
         const videoDataResult = await getComments(commentManager, firstVideo.contentId);
         if (!videoDataResult.ok) return err(videoDataResult.error);
-        const addedRes = await requestMessageResult('add_video', {
-          video: videoDataResult.value,
-        });
+        const addedRes = await requestMessageResult('add_video', { video: videoDataResult.value });
         return addedRes.ok ? ok(addedRes.value as CommentVideoData[]) : err(addedRes.error);
       });
     };

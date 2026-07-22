@@ -5,10 +5,7 @@ const meta = {
   title: 'Settings/Fields/SegmentedControlField',
   component: SegmentedControlField,
   parameters: { layout: 'padded' },
-  args: {
-    configKey: 'theme_color_mode',
-    label: 'カラーモード',
-  },
+  args: { configKey: 'theme_color_mode', label: 'カラーモード' },
 } satisfies Meta<typeof SegmentedControlField>;
 
 export default meta;

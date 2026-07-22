@@ -43,14 +43,7 @@ const comments: NvCommentItem[] = Array.from({ length: 50 }, (_, index) => {
   };
 });
 
-const threads: Threads = [
-  {
-    id: 1,
-    fork: 'main',
-    commentCount: comments.length,
-    comments,
-  },
-];
+const threads: Threads = [{ id: 1, fork: 'main', commentCount: comments.length, comments }];
 
 const meta = {
   title: 'Sidebar/SidebarComments',

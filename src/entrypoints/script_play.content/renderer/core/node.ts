@@ -110,11 +110,7 @@ const buildTexture = (ctx: NodeContext, style: TextStyle, text: string, resoluti
   wrap.interactiveChildren = false;
   wrap.addChild(temp);
 
-  const texture = ctx.options.renderer.textureGenerator.generateTexture({
-    antialias: true,
-    resolution,
-    target: wrap,
-  });
+  const texture = ctx.options.renderer.textureGenerator.generateTexture({ antialias: true, resolution, target: wrap });
 
   temp.destroy({ style: false, texture: true, textureSource: true });
   wrap.destroy({ children: true });

@@ -51,9 +51,7 @@ export async function videoWrapper(): Promise<Root | undefined> {
   if (!sideMenu) {
     sideMenu = document.createElement('div');
     sideMenu.id = 'd-comments-side';
-    Object.assign(sideMenu.style, {
-      zIndex: '10',
-    });
+    Object.assign(sideMenu.style, { zIndex: '10' });
     wrapper.append(sideMenu);
   } else if (!sideMenu.parentElement) {
     wrapper.append(sideMenu);

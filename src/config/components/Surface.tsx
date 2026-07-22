@@ -13,11 +13,7 @@ export type SurfaceProps = Omit<PaperProps, 'style'> & {
 export function Surface({ tone = 'elevated', style, ...props }: SurfaceProps): React.ReactElement {
   const { styles: ps } = useTheme();
   const background = ps.bg[tone] as string;
-  const surfaceStyle: CSSProperties = {
-    background,
-    border: ps.panel.border,
-    ...style,
-  };
+  const surfaceStyle: CSSProperties = { background, border: ps.panel.border, ...style };
 
   return <Paper {...props} style={surfaceStyle} />;
 }

@@ -23,9 +23,6 @@ export interface ProtocolMap {
 export type MessageType = keyof ProtocolMap;
 export type MessagePayload<TType extends MessageType> = Parameters<ProtocolMap[TType]>[0];
 export type MessageResponse<TType extends MessageType> = ReturnType<ProtocolMap[TType]>;
-export type Message<TType extends MessageType> = {
-  type: TType;
-  payload: MessagePayload<TType>;
-};
+export type Message<TType extends MessageType> = { type: TType; payload: MessagePayload<TType> };
 
 export type MaybePromise<TValue> = TValue | Promise<TValue>;

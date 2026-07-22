@@ -1,10 +1,7 @@
 import { Application, Container } from 'pixi.js';
 import { CANVAS_HEIGHT, CANVAS_WIDTH } from './constants';
 
-export type PixiScene = {
-  app: Application;
-  layer: Container;
-};
+export type PixiScene = { app: Application; layer: Container };
 
 export async function createPixiScene(overlay: HTMLElement): Promise<PixiScene> {
   const app = new Application();

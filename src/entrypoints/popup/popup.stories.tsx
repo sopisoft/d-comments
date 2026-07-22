@@ -25,13 +25,5 @@ export const OnDAnimePlayingPage: Story = {
 };
 
 export const OnOtherPage: Story = {
-  parameters: {
-    extension: {
-      activeTab: {
-        id: 11,
-        title: '別のページ',
-        url: 'https://example.com/',
-      },
-    },
-  },
+  parameters: { extension: { activeTab: { id: 11, title: '別のページ', url: 'https://example.com/' } } },
 };

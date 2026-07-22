@@ -111,19 +111,9 @@ export const SidebarProvider = ({ children }: { children: ReactNode }): ReactEle
 export const useSidebar = (): SidebarConfig => useContext(SidebarContext);
 
 export const createSidebarStyles = (c: SidebarConfig): Record<string, CSSProperties> => ({
-  header: {
-    padding: `${ui.space.sm}px ${ui.space.md}px`,
-    borderBottom: `1px solid ${c.alpha(0.08)}`,
-    flexShrink: 0,
-  },
+  header: { padding: `${ui.space.sm}px ${ui.space.md}px`, borderBottom: `1px solid ${c.alpha(0.08)}`, flexShrink: 0 },
   list: { flex: 1, minHeight: 0, overflow: 'hidden' },
-  main: {
-    flex: 1,
-    display: 'flex',
-    flexDirection: 'column',
-    overflow: 'hidden',
-    minHeight: 0,
-  },
+  main: { flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', minHeight: 0 },
   root: {
     position: 'relative',
     height: '100%',

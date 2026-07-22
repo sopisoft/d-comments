@@ -8,10 +8,7 @@ const pkg = JSON.parse(fs.readFileSync('package.json', 'utf-8'));
 // See https://wxt.dev/api/config.html
 export default defineConfig({
   browser: 'firefox',
-  webExt: {
-    chromiumProfile: path.resolve('.wxt/chrome-profile'),
-    keepProfileChanges: true,
-  },
+  webExt: { chromiumProfile: path.resolve('.wxt/chrome-profile'), keepProfileChanges: true },
   manifest: ({ browser }) => ({
     name: pkg.displayName,
     short_name: pkg.name,
@@ -31,9 +28,7 @@ export default defineConfig({
           browser_specific_settings: {
             gecko: {
               id: '{7817f7db-9b81-4857-8e67-d5c32aa6b52e}',
-              data_collection_permissions: {
-                required: ['websiteContent'],
-              },
+              data_collection_permissions: { required: ['websiteContent'] },
             },
           },
         }
@@ -44,18 +39,11 @@ export default defineConfig({
   outDir: 'dist',
   publicDir: 'src/raw',
   srcDir: 'src',
-  vite: () => ({
-    plugins: [markdownHtmlPlugin()],
-    optimizeDeps: {
-      entries: ['src/entrypoints/**/*.html'],
-    },
-  }),
+  vite: () => ({ plugins: [markdownHtmlPlugin()], optimizeDeps: { entries: ['src/entrypoints/**/*.html'] } }),
   hooks: {
     'vite:devServer:extendConfig': (config) => {
       config.server ??= {};
-      config.server.watch = {
-        ignored: ['**/.direnv/**', '**/dist/**', '**/.wxt/**'],
-      };
+      config.server.watch = { ignored: ['**/.direnv/**', '**/dist/**', '**/.wxt/**'] };
     },
   },
 });

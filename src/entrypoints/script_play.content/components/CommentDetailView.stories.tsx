@@ -59,10 +59,6 @@ export const Default: Story = {
 
 function ThemeAwareCommentDetail(args: React.ComponentProps<typeof CommentDetailView>): React.ReactElement {
   const { palette } = useTheme();
-  const theme: ThemeProps = {
-    ...args.theme,
-    alpha: (a) => ui.alpha(palette.text.primary, a),
-    palette,
-  };
+  const theme: ThemeProps = { ...args.theme, alpha: (a) => ui.alpha(palette.text.primary, a), palette };
   return <CommentDetailView {...args} theme={theme} />;
 }

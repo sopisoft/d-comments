@@ -48,10 +48,7 @@ export function OtherPanel(): React.ReactElement {
   }, []);
 
   const manifest = browser.runtime.getManifest();
-  const panelStyle = {
-    background: ps.bg.elevated,
-    border: `1px solid ${ps.border.default}`,
-  };
+  const panelStyle = { background: ps.bg.elevated, border: `1px solid ${ps.border.default}` };
   const linkIcon = <MdOpenInNew size={ui.icon.xs} style={{ opacity: 0.6 }} />;
 
   return (
@@ -116,12 +113,7 @@ export function OtherPanel(): React.ReactElement {
             <Accordion
               variant="contained"
               radius="sm"
-              styles={{
-                item: {
-                  background: ps.bg.base,
-                  borderColor: ps.border.default,
-                },
-              }}
+              styles={{ item: { background: ps.bg.base, borderColor: ps.border.default } }}
             >
               {Object.entries(stored).map(([key, value]) => (
                 <Accordion.Item value={key} key={key}>

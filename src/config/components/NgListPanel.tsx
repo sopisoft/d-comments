@@ -90,10 +90,7 @@ function Section({
     if (v) await onUpdate(entries.map((e) => (e.value === editing ? { ...e, value: v } : e)));
     setEditing(null);
   };
-  const boxStyle = {
-    background: bg.elevated.background,
-    border: `1px solid ${ps.border.default}`,
-  };
+  const boxStyle = { background: bg.elevated.background, border: `1px solid ${ps.border.default}` };
   return (
     <Paper p="md" radius="md" style={boxStyle}>
       <Stack gap="md">
@@ -126,10 +123,7 @@ function Section({
               flex={1}
               size="sm"
               styles={{
-                input: {
-                  background: bg.surface.background,
-                  borderColor: ps.border.default,
-                },
+                input: { background: bg.surface.background, borderColor: ps.border.default },
                 label: { color: ps.text.primary },
               }}
             />
@@ -143,10 +137,7 @@ function Section({
             p="lg"
             radius="sm"
             ta="center"
-            style={{
-              background: bg.base.background,
-              border: `1px dashed ${ps.border.subtle}`,
-            }}
+            style={{ background: bg.base.background, border: `1px dashed ${ps.border.subtle}` }}
           >
             <Text size="sm" c={ps.text.muted}>
               登録されていません

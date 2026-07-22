@@ -5,11 +5,7 @@ import { ui } from '@/config/theme';
 import { useConfig } from '../hooks/useConfigs';
 import { useTheme } from '../hooks/useTheme';
 
-type FieldProps<TKey extends ConfigKey> = {
-  configKey: TKey;
-  label: string;
-  description?: string;
-};
+type FieldProps<TKey extends ConfigKey> = { configKey: TKey; label: string; description?: string };
 
 type NumericOptions = { min: number; max: number; step?: number; unit?: string };
 type SegmentedOption = { value: string; label: string; icon?: React.ComponentType<{ size?: number }> };
@@ -33,15 +29,8 @@ const isSegmentedOptions = (options: unknown): options is SegmentedOption[] =>
 const useFieldAppearance = () => {
   const { styles: ps } = useTheme();
   return useMemo(() => {
-    const textStyles = {
-      description: { color: ps.text.secondary },
-      label: { color: ps.text.primary },
-    } as const;
-    return {
-      inputStyles: { ...ps.inputStyles, ...textStyles },
-      ps,
-      textStyles,
-    } as const;
+    const textStyles = { description: { color: ps.text.secondary }, label: { color: ps.text.primary } } as const;
+    return { inputStyles: { ...ps.inputStyles, ...textStyles }, ps, textStyles } as const;
   }, [ps]);
 };
 
@@ -142,11 +131,7 @@ export const CheckboxGroupField = ({
         p="sm"
         mt="sm"
         radius="sm"
-        style={{
-          background: ps.bg.surface,
-          border: ps.panel.border,
-          color: ps.text.primary,
-        }}
+        style={{ background: ps.bg.surface, border: ps.panel.border, color: ps.text.primary }}
       >
         <Stack gap="sm">
           {defaultValue.map((item) => {

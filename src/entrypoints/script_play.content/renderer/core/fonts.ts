@@ -1,29 +1,13 @@
 const fontTemplates = {
-  arial: {
-    font: 'Arial, "ＭＳ Ｐゴシック", "MS PGothic", MSPGothic, MS-PGothic',
-    offset: 0.01,
-    weight: 600,
-  },
+  arial: { font: 'Arial, "ＭＳ Ｐゴシック", "MS PGothic", MSPGothic, MS-PGothic', offset: 0.01, weight: 600 },
   gothic: {
     font: '"游ゴシック体", "游ゴシック", "Yu Gothic", YuGothic, yugothic, YuGo-Medium',
     offset: -0.04,
     weight: 400,
   },
-  gulim: {
-    font: 'Gulim, "黒体", SimHei',
-    offset: 0.03,
-    weight: 400,
-  },
-  macGothic1: {
-    font: '"ヒラギノ角ゴシック", "Hiragino Sans", HiraginoSans',
-    offset: -0.05,
-    weight: 600,
-  },
-  macGothic2: {
-    font: '"ヒラギノ角ゴシック", "Hiragino Sans", HiraginoSans',
-    offset: -0.04,
-    weight: 300,
-  },
+  gulim: { font: 'Gulim, "黒体", SimHei', offset: 0.03, weight: 400 },
+  macGothic1: { font: '"ヒラギノ角ゴシック", "Hiragino Sans", HiraginoSans', offset: -0.05, weight: 600 },
+  macGothic2: { font: '"ヒラギノ角ゴシック", "Hiragino Sans", HiraginoSans', offset: -0.04, weight: 300 },
   macGothicPro3: {
     font: '"ヒラギノ角ゴ ProN W3", HiraKakuProN-W3, "ヒラギノ角ゴ ProN", HiraKakuProN, "Hiragino Kaku Gothic ProN"',
     offset: -0.04,
@@ -39,31 +23,11 @@ const fontTemplates = {
     offset: -0.02,
     weight: 300,
   },
-  mincho: {
-    font: '"游明朝体", "游明朝", "Yu Mincho", YuMincho, yumincho, YuMin-Medium',
-    offset: -0.01,
-    weight: 400,
-  },
-  sansSerif400: {
-    font: 'sans-serif',
-    offset: 0,
-    weight: 400,
-  },
-  sansSerif600: {
-    font: 'sans-serif',
-    offset: 0,
-    weight: 600,
-  },
-  serif: {
-    font: 'serif',
-    offset: 0,
-    weight: 400,
-  },
-  simsun: {
-    font: '"宋体", SimSun',
-    offset: 0.135,
-    weight: 400,
-  },
+  mincho: { font: '"游明朝体", "游明朝", "Yu Mincho", YuMincho, yumincho, YuMin-Medium', offset: -0.01, weight: 400 },
+  sansSerif400: { font: 'sans-serif', offset: 0, weight: 400 },
+  sansSerif600: { font: 'sans-serif', offset: 0, weight: 600 },
+  serif: { font: 'serif', offset: 0, weight: 400 },
+  simsun: { font: '"宋体", SimSun', offset: 0.135, weight: 400 },
 } as const;
 
 const build = (templates: ReadonlyArray<{ font: string; offset: number; weight: number }>) =>
@@ -121,12 +85,7 @@ const fontSets = {
 
 export type StandardFontName = 'defont' | 'gothic' | 'mincho';
 
-export type FontAttributes = {
-  key: StandardFontName;
-  family: string;
-  weight: number;
-  offset: number;
-};
+export type FontAttributes = { key: StandardFontName; family: string; weight: number; offset: number };
 
 const detectPlatform = (): keyof typeof fontSets => {
   if (typeof navigator === 'undefined') return 'other';

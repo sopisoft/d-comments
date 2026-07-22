@@ -103,21 +103,14 @@ export const CommentCardView = ({
         <Stack gap="xs" style={{ flex: 1, minWidth: 0 }}>
           <Text
             lineClamp={4}
-            style={{
-              fontSize: theme.fontSizePx ?? ui.font.size.md,
-              textAlign: 'left',
-              wordBreak: 'break-word',
-            }}
+            style={{ fontSize: theme.fontSizePx ?? ui.font.size.md, textAlign: 'left', wordBreak: 'break-word' }}
           >
             {comment.body}
           </Text>
           <Badge
             variant="light"
             size="sm"
-            style={{
-              backgroundColor: theme.palette.bg.surface,
-              color: theme.palette.text.secondary,
-            }}
+            style={{ backgroundColor: theme.palette.bg.surface, color: theme.palette.text.secondary }}
           >
             {vposToTime(comment.vposMs)}
           </Badge>

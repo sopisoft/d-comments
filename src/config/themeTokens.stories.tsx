@@ -4,29 +4,18 @@ import { readableTextOnHex } from '@/lib/color';
 import { useTheme } from './hooks/useTheme';
 import { ui } from './themeTokens';
 
-const meta = {
-  title: 'Foundation/Design tokens',
-  parameters: { layout: 'padded' },
-} satisfies Meta;
+const meta = { title: 'Foundation/Design tokens', parameters: { layout: 'padded' } } satisfies Meta;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const ColorPalette: Story = {
-  render: () => <ColorPaletteStory />,
-};
+export const ColorPalette: Story = { render: () => <ColorPaletteStory /> };
 
-export const Spacing: Story = {
-  render: () => <SpacingStory />,
-};
+export const Spacing: Story = { render: () => <SpacingStory /> };
 
-export const Radii: Story = {
-  render: () => <RadiiStory />,
-};
+export const Radii: Story = { render: () => <RadiiStory /> };
 
-export const Typography: Story = {
-  render: () => <TypographyStory />,
-};
+export const Typography: Story = { render: () => <TypographyStory /> };
 
 function ColorPaletteStory(): React.ReactElement {
   const { palette } = useTheme();
@@ -72,11 +61,7 @@ function SpacingStory(): React.ReactElement {
         {Object.entries(ui.space).map(([name, value]) => (
           <Paper
             key={name}
-            style={{
-              background: palette.bg.deep,
-              border: `1px solid ${palette.border.subtle}`,
-              padding: value,
-            }}
+            style={{ background: palette.bg.deep, border: `1px solid ${palette.border.subtle}`, padding: value }}
           >
             <Group justify="space-between" align="center">
               <Text size="sm" fw={ui.font.weight.semibold}>

@@ -10,9 +10,7 @@ export function IdForm({ addPlaying }: { addPlaying: (id: string) => Promise<voi
   const { styles: ps } = useTheme();
   const form = useForm({
     initialValues: { id: '' },
-    validate: {
-      id: (v) => (VIDEO_ID_REGEX.test(v) ? null : '動画IDの形式が正しくありません'),
-    },
+    validate: { id: (v) => (VIDEO_ID_REGEX.test(v) ? null : '動画IDの形式が正しくありません') },
   });
 
   return (

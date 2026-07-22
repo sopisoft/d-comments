@@ -50,12 +50,7 @@ export const VideoCard = memo(function VideoCard({
           <Image
             src={item.thumbnailUrl}
             alt={item.title}
-            style={{
-              height: '100%',
-              objectFit: 'cover',
-              objectPosition: 'center',
-              width: '100%',
-            }}
+            style={{ height: '100%', objectFit: 'cover', objectPosition: 'center', width: '100%' }}
           />
           {item.channelId && (
             <Badge
@@ -65,9 +60,7 @@ export const VideoCard = memo(function VideoCard({
               size="xs"
               color={item.isDAnime ? 'orange' : 'cyan'}
               variant="filled"
-              style={{
-                textTransform: 'none',
-              }}
+              style={{ textTransform: 'none' }}
             >
               {item.isDAnime ? 'dアニメ' : '公式'}
             </Badge>

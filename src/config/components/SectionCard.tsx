@@ -18,15 +18,7 @@ export function SectionCard({
 }): React.ReactElement {
   const { styles: ps } = useTheme();
   return (
-    <Surface
-      radius="md"
-      p="lg"
-      style={{
-        margin: '0 auto',
-        maxWidth: '56rem',
-        width: '100%',
-      }}
-    >
+    <Surface radius="md" p="lg" style={{ margin: '0 auto', maxWidth: '56rem', width: '100%' }}>
       <Stack gap="lg">
         <Group gap="sm" align="flex-start">
           {Icon && (

@@ -41,10 +41,7 @@ export function Popup(): React.ReactElement {
         header={{ height: ui.layout.headerHeight }}
         padding="md"
         styles={{
-          header: {
-            backgroundColor: ps.bg.elevated,
-            borderBottom: `1px solid ${ps.border.default}`,
-          },
+          header: { backgroundColor: ps.bg.elevated, borderBottom: `1px solid ${ps.border.default}` },
           main: { backgroundColor: ps.bg.surface },
           root: { backgroundColor: ps.bg.surface },
         }}

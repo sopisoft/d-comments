@@ -18,11 +18,7 @@ export type WorkInfo = {
 
 const getWorkInfo = async (): Promise<Result<WorkInfo, Error>> => {
   const partId = new URLSearchParams(location.search).get('partId') ?? '';
-  const params = new URLSearchParams({
-    defaultPlay: '5',
-    partId,
-    viewType: '5',
-  });
+  const params = new URLSearchParams({ defaultPlay: '5', partId, viewType: '5' });
   const url = `https://animestore.docomo.ne.jp/animestore/rest/WS010105?${params}`;
   return fetch(url, { cache: 'no-cache', method: 'GET' })
     .then((res) => res.json() as Promise<WorkInfo>)

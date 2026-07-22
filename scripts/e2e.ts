@@ -40,8 +40,5 @@ const result = spawnSync('pnpm', ['exec', 'wxt', 'build', '-b', 'chrome', '--mv3
 });
 if (result.status !== 0) process.exit(result.status ?? 1);
 
-const testResult = spawnSync('pnpm', ['exec', 'playwright', 'test'], {
-  env: environment,
-  stdio: 'inherit',
-});
+const testResult = spawnSync('pnpm', ['exec', 'playwright', 'test'], { env: environment, stdio: 'inherit' });
 process.exit(testResult.status ?? 1);
