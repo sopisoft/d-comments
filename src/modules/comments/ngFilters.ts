@@ -7,15 +7,13 @@ export type NgFilter = (comment: CommentShape) => boolean;
 const REGEX_PREFIX = 're:' as const;
 const SLASH_REGEX = /^\/(.*)\/(i?)$/;
 
-type WordRule = {
-  test: (value: string) => boolean;
-};
+type WordRule = { test: (value: string) => boolean };
 
 const toRegex = (raw: string): RegExp | null => {
   const normalized = raw.trim();
   if (!normalized) return null;
   const match = normalized.match(SLASH_REGEX);
-  const source = match ? match[1] : normalized;
+  const source = match?.[1] ?? normalized;
   const flags = match ? match[2] : undefined;
   return new RegExp(source, flags);
 };
@@ -41,11 +39,7 @@ export const normalizeNgList = (value: NgEntry[]): NgEntry[] => {
     const rawValue = item.value.trim();
     if (!rawValue || seen.has(rawValue)) continue;
     seen.add(rawValue);
-    normalized.push({
-      enabled: item.enabled !== false,
-      isRegex: item.isRegex === true,
-      value: rawValue,
-    });
+    normalized.push({ enabled: item.enabled !== false, isRegex: item.isRegex === true, value: rawValue });
   }
   return normalized;
 };

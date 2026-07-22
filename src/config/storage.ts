@@ -5,10 +5,7 @@ type StorageLike = {
   onChanged: typeof browser.storage.onChanged;
 };
 
-const defaultStorage: StorageLike = {
-  area: browser.storage.local,
-  onChanged: browser.storage.onChanged,
-};
+const defaultStorage: StorageLike = { area: browser.storage.local, onChanged: browser.storage.onChanged };
 
 const clampNumberValue = <TKey extends ConfigKey>(key: TKey, value: number) => {
   const options = getUiOptions(key) as { min?: number | null; max?: number | null } | undefined;
@@ -49,15 +46,16 @@ export const setConfig = async <TKey extends ConfigKey>(
   await storage.area.set({ [key]: nextValue });
 };
 
-export const watchConfig = async <TKey extends ConfigKey>(
+export const watchConfig = <TKey extends ConfigKey>(
   key: TKey,
   callback: (newValue: ConfigValue<TKey>, oldValue: ConfigValue<TKey>) => void,
   storageOverride?: Partial<StorageLike>
-): Promise<() => void> => {
+): (() => void) => {
   const storage = resolveStorage(storageOverride);
   const listener = (changes: Record<string, Browser.storage.StorageChange>, areaName: string) => {
     if (areaName !== 'local' || !(key in changes)) return;
     const change = changes[key];
+    if (!change) return;
     const newVal = change.newValue as ConfigValue<TKey> | undefined;
     const oldVal = change.oldValue as ConfigValue<TKey> | undefined;
     callback(resolveValue(key, newVal), resolveValue(key, oldVal));
@@ -69,11 +67,7 @@ export const watchConfig = async <TKey extends ConfigKey>(
 };
 
 export type NgListKey = 'ng_user_ids' | 'ng_words';
-export type NgEntry = {
-  value: string;
-  enabled: boolean;
-  isRegex?: boolean;
-};
+export type NgEntry = { value: string; enabled: boolean; isRegex?: boolean };
 
 export const addNgEntry = async (key: NgListKey, rawValue: string): Promise<void> => {
   const value = rawValue.trim();

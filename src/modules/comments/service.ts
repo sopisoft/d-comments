@@ -7,11 +7,7 @@ export type CommentService = {
   fetchComments(nvComment: NvComment): Promise<Result<SuccessfulResponseData<ThreadsDataResponse>, Error>>;
 };
 
-type MessageEnvelope<T> = {
-  meta?: { status?: number; errorMessage?: string };
-  data?: T;
-  error?: string;
-};
+type MessageEnvelope<T> = { meta?: { status?: number; errorMessage?: string }; data?: T; error?: string };
 
 const isEnvelope = <T>(value: unknown): value is MessageEnvelope<T> => typeof value === 'object' && value !== null;
 

@@ -1,25 +1,37 @@
 import { Checkbox, Input, NumberInput, Paper, SegmentedControl, Slider, Stack, Switch } from '@mantine/core';
+import { useMemo } from 'react';
 import { type ConfigKey, type ConfigKeysWithUIType, type ConfigValue, getUiOptions } from '@/config/defaults';
+import { ui } from '@/config/theme';
 import { useConfig } from '../hooks/useConfigs';
 import { useTheme } from '../hooks/useTheme';
 
-type FieldProps<TKey extends ConfigKey> = {
-  configKey: TKey;
-  label: string;
-  description?: string;
+type FieldProps<TKey extends ConfigKey> = { configKey: TKey; label: string; description?: string };
+
+type NumericOptions = { min: number; max: number; step?: number; unit?: string };
+type SegmentedOption = { value: string; label: string; icon?: React.ComponentType<{ size?: number }> };
+
+const isNumericOptions = (options: unknown): options is NumericOptions => {
+  if (typeof options !== 'object' || options === null) return false;
+  const candidate = options as Record<string, unknown>;
+  return typeof candidate.min === 'number' && typeof candidate.max === 'number';
 };
+
+const isSegmentedOptions = (options: unknown): options is SegmentedOption[] =>
+  Array.isArray(options) &&
+  options.every(
+    (option): option is SegmentedOption =>
+      typeof option === 'object' &&
+      option !== null &&
+      typeof option.value === 'string' &&
+      typeof option.label === 'string'
+  );
 
 const useFieldAppearance = () => {
   const { styles: ps } = useTheme();
-  const textStyles = {
-    description: { color: ps.text.secondary },
-    label: { color: ps.text.primary },
-  } as const;
-  return {
-    inputStyles: { ...ps.inputStyles, ...textStyles },
-    ps,
-    textStyles,
-  } as const;
+  return useMemo(() => {
+    const textStyles = { description: { color: ps.text.secondary }, label: { color: ps.text.primary } } as const;
+    return { inputStyles: { ...ps.inputStyles, ...textStyles }, ps, textStyles } as const;
+  }, [ps]);
 };
 
 export const SwitchField = ({
@@ -45,8 +57,9 @@ export const NumberField = ({
   configKey,
   label,
   description,
-}: FieldProps<ConfigKeysWithUIType<'number'>>): React.ReactElement => {
-  const options = getUiOptions(configKey) as { min: number; max: number; step?: number };
+}: FieldProps<ConfigKeysWithUIType<'number'>>): React.ReactElement | null => {
+  const options = getUiOptions(configKey);
+  if (!isNumericOptions(options)) return null;
   const { inputStyles } = useFieldAppearance();
   const { currentValue, save } = useConfig(configKey);
   return (
@@ -70,13 +83,10 @@ export const SliderField = ({
   configKey,
   label,
   description,
-}: FieldProps<ConfigKeysWithUIType<'slider'>>): React.ReactElement => {
-  const { min, max, step, unit } = getUiOptions(configKey) as {
-    min: number;
-    max: number;
-    step: number;
-    unit?: string;
-  };
+}: FieldProps<ConfigKeysWithUIType<'slider'>>): React.ReactElement | null => {
+  const options = getUiOptions(configKey);
+  if (!isNumericOptions(options)) return null;
+  const { min, max, step, unit } = options;
   const { textStyles } = useFieldAppearance();
   const { currentValue, save } = useConfig(configKey);
   const marks = unit
@@ -88,6 +98,7 @@ export const SliderField = ({
   return (
     <Input.Wrapper label={label} description={description} styles={textStyles}>
       <Slider
+        thumbLabel={label}
         value={Number(currentValue)}
         onChange={save}
         min={min}
@@ -120,11 +131,7 @@ export const CheckboxGroupField = ({
         p="sm"
         mt="sm"
         radius="sm"
-        style={{
-          background: ps.bg.surface,
-          border: ps.panel.border,
-          color: ps.text.primary,
-        }}
+        style={{ background: ps.bg.surface, border: ps.panel.border, color: ps.text.primary }}
       >
         <Stack gap="sm">
           {defaultValue.map((item) => {
@@ -155,12 +162,8 @@ export const SegmentedControlField = <TKey extends ConfigKeysWithUIType<'segment
   const { styles } = useTheme();
   const { textStyles } = useFieldAppearance();
   const { currentValue, defaultValue, save } = useConfig(configKey);
-  const options = getUiOptions(configKey) as Array<{
-    value: string;
-    label: string;
-    icon?: React.ComponentType<{ size?: number }>;
-  }>;
-  if (!options?.length) return null;
+  const options = getUiOptions(configKey);
+  if (!isSegmentedOptions(options) || options.length === 0) return null;
   const current = String(currentValue ?? defaultValue);
   const saveFromString = (v: string) => save(v as ConfigValue<TKey>);
 
@@ -173,8 +176,8 @@ export const SegmentedControlField = <TKey extends ConfigKeysWithUIType<'segment
         onChange={saveFromString}
         data={options.map((option) => ({
           label: option.icon ? (
-            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-              <option.icon size={16} />
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: ui.space.xs }}>
+              <option.icon size={ui.icon.md} />
               {option.label}
             </span>
           ) : (

@@ -2,7 +2,6 @@ import { Badge, Card, Group, Stack, Text } from '@mantine/core';
 import type { CSSProperties } from 'react';
 import { useMemo } from 'react';
 import { ui } from '@/config/theme';
-import { adjustColor } from '@/lib/color';
 import { nicoruColor, vposToTime } from '@/modules/formatting';
 import type { NvCommentItem } from '@/types/api';
 import type { ThemeProps } from './types';
@@ -13,7 +12,7 @@ const nicoruGrad = (bg: string) =>
   `linear-gradient(135deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.18) 100%), ${bg}`;
 
 export const NicoruIcon = ({
-  size = 20,
+  size = ui.icon.xl,
   color = 'currentColor',
 }: {
   size?: number;
@@ -32,7 +31,14 @@ export const NicoruIcon = ({
   </svg>
 );
 
-const computeCardStyle = (isActive: boolean, hovered: boolean, nicorubg: string, accent: string): CSSProperties => {
+const computeCardStyle = (
+  isActive: boolean,
+  hovered: boolean,
+  nicorubg: string,
+  accent: string,
+  showDivider: boolean,
+  dividerColor: string
+): CSSProperties => {
   const hasNicoruBg = nicorubg !== nicoruColor(0);
   const bg = isActive
     ? activeGrad(accent)
@@ -45,11 +51,12 @@ const computeCardStyle = (isActive: boolean, hovered: boolean, nicorubg: string,
           : 'transparent';
   return {
     background: bg,
-    borderColor: isActive ? accent : hovered ? adjustColor(accent, -0.12) : undefined,
-    borderWidth: isActive ? 2 : 1,
+    border: 'none',
+    borderBottom: showDivider ? `1px solid ${dividerColor}` : 'none',
+    boxSizing: 'border-box',
     cursor: 'pointer',
-    marginBottom: ui.space.sm,
-    transition: ui.transition,
+    transition: ui.transition.fast,
+    width: '100%',
   };
 };
 
@@ -61,6 +68,7 @@ export type CommentCardViewProps = {
   onMouseEnter: () => void;
   onMouseLeave: () => void;
   onClick: () => void;
+  showDivider: boolean;
 };
 
 export const CommentCardView = ({
@@ -71,18 +79,21 @@ export const CommentCardView = ({
   onMouseEnter,
   onMouseLeave,
   onClick,
+  showDivider,
 }: CommentCardViewProps): React.ReactElement => {
   const nicorubg = theme.showNicoru ? nicoruColor(comment.nicoruCount) : nicoruColor(0);
   const style = useMemo(
-    () => computeCardStyle(isActive, hovered, nicorubg, theme.palette.accent),
-    [isActive, hovered, nicorubg, theme.palette.accent]
+    () => computeCardStyle(isActive, hovered, nicorubg, theme.palette.accent, showDivider, theme.alpha(0.14)),
+    [isActive, hovered, nicorubg, showDivider, theme]
   );
 
   return (
     <Card
-      component="div"
+      component="button"
+      type="button"
+      aria-label={`コメント: ${comment.body}`}
       padding="xs"
-      radius="sm"
+      radius={0}
       onClick={onClick}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
@@ -92,27 +103,21 @@ export const CommentCardView = ({
         <Stack gap="xs" style={{ flex: 1, minWidth: 0 }}>
           <Text
             lineClamp={4}
-            style={{
-              fontSize: theme.fontSizePx,
-              wordBreak: 'break-word',
-            }}
+            style={{ fontSize: theme.fontSizePx ?? ui.font.size.md, textAlign: 'left', wordBreak: 'break-word' }}
           >
             {comment.body}
           </Text>
           <Badge
             variant="light"
             size="sm"
-            style={{
-              backgroundColor: theme.palette.bg.surface,
-              color: theme.palette.text.secondary,
-            }}
+            style={{ backgroundColor: theme.palette.bg.surface, color: theme.palette.text.secondary }}
           >
             {vposToTime(comment.vposMs)}
           </Badge>
         </Stack>
         {theme.showNicoru && (
-          <Stack gap={4} align="center" justify="center" style={{ flexShrink: 0 }}>
-            <NicoruIcon size={20} />
+          <Stack gap={4} align="center" justify="center" style={{ alignSelf: 'stretch', flexShrink: 0 }}>
+            <NicoruIcon size={ui.icon.xl} />
             <Text size="xs">{comment.nicoruCount}</Text>
           </Stack>
         )}

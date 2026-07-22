@@ -44,8 +44,14 @@ const contrastRatio = (l1: number, l2: number): number => {
   return (max + 0.05) / (min + 0.05);
 };
 
-const LIGHT_TEXT_RGB = hexToRgb(HEX_LIGHT_TEXT) as RgbColor;
-const DARK_TEXT_RGB = hexToRgb(HEX_DARK_TEXT) as RgbColor;
+const parseStaticColor = (hex: string): RgbColor => {
+  const color = hexToRgb(hex);
+  if (!color) throw new Error(`Invalid static color: ${hex}`);
+  return color;
+};
+
+const LIGHT_TEXT_RGB = parseStaticColor(HEX_LIGHT_TEXT);
+const DARK_TEXT_RGB = parseStaticColor(HEX_DARK_TEXT);
 const LIGHT_LUM = relativeLuminance(LIGHT_TEXT_RGB);
 const DARK_LUM = relativeLuminance(DARK_TEXT_RGB);
 

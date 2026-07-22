@@ -12,10 +12,7 @@ import {
 import type { ConfigKeysWithUIType } from './defaults';
 import type { UiType } from './types';
 
-export type SectionField = {
-  label: string;
-  description?: string;
-} & {
+export type SectionField = { label: string; description?: string } & {
   [T in UiType]: { configKey: ConfigKeysWithUIType<T> };
 }[UiType];
 
@@ -77,16 +74,8 @@ export const configSections: SectionDefinition[] = [
         label: 'コメントの透明度',
         description: 'コメントの透明度を設定します。',
       },
-      {
-        configKey: 'nicoarea_scale',
-        label: 'コメントの拡大率',
-        description: 'コメントの拡大率を設定します。',
-      },
-      {
-        configKey: 'visible_comments',
-        label: '表示するコメント',
-        description: '表示するコメントを選択します。',
-      },
+      { configKey: 'nicoarea_scale', label: 'コメントの拡大率', description: 'コメントの拡大率を設定します。' },
+      { configKey: 'visible_comments', label: '表示するコメント', description: '表示するコメントを選択します。' },
     ],
     icon: MdChat,
     key: 'comments',
@@ -187,13 +176,7 @@ export const configSections: SectionDefinition[] = [
   },
   {
     description: '配色やカラーモードを調整します',
-    fields: [
-      {
-        configKey: 'theme_color_mode',
-        label: 'テーマ設定',
-        description: 'カラーモードを選択します。',
-      },
-    ],
+    fields: [{ configKey: 'theme_color_mode', label: 'テーマ設定', description: 'カラーモードを選択します。' }],
     icon: MdPalette,
     key: 'theme',
     title: 'テーマ',

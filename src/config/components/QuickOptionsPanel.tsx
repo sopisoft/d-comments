@@ -1,5 +1,6 @@
-import { Divider, Stack } from '@mantine/core';
-import { MdFlashOn } from 'react-icons/md';
+import { Anchor, Divider, Group, Stack, Text } from '@mantine/core';
+import { MdFlashOn, MdOpenInNew } from 'react-icons/md';
+import { ui } from '@/config/theme';
 import { useTheme } from '../hooks/useTheme';
 import { NumberField, SwitchField } from './Fields';
 import { SectionCard } from './SectionCard';
@@ -7,9 +8,33 @@ import { SectionCard } from './SectionCard';
 export function QuickOptionsPanel(): React.ReactElement {
   const { styles: ps } = useTheme();
   return (
-    <Stack gap="xl" align="center">
-      <SectionCard icon={MdFlashOn} title="クイックオプション" description="よく使う設定を素早く変更できます">
-        <Stack gap="lg">
+    <Stack gap={ui.space.xl} align="center">
+      <SectionCard
+        icon={MdFlashOn}
+        title="クイックオプション"
+        description={
+          <Group gap={ui.space.sm} align="center" wrap="wrap">
+            <Group gap={ui.space.xs} wrap="nowrap">
+              <Text size="sm" c={ps.text.muted}>
+                詳細設定：
+              </Text>
+              <Anchor
+                href={browser.runtime.getURL('/options.html').toString()}
+                target="_blank"
+                rel="noopener noreferrer"
+                size="sm"
+                fw={ui.font.weight.medium}
+              >
+                <Group gap={ui.space.xs} wrap="nowrap">
+                  オプションページ
+                  <MdOpenInNew size={ui.icon.sm} />
+                </Group>
+              </Anchor>
+            </Group>
+          </Group>
+        }
+      >
+        <Stack gap={ui.space.lg}>
           <Divider color={ps.border.subtle} />
           <SwitchField
             configKey="login"

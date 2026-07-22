@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { adjustColor, readableTextOnHex } from '@/lib/color';
+import { logger } from '@/lib/logger';
 import { getConfig, watchConfig } from '../storage';
 import {
   type ColorMode,
@@ -18,65 +19,37 @@ export type ThemeConfig = {
   styles: ReturnType<typeof createStyles>;
   isPending: boolean;
 };
-type ThemeState = {
-  configMode: ColorMode;
-  systemMode: ThemeMode;
-  isPending: boolean;
-};
+type ThemeState = { configMode: ColorMode; systemMode: ThemeMode; isPending: boolean };
 
-const ACCENT = '#EB5528';
+const ACCENT = '#B93815';
 const getSystemMode = (): ThemeMode => (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
 const resolveMode = (s: ThemeState): ThemeMode => (s.configMode === 'auto' ? s.systemMode : s.configMode);
 const isColorMode = (v: unknown): v is ColorMode => v === 'light' || v === 'dark' || v === 'auto';
 
 const BASE_PALETTES: Record<ThemeMode, Omit<ThemePalette, 'accent'>> = {
   dark: {
-    bg: {
-      base: '#1A1B1E',
-      elevated: '#25262B',
-      surface: '#2C2E33',
-      deep: '#373A40',
-    },
+    bg: { base: '#1A1B1E', elevated: '#25262B', surface: '#2C2E33', deep: '#373A40' },
     text: { primary: '#F8F9FA', secondary: '#DEE2E6', muted: '#ADB5BD' },
     border: { default: '#495057', subtle: '#3D4349' },
   },
   light: {
-    bg: {
-      base: '#FFFFFF',
-      elevated: '#F8F9FA',
-      surface: '#F1F3F5',
-      deep: '#E9ECEF',
-    },
-    text: { primary: '#212529', secondary: '#495057', muted: '#6C757D' },
+    bg: { base: '#FFFFFF', elevated: '#F8F9FA', surface: '#F1F3F5', deep: '#E9ECEF' },
+    text: { primary: '#212529', secondary: '#495057', muted: '#5C636A' },
     border: { default: '#CED4DA', subtle: '#DEE2E6' },
   },
 };
 
-export const createPalette = (mode: ThemeMode): ThemePalette => ({
-  ...BASE_PALETTES[mode],
-  accent: ACCENT,
-});
+export const createPalette = (mode: ThemeMode): ThemePalette => ({ ...BASE_PALETTES[mode], accent: ACCENT });
 const ACCENT_STOPS = [0.9, 0.7, 0.5, 0.35, 0.2, 0, -0.12, -0.24, -0.38, -0.5];
 const createAccentScale = (accent: string): ThemeColorScale =>
   ACCENT_STOPS.map((d) => adjustColor(accent, d)) as ThemeColorScale;
 const FIXED_SCHEMES: ThemeSchemes = {
-  dark: {
-    colors: { accent: createAccentScale(ACCENT) },
-    primaryColor: 'accent',
-    primaryShade: { light: 5, dark: 5 },
-  },
-  light: {
-    colors: { accent: createAccentScale(ACCENT) },
-    primaryColor: 'accent',
-    primaryShade: { light: 5, dark: 5 },
-  },
+  dark: { colors: { accent: createAccentScale(ACCENT) }, primaryColor: 'accent', primaryShade: { light: 5, dark: 5 } },
+  light: { colors: { accent: createAccentScale(ACCENT) }, primaryColor: 'accent', primaryShade: { light: 5, dark: 5 } },
 };
 
 const createStyles = (p: ThemePalette) => {
-  const pair = (bg: string) => ({
-    background: bg,
-    foreground: readableTextOnHex(bg),
-  });
+  const pair = (bg: string) => ({ background: bg, foreground: readableTextOnHex(bg) });
   const bgPairs = {
     base: pair(p.bg.base),
     deep: pair(p.bg.deep),
@@ -108,23 +81,16 @@ const createStyles = (p: ThemePalette) => {
 };
 
 export function useTheme(): ThemeConfig {
-  const [state, setState] = useState<ThemeState>({
-    configMode: 'auto',
-    isPending: true,
-    systemMode: getSystemMode(),
-  });
+  const [state, setState] = useState<ThemeState>({ configMode: 'auto', isPending: true, systemMode: getSystemMode() });
 
   useEffect(() => {
     let active = true;
-    getConfig('theme_color_mode').then((m) => {
-      if (active)
-        setState((p) => ({
-          ...p,
-          configMode: isColorMode(m) ? m : 'auto',
-          isPending: false,
-        }));
-    });
-    const modeWatcher = watchConfig('theme_color_mode', (m) =>
+    getConfig('theme_color_mode')
+      .then((m) => {
+        if (active) setState((p) => ({ ...p, configMode: isColorMode(m) ? m : 'auto', isPending: false }));
+      })
+      .catch(logger.error);
+    const stopModeWatcher = watchConfig('theme_color_mode', (m) =>
       setState((p) => ({ ...p, configMode: isColorMode(m) ? m : p.configMode }))
     );
     const mq = window.matchMedia('(prefers-color-scheme: dark)');
@@ -132,7 +98,7 @@ export function useTheme(): ThemeConfig {
     mq.addEventListener('change', onChange);
     return () => {
       active = false;
-      modeWatcher.then((d) => d?.());
+      stopModeWatcher();
       mq.removeEventListener('change', onChange);
     };
   }, []);

@@ -1,24 +1,33 @@
-import { Accordion, Anchor, Badge, Code, Divider, Group, Paper, Stack, Text, Title } from '@mantine/core';
+import { Accordion, Anchor, Badge, Code, Divider, Group, Stack, Text, Title } from '@mantine/core';
 import { useEffect, useState } from 'react';
 import { MdBugReport, MdHelp, MdOpenInNew, MdSettings, MdStorage } from 'react-icons/md';
+import { Surface } from '@/config/components/Surface';
 import { useTheme } from '@/config/hooks/useTheme';
 import { ui } from '@/config/theme';
+import { logger } from '@/lib/logger';
 
 type JsonValue = string | number | boolean | null | JsonValue[] | JsonObject;
 type JsonObject = { [key: string]: JsonValue };
 
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === 'object' && value !== null && !Array.isArray(value);
+
 const toJsonValue = (value: unknown): JsonValue => {
   if (value === null || value === undefined) return null;
   if (Array.isArray(value)) return value.map(toJsonValue);
-  if (typeof value === 'object') {
-    return Object.fromEntries(Object.entries(value as Record<string, unknown>).map(([k, v]) => [k, toJsonValue(v)]));
+  if (isRecord(value)) {
+    return Object.fromEntries(Object.entries(value).map(([k, v]) => [k, toJsonValue(v)]));
   }
   if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') return value;
   return String(value);
 };
 
-const toJsonObject = (value: unknown): JsonObject =>
-  typeof value === 'object' && value !== null ? (toJsonValue(value) as JsonObject) : {};
+const toJsonObject = (value: unknown): JsonObject => {
+  if (!isRecord(value)) return {};
+  const object: JsonObject = {};
+  for (const [key, item] of Object.entries(value)) object[key] = toJsonValue(item);
+  return object;
+};
 
 function formUrl(): URL {
   const version = browser.runtime.getManifest().version;
@@ -32,34 +41,34 @@ export function OtherPanel(): React.ReactElement {
   const { styles: ps } = useTheme();
   const [stored, setStored] = useState<JsonObject>({});
   useEffect(() => {
-    browser.storage.local.get().then((items) => setStored(toJsonObject(items)));
+    browser.storage.local
+      .get()
+      .then((items) => setStored(toJsonObject(items)))
+      .catch(logger.error);
   }, []);
 
   const manifest = browser.runtime.getManifest();
-  const panelStyle = {
-    background: ps.bg.elevated,
-    border: `1px solid ${ps.border.default}`,
-  };
-  const linkIcon = <MdOpenInNew size={12} style={{ opacity: 0.6 }} />;
+  const panelStyle = { background: ps.bg.elevated, border: `1px solid ${ps.border.default}` };
+  const linkIcon = <MdOpenInNew size={ui.icon.xs} style={{ opacity: 0.6 }} />;
 
   return (
     <Stack gap="lg" p="md">
-      <Paper p="lg" radius="md" ta="center" style={panelStyle}>
+      <Surface p="lg" radius="md" ta="center" style={panelStyle}>
         <Stack align="center" gap="xs">
-          <Title order={3} fw={600} c={ps.text.primary}>
+          <Title order={3} fw={ui.font.weight.semibold} c={ps.text.primary}>
             {manifest.name}
           </Title>
-          <Badge variant="light" color="orange" size="lg">
+          <Badge variant="light" color="dark" size="lg">
             v{manifest.version}
           </Badge>
         </Stack>
-      </Paper>
+      </Surface>
 
-      <Paper p="md" radius="md" style={panelStyle}>
+      <Surface p="md" radius="md" style={panelStyle}>
         <Stack gap="sm">
           <Anchor href={formUrl().toString()} target="_blank" rel="noopener noreferrer" size="sm">
             <Group gap="xs">
-              <MdBugReport size={16} />
+              <MdBugReport size={ui.icon.md} />
               不具合報告{linkIcon}
             </Group>
           </Anchor>
@@ -71,7 +80,7 @@ export function OtherPanel(): React.ReactElement {
             size="sm"
           >
             <Group gap="xs">
-              <MdHelp size={16} />
+              <MdHelp size={ui.icon.md} />
               使用方法{linkIcon}
             </Group>
           </Anchor>
@@ -83,18 +92,18 @@ export function OtherPanel(): React.ReactElement {
             size="sm"
           >
             <Group gap="xs">
-              <MdSettings size={16} />
+              <MdSettings size={ui.icon.md} />
               詳細設定ページを開く{linkIcon}
             </Group>
           </Anchor>
         </Stack>
-      </Paper>
+      </Surface>
 
       <Accordion variant="separated" radius="md" styles={{ control: { padding: ui.space.md }, item: panelStyle }}>
         <Accordion.Item value="storage">
           <Accordion.Control>
             <Group gap="xs">
-              <MdStorage size={16} color={ps.text.primary} />
+              <MdStorage size={ui.icon.md} color={ps.text.primary} />
               <Text size="sm" c={ps.text.primary}>
                 ストレージの内容
               </Text>
@@ -104,12 +113,7 @@ export function OtherPanel(): React.ReactElement {
             <Accordion
               variant="contained"
               radius="sm"
-              styles={{
-                item: {
-                  background: ps.bg.base,
-                  borderColor: ps.border.default,
-                },
-              }}
+              styles={{ item: { background: ps.bg.base, borderColor: ps.border.default } }}
             >
               {Object.entries(stored).map(([key, value]) => (
                 <Accordion.Item value={key} key={key}>
@@ -119,7 +123,7 @@ export function OtherPanel(): React.ReactElement {
                     </Text>
                   </Accordion.Control>
                   <Accordion.Panel>
-                    <Code block style={{ background: ps.bg.deep, fontSize: '0.75rem' }}>
+                    <Code block style={{ background: ps.bg.deep, fontSize: ui.font.size.xs }}>
                       {JSON.stringify(value, null, 2)}
                     </Code>
                   </Accordion.Panel>

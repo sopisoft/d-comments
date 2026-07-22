@@ -5,18 +5,14 @@ import { NgListPanel } from '@/config/components/NgListPanel';
 import { QuickOptionsPanel } from '@/config/components/QuickOptionsPanel';
 import { SurveyFormPanel } from '@/config/components/SurveyForm';
 import { useTheme } from '@/config/hooks/useTheme';
+import { ui } from '@/config/theme';
 
 export function Options(): React.ReactElement {
   const { styles: ps } = useTheme();
   return (
     <Tabs defaultValue="configurations" variant="pills">
-      <AppShell header={{ height: 56 }} padding="lg">
-        <AppShell.Header
-          style={{
-            backgroundColor: ps.bg.elevated,
-            borderBottom: `1px solid ${ps.border.default}`,
-          }}
-        >
+      <AppShell header={{ height: ui.layout.headerHeight }} padding="lg">
+        <AppShell.Header style={{ backgroundColor: ps.bg.elevated, borderBottom: `1px solid ${ps.border.default}` }}>
           <Group h="100%" px="lg" justify="space-between">
             <Title order={4} c={ps.accent}>
               d-comments 設定
@@ -30,13 +26,8 @@ export function Options(): React.ReactElement {
             </Tabs.List>
           </Group>
         </AppShell.Header>
-        <AppShell.Main
-          style={{
-            backgroundColor: ps.bg.surface,
-            color: ps.text.primary,
-          }}
-        >
-          <div style={{ margin: '0 auto', maxWidth: '900px' }}>
+        <AppShell.Main style={{ backgroundColor: ps.bg.surface, color: ps.text.primary }}>
+          <div style={{ margin: '0 auto', maxWidth: ui.layout.contentMaxWidth }}>
             <Tabs.Panel value="quick">
               <QuickOptionsPanel />
             </Tabs.Panel>
@@ -52,9 +43,9 @@ export function Options(): React.ReactElement {
             <Tabs.Panel value="usage">
               <Paper p="md" radius="md">
                 <Anchor href="usage.html" target="_blank" rel="noopener noreferrer">
-                  <Title order={4} fw={600} c={ps.accent}>
+                  <Title order={4} fw={ui.font.weight.semibold} c={ps.accent}>
                     つかいかたを新しいタブで開く
-                    <MdOpenInNew size={12} style={{ opacity: 0.6 }} />
+                    <MdOpenInNew size={ui.icon.xs} style={{ opacity: 0.6 }} />
                   </Title>
                 </Anchor>
               </Paper>

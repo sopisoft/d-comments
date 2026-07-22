@@ -40,11 +40,7 @@ export const createNiconiRenderer = async (): Promise<Result<RendererController,
 
   let offsetMs = initialOffset;
   let isVisible = initialVisibility;
-  const options: Options = {
-    format: 'v1',
-    keepCA: true,
-    scale: Math.max(initialScale / 100, 0),
-  };
+  const options: Options = { format: 'v1', keepCA: true, scale: Math.max(initialScale / 100, 0) };
   const clampFps = (value: number) => Math.min(120, Math.max(15, Math.round(Number.isFinite(value) ? value : 60)));
   let frameIntervalMs = 1000 / clampFps(initialFps);
   let lastDrawAt = performance.now();
@@ -121,23 +117,33 @@ export const createNiconiRenderer = async (): Promise<Result<RendererController,
   };
 
   const stops: (() => void)[] = [];
-  watchConfig('comment_area_opacity_percentage', (value) => {
-    canvas.style.opacity = (value / 100).toString();
-  }).then((stop) => stops.push(stop));
-  watchConfig('nicoarea_scale', (value) => {
-    options.scale = Math.max(value / 100, 0);
-    rebuild();
-  }).then((stop) => stops.push(stop));
-  watchConfig('comment_renderer_fps', (value) => {
-    frameIntervalMs = 1000 / clampFps(value);
-    lastDrawAt = performance.now();
-  }).then((stop) => stops.push(stop));
-  watchConfig('show_comments_in_niconico_style', (value) => {
-    applyVisibility(value);
-  }).then((stop) => stops.push(stop));
-  watchConfig('comment_timing_offset', (value) => {
-    offsetMs = value;
-  }).then((stop) => stops.push(stop));
+  stops.push(
+    watchConfig('comment_area_opacity_percentage', (value) => {
+      canvas.style.opacity = (value / 100).toString();
+    })
+  );
+  stops.push(
+    watchConfig('nicoarea_scale', (value) => {
+      options.scale = Math.max(value / 100, 0);
+      rebuild();
+    })
+  );
+  stops.push(
+    watchConfig('comment_renderer_fps', (value) => {
+      frameIntervalMs = 1000 / clampFps(value);
+      lastDrawAt = performance.now();
+    })
+  );
+  stops.push(
+    watchConfig('show_comments_in_niconico_style', (value) => {
+      applyVisibility(value);
+    })
+  );
+  stops.push(
+    watchConfig('comment_timing_offset', (value) => {
+      offsetMs = value;
+    })
+  );
 
   const setThreads = (threads: Threads): Threads => {
     currentThreads = threads;

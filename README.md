@@ -82,6 +82,47 @@ Run the following command:
 pnpm lint
 ```
 
+### UI / E2E debugging
+
+Storybook はブラウザ拡張のUI部品を、拡張APIや実サイトから切り離して確認するために使います。
+現在はコメントカードの通常・選択中・ニコる非表示の状態を収録しています。
+
+```sh
+pnpm storybook
+```
+
+拡張機能は Playwright で Chrome にビルド済み拡張を読み込み、DOM・操作結果・コンソールエラーを検証します。
+
+```sh
+pnpm test:e2e
+pnpm test:e2e:headed # headed Chromiumでデバッグするとき
+pnpm test:e2e:debug # Playwright Inspectorで停止しながら調査するとき
+```
+
+テストレポートは `/tmp/d-comments-playwright-report` に出力されます。E2E実行前に `pnpm exec playwright install chromium` を一度実行してください。
+
+dアニメストアの実サイトを検証する場合は、専用のChromiumプロファイルを指定してheadedモードで起動し、ブラウザ上で手動ログインした状態を使ってください。
+
+```sh
+pnpm auth:chrome
+pnpm test:e2e:headed
+```
+
+認証済みプロファイルはデフォルトで`~/.local/state/d-comments/chrome-profile`に保存されます。通常の拡張ページのスモークテストは、認証なしの一時プロファイルで実行されます。
+
+認証済みの実サイトでcontent scriptまで検証する場合は、対象の視聴ページURLを指定して実行します。2段階認証を含むログインは、先に`pnpm auth:chrome`で手動完了してください。
+
+```sh
+node scripts/e2e.ts \
+  --danime-url "https://animestore.docomo.ne.jp/animestore/sc_d_pc?partId=YOUR_PART_ID"
+```
+
+`--danime-url`を指定すると、認証済みプロファイルの利用とdアニメストア統合テストが自動的に有効になります。プロファイルを変更する場合は`--profile-dir PATH`、画面を表示する場合は`--headed`を追加してください。Playwright Inspectorで調査する場合は`--debug`を使います。
+
+この統合テストは、dアニメストアの動画要素、拡張が追加する`#d-comments-wrapper`／`#d-comments-side`、Popupのロードを確認します。対象作品やサイト側の状態に依存するため、URLは実際に視聴できるページを指定してください。
+
+`pnpm auth:chrome` は専用のChromeプロファイルを開き、dアニメストアのログインと2段階認証を手動で完了するための補助コマンドです。認証情報は入力・保存せず、Cookieなどのセッション情報だけをOSのユーザーディレクトリ（`~/.local/state/d-comments/chrome-profile`、権限700）へ保存します。通常利用中のChromeと同じプロファイルを同時に開かないでください。
+
 ### Format
 
 Run the following command:

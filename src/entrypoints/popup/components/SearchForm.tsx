@@ -30,13 +30,7 @@ export function SearchForm({
 }): React.ReactElement {
   const { styles: ps } = useTheme();
   const inputStyles = { ...ps.inputStyles, label: { color: ps.text.primary } };
-  const form = useForm({
-    initialValues: {
-      sort_option: 'commentCounter',
-      sort_order: '-',
-      word: initialWord ?? '',
-    },
-  });
+  const form = useForm({ initialValues: { sort_option: 'commentCounter', sort_order: '-', word: initialWord ?? '' } });
 
   const runSearch = useCallback(
     async (word: string, sort: SnapShotQuery['_sort']) => {
@@ -44,7 +38,7 @@ export function SearchForm({
         await requestMessageResult('search', buildSearchQuery(word, sort)),
         'Search failed'
       );
-      if (!payload || payload.meta.status !== 200) {
+      if (payload?.meta.status !== 200) {
         logger.error(payload?.meta.errorCode, payload?.meta.errorMessage);
         return;
       }
@@ -54,9 +48,11 @@ export function SearchForm({
   );
 
   useEffect(() => {
-    getConfig('auto_search').then(async (v) => {
-      if (v) await runSearch(form.getValues().word, '-commentCounter');
-    });
+    getConfig('auto_search')
+      .then(async (v) => {
+        if (v) await runSearch(form.getValues().word, '-commentCounter');
+      })
+      .catch(logger.error);
   }, [form, runSearch]);
 
   return (

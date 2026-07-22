@@ -10,10 +10,7 @@ import type { CommentManager } from '@/modules/comments/types';
 import type { Threads } from '@/types/api';
 import type { CommentVideoData } from '@/types/comments';
 
-export type CommentStoreSnapshot = {
-  videos: CommentVideoData[];
-  threads: Threads;
-};
+export type CommentStoreSnapshot = { videos: CommentVideoData[]; threads: Threads };
 
 const managers = new Map<number, CommentManager>();
 
@@ -38,10 +35,7 @@ const updateManager = (tabId: number, update: (manager: CommentManager) => Comme
 };
 
 export const addVideoToStore = async (tabId: number, video: CommentVideoData): Promise<CommentStoreSnapshot> => {
-  logger.debug('Adding video to store', {
-    id: video.videoData.contentId,
-    tabId,
-  });
+  logger.debug('Adding video to store', { id: video.videoData.contentId, tabId });
   const next = updateManager(tabId, (manager) => addPlayingVideo(manager, video));
   return storeSnapshot(next);
 };

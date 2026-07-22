@@ -14,11 +14,9 @@ export function queryVideoElement(): HTMLVideoElement | null {
   return document.querySelector<HTMLVideoElement>('video');
 }
 
-export function mountOverlay(video: HTMLVideoElement): {
-  video: HTMLVideoElement;
-  overlay: HTMLDivElement;
-} {
-  const existing = document.getElementById(OVERLAY_ID) as HTMLDivElement | null;
+export function mountOverlay(video: HTMLVideoElement): { video: HTMLVideoElement; overlay: HTMLDivElement } {
+  const existingElement = document.getElementById(OVERLAY_ID);
+  const existing = existingElement instanceof HTMLDivElement ? existingElement : null;
   const container = video.parentElement;
   if (existing) {
     if (container && existing.parentElement !== container) container.appendChild(existing);

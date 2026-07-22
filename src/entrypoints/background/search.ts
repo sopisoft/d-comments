@@ -50,11 +50,7 @@ type FiltersQuery = {
 };
 
 type JsonFilter =
-  | {
-      type: 'equal';
-      field: Filters;
-      value: Fields[Filters];
-    }
+  | { type: 'equal'; field: Filters; value: Fields[Filters] }
   | {
       type: 'range';
       field: Filters;
@@ -63,14 +59,8 @@ type JsonFilter =
       include_lower?: boolean; // From の値を含めるか
       include_upper?: boolean; // To の値を含めるか
     }
-  | {
-      type: 'or' | 'and';
-      filters: JsonFilter[];
-    }
-  | {
-      type: 'not';
-      filter: JsonFilter;
-    };
+  | { type: 'or' | 'and'; filters: JsonFilter[] }
+  | { type: 'not'; filter: JsonFilter };
 
 export interface SnapShotQuery {
   q: string; // 検索クエリ

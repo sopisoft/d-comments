@@ -78,11 +78,7 @@ const commit = async (tabId: number, state: ReturnType<typeof getStoreSnapshot>)
 const broadcastState = async (tabId: number, state: ReturnType<typeof getStoreSnapshot>) => {
   await browser.tabs
     .sendMessage(tabId, {
-      payload: {
-        tabId,
-        videos: state.videos,
-        threads: state.threads,
-      },
+      payload: { tabId, videos: state.videos, threads: state.threads },
       type: 'comment_state_update',
     })
     .then(

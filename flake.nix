@@ -15,8 +15,8 @@
         devShells.default = packages.mkShell {
           buildInputs = with packages; [
             git
-            nodejs_25
-            nodejs_25.pkgs.pnpm
+            nodejs_26
+            pnpm
           ];
 
           shellHook = ''

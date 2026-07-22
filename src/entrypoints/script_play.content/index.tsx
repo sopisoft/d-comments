@@ -2,6 +2,7 @@ import '@mantine/core/styles.css';
 import { createRoot, type Root } from 'react-dom/client';
 import { getConfig, watchConfig } from '@/config/storage';
 import { ThemedMantineProvider } from '@/config/theme';
+import { logger } from '@/lib/logger';
 import { andThenAsync, err, ok, unwrap } from '@/lib/types';
 import { toVideoData } from '@/lib/utils';
 import { onMessage, requestMessageResult } from '@/messaging/runtime';
@@ -100,9 +101,9 @@ export default defineContentScript({
     };
     const initialMode = (await getConfig('use_new_renderer')) ? 'pixi' : 'niconi';
     await applyRendererMode(initialMode);
-    await watchConfig('use_new_renderer', (enabled) => {
+    watchConfig('use_new_renderer', (enabled) => {
       applyRendererMode(enabled ? 'pixi' : 'niconi').catch(() => {
-        applyRendererMode('niconi').catch(() => {});
+        applyRendererMode('niconi').catch(logger.error);
       });
     });
 
@@ -118,11 +119,11 @@ export default defineContentScript({
       return andThenAsync(searchRes, async (snapshot) => {
         const videos = toVideoData(snapshot);
         if (videos.length === 0) return ok([]);
-        const videoDataResult = await getComments(commentManager, videos[0].contentId);
+        const firstVideo = videos[0];
+        if (!firstVideo) return ok([]);
+        const videoDataResult = await getComments(commentManager, firstVideo.contentId);
         if (!videoDataResult.ok) return err(videoDataResult.error);
-        const addedRes = await requestMessageResult('add_video', {
-          video: videoDataResult.value,
-        });
+        const addedRes = await requestMessageResult('add_video', { video: videoDataResult.value });
         return addedRes.ok ? ok(addedRes.value as CommentVideoData[]) : err(addedRes.error);
       });
     };
@@ -137,7 +138,7 @@ export default defineContentScript({
         return;
       }
       lastPartId = currentPartId;
-      handlePartChange().catch(() => {});
+      handlePartChange().catch(logger.error);
     }, 500);
   },
   matches: ['*://animestore.docomo.ne.jp/animestore/*'],

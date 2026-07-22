@@ -38,11 +38,7 @@ export const getComments = async (
 
   const threads = filterThreadComments(threadsResponse.value.threads, shouldFilterComment);
 
-  return ok({
-    date: manager.now(),
-    threads,
-    videoData: toCommentVideoData(videoInfo.value),
-  });
+  return ok({ date: manager.now(), threads, videoData: toCommentVideoData(videoInfo.value) });
 };
 
 export const getPlaying = (manager: CommentManager): CommentVideoData[] => manager.playing.map(clone);
@@ -66,10 +62,7 @@ export const removePlayingVideo = (manager: CommentManager, videoId: string): Co
   playing: manager.playing.filter((video) => video.videoData.contentId !== videoId),
 });
 
-export const clearPlayingVideos = (manager: CommentManager): CommentManager => ({
-  ...manager,
-  playing: [],
-});
+export const clearPlayingVideos = (manager: CommentManager): CommentManager => ({ ...manager, playing: [] });
 
 export const sortComments = (list: readonly NvCommentItem[]): NvCommentItem[] =>
   [...list].sort((a, b) => a.vposMs - b.vposMs);

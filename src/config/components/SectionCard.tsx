@@ -1,7 +1,9 @@
-import { Group, Paper, Stack, Text, ThemeIcon, Title } from '@mantine/core';
+import { Group, Stack, Text, ThemeIcon, Title } from '@mantine/core';
 import type { ReactNode } from 'react';
 import type { IconType } from 'react-icons';
+import { ui } from '@/config/theme';
 import { useTheme } from '../hooks/useTheme';
+import { Surface } from './Surface';
 
 export function SectionCard({
   title,
@@ -10,43 +12,35 @@ export function SectionCard({
   children,
 }: {
   title: string;
-  description?: string;
+  description?: ReactNode;
   icon?: IconType;
   children: ReactNode;
 }): React.ReactElement {
   const { styles: ps } = useTheme();
   return (
-    <Paper
-      radius="md"
-      p="lg"
-      style={{
-        background: ps.pairs.bg.elevated.background,
-        border: ps.panel.border,
-        margin: '0 auto',
-        maxWidth: '56rem',
-        width: '100%',
-      }}
-    >
+    <Surface radius="md" p="lg" style={{ margin: '0 auto', maxWidth: '56rem', width: '100%' }}>
       <Stack gap="lg">
         <Group gap="sm" align="flex-start">
           {Icon && (
-            <ThemeIcon color="accent" size={34} radius="md" variant="light">
-              <Icon size={18} />
+            <ThemeIcon color="accent" size={ui.icon.section} radius="md" variant="light">
+              <Icon size={ui.icon.sectionGlyph} />
             </ThemeIcon>
           )}
           <div>
-            <Title order={4} fw={600} c={ps.text.primary}>
+            <Title order={4} fw={ui.font.weight.semibold} c={ps.text.primary}>
               {title}
             </Title>
-            {description && (
-              <Text size="sm" c={ps.text.muted} mt={4}>
+            {typeof description === 'string' ? (
+              <Text size="sm" c={ps.text.muted} mt={ui.space.xs}>
                 {description}
               </Text>
+            ) : (
+              description
             )}
           </div>
         </Group>
         {children}
       </Stack>
-    </Paper>
+    </Surface>
   );
 }

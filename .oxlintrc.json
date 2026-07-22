@@ -1,61 +1,57 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
   "ignorePatterns": ["src/generated/**"],
-  "plugins": ["import", "jest", "jsdoc", "node", "oxc", "promise", "typescript", "unicorn"],
+  "options": { "denyWarnings": true, "reportUnusedDisableDirectives": "error", "typeAware": true, "typeCheck": true },
+  "plugins": [
+    "import",
+    "jest",
+    "jsdoc",
+    "jsx-a11y",
+    "node",
+    "oxc",
+    "promise",
+    "react",
+    "typescript",
+    "unicorn",
+    "vitest"
+  ],
   "rules": {
     "capitalized-comments": "error",
-    "eqeqeq": [
-      "error",
-      "always",
-      {
-        "null": "ignore"
-      }
-    ],
+    "eqeqeq": ["error", "always", { "null": "ignore" }],
     "import/no-cycle": "error",
     "import/no-dynamic-require": "error",
-    "no-console": [
-      "error",
-      {
-        "allow": ["error", "info", "warn"]
-      }
-    ],
+    "no-console": ["error", { "allow": ["error", "info", "warn"] }],
     "no-debugger": "error",
     "no-eq-null": "error",
     "no-shadow": "error",
     "no-unused-vars": [
       "error",
-      {
-        "argsIgnorePattern": "^_",
-        "caughtErrorsIgnorePattern": "^_",
-        "varsIgnorePattern": "^_"
-      }
+      { "argsIgnorePattern": "^_", "caughtErrorsIgnorePattern": "^_", "varsIgnorePattern": "^_" }
     ],
     "eslint/no-shadow": "off",
     "no-var": "error",
-    "no-void": "error",
+    "no-void": ["error", { "allowAsStatement": true }],
     "oxc/no-this-in-exported-function": "error",
     "prefer-const": "error",
     "promise/valid-params": "error",
-    "sort-imports": [
-      "error",
-      {
-        "ignoreCase": true,
-        "ignoreDeclarationSort": true
-      }
-    ],
+    "sort-imports": ["error", { "ignoreCase": true, "ignoreDeclarationSort": true }],
     "typescript/explicit-module-boundary-types": "error",
     "typescript/no-deprecated": "error",
     "typescript/no-explicit-any": "error",
     "typescript/no-extraneous-class": "error",
     "typescript/no-floating-promises": "error",
-    "typescript/no-namespace": "off",
-    "typescript/no-unnecessary-type-assertion": "error",
+    "typescript/no-namespace": "error",
     "typescript/no-unsafe-function-type": "error",
     "typescript/no-unsafe-return": "error",
-    "typescript/no-unsafe-type-assertion": "error",
-    "typescript/prefer-nullish-coalescing": "error",
-    "typescript/prefer-optional-chain": "error",
-    "typescript/require-await": "error",
-    "unicorn/prefer-array-find": "error"
+    "typescript/no-unsafe-type-assertion": "off",
+    "typescript/prefer-nullish-coalescing": "off",
+    "typescript/prefer-optional-chain": "off",
+    "typescript/require-await": "off",
+    "typescript/no-base-to-string": "off",
+    "typescript/no-misused-spread": "off",
+    "unicorn/prefer-array-find": "error",
+    "jsx-a11y/no-autofocus": "error",
+    "jsx-a11y/iframe-has-title": "error",
+    "jsx-a11y/prefer-tag-over-role": "off"
   }
 }

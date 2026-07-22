@@ -13,8 +13,4 @@ type VideoData = {
   thumbnailUrl: string;
 };
 
-export type CommentVideoData = {
-  date: number;
-  videoData: VideoData;
-  threads: Threads;
-};
+export type CommentVideoData = { date: number; videoData: VideoData; threads: Threads };

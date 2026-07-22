@@ -2,6 +2,7 @@ import { Button, Stack, Text, TextInput } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { MdDownload } from 'react-icons/md';
 import { useTheme } from '@/config/hooks/useTheme';
+import { ui } from '@/config/theme';
 
 const VIDEO_ID_REGEX = /^(sm|nm|so|ca|ax|yo|nl|ig|na|cw|z[a-e]|om|sk|yk)\d{1,14}$/;
 
@@ -9,9 +10,7 @@ export function IdForm({ addPlaying }: { addPlaying: (id: string) => Promise<voi
   const { styles: ps } = useTheme();
   const form = useForm({
     initialValues: { id: '' },
-    validate: {
-      id: (v) => (VIDEO_ID_REGEX.test(v) ? null : '動画IDの形式が正しくありません'),
-    },
+    validate: { id: (v) => (VIDEO_ID_REGEX.test(v) ? null : '動画IDの形式が正しくありません') },
   });
 
   return (
@@ -31,7 +30,7 @@ export function IdForm({ addPlaying }: { addPlaying: (id: string) => Promise<voi
         <Button
           type="submit"
           loading={form.submitting}
-          leftSection={<MdDownload size={16} />}
+          leftSection={<MdDownload size={ui.icon.md} />}
           variant="filled"
           color="accent"
         >
