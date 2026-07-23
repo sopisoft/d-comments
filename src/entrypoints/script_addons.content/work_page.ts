@@ -3,7 +3,7 @@ import { findElements } from '@/lib/dom';
 import { logger } from '@/lib/logger';
 
 /**
- * 作品ページの各パートに新しいタブで開くボタンを追加する
+ * 作品ページの各パートに再生リンクを追加する
  */
 export const add_button_to_play = async (): Promise<void> => {
   logger.debug('addon_addMenu');
@@ -37,16 +37,7 @@ export const add_button_to_play = async (): Promise<void> => {
       target?.appendChild(a);
     }
 
-    a.textContent = playInSameTab ? '現在のタブで開く' : '新しいタブで開く';
+    a.textContent = playInSameTab ? '同じタブで再生' : '新しいタブで再生';
     a.target = playInSameTab ? '_self' : '_blank';
-    a.addEventListener('click', (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      if (playInSameTab) {
-        window.location.href = a.href;
-      } else {
-        window.open(a.href);
-      }
-    });
   }
 };

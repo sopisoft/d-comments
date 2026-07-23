@@ -1,14 +1,5 @@
 import type { IconType } from 'react-icons';
-import {
-  MdAutorenew,
-  MdChat,
-  MdExtension,
-  MdMovie,
-  MdOutlineVideoStable,
-  MdPalette,
-  MdSearch,
-  MdViewSidebar,
-} from 'react-icons/md';
+import { MdAutorenew, MdChat, MdMovie, MdOutlineVideoStable, MdPalette, MdSearch, MdViewSidebar } from 'react-icons/md';
 import type { ConfigKeysWithUIType } from './defaults';
 import type { UiType } from './types';
 
@@ -144,30 +135,17 @@ export const configSections: SectionDefinition[] = [
     title: 'コメントレンダラーの設定',
   },
   {
-    description: '追加機能のオン/オフを切り替えます',
-    fields: [
-      {
-        configKey: 'enable_addon_disable_new_window',
-        label: '新しいウィンドウを無効にする',
-        description: '新しいウィンドウでの表示を無効にします。',
-      },
-    ],
-    icon: MdExtension,
-    key: 'addons',
-    title: 'アドオンの設定',
-  },
-  {
-    description: '作品ページ固有の挙動を設定します',
+    description: '作品ページの再生方法を設定します',
     fields: [
       {
         configKey: 'enable_addon_add_button_to_play',
-        label: '再生ボタンを追加',
-        description: '再生ページにボタンを追加します。',
+        label: '再生ボタン',
+        description: '作品ページに再生ボタンを追加します。',
       },
       {
         configKey: 'addon_option_play_in_same_tab',
         label: '同じタブで再生',
-        description: '動画を同じタブで再生します。',
+        description: '作品ページjと同じタブでを同じタブで再生を開始します。',
       },
     ],
     icon: MdMovie,
