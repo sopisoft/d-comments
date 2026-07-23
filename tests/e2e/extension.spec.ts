@@ -16,6 +16,9 @@ test('options page renders and its main tabs work', async ({ extensionPage, exte
 
   await expect(extensionPage).toHaveTitle('設定');
   await expect(extensionPage.getByRole('heading', { name: 'd-comments 設定' })).toBeVisible();
+  await expect(extensionPage.getByRole('heading', { name: '作品ページ' })).toBeVisible();
+  await expect(extensionPage.getByText('再生ボタン', { exact: true })).toBeVisible();
+  await expect(extensionPage.getByText('同じタブで再生', { exact: true })).toBeVisible();
   await expect(extensionPage.getByRole('tab', { name: 'NG 管理' })).toBeVisible();
   await extensionPage.getByRole('tab', { name: 'クイック設定' }).click();
   await expect(extensionPage.getByRole('tab', { name: 'クイック設定' })).toHaveAttribute('aria-selected', 'true');

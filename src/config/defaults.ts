@@ -72,11 +72,6 @@ export const defaultConfigs = defineConfigs({
   use_new_renderer: { ui_type: 'switch', value: false },
 
   /**
-   * アドオンの設定
-   */
-  enable_addon_disable_new_window: { ui_type: 'switch', value: false },
-
-  /**
    * Ci_pc 作品ページ
    */
   enable_addon_add_button_to_play: { ui_type: 'switch', value: true },
