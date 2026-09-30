@@ -45,46 +45,41 @@ export type Threads = {
 
 export type VideoData = BaseResponse<{
   response: {
-    channel: {
-      id: string;
-      name: string;
-      isOfficialAnime: boolean;
-      isDisplayAdBanner: boolean;
-      thumbnail: { url: string; smallUrl: string };
-      viewer: { follow: { isFollowed: boolean; isBookmarked: boolean; token: string; tokenTimestamp: number } };
-    } | null;
-    client: { nicosid: string; watchId: string; watchTrackId: string };
-    comment: {
-      server: { url: string };
-      keys: { userKey: string };
-      layers: { index: number; isTranslucent: boolean; threadIds: Thread[] }[];
-      threads: {
-        id: Thread['id'];
-        fork: Thread['fork'];
-        forkLabel: Thread['forkLabel'];
-        videoId: string; // ContentId
-        isOwnerThread: boolean;
-        isActive: boolean;
-        isDefaultPostTarget: boolean;
-        isEasyCommentPostTarget: boolean;
-        isLeafRequired: boolean;
-        isThreadkeyRequired: boolean;
-        threadkey: string;
-        is184Forced: boolean;
-        hasNicoscript: boolean;
-        label: 'owner' | 'default' | 'community' | 'easy' | 'extra-community' | 'extra-easy';
-        postKeyStatus: number;
-        server: string;
-      }[];
-      nvComment: NvComment;
-    };
-    video: {
-      id: string; // ContentId
-      title: string;
-      description: string; // HTML
-      count: { view: number; comment: number; mylist: number; like: number };
-      duration: number;
-      thumbnail: { url: string; middleUrl: string; largeUrl: string; player: string; ogp: string };
+    $watchV4: {
+      data: {
+        client: { nicosid: string; watchId: string; watchTrackId: string };
+        comment: {
+          nvComment: NvComment;
+          threads: {
+            id: Thread['id'];
+            fork: Thread['fork'];
+            forkLabel: Thread['forkLabel'];
+            videoId: string;
+            label: string;
+          }[];
+          layers: {
+            index: number;
+            isTranslucent: boolean;
+            components: { threadId: Thread['id']; fork: Thread['fork']; forkLabel: Thread['forkLabel'] }[];
+          }[];
+        };
+        metadata: { jsonLd?: { owner?: { id: string; type: string; name?: string } } };
+        video: {
+          id: string; // ContentId
+          title: string;
+          description: string;
+          count: { view: number; comment: number; mylist: number; like: number };
+          duration: number;
+          thumbnail: {
+            normal: string;
+            player: string;
+            ogp: string;
+            middle: string | null;
+            large: string | null;
+            short: string | null;
+          };
+        };
+      };
     };
   };
 }>;

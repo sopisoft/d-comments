@@ -28,7 +28,7 @@ export const getComments = async (
   const videoInfo = await manager.service.fetchVideoInfo(videoId);
   if (!videoInfo.ok) return videoInfo;
 
-  const threadsResponse = await manager.service.fetchComments(videoInfo.value.response.comment.nvComment);
+  const threadsResponse = await manager.service.fetchComments(videoInfo.value.response.$watchV4.data.comment.nvComment);
   if (!threadsResponse.ok) return threadsResponse;
 
   const shouldFilterComment = createNgFilter({
