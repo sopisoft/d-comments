@@ -38,12 +38,14 @@ export default defineContentScript({
         name: 'd-comments-sidebar',
         position: 'inline',
         anchor: '#d-comments-side',
+        inheritStyles: true,
+        css: ':host { display: block; height: 100%; }',
         isolateEvents: false,
         onMount(container) {
           sidebarHost = container;
-          const styleEl = document.createElement('style');
-          styleEl.textContent = 'html, body { height: 100%; }';
-          container.appendChild(styleEl);
+          container.style.display = 'block';
+          container.style.height = '100%';
+          container.style.width = '100%';
         },
       });
       ui.mount();
@@ -58,7 +60,7 @@ export default defineContentScript({
       }
       sidebarRoot.render(
         <ThemedMantineProvider>
-          <CommentSidebar threads={threads} />
+          <CommentSidebar threads={threads} onRefresh={refreshComments} />
         </ThemedMantineProvider>
       );
     };
@@ -73,6 +75,17 @@ export default defineContentScript({
       renderSidebar(currentThreads);
       rendererController?.setThreads(currentThreads);
     };
+
+    async function refreshComments() {
+      const playing = await requestMessageResult('playing_video');
+      if (!playing.ok) return logger.error(playing.error);
+      const currentVideo = playing.value[0];
+      if (!currentVideo) return;
+      const refreshed = await getComments(commentManager, currentVideo.videoData.contentId);
+      if (!refreshed.ok) return logger.error(refreshed.error);
+      const added = await requestMessageResult('add_video', { video: refreshed.value });
+      if (!added.ok) logger.error(added.error);
+    }
 
     const resetRenderer = () => {
       rendererController?.dispose?.();

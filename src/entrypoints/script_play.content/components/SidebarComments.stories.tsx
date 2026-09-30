@@ -48,7 +48,7 @@ const threads: Threads = [{ id: 1, fork: 'main', commentCount: comments.length, 
 const meta = {
   title: 'Sidebar/SidebarComments',
   component: SidebarComments,
-  args: { threads, config, video: null, styles: createSidebarStyles(config) },
+  args: { threads, config, video: null, styles: createSidebarStyles(config), onRefresh: () => {} },
   parameters: { layout: 'fullscreen' },
   render: (args) => (
     <Box
