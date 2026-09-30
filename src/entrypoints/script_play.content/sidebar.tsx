@@ -5,15 +5,27 @@ import { ResizeHandle } from './components/SidebarResizeHandle';
 import { createSidebarStyles, SidebarProvider, useSidebar, useVideoElement } from './context/SidebarContext';
 import { useCommentList } from './hooks/useCommentList';
 
-export function CommentSidebar({ threads }: { threads: Threads }): React.ReactElement {
+export function CommentSidebar({
+  threads,
+  onRefresh,
+}: {
+  threads: Threads;
+  onRefresh: () => void;
+}): React.ReactElement {
   return (
     <SidebarProvider>
-      <SidebarContent threads={threads} />
+      <SidebarContent threads={threads} onRefresh={onRefresh} />
     </SidebarProvider>
   );
 }
 
-function SidebarContent({ threads }: { threads: Threads }): React.ReactElement {
+function SidebarContent({
+  threads,
+  onRefresh,
+}: {
+  threads: Threads;
+  onRefresh: () => void;
+}): React.ReactElement {
   const { video } = useVideoElement();
   const config = useSidebar();
   const styles = useMemo(() => createSidebarStyles(config), [config]);
@@ -23,7 +35,7 @@ function SidebarContent({ threads }: { threads: Threads }): React.ReactElement {
   return (
     <div style={root}>
       <ResizeHandle config={config} />
-      <SidebarComments threads={threads} config={config} video={video} styles={styles} />
+      <SidebarComments threads={threads} config={config} video={video} styles={styles} onRefresh={onRefresh} />
     </div>
   );
 }

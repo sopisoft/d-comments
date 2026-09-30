@@ -1,7 +1,8 @@
-import { Group, Popover, Text } from '@mantine/core';
+import { ActionIcon, Group, Popover, Text } from '@mantine/core';
 import { type CSSProperties, memo } from 'react';
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
 import { Virtuoso, type VirtuosoHandle } from 'react-virtuoso';
+import { FiRefreshCw } from 'react-icons/fi';
 import { ui } from '@/config/theme';
 import type { NvCommentItem, Threads } from '@/types/api';
 import type { SidebarConfig } from '../context/SidebarContext';
@@ -118,9 +119,10 @@ export type SidebarCommentsProps = {
   config: SidebarConfig;
   video: HTMLVideoElement | null;
   styles: Record<string, CSSProperties>;
+  onRefresh: () => void;
 };
 
-export const SidebarComments = ({ threads, config, video, styles }: SidebarCommentsProps): React.ReactElement => {
+export const SidebarComments = ({ threads, config, video, styles, onRefresh }: SidebarCommentsProps): React.ReactElement => {
   const virtuosoRef = useRef<VirtuosoHandle | null>(null);
   const comments = useCommentList(threads);
   const hasActive = useHasActiveComment();
@@ -179,6 +181,17 @@ export const SidebarComments = ({ threads, config, video, styles }: SidebarComme
           <Text size="sm" fw={ui.font.weight.semibold}>
             コメント: {comments.length}
           </Text>
+          <ActionIcon
+            aria-label="コメントを更新"
+            title="コメントを更新"
+            size={ui.space.xl + ui.space.xs}
+            variant="transparent"
+            vars={() => ({ root: { '--ai-hover': 'transparent' } })}
+            onClick={onRefresh}
+            style={{ cursor: 'pointer' }}
+          >
+            <FiRefreshCw size={ui.icon.md} />
+          </ActionIcon>
         </Group>
       </header>
       <div style={styles.main}>
