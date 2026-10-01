@@ -43,45 +43,24 @@ export type Threads = {
   comments: NvCommentItem[];
 }[];
 
+type WatchVideo = {
+  id: string;
+  title: string;
+  description: string;
+  count: { view: number; comment: number; mylist: number; like: number };
+  duration: number;
+  thumbnail: { url?: string; normal?: string };
+};
+
+export type WatchPageData = {
+  comment: { nvComment: NvComment };
+  video: WatchVideo;
+  channel?: { id: string } | null;
+};
+
 export type VideoData = BaseResponse<{
-  response: {
-    $watchV4: {
-      data: {
-        client: { nicosid: string; watchId: string; watchTrackId: string };
-        comment: {
-          nvComment: NvComment;
-          threads: {
-            id: Thread['id'];
-            fork: Thread['fork'];
-            forkLabel: Thread['forkLabel'];
-            videoId: string;
-            label: string;
-          }[];
-          layers: {
-            index: number;
-            isTranslucent: boolean;
-            components: { threadId: Thread['id']; fork: Thread['fork']; forkLabel: Thread['forkLabel'] }[];
-          }[];
-        };
-        metadata: { jsonLd?: { owner?: { id: string; type: string; name?: string } } };
-        video: {
-          id: string; // ContentId
-          title: string;
-          description: string;
-          count: { view: number; comment: number; mylist: number; like: number };
-          duration: number;
-          thumbnail: {
-            normal: string;
-            player: string;
-            ogp: string;
-            middle: string | null;
-            large: string | null;
-            short: string | null;
-          };
-        };
-      };
-    };
-  };
+  metadata?: { jsonLd?: { owner?: { id: string; type: string; name?: string } } };
+  response: WatchPageData;
 }>;
 
 export type ThreadsDataResponse = BaseResponse<{ globalComments: [{ id: number; count: number }]; threads: Threads }>;

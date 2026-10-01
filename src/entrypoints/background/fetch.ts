@@ -1,6 +1,6 @@
 import { getConfig } from '@/config/storage';
 import { err, ok, type Result } from '@/lib/types';
-import type { NvComment, Owner, ThreadKeyResponse, ThreadsDataResponse, VideoData } from '@/types/api';
+import type { NvComment, Owner, ThreadKeyResponse, ThreadsDataResponse, VideoData, WatchPageData } from '@/types/api';
 
 async function apiFetch<T>(input: RequestInfo, init?: RequestInit): Promise<Result<T, Error>> {
   const res = await fetch(input, init);
@@ -27,7 +27,40 @@ async function buildAuthRequestInit(r: RequestInit): Promise<RequestInit> {
 export async function videoData(videoId: string): Promise<Result<VideoData, Error>> {
   const url = `https://www.nicovideo.jp/watch/${videoId}?responseType=json`;
   const req: RequestInit = { cache: 'no-cache', credentials: 'omit', mode: 'cors' };
-  return apiFetch<VideoData>(url, await buildAuthRequestInit(req));
+  const init = await buildAuthRequestInit(req);
+  const responseTypeResult = await apiFetch<VideoData>(url, init);
+  if (
+    responseTypeResult.ok &&
+    responseTypeResult.value.meta.status === 200 &&
+    hasWatchPageData(responseTypeResult.value.data?.response)
+  ) {
+    return responseTypeResult;
+  }
+
+  const watchApi = (await getConfig('login')) ? 'v3' : 'v3_guest';
+  const actionTrackId = `${crypto.randomUUID().replaceAll('-', '').slice(0, 10)}_${Date.now()}`;
+  const fallbackUrl = new URL(`https://www.nicovideo.jp/api/watch/${watchApi}/${encodeURIComponent(videoId)}`);
+  fallbackUrl.searchParams.set('actionTrackId', actionTrackId);
+  const fallback = await apiFetch<{ meta: { status: number; errorMessage?: string }; data: WatchPageData | null }>(fallbackUrl.toString(), {
+    ...init,
+    headers: {
+      ...(init.headers as Record<string, string> | undefined),
+      'x-frontend-id': '6',
+      'x-frontend-version': '0',
+    },
+  });
+
+  if (!fallback.ok) return err(fallback.error);
+  if (fallback.value.meta.status !== 200 || !hasWatchPageData(fallback.value.data)) {
+    return ok({ meta: { status: 500, errorMessage: fallback.value.meta.errorMessage }, data: null });
+  }
+  return ok({ meta: { status: 200 }, data: { response: fallback.value.data } });
+}
+
+function hasWatchPageData(value: unknown): value is WatchPageData {
+  if (typeof value !== 'object' || value === null) return false;
+  const data = value as Partial<WatchPageData>;
+  return Boolean(data.comment?.nvComment && data.video?.id && data.video?.count && data.video?.thumbnail);
 }
 
 export async function threadsData(nvComment: NvComment): Promise<Result<ThreadsDataResponse, Error>> {
