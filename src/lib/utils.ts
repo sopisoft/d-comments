@@ -25,15 +25,16 @@ export const toCommentVideoList = (snapshot: SnapShotResponse): CommentVideoData
   toVideoData(snapshot).map((v) => ({ date: -1, threads: [], videoData: v }));
 
 export const toCommentVideoData = (videoData: SuccessfulResponseData<VideoData>): CommentVideoData['videoData'] => {
-  const { video, metadata } = videoData.response.$watchV4.data;
-  const channelId = metadata.jsonLd?.owner?.type === 'channel' ? metadata.jsonLd.owner.id : undefined;
+  const { video, channel } = videoData.response;
+  const owner = videoData.metadata?.jsonLd?.owner;
+  const channelId = owner?.type === 'channel' ? owner.id : channel?.id;
   return {
     commentCounter: video.count.comment,
     contentId: video.id,
     description: video.description,
     isDAnime: isDAnimeChannel(Number(channelId?.replace(/^ch/, ''))),
     lengthSeconds: video.duration,
-    thumbnailUrl: video.thumbnail.normal,
+    thumbnailUrl: video.thumbnail.url ?? video.thumbnail.normal ?? '',
     title: video.title,
     viewCounter: video.count.view,
   };

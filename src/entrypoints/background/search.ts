@@ -90,7 +90,51 @@ export type SnapShotResponse = {
   data: Marge<Nullable<Fields>, { contentId: string }>[];
 };
 
+type VideoSearchItem = {
+  id: string;
+  title: string;
+  registeredAt: string;
+  count: { view: number; comment: number; mylist: number; like: number };
+  thumbnail: { url: string };
+  duration: number;
+  shortDescription: string;
+  isChannelVideo: boolean;
+  owner?: { type?: string; id?: string };
+};
+
+type VideoSearchResponse = {
+  meta: { status: number; errorMessage?: string };
+  data: {
+    totalCount: number;
+    hasNext: boolean;
+    genres?: { key: string; label: string }[];
+    items: VideoSearchItem[];
+    additionals?: { tags?: { text: string }[] };
+  };
+};
+
+const sortKeyByField: Record<_sort, string> = {
+  viewCounter: 'viewCount',
+  mylistCounter: 'mylistCount',
+  likeCounter: 'likeCount',
+  lengthSeconds: 'duration',
+  startTime: 'registeredAt',
+  commentCounter: 'commentCount',
+  lastCommentTime: 'lastCommentTime',
+};
+
 const buildSearchUrl = (query: SnapShotQuery): URL => {
+  const url = new URL('https://nvapi.nicovideo.jp/v2/search/video');
+  const { searchParams } = url;
+  searchParams.set('keyword', query.q);
+  searchParams.set('pageSize', `${Math.min(query._limit ?? 50, 100)}`);
+  searchParams.set('page', `${Math.floor((query._offset ?? 0) / (query._limit ?? 50)) + 1}`);
+  searchParams.set('sortKey', sortKeyByField[query._sort.slice(1) as _sort]);
+  searchParams.set('sortOrder', query._sort.startsWith('+') ? 'asc' : 'desc');
+  return url;
+};
+
+const buildSnapshotSearchUrl = (query: SnapShotQuery): URL => {
   const url = new URL('https://snapshot.search.nicovideo.jp/api/v2/snapshot/video/contents/search');
   const { searchParams } = url;
   searchParams.set('q', query.q);
@@ -111,13 +155,79 @@ const buildSearchUrl = (query: SnapShotQuery): URL => {
   return url;
 };
 
-export const search = async (query: SnapShotQuery): Promise<Result<SnapShotResponse, Error>> =>
-  fetch(buildSearchUrl(query))
-    .then((res) => res.json() as Promise<SnapShotResponse>)
-    .then(
-      async (res) => {
-        if (await getConfig('channels_only')) res.data = res.data.filter((v) => v.channelId !== null);
-        return ok(res);
-      },
-      (error: unknown) => err(toError(error))
-    );
+const toSnapshotResponse = (response: VideoSearchResponse): SnapShotResponse => {
+  const genres = response.data.genres?.map((genre) => genre.label).join(' ') ?? '';
+  const tags = response.data.additionals?.tags?.map((tag) => tag.text) ?? [];
+  return {
+    meta: { status: response.meta.status === 200 ? 200 : 500, totalCount: response.data.totalCount },
+    data: response.data.items.map((item) => {
+      const channelId = item.isChannelVideo ? Number(item.owner?.id?.replace(/^ch/, '')) : null;
+      const userId = item.isChannelVideo ? null : Number(item.owner?.id);
+      return {
+        contentId: item.id,
+        title: item.title,
+        description: item.shortDescription,
+        userId: Number.isFinite(userId) ? userId : null,
+        channelId: Number.isFinite(channelId) ? channelId : null,
+        viewCounter: item.count.view,
+        mylistCounter: item.count.mylist,
+        likeCounter: item.count.like,
+        lengthSeconds: item.duration,
+        thumbnailUrl: item.thumbnail.url,
+        startTime: item.registeredAt,
+        lastResBody: null,
+        commentCounter: item.count.comment,
+        lastCommentTime: null,
+        categoryTags: genres,
+        tags: tags.join(' '),
+        tagsExact: tags,
+        genre: response.data.genres?.[0]?.key ?? null,
+        'genre.keyword': response.data.genres?.[0]?.key ?? null,
+      };
+    }),
+  };
+};
+
+const fetchNvapiSearch = async (query: SnapShotQuery): Promise<Result<SnapShotResponse, Error>> => {
+  try {
+    const response = await fetch(buildSearchUrl(query), {
+      headers: { 'x-frontend-id': '6', 'x-frontend-version': '0' },
+    });
+    if (!response.ok) return err(toError(`HTTP error: ${response.status}`));
+
+    const json = (await response.json()) as VideoSearchResponse;
+    if (json.meta.status !== 200) return err(toError(json.meta.errorMessage ?? 'Video search failed'));
+
+    return ok(toSnapshotResponse(json));
+  } catch (error) {
+    return err(toError(error));
+  }
+};
+
+const fetchSnapshotSearch = async (query: SnapShotQuery): Promise<Result<SnapShotResponse, Error>> => {
+  try {
+    const response = await fetch(buildSnapshotSearchUrl(query));
+    if (!response.ok) return err(toError(`HTTP error: ${response.status}`));
+
+    const json = (await response.json()) as SnapShotResponse;
+    if (json.meta.status !== 200) return err(toError(json.meta.errorMessage ?? 'Snapshot search failed'));
+    return ok(json);
+  } catch (error) {
+    return err(toError(error));
+  }
+};
+
+export const search = async (query: SnapShotQuery): Promise<Result<SnapShotResponse, Error>> => {
+  const nvapiResult = await fetchNvapiSearch(query);
+  const result = nvapiResult.ok ? nvapiResult : await fetchSnapshotSearch(query);
+  if (!result.ok) {
+    const message = nvapiResult.ok
+      ? result.error.message
+      : `NVAPI search failed: ${nvapiResult.error.message}; Snapshot fallback failed: ${result.error.message}`;
+    return err(toError(message));
+  }
+
+  const response = result.value;
+  if (await getConfig('channels_only')) response.data = response.data.filter((item) => item.channelId !== null);
+  return ok(response);
+};
