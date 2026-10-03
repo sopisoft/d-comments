@@ -39,5 +39,13 @@ export const add_button_to_play = async (): Promise<void> => {
 
     a.textContent = playInSameTab ? '同じタブで再生' : '新しいタブで再生';
     a.target = playInSameTab ? '_self' : '_blank';
+
+    if (!playInSameTab) {
+      a.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        window.open(a.href);
+      });
+    }
   }
 };

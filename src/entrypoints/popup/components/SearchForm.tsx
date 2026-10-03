@@ -1,6 +1,6 @@
 import { Button, Group, Select, Stack, TextInput } from '@mantine/core';
 import { useForm } from '@mantine/form';
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useEffectEvent } from 'react';
 import { useTheme } from '@/config/hooks/useTheme';
 import { getConfig } from '@/config/storage';
 import type { _sort, SnapShotQuery, SnapShotResponse } from '@/entrypoints/background/search';
@@ -47,13 +47,13 @@ export function SearchForm({
     [addVideos]
   );
 
+  const autoSearch = useEffectEvent(async () => {
+    if (await getConfig('auto_search')) await runSearch(initialWord ?? '', '-commentCounter');
+  });
+
   useEffect(() => {
-    getConfig('auto_search')
-      .then(async (v) => {
-        if (v) await runSearch(form.getValues().word, '-commentCounter');
-      })
-      .catch(logger.error);
-  }, [form, runSearch]);
+    autoSearch().catch(logger.error);
+  }, []);
 
   return (
     <form
