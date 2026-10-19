@@ -1,6 +1,7 @@
 import type { SnapShotQuery, SnapShotResponse } from '@/entrypoints/background/search';
 import { err, ok, type Result } from '@/lib/types';
 import { toVideoData } from '@/lib/utils';
+import { type CommentSourcePolicy, selectCommentSources } from './commentSource';
 import { buildEpisodeSearchQueries, buildSearchQuery, type EpisodeIdentity } from './search';
 import { type NicoCandidate, rankCompatibleCandidates } from './videoMatching';
 
@@ -8,8 +9,10 @@ import { type NicoCandidate, rankCompatibleCandidates } from './videoMatching';
 export const searchEpisodeCandidates = async (
   episode: EpisodeIdentity,
   search: (query: SnapShotQuery) => Promise<Result<SnapShotResponse, Error>>,
-  knownChannelId?: number
+  knownChannelId?: number,
+  policy: CommentSourcePolicy = 'official-and-danime'
 ): Promise<Result<NicoCandidate[], Error>> => {
+  const candidates = new Map<string, NicoCandidate>();
   let lastError: Error | undefined;
   let succeeded = false;
   for (const query of buildEpisodeSearchQueries(episode)) {
@@ -20,7 +23,11 @@ export const searchEpisodeCandidates = async (
     }
     succeeded = true;
     const compatible = rankCompatibleCandidates(episode, toVideoData(result.value), knownChannelId);
-    if (compatible.length) return ok(compatible);
+    for (const candidate of compatible) candidates.set(candidate.contentId, candidate);
+    const selected = selectCommentSources([...candidates.values()], policy);
+    if (selected.length >= (policy === 'official-and-danime' ? 2 : 1)) {
+      return ok([...candidates.values()]);
+    }
   }
-  return !succeeded && lastError ? err(lastError) : ok([]);
+  return !succeeded && lastError ? err(lastError) : ok([...candidates.values()]);
 };

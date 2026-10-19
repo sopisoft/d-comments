@@ -41,14 +41,17 @@ export async function videoData(videoId: string): Promise<Result<VideoData, Erro
   const actionTrackId = `${crypto.randomUUID().replaceAll('-', '').slice(0, 10)}_${Date.now()}`;
   const fallbackUrl = new URL(`https://www.nicovideo.jp/api/watch/${watchApi}/${encodeURIComponent(videoId)}`);
   fallbackUrl.searchParams.set('actionTrackId', actionTrackId);
-  const fallback = await apiFetch<{ meta: { status: number; errorMessage?: string }; data: WatchPageData | null }>(fallbackUrl.toString(), {
-    ...init,
-    headers: {
-      ...(init.headers as Record<string, string> | undefined),
-      'x-frontend-id': '6',
-      'x-frontend-version': '0',
-    },
-  });
+  const fallback = await apiFetch<{ meta: { status: number; errorMessage?: string }; data: WatchPageData | null }>(
+    fallbackUrl.toString(),
+    {
+      ...init,
+      headers: {
+        ...(init.headers as Record<string, string> | undefined),
+        'x-frontend-id': '6',
+        'x-frontend-version': '0',
+      },
+    }
+  );
 
   if (!fallback.ok) return err(fallback.error);
   if (fallback.value.meta.status !== 200 || !hasWatchPageData(fallback.value.data)) {

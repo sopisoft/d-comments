@@ -6,6 +6,7 @@ import { logger } from '@/lib/logger';
 import { andThenAsync, err, ok, unwrap } from '@/lib/types';
 import { onMessage, requestMessageResult } from '@/messaging/runtime';
 import { createCommentManager, getComments } from '@/modules/comments/manager';
+import { selectCommentSources } from '@/modules/commentSource';
 import { searchEpisodeCandidates } from '@/modules/episodeSearch';
 import { getWorkChannel, resolveWorkChannel, saveWorkChannel } from '@/modules/workChannels';
 import type { Threads } from '@/types/api';
@@ -130,21 +131,32 @@ export default defineContentScript({
       if (!(await getConfig('enable_auto_play'))) return ok([]);
       const episode = workInfoResult.value.data;
       const knownChannel = await getWorkChannel(episode.workTitle);
+      const policy = await getConfig('comment_source_policy');
       const searchRes = await searchEpisodeCandidates(
         episode,
         (query) => requestMessageResult('search', query),
-        knownChannel?.channelId
+        knownChannel?.channelId,
+        policy
       );
       return andThenAsync(searchRes, async (videos) => {
         const mapping = resolveWorkChannel(episode, videos, knownChannel);
         if (mapping && mapping !== knownChannel) await saveWorkChannel(episode.workTitle, mapping);
-        if (videos.length === 0) return ok([]);
-        const firstVideo = videos[0];
-        if (!firstVideo) return ok([]);
-        const videoDataResult = await getComments(commentManager, firstVideo.contentId);
-        if (!videoDataResult.ok) return err(videoDataResult.error);
-        const addedRes = await requestMessageResult('add_video', { video: videoDataResult.value });
-        return addedRes.ok ? ok(addedRes.value as CommentVideoData[]) : err(addedRes.error);
+        let playing: CommentVideoData[] = [];
+        let lastError: Error | undefined;
+        for (const video of selectCommentSources(videos, policy)) {
+          const result = await getComments(commentManager, video.contentId);
+          if (!result.ok) {
+            lastError = result.error;
+            continue;
+          }
+          const added = await requestMessageResult('add_video', { video: result.value });
+          if (!added.ok) {
+            lastError = added.error;
+            continue;
+          }
+          playing = added.value;
+        }
+        return playing.length || !lastError ? ok(playing) : err(lastError);
       });
     };
 

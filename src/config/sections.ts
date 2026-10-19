@@ -25,9 +25,10 @@ export const configSections: SectionDefinition[] = [
         description: 'ニコニコ動画にログインすると、ニコニコ動画とNGユーザー・NGワードの同期ができます。',
       },
       {
-        configKey: 'channels_only',
-        label: 'チャンネルのみ',
-        description: 'チャンネルのコメントのみを検索・表示します。',
+        configKey: 'comment_source_policy',
+        label: '優先する動画の主',
+        description:
+          '一般はユーザー投稿を含むすべての動画、公式はアニメチャンネル、dアニメはdアニメストアニコニコ支店の動画からコメントを取得します。',
       },
     ],
     icon: MdSearch,
