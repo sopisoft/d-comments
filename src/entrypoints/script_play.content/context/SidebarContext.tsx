@@ -61,16 +61,16 @@ export const SidebarProvider = ({ children }: { children: ReactNode }): ReactEle
   const { currentValue: scrollSmoothly } = useConfig('enable_smooth_scrolling');
   const { currentValue: timingOffset } = useConfig('comment_timing_offset');
   const { currentValue: fps } = useConfig('comment_renderer_fps');
-  const [width, setWidth] = useState(configWidth);
-
-  useEffect(() => {
-    setWidth(configWidth);
-  }, [configWidth]);
+  const [widthState, setWidthState] = useState({ configWidth, width: configWidth });
+  if (widthState.configWidth !== configWidth) {
+    setWidthState({ configWidth, width: configWidth });
+  }
+  const width = widthState.width;
 
   const { ui_options } = defaultConfigs.comment_area_width_px;
   const handleSetWidth = useCallback(
-    (w: number) => setWidth(Math.max(ui_options.min, Math.min(ui_options.max, w))),
-    [ui_options.min, ui_options.max]
+    (w: number) => setWidthState({ configWidth, width: Math.max(ui_options.min, Math.min(ui_options.max, w)) }),
+    [configWidth, ui_options.min, ui_options.max]
   );
 
   const value = useMemo<SidebarConfig>(

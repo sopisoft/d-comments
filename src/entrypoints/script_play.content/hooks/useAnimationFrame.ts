@@ -11,13 +11,13 @@ export function useAnimationFrame(callback: () => void, intervalMs = 0): { pause
   }, [callback]);
 
   const loop = useCallback(
-    (time: number) => {
+    function tick(time: number) {
       if (!running.current) return;
       if (!intervalMs || time >= nextTick.current) {
         nextTick.current = intervalMs ? time + intervalMs : time;
         saved.current();
       }
-      rafRef.current = requestAnimationFrame(loop);
+      rafRef.current = requestAnimationFrame(tick);
     },
     [intervalMs]
   );

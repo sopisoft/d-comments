@@ -122,6 +122,10 @@ export type SidebarCommentsProps = {
   onRefresh: () => void;
 };
 
+const seekVideo = (video: HTMLVideoElement | null, vposMs: number) => {
+  if (video) video.currentTime = vposMs / 1000;
+};
+
 export const SidebarComments = ({
   threads,
   config,
@@ -160,12 +164,7 @@ export const SidebarComments = ({
     checkHover();
     return () => clearInterval(id);
   }, [notifyHover]);
-  const seek = useCallback(
-    (vposMs: number) => {
-      if (video) video.currentTime = vposMs / 1000;
-    },
-    [video]
-  );
+  const seek = useCallback((vposMs: number) => seekVideo(video, vposMs), [video]);
 
   const itemContent = useCallback(
     (index: number, item: NvCommentItem) => (
