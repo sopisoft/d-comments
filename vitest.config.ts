@@ -10,6 +10,10 @@ export default defineConfig({
   test: {
     projects: [
       {
+        resolve: { alias: { '@': path.join(rootDir, 'src') } },
+        test: { name: 'unit', environment: 'node', include: ['tests/unit/**/*.test.ts'] },
+      },
+      {
         extends: true,
         plugins: [storybookTest({ configDir: path.join(rootDir, '.storybook') })],
         test: {

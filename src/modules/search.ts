@@ -1,67 +1,20 @@
 import type { SnapShotQuery } from '@/entrypoints/background/search';
-import { logger } from '@/lib/logger';
 
-/**
- *タイトルを検索用に整える
- *danime-save-annict-2
- *https://github.com/TomoTom0/danime-save-annict-2/blob/105851c64900b4994eb095f0f1bd83e755cb5f1d/src/scripts/index.js#L447-L463
- */
-export function sanitizeTitle(title: string): string {
-  const deleteArray = [
-    '([\\[《（【＜〈].+?[\\]》）】〉＞】])',
-    '第?\\d{1,2}期',
-    '^映画',
-    '^劇場版',
-    '(TV|テレビ|劇場)(アニメーション|アニメ)',
-    '^アニメ',
-    'Ⅰ',
-    'Ⅱ',
-    'II',
-    'Ⅲ',
-    'III',
-    'Ⅳ',
-    'IV',
-    'Ⅴ',
-    'Ⅵ',
-    'Ⅶ',
-    'VII',
-    'Ⅷ',
-    'VIII',
-    'Ⅸ',
-    'IX',
-    'Ⅹ',
-  ];
-  const remakeWords = { '!': '！', '\u00A0': ' ', '\u3000': ' ' };
+export const normalizeText = (value: string): string => value.normalize('NFKC').replace(/\s+/g, ' ').trim();
 
-  const titleRegex = /^(TV|テレビ|劇場|オリジナル)?\s?(アニメーション|アニメ)\s?[｢「『]/;
-  const match = title.match(titleRegex);
-  let trimmedTitle = title;
-  if (match?.index !== undefined) {
-    const index = match.index + match[0].length;
-    trimmedTitle = trimmedTitle.substring(index).replace(/[」｣』]/, ' ');
-  }
+export type EpisodeIdentity = {
+  workTitle: string;
+  partDispNumber: string;
+  partTitle: string;
+};
 
-  const sanitized = trimmedTitle
-    .replace(
-      /[Ａ-Ｚａ-ｚ０-９：＆]/g,
-      (s) => String.fromCharCode(s.charCodeAt(0) - 65248) // 全角を半角に
-    )
-    .replace(new RegExp(deleteArray.join('|'), 'gi'), '')
-    .replace(
-      new RegExp(Object.keys(remakeWords).join('|'), 'g'),
-      (match) => remakeWords[match as keyof typeof remakeWords]
-    )
-    .trim();
+export const buildEpisodeSearchQueries = (episode: EpisodeIdentity): string[] => {
+  const queries = [episode.workTitle, `${episode.workTitle} ${episode.partDispNumber}`];
+  if (episode.partTitle.trim()) queries.push(episode.partTitle, `${episode.partDispNumber} ${episode.partTitle}`);
+  return [...new Set(queries.map(normalizeText).filter(Boolean))];
+};
 
-  logger.info(`sanitizeTitle: "${title}" -> "${sanitized}"`);
-  return sanitized;
-}
-
-/**
- * Build search query from work title
- */
 export function buildSearchQuery(word: string, sort: SnapShotQuery['_sort'] = '-commentCounter'): SnapShotQuery {
-  const q = sanitizeTitle(word);
   return {
     _limit: 50,
     _sort: sort,
@@ -80,7 +33,7 @@ export function buildSearchQuery(word: string, sort: SnapShotQuery['_sort'] = '-
       'userId',
       'thumbnailUrl',
     ],
-    q,
+    q: normalizeText(word),
     targets: ['title', 'description'],
   };
 }

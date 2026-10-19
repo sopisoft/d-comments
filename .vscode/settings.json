@@ -20,10 +20,10 @@
 		}
 	],
 	"oxc.typeAware": true,
-	"typescript.autoClosingTags": true,
-	"typescript.check.npmIsInstalled": true,
-	"typescript.format.enable": false,
-	"typescript.referencesCodeLens.enabled": true,
-	"typescript.tsdk": "node_modules/typescript/lib",
-	"typescript.updateImportsOnFileMove.enabled": "always",
+	"js/ts.experimental.useTsgo": true,
+	"js/ts.autoClosingTags.enabled": true,
+	"js/ts.format.enabled": false,
+	"js/ts.referencesCodeLens.enabled": true,
+	"js/ts.updateImportsOnFileMove.enabled": "always",
+	"js/ts.implementationsCodeLens.enabled": true
 }

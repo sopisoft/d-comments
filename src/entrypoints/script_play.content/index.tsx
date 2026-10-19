@@ -4,10 +4,10 @@ import { getConfig, watchConfig } from '@/config/storage';
 import { ThemedMantineProvider } from '@/config/theme';
 import { logger } from '@/lib/logger';
 import { andThenAsync, err, ok, unwrap } from '@/lib/types';
-import { toVideoData } from '@/lib/utils';
 import { onMessage, requestMessageResult } from '@/messaging/runtime';
 import { createCommentManager, getComments } from '@/modules/comments/manager';
-import { buildSearchQuery } from '@/modules/search';
+import { searchEpisodeCandidates } from '@/modules/episodeSearch';
+import { getWorkChannel, resolveWorkChannel, saveWorkChannel } from '@/modules/workChannels';
 import type { Threads } from '@/types/api';
 import type { CommentVideoData } from '@/types/comments';
 import { renderer, type RendererMode } from './renderer';
@@ -128,9 +128,16 @@ export default defineContentScript({
       const workInfoResult = await updateWorkInfo();
       if (!workInfoResult.ok) return err(workInfoResult.error);
       if (!(await getConfig('enable_auto_play'))) return ok([]);
-      const searchRes = await requestMessageResult('search', buildSearchQuery(workInfoResult.value.data.title));
-      return andThenAsync(searchRes, async (snapshot) => {
-        const videos = toVideoData(snapshot);
+      const episode = workInfoResult.value.data;
+      const knownChannel = await getWorkChannel(episode.workTitle);
+      const searchRes = await searchEpisodeCandidates(
+        episode,
+        (query) => requestMessageResult('search', query),
+        knownChannel?.channelId
+      );
+      return andThenAsync(searchRes, async (videos) => {
+        const mapping = resolveWorkChannel(episode, videos, knownChannel);
+        if (mapping && mapping !== knownChannel) await saveWorkChannel(episode.workTitle, mapping);
         if (videos.length === 0) return ok([]);
         const firstVideo = videos[0];
         if (!firstVideo) return ok([]);
