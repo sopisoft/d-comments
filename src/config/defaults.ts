@@ -1,4 +1,5 @@
 import { MdDarkMode, MdLightMode, MdSettings } from 'react-icons/md';
+import type { CommentSourcePolicy } from '@/modules/commentSource';
 import type { UiOptions, UiType } from './types';
 import { defineConfigs } from './types';
 
@@ -22,6 +23,16 @@ export const defaultConfigs = defineConfigs({
   login: { ui_type: 'switch', value: false },
   enable_auto_play: { ui_type: 'switch', value: true },
   auto_search: { ui_type: 'switch', value: false },
+  comment_source_policy: {
+    ui_type: 'segmented_control',
+    value: 'official-and-danime' as CommentSourcePolicy,
+    ui_options: [
+      { value: 'general', label: '一般' },
+      { value: 'official-channel', label: '公式' },
+      { value: 'danime-channel', label: 'dアニメ' },
+      { value: 'official-and-danime', label: '公式＋dアニメ' },
+    ],
+  },
   enable_auto_scroll: { ui_type: 'switch', value: true },
 
   /**
@@ -57,7 +68,6 @@ export const defaultConfigs = defineConfigs({
       { key: 'easy', value: 'かんたんコメント', enabled: false },
     ],
   },
-  channels_only: { ui_type: 'switch', value: true },
   enable_smooth_scrolling: { ui_type: 'switch', value: false },
   comment_timing_offset: {
     ui_options: { min: -100000, max: 100000, step: 10 } satisfies UiOptions,

@@ -19,13 +19,7 @@ export function CommentSidebar({
   );
 }
 
-function SidebarContent({
-  threads,
-  onRefresh,
-}: {
-  threads: Threads;
-  onRefresh: () => void;
-}): React.ReactElement {
+function SidebarContent({ threads, onRefresh }: { threads: Threads; onRefresh: () => void }): React.ReactElement {
   const { video } = useVideoElement();
   const config = useSidebar();
   const styles = useMemo(() => createSidebarStyles(config), [config]);

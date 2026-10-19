@@ -1,5 +1,6 @@
 import { getConfig } from '@/config/storage';
 import { err, ok, type Result, toError } from '@/lib/types';
+import { matchesCommentSource } from '@/modules/commentSource';
 
 type Integer = number;
 type Fields = {
@@ -228,6 +229,7 @@ export const search = async (query: SnapShotQuery): Promise<Result<SnapShotRespo
   }
 
   const response = result.value;
-  if (await getConfig('channels_only')) response.data = response.data.filter((item) => item.channelId !== null);
+  const policy = await getConfig('comment_source_policy');
+  response.data = response.data.filter((item) => matchesCommentSource(item, policy));
   return ok(response);
 };

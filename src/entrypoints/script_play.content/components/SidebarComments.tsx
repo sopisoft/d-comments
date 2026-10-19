@@ -1,8 +1,8 @@
 import { ActionIcon, Group, Popover, Text } from '@mantine/core';
 import { type CSSProperties, memo } from 'react';
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
-import { Virtuoso, type VirtuosoHandle } from 'react-virtuoso';
 import { FiRefreshCw } from 'react-icons/fi';
+import { Virtuoso, type VirtuosoHandle } from 'react-virtuoso';
 import { ui } from '@/config/theme';
 import type { NvCommentItem, Threads } from '@/types/api';
 import type { SidebarConfig } from '../context/SidebarContext';
@@ -122,7 +122,13 @@ export type SidebarCommentsProps = {
   onRefresh: () => void;
 };
 
-export const SidebarComments = ({ threads, config, video, styles, onRefresh }: SidebarCommentsProps): React.ReactElement => {
+export const SidebarComments = ({
+  threads,
+  config,
+  video,
+  styles,
+  onRefresh,
+}: SidebarCommentsProps): React.ReactElement => {
   const virtuosoRef = useRef<VirtuosoHandle | null>(null);
   const comments = useCommentList(threads);
   const hasActive = useHasActiveComment();
